@@ -64,13 +64,23 @@
 
 :root {
     --bs-body-font-family: "Inter", sans-serif;
+
+    --orthogram-navbar-bg: #f4f4f5;
+    --orthogram-navbar-border: #374151;
+    --orthogram-text: #111827;
+    --orthogram-muted: #4b5563;
+}
+
+[data-bs-theme="dark"] {
+    --orthogram-navbar-bg: #f4f4f5;
+    --orthogram-navbar-border: #374151;
+    --orthogram-text: #111827;
+    --orthogram-muted: #4b5563;
 }
 
 body {
-    background-color: #FFFFFF;
     font-family: "Inter", sans-serif;
     font-weight: 400;
-    color: rgb(26, 38, 45);
     line-height: 1.6;
 }
 
@@ -91,6 +101,7 @@ h6,
     font-family: "DidactGothic", sans-serif;
     font-weight: 400;
     line-height: 1.2;
+    color: var(--bs-body-color);
 }
 
 /*--------------------------------------------------------------
@@ -124,6 +135,20 @@ h6,
         padding-right: 48px !important;
         padding-left: 48px !important;
     }
+}
+
+.orthogram-navbar {
+    background-color: var(--orthogram-navbar-bg);
+    border-top: 3px solid var(--orthogram-navbar-border);
+}
+
+.nav-link {
+    color: var(--orthogram-muted);
+}
+
+.nav-link:hover,
+.nav-link:focus {
+    color: var(--orthogram-text);
 }
 
 .btn-connect {
@@ -248,7 +273,7 @@ h6,
     font-size: 2rem;
     font-weight: 300;
     letter-spacing: 0.04em;
-    color: #111827;
+    color: var(--orthogram-text);
     text-transform: uppercase;
     line-height: 1;
     margin-top: 4px;
