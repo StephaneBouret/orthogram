@@ -1,3 +1,265 @@
+@font-face {
+    font-family: 'Inter';
+    src: url('../fonts/inter/Inter_18pt-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('../fonts/inter/Inter_18pt-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('../fonts/inter/Inter_18pt-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('../fonts/inter/Inter_18pt-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('../fonts/inter/Inter_18pt-Italic.ttf') format('truetype');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Roboto";
+    src: url("../fonts/Roboto-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Roboto";
+    src: url("../fonts/Roboto-Italic.ttf") format("truetype");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "DidactGothic";
+    src: url("../fonts/DidactGothic-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    --bs-body-font-family: "Inter", sans-serif;
+}
+
 body {
-    background-color: skyblue;
+    background-color: #FFFFFF;
+    font-family: "Inter", sans-serif;
+    font-weight: 400;
+    color: rgb(26, 38, 45);
+    line-height: 1.6;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6,
+.hero-title,
+.section-title {
+    font-family: "DidactGothic", sans-serif;
+    font-weight: 400;
+    line-height: 1.2;
+}
+
+/*--------------------------------------------------------------
+# Navbar
+--------------------------------------------------------------*/
+.navbar {
+    align-items: center !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
+    padding-bottom: .5rem !important;
+    padding-top: .5rem !important;
+    position: relative !important;
+}
+
+.container-fluid {
+    max-width: 1440px;
+    padding-right: 20px !important;
+    padding-left: 20px !important;
+}
+
+@media (min-width: 576px) {
+    .container-fluid {
+        padding-right: 32px !important;
+        padding-left: 32px !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .container-fluid {
+        padding-right: 48px !important;
+        padding-left: 48px !important;
+    }
+}
+
+.btn-connect {
+    background-color: #325d88 !important;
+    border-color: #325d88 !important;
+    font-family: "Inter", sans-serif;
+    font-weight: 600;
+}
+
+.btn-connect:hover {
+    color: #FFF !important;
+    background-color: #2b4f74 !important;
+    border-color: transparent !important;
+}
+
+.dropdown-user {
+    font-size: 13px;
+    letter-spacing: 0em;
+    line-height: 22px;
+    text-transform: uppercase;
+    color: rgb(26, 38, 45) !important;
+    outline: none;
+    font-weight: 600 !important;
+    text-decoration: none;
+    border-radius: 8px !important;
+    padding: 4px 8px !important;
+    font-family: "Inter", sans-serif;
+}
+
+.dropdown-user:hover,
+.dropdown-user:focus,
+.dropdown-user:active {
+    color: rgb(26, 38, 45) !important;
+    background-color: rgb(237, 239, 240) !important;
+    text-decoration: none;
+}
+
+.space-between {
+    height: 0;
+    border-top: 1px solid rgb(213, 215, 217);
+}
+
+.color-btn-logout {
+    color: rgba(26, 38, 45, 0.6) !important;
+}
+
+.color-btn-logout:hover,
+.color-btn-logout:focus,
+.color-btn-logout:active {
+    color: rgb(26, 38, 45) !important;
+    background-color: rgb(237, 239, 240) !important;
+    text-decoration: none;
+}
+
+.btn-dropdown-user {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    outline: none;
+    padding: 0;
+}
+
+.sc-img-gravatar {
+    -o-object-fit: cover;
+    object-fit: cover;
+    -o-object-position: center center;
+    object-position: center center;
+    margin: 0 auto;
+    border-radius: 0;
+    aspect-ratio: unset;
+    width: 100%;
+}
+
+.sc-gravatar .sc-img-gravatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.vihbpq {
+    max-width: 100px;
+    -o-object-fit: cover;
+    object-fit: cover;
+}
+
+.q6csu5 {
+    align-items: center;
+}
+
+@media (max-width: 992px) {
+    .q6csu5 {
+        align-items: flex-start;
+    }
+}
+
+/*--------------------------------------------------------------
+# Logo / Branding
+--------------------------------------------------------------*/
+.logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    gap: 14px;
+}
+
+.logo-symbol {
+    width: 72px;
+    height: auto;
+    display: block;
+    transition: transform .2s ease;
+}
+
+.logo-link:hover .logo-symbol {
+    transform: scale(1.03);
+}
+
+.logo-text {
+    font-family: "Inter", sans-serif;
+    font-size: 2rem;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    color: #111827;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+    .logo-symbol {
+        width: 56px;
+    }
+
+    .logo-text {
+        font-size: 1.6rem;
+    }
 }
