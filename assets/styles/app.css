@@ -65,14 +65,14 @@
 :root {
     --bs-body-font-family: "Inter", sans-serif;
 
-    --orthogram-navbar-bg: #f4f4f5;
+    --orthogram-navbar-bg: #f6f2eb;
     --orthogram-navbar-border: #374151;
     --orthogram-text: #111827;
     --orthogram-muted: #4b5563;
 }
 
 [data-bs-theme="dark"] {
-    --orthogram-navbar-bg: #f4f4f5;
+    --orthogram-navbar-bg: #f6f2eb;
     --orthogram-navbar-border: #374151;
     --orthogram-text: #111827;
     --orthogram-muted: #4b5563;
@@ -247,6 +247,20 @@ h6,
     }
 }
 
+.navbar-toggler {
+    border-color: rgba(17, 24, 39, 0.15);
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+}
+
+.navbar-toggler-icon {
+    background-image: var(--bs-navbar-toggler-icon-bg);
+    -webkit-filter: invert(0);
+    filter: invert(0);
+}
+
 /*--------------------------------------------------------------
 # Logo / Branding
 --------------------------------------------------------------*/
@@ -254,11 +268,11 @@ h6,
     display: flex;
     align-items: center;
     text-decoration: none;
-    gap: 14px;
+    /* gap: 4px; */
 }
 
 .logo-symbol {
-    width: 72px;
+    width: 78px;
     height: auto;
     display: block;
     transition: transform .2s ease;
@@ -272,11 +286,12 @@ h6,
     font-family: "Inter", sans-serif;
     font-size: 2rem;
     font-weight: 300;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
     color: var(--orthogram-text);
     text-transform: uppercase;
     line-height: 1;
-    margin-top: 4px;
+    margin-top: 2px;
+    margin-left: -20px;
 }
 
 @media (max-width: 768px) {
@@ -286,5 +301,494 @@ h6,
 
     .logo-text {
         font-size: 1.6rem;
+    }
+}
+
+/*--------------------------------------------------------------
+# Homepage
+--------------------------------------------------------------*/
+.home-page {
+    overflow: hidden;
+}
+
+.home-hero {
+    position: relative;
+    min-height: 620px;
+    display: flex;
+    align-items: center;
+    background-image: url('../img/home/bg_accueil_orthogram_pix_2.png');
+    background-size: cover;
+    background-position: center;
+}
+
+.home-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, .50) 0%,
+        rgba(255, 255, 255, .34) 38%,
+        rgba(255, 255, 255, .06) 100%
+    );
+}
+
+[data-bs-theme="dark"] .home-hero-overlay {
+    background: linear-gradient(
+        90deg,
+        rgba(17, 24, 39, .48) 0%,
+        rgba(17, 24, 39, .28) 40%,
+        rgba(17, 24, 39, .04) 100%
+    );
+}
+
+.home-hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 760px;
+}
+
+.home-hero-content::before {
+    content: "";
+    position: absolute;
+    inset: -40px;
+    background: rgba(255, 255, 255, .13);
+    backdrop-filter: blur(1px);
+    border: 1px solid rgba(255, 255, 255, .28);
+    border-radius: 32px;
+    z-index: -1;
+}
+
+[data-bs-theme="dark"] .home-hero-content::before {
+    background: rgba(17, 24, 39, .10);
+    /* backdrop-filter: blur(8px); */
+    border-color: rgba(255, 255, 255, .08);
+}
+
+.home-kicker {
+    color: #d97706;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-size: .85rem;
+    margin-bottom: .75rem;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, .35);
+}
+
+[data-bs-theme="dark"] .home-kicker {
+    color: #fbbf24;
+    text-shadow: none;
+}
+
+.home-title {
+    font-family: "DidactGothic", sans-serif;
+    color: #1f2937;
+    font-size: clamp(3rem, 6vw, 5.8rem);
+    line-height: .95;
+    max-width: 820px;
+    margin-top: -.2rem;
+    margin-bottom: 1.5rem;
+}
+
+[data-bs-theme="dark"] .home-title {
+    color: #f9fafb;
+}
+
+.home-lead {
+    max-width: 650px;
+    font-size: 1.25rem;
+    line-height: 1.7;
+    color: #374151;
+    margin-bottom: 2rem;
+}
+
+[data-bs-theme="dark"] .home-lead {
+    color: rgba(249, 250, 251, .82);
+}
+
+.home-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.btn-orthogram-primary {
+    background-color: #f59e0b;
+    color: #111827;
+    border: 1px solid #f59e0b;
+    border-radius: 999px;
+    padding: .85rem 1.4rem;
+    font-weight: 700;
+}
+
+.btn-orthogram-primary:hover,
+.btn-orthogram-primary:focus {
+    background-color: #f97316;
+    border-color: #f97316;
+    color: #111827;
+}
+
+.btn-orthogram-light {
+    background-color: rgba(255, 255, 255, .84);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, .06);
+    color: #111827;
+    border: 1px solid rgba(17, 24, 39, .12);
+    border-radius: 999px;
+    padding: .85rem 1.4rem;
+    font-weight: 700;
+}
+
+.btn-orthogram-light:hover,
+.btn-orthogram-light:focus {
+    background-color: #ffffff;
+    color: #111827;
+    transform: translateY(-1px);
+}
+
+.home-section {
+    padding: 6rem 0;
+}
+
+.section-heading {
+    max-width: 760px;
+    margin-bottom: 3rem;
+}
+
+.section-heading.text-center {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.section-heading h2 {
+    font-size: clamp(2.2rem, 4vw, 3.5rem);
+}
+
+/*--------------------------------------------------------------
+# Homepage - Benefits
+--------------------------------------------------------------*/
+.home-benefits {
+    background-color: var(--bs-body-bg);
+}
+
+.benefit-card {
+    height: 100%;
+    overflow: hidden;
+    border-radius: 36px;
+    background-color: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
+    box-shadow: 0 20px 50px rgba(15, 23, 42, .08);
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.benefit-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 28px 70px rgba(15, 23, 42, .12);
+}
+
+.benefit-media {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background-color: #f8fafc;
+}
+
+.benefit-img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+    object-position: center;
+}
+
+.benefit-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.4rem;
+    padding: 2rem;
+}
+
+.benefit-icon {
+    flex: 0 0 76px;
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+.benefit-icon-purple {
+    color: #8b5cf6;
+    background-color: rgba(139, 92, 246, .13);
+}
+
+.benefit-icon-green {
+    color: #10b981;
+    background-color: rgba(16, 185, 129, .13);
+}
+
+.benefit-icon-orange {
+    color: #f59e0b;
+    background-color: rgba(245, 158, 11, .15);
+}
+
+.benefit-content h3 {
+    font-family: "Inter", sans-serif;
+    font-size: 1.9rem;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--bs-body-color);
+    margin-bottom: 1rem;
+}
+
+.benefit-content p {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--bs-secondary-color);
+    margin: 0;
+}
+
+/*--------------------------------------------------------------
+# Homepage - Paths
+--------------------------------------------------------------*/
+.home-paths {
+    background-color: var(--bs-tertiary-bg);
+}
+
+.path-card {
+    height: 100%;
+    padding: 2rem;
+    border-radius: 28px;
+    background-color: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
+}
+
+.path-icon {
+    display: inline-flex;
+    width: 52px;
+    height: 52px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    background-color: rgba(245, 158, 11, .14);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.path-card h3 {
+    font-family: "Inter", sans-serif;
+    font-weight: 700;
+    font-size: 1.35rem;
+}
+
+.path-card p {
+    color: var(--bs-secondary-color);
+    margin-bottom: 0;
+}
+
+/*--------------------------------------------------------------
+# Homepage - Hero badges
+--------------------------------------------------------------*/
+.hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin-top: 1.75rem;
+}
+
+.hero-badges span {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: .55rem .9rem;
+    background-color: rgba(255, 255, 255, .78);
+    border: 1px solid rgba(17, 24, 39, .10);
+    color: #111827;
+    font-weight: 600;
+    font-size: .95rem;
+}
+
+[data-bs-theme="dark"] .hero-badges span {
+    background-color: rgba(17, 24, 39, .72);
+    border-color: rgba(255, 255, 255, .12);
+    color: #f9fafb;
+}
+
+/*--------------------------------------------------------------
+# Homepage - Steps
+--------------------------------------------------------------*/
+.home-steps {
+    background-color: var(--bs-tertiary-bg);
+}
+
+.step-card {
+    height: 100%;
+    padding: 2rem;
+    border-radius: 30px;
+    background-color: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
+    box-shadow: 0 18px 45px rgba(15, 23, 42, .06);
+}
+
+.step-number {
+    display: inline-flex;
+    margin-bottom: 1.5rem;
+    color: #f59e0b;
+    font-weight: 800;
+    font-size: .95rem;
+    letter-spacing: .12em;
+}
+
+.step-card h3 {
+    font-family: "Inter", sans-serif;
+    font-weight: 700;
+    font-size: 1.45rem;
+    margin-bottom: 1rem;
+}
+
+.step-card p {
+    color: var(--bs-secondary-color);
+    margin-bottom: 0;
+}
+
+/*--------------------------------------------------------------
+# Homepage - Audience
+--------------------------------------------------------------*/
+.home-audience {
+    background-color: var(--bs-body-bg);
+}
+
+.audience-box {
+    display: grid;
+    grid-template-columns: 1.1fr .9fr;
+    gap: 3rem;
+    align-items: center;
+    padding: 3rem;
+    border-radius: 36px;
+    background-color: var(--bs-tertiary-bg);
+    border: 1px solid var(--bs-border-color);
+}
+
+.audience-box h2 {
+    font-size: clamp(2rem, 4vw, 3.4rem);
+}
+
+.audience-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .85rem;
+}
+
+.audience-tags span {
+    display: inline-flex;
+    padding: .8rem 1rem;
+    border-radius: 999px;
+    background-color: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
+    font-weight: 700;
+    color: var(--bs-body-color);
+}
+
+/*--------------------------------------------------------------
+# Homepage - Method
+--------------------------------------------------------------*/
+.home-method {
+    background-color: #111827;
+    color: #f9fafb;
+}
+
+.home-method .home-kicker {
+    color: #fbbf24;
+}
+
+.method-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.method-box h2 {
+    color: #f9fafb;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+}
+
+.method-box p {
+    max-width: 720px;
+    color: rgba(249, 250, 251, .78);
+    font-size: 1.15rem;
+}
+
+/*--------------------------------------------------------------
+# Homepage - Dark mode
+--------------------------------------------------------------*/
+[data-bs-theme="dark"] .benefit-card {
+    background-color: #1a2231;
+    border-color: rgba(255, 255, 255, .06);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, .35);
+}
+
+[data-bs-theme="dark"] .benefit-media {
+    background-color: #1a2231;
+}
+
+/*--------------------------------------------------------------
+# Homepage - Responsive
+--------------------------------------------------------------*/
+@media (max-width: 992px) {
+    .home-hero {
+        min-height: 560px;
+        background-position: center right;
+    }
+
+    .method-box {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .audience-box {
+        grid-template-columns: 1fr;
+        padding: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .benefit-content {
+        gap: 1rem;
+        padding: 1.4rem;
+    }
+
+    .benefit-icon {
+        flex-basis: 58px;
+        width: 58px;
+        height: 58px;
+        font-size: 1.4rem;
+    }
+
+    .benefit-content h3 {
+        font-size: 1.45rem;
+    }
+
+    .benefit-content p {
+        font-size: .98rem;
+        line-height: 1.6;
+    }
+}
+
+@media (max-width: 576px) {
+    .home-section {
+        padding: 4rem 0;
+    }
+
+    .home-hero {
+        min-height: 520px;
+    }
+
+    .home-actions .btn {
+        width: 100%;
+    }
+
+    .hero-badges span {
+        font-size: .85rem;
     }
 }
