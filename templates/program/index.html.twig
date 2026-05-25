@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{ program.slug }}
+{% endblock %}
+
+{% block body %}
+	<section class="show-program mt-0 kcKEGd">
+		<div class="container-programs">
+			<div class="intro-program">
+				<div class="img-program">
+					<img src="{{ vich_uploader_asset(program, 'imageFile') }}" alt="{{ program.name }}" class="program-img">
+				</div>
+				<div class="intro-text-program">
+					<div class="text-start">
+						<header>
+							<div class="payment-terms-program mb-0">
+								<ul class="payment-terms-list">
+									<li class="font-18">{{ program.price | amount }}</li>
+								</ul>
+							</div>
+							<h2 class="title-program font-36 fpTULK">{{ program.name }}</h2>
+						</header>
+						<div class="content-program font-18 fpTULK">
+							{{ program.description | nl2br }}
+						</div>
+						<div class="content-button-go">
+							<div class="wrap-button-go">
+								<a href="#" class="show-detail-program font-18">Oui, je veux progresser 💪</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+    {% include "partials/program/_why_this_training.html.twig" %}
+    {% include "partials/program/_program_structure.html.twig" %}
+    {% include "partials/program/_program_hightlight.html.twig" %}
+    {% include "partials/program/_program_detail.html.twig" %}
+    {% include "partials/program/_test_program.html.twig" %}
+    {% include "partials/program/_nav_float.html.twig" %}
+{% endblock %}

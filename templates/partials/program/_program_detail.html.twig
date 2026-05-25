@@ -1,0 +1,28 @@
+{% if program.programDetails is not empty %}
+	<section class="show-program mt-0">
+		<div class="container-programs">
+			<div class="show-detailed-program">
+				<div class="grid-header text-start">
+					<header>
+						<h2 class="title-program show-title-program">Ce que vous allez apprendre avec Orthogram 😊</h2>
+					</header>
+				</div>
+				{% for detail in program.programDetails %}
+					<div class="mw-0">
+						<section class="detailed-items-program">
+							<div class="refunded-content">
+								<div class="text-start">
+									<div class="content-program">
+										<div class="font-18">
+											{{ detail.content|raw }}
+										</div>
+									</div>
+								</div>
+							</div>
+						</section>
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+	</section>
+{% endif %}

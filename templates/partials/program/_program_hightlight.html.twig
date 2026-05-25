@@ -1,0 +1,25 @@
+{% if program.programHighlights is not empty %}
+	<section class="program-highlights">
+		<div class="container-programs">
+			<div class="show-highlights-program">
+				{% for highlight in program.programHighlights %}
+					<div class="mw-0">
+						<section class="detailed-items-program">
+							<div class="refunded-content">
+								<div class="text-start">
+									<header>
+										<h2 class="title-program show-title-program">{{ highlight.title }}</h2>
+									</header>
+
+									<div class="content-program font-18">
+										{{ highlight.content|raw }}
+									</div>
+								</div>
+							</div>
+						</section>
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+	</section>
+{% endif %}

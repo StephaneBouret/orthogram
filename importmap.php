@@ -43,4 +43,8 @@ return [
         'version' => '1.13.1',
         'type' => 'css',
     ],
+    'admin_check_name' => [
+        'path' => './assets/js/admin_check_name.js',
+        'entrypoint' => true,
+    ],
 ];

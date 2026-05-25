@@ -4,6 +4,8 @@
 {% endblock %}
 
 {% block body %}
+	{% set programUrl = program ? path('app_program_show', { slug: program.slug }) : '#' %}
+
 	<div class="home-page">
 
 		<section class="home-hero">
@@ -33,7 +35,7 @@
 									Commencer par un cours gratuit
 								</a>
 
-								<a href="#" class="btn btn-orthogram-light">
+								<a href="{{ programUrl }}" class="btn btn-orthogram-light">
 									Découvrir la méthode
 								</a>
 							</div>
@@ -287,7 +289,7 @@
 					</div>
 
 					<div>
-						<a href="#" class="btn btn-orthogram-primary">
+						<a href="{{ programUrl }}" class="btn btn-orthogram-primary">
 							Voir les parcours disponibles
 						</a>
 					</div>

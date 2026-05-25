@@ -31,8 +31,8 @@ const closeAlertMessage = () => {
 
 const initPage = () => {
     closeAlertMessage();
-}
+};
 
 console.log("This log comes from assets/app.js - welcome to AssetMapper! 🎉");
-document.addEventListener('load', initPage);
+document.addEventListener('DOMContentLoaded', initPage);
 document.addEventListener('turbo:load', initPage);
