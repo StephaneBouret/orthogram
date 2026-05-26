@@ -57,8 +57,8 @@ final class EasyAdminSlugSubscriber implements EventSubscriberInterface
             return;
         }
 
-        // Normalisation du nom
-        $normalizedName = mb_convert_case($name, MB_CASE_TITLE, 'UTF-8');
+        // Normalisation du nom : première lettre en majuscule, reste conservé.
+        $normalizedName = $this->capitalizeFirstLetter($name);
         $entity->setName($normalizedName);
 
         $newSlug = (string) $this->slugger->slug($normalizedName)->lower();
@@ -73,5 +73,13 @@ final class EasyAdminSlugSubscriber implements EventSubscriberInterface
         if ($currentSlug !== $newSlug) {
             $entity->setSlug($newSlug);
         }
+    }
+
+    private function capitalizeFirstLetter(string $value): string
+    {
+        $firstLetter = mb_substr($value, 0, 1, 'UTF-8');
+        $rest = mb_substr($value, 1, null, 'UTF-8');
+
+        return mb_strtoupper($firstLetter, 'UTF-8') . $rest;
     }
 }
