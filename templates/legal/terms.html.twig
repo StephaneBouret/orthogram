@@ -1,0 +1,177 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Conditions générales de vente
+{% endblock %}
+
+{% block body %}
+	<section class="legal">
+		<div class="container-legal">
+			<div class="text-start">
+				<header>
+					<h2 class="title-legal">
+						Conditions générales de vente
+					</h2>
+				</header>
+				<div class="content-legal">
+					<div class="align-baseline">
+						<br>
+						<strong>1) Objet<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						Les présentes Conditions Générales de Vente (CGV) ont pour objet de définir les modalités de souscription, de paiement et d'utilisation de l'abonnement accessible via notre application.
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>2) Acceptation des CGV<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						La souscription à l'abonnement implique l'acceptation sans réserve des présentes CGV par le Client.
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>3) Description du service<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						L'abonnement permet à l'Utilisateur d'accéder, pendant sa période de validité, aux contenus de formation, exercices, évaluations, ressources pédagogiques et fonctionnalités mis à disposition sur la plateforme Orthogram, selon l'offre souscrite et les fonctionnalités proposées sur la plateforme au jour de la souscription.
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>4) Prix et paiement<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						Le prix de l'abonnement est indiqué en euros, toutes taxes comprises. Le paiement est réalisé en ligne via Stripe. Le Client garantit disposer des autorisations nécessaires pour utiliser le mode de paiement choisi.
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>5) Droit de rétractation et accès immédiat au service<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						<ol>
+							<li>
+								<strong>Principe</strong>
+								<p>
+									Conformément aux articles
+									<strong>L221-18 et suivants</strong>
+									du Code de la consommation, le Client consommateur dispose en principe d'un délai de
+									<strong>quatorze (14) jours</strong>
+									à compter de la conclusion du contrat pour exercer son droit de rétractation.
+								</p>
+							</li>
+							<li>
+								<strong>Accès immédiat à l'abonnement</strong>
+								<p>
+									L'abonnement donne accès à un service numérique fourni immédiatement après validation du paiement.
+								</p>
+								<p>
+									Avant de finaliser sa souscription, le Client doit expressément :
+								</p>
+								<ul>
+									<li>accepter les présentes CGV ;</li>
+									<li>demander l'exécution immédiate du service avant l'expiration du délai de rétractation ;</li>
+									<li>reconnaître expressément qu'il perd son droit de rétractation dans les conditions prévues par la loi.</li>
+								</ul>
+								<br>
+							</li>
+							<li>
+								<strong>Conséquence de la demande d'accès immédiat</strong>
+								<p>
+									En validant sa souscription avec demande d'accès immédiat, le Client reconnaît expressément :
+								</p>
+								<ol>
+									<li>que l'exécution du contrat commence avant la fin du délai légal de rétractation ;</li>
+									<li>qu'il souhaite accéder immédiatement à l'espace ;</li>
+									<li>qu'il reconnaît perdre son droit de rétractation dans les conditions prévues par l'article
+										<strong>L221-28</strong>
+										du Code de la consommation.</li>
+								</ol>
+								<br>
+							</li>
+							<li>
+								<strong>Remboursement</strong>
+								<p>
+									Aucun remboursement ne pourra être demandé au titre du droit de rétractation une fois l'accès immédiat au service demandé par le Client et le service exécuté conformément aux dispositions légales applicables.
+								</p>
+							</li>
+						</ol>
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>6) Durée, renouvellement et résiliation<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						La durée de l'abonnement est celle indiquée lors de la souscription. Sauf mention contraire, l'abonnement est souscrit pour une durée d'un an à compter de son activation.
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>7) Résiliation du compte<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						L'utilisateur peut demander la suppression de son compte selon les modalités prévues dans l'application. La suppression du compte n'ouvre pas droit à remboursement de l'abonnement déjà souscrit, sauf disposition légale impérative contraire.
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>8) Responsabilité<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						Le vendeur ne saurait être tenu responsable des interruptions ou dysfonctionnements de l'application liés à des problèmes techniques, de maintenance ou à toute cause échappant à son contrôle.
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>9) Protection des données personnelles<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						Les données collectées lors de la souscription sont traitées conformément à notre politique de confidentialité disponible à l'adresse
+						<a href="{{ path('app_privacy') }}">Politique de confidentialité</a>.
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>10) Modifications des CGV<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						Le vendeur se réserve le droit de modifier les présentes CGV à tout moment. Les CGV applicables sont celles en vigueur au moment de la souscription.
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>11) Droit applicable et litiges<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						Les présentes CGV sont soumises au droit français. En cas de litige, les parties s'efforceront de trouver une solution amiable avant toute action judiciaire devant les tribunaux compétents.
+                        Conformément aux dispositions du Code de la consommation, le consommateur a la possibilité de recourir gratuitement à un médiateur de la consommation en vue de la résolution amiable d'un litige.
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>12) Contact<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						Pour toute question ou réclamation, vous pouvez nous contacter à l'adresse suivante :
+						<a href="mailto:{{ company.email }}">{{ company.email }}</a>.
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+    {% include "shared/_footer.html.twig" %}
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mentions légales -
+	{{ company.slug }}
+{% endblock %}
+
+{% block body %}
+	<section class="legal jyoYKi">
+		<div class="container-legal">
+			<div class="text-start">
+				<header>
+					<h2 class="title-legal">
+						Mentions légales
+					</h2>
+				</header>
+				<div class="content-legal">
+					<div class="align-baseline">
+						<strong>{{ company.name }}</strong>
+						<br>
+						<strong>SIRET :
+						</strong>
+						{{ company.siren}}
+						<br><br>
+					</div>
+					<div class="align-baseline">
+						<strong>Adresse :
+						</strong>
+						{{ company.address}},
+						{{ company.postalCode }}
+						{{ company.city | upper }}
+					</div>
+					<div class="align-baseline">
+						<strong>Email :
+						</strong>
+						{{ company.email }}
+					</div>
+					<div class="align-baseline">
+						<strong>Responsable de la publication :
+						</strong>
+						{{ company.manager }}
+					</div>
+					<div class="align-baseline">
+						<strong>Concepteur du site :
+						</strong>
+						{{ company.websiteCreator }}
+					</div>
+					<div class="align-baseline">
+						<br>
+						<strong>Hébergement<br></strong>
+					</div>
+					<div class="align-baseline">
+						<p>
+							<strong>Hébergeur :</strong><br>
+							<a href="https://www.hostinger.fr" target="_blank" rel="noopener noreferrer">
+								Hostinger International Ltd
+							</a><br>
+							61 Lordou Vironos Street<br>
+							6023 Larnaca<br>
+							Chypre
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	{% include "shared/_footer.html.twig" %}
+{% endblock %}

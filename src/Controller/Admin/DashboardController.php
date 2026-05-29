@@ -35,6 +35,9 @@ class DashboardController extends AbstractDashboardController
         return [
             MenuItem::linkToDashboard('Dashboard', 'fa fa-home'),
 
+            MenuItem::section('Entreprise'),
+            MenuItem::linkTo(CompanyCrudController::class, 'Entreprise', 'fa-solid fa-building'),
+
             MenuItem::section('Formation'),
             MenuItem::linkTo(ProgramCrudController::class, 'Programme de formation', 'fas fa-list-check'),
             MenuItem::linkTo(SectionsCrudController::class, 'Sections du programme', 'fa-fw fas fa-section'),

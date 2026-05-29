@@ -4,6 +4,7 @@ twig:
         - "bootstrap_5_layout.html.twig"
         - "form/toggle_password.html.twig"
     globals:
+        companyRepository: '@App\Repository\CompanyRepository'
         appName: "ORTHOGRAM"
 
 when@test:

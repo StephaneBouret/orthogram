@@ -1,0 +1,210 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Politique de confidentialité{% endblock %}
+
+{% block body %}
+	<section class="legal">
+		<div class="container-legal">
+			<div class="text-start">
+				<header>
+					<h2 class="title-legal">
+						Politique de confidentialité
+					</h2>
+				</header>
+
+				<div class="content-legal">
+					<div class="align-baseline">
+						La présente politique de confidentialité a pour objet d'informer les Utilisateurs de la plateforme Orthogram sur la manière dont leurs données personnelles sont collectées, utilisées, conservées et protégées dans le cadre de l'utilisation du site
+						<a href="{{ company.url }}">{{ company.url }}</a>.
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>1) Responsable du traitement<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						Le responsable du traitement des données personnelles est :
+						<br><br>
+						<strong>{{ company.name }}</strong><br>
+						SIRET : {{ company.siren }}<br>
+						Adresse : {{ company.address }}, {{ company.postalCode }} {{ company.city | upper }}<br>
+						Email : <a href="mailto:{{ company.email }}">{{ company.email }}</a><br>
+						Responsable de la publication : {{ company.manager }}
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>2) Données personnelles collectées<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						Dans le cadre de l'utilisation de la plateforme Orthogram, les données suivantes peuvent être collectées :
+						<ul>
+							<li>données d'identification : nom, prénom, adresse email ;</li>
+							<li>données liées au compte utilisateur : identifiants, mot de passe chiffré, date de création du compte, date de dernière connexion ;</li>
+							<li>données liées à l'abonnement : formule souscrite, statut de l'abonnement, date de début, date de fin, historique de souscription ;</li>
+							<li>données liées à l'utilisation de la plateforme : progression, exercices réalisés, résultats, rapports générés et activités associées au compte ;</li>
+							<li>données techniques : adresse IP, navigateur utilisé, système d'exploitation, journaux de connexion et informations nécessaires à la sécurité du service ;</li>
+							<li>données de paiement strictement nécessaires au suivi de la transaction, traitées par le prestataire de paiement Stripe.</li>
+						</ul>
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>3) Finalités du traitement<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						Les données personnelles sont collectées et traitées pour les finalités suivantes :
+						<ul>
+							<li>permettre la création et la gestion du compte utilisateur ;</li>
+							<li>permettre l'accès aux contenus, exercices, évaluations, ressources pédagogiques et fonctionnalités de la plateforme ;</li>
+							<li>gérer les abonnements, paiements, factures et accès aux services payants ;</li>
+							<li>suivre la progression pédagogique de l'Utilisateur et générer les rapports disponibles dans l'application ;</li>
+							<li>répondre aux demandes de contact, d'assistance ou de réclamation ;</li>
+							<li>assurer la sécurité, la maintenance, la prévention de la fraude et le bon fonctionnement technique de la plateforme ;</li>
+							<li>respecter les obligations légales, comptables et fiscales applicables.</li>
+						</ul>
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>4) Bases légales du traitement<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						Les traitements de données personnelles réalisés par Orthogram reposent, selon les cas, sur les bases légales suivantes :
+						<ul>
+							<li><strong>l'exécution du contrat</strong>, pour la création du compte, l'accès à la plateforme, la gestion de l'abonnement et la fourniture des services souscrits ;</li>
+							<li><strong>le respect d'obligations légales</strong>, notamment en matière comptable, fiscale et de conservation des justificatifs de transaction ;</li>
+							<li><strong>l'intérêt légitime</strong>, pour assurer la sécurité du site, prévenir les abus, améliorer le service et conserver des preuves en cas de litige ;</li>
+							<li><strong>le consentement</strong>, lorsque celui-ci est requis, notamment pour certains cookies ou traceurs non strictement nécessaires au fonctionnement du service.</li>
+						</ul>
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>5) Durée de conservation des données<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						Les données personnelles sont conservées uniquement pendant la durée nécessaire aux finalités pour lesquelles elles ont été collectées, puis archivées ou supprimées conformément aux obligations légales applicables.
+						<ul>
+							<li>Les données du compte utilisateur sont conservées pendant toute la durée d'utilisation du compte, puis supprimées ou anonymisées après demande de suppression, sauf obligation légale contraire.</li>
+							<li>Les données liées aux abonnements, paiements et factures sont conservées pendant la durée légale nécessaire au respect des obligations comptables et fiscales.</li>
+							<li>Les données pédagogiques liées à la progression et aux rapports sont conservées tant que le compte est actif ou pendant la durée nécessaire à la fourniture du service.</li>
+							<li>Les journaux techniques et données de sécurité sont conservés pendant une durée limitée, proportionnée aux besoins de sécurité, de maintenance et de preuve.</li>
+							<li>Les cookies sont conservés pour une durée maximale de treize (13) mois lorsqu'ils nécessitent le consentement de l'Utilisateur.</li>
+						</ul>
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>6) Paiement et traitement par Stripe<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						Les paiements réalisés sur la plateforme sont traités par le prestataire de paiement Stripe. Orthogram ne stocke pas les numéros complets de carte bancaire de l'Utilisateur.
+						<br><br>
+						Dans le cadre du paiement, Stripe peut traiter certaines données nécessaires à la transaction, telles que les informations de paiement, l'adresse email, l'identifiant de transaction, le montant payé, la date du paiement et les informations nécessaires à la prévention de la fraude.
+						<br><br>
+						Ces traitements sont soumis aux propres conditions et politiques de confidentialité de Stripe, consultables sur le site de Stripe. Les données nécessaires au suivi de la commande, à la facturation et à la preuve du paiement peuvent être conservées par Orthogram conformément aux obligations légales applicables.
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>7) Destinataires des données<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						Les données personnelles sont destinées à Orthogram et aux prestataires techniques strictement nécessaires au fonctionnement du service, notamment l'hébergeur, le prestataire de paiement, les outils d'envoi d'emails, de maintenance, de sécurité ou de support technique.
+						<br><br>
+						Les données personnelles ne sont pas vendues à des tiers.
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>8) Hébergement et sécurité<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						La plateforme est hébergée par :
+						<br><br>
+						<strong>Hostinger International Ltd</strong><br>
+						61 Lordou Vironos Street<br>
+						6023 Larnaca<br>
+						Chypre
+						<br><br>
+						Orthogram met en œuvre des mesures techniques et organisationnelles raisonnables afin de protéger les données personnelles contre l'accès non autorisé, la perte, l'altération, la divulgation ou la destruction. Toutefois, aucune transmission de données sur Internet ne peut être garantie comme totalement sécurisée.
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>9) Cookies et traceurs<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						La plateforme peut utiliser des cookies ou technologies similaires afin d'assurer son bon fonctionnement, de maintenir la session de l'Utilisateur, de sécuriser l'accès au compte et, le cas échéant, de mesurer l'audience ou d'améliorer l'expérience utilisateur.
+						<br><br>
+						Les cookies strictement nécessaires au fonctionnement du service ne nécessitent pas le consentement préalable de l'Utilisateur. Les cookies non essentiels, notamment les cookies de mesure d'audience ou de services tiers lorsqu'ils sont utilisés, sont soumis au consentement préalable de l'Utilisateur.
+						<br><br>
+						L'Utilisateur peut à tout moment configurer son navigateur pour accepter, refuser ou supprimer les cookies. Le refus de certains cookies strictement nécessaires peut toutefois empêcher le bon fonctionnement de la plateforme.
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>10) Droits des Utilisateurs<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						Conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés, l'Utilisateur dispose des droits suivants sur ses données personnelles :
+						<ul>
+							<li><strong>droit d'accès</strong> : obtenir la confirmation que des données le concernant sont traitées et en recevoir une copie ;</li>
+							<li><strong>droit de rectification</strong> : demander la correction des données inexactes ou incomplètes ;</li>
+							<li><strong>droit d'effacement</strong> : demander la suppression de ses données, dans les limites prévues par la loi ;</li>
+							<li><strong>droit à la limitation du traitement</strong> : demander la suspension temporaire de certains traitements ;</li>
+							<li><strong>droit d'opposition</strong> : s'opposer à certains traitements fondés sur l'intérêt légitime ;</li>
+							<li><strong>droit à la portabilité</strong> : recevoir les données fournies dans un format structuré, couramment utilisé et lisible par machine, lorsque ce droit est applicable ;</li>
+							<li><strong>droit de retirer son consentement</strong> à tout moment, lorsque le traitement repose sur le consentement.</li>
+						</ul>
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>11) Exercice des droits<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						L'Utilisateur peut exercer ses droits en adressant une demande à :
+						<a href="mailto:{{ company.email }}">{{ company.email }}</a>.
+						<br><br>
+						La demande doit être suffisamment précise afin de permettre son traitement. Une vérification d'identité pourra être demandée lorsque cela est nécessaire pour protéger les données personnelles de l'Utilisateur.
+						<br><br>
+						Orthogram s'efforcera de répondre aux demandes dans les délais prévus par la réglementation applicable.
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>12) Réclamation auprès de la CNIL<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						Si l'Utilisateur estime, après avoir contacté Orthogram, que ses droits ne sont pas respectés ou que le traitement de ses données personnelles n'est pas conforme à la réglementation applicable, il peut adresser une réclamation à la CNIL :
+						<a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer">www.cnil.fr</a>.
+					</div>
+
+					<div class="align-baseline">
+						<br>
+						<strong>13) Modification de la politique de confidentialité<br></strong>
+						<br>
+					</div>
+					<div class="align-baseline">
+						Orthogram se réserve le droit de modifier la présente politique de confidentialité afin de l'adapter aux évolutions légales, techniques ou fonctionnelles de la plateforme. La version applicable est celle publiée sur le site au moment de la consultation.
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+    {% include "shared/_footer.html.twig" %}
+{% endblock %}
