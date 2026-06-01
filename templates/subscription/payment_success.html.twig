@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Paiement de votre abonnement
+{% endblock %}
+
+{% block body %}
+	<div class="container py-5" {% if paymentState == 'processing' %} data-controller="subscription-payment-status" data-subscription-payment-status-url-value="{{ path('app_subscription_payment_status', { id: subscription.id }) }}" data-subscription-payment-status-interval-value="4000" data-subscription-payment-status-state-value="{{ paymentState }}" {% endif %}>
+		<div class="mx-auto" style="max-width: 760px;">
+			<div class="text-center mb-4">
+				<h1 class="mb-3">Paiement de votre abonnement</h1>
+				<p class="text-muted mb-0">
+					{{ subscription.title }}
+				</p>
+			</div>
+
+			{% if paymentState == 'success' %}
+				<div class="alert alert-success" role="alert">
+					<h2 class="h4 alert-heading mb-3">Paiement confirmé</h2>
+					<p class="mb-2">
+						Votre abonnement est maintenant actif.
+					</p>
+
+					{% if subscription.startsAt %}
+						<p class="mb-1">
+							<strong>Début :</strong>
+							{{ subscription.startsAt|date('d/m/Y H:i') }}
+						</p>
+					{% endif %}
+
+					{% if subscription.endsAt %}
+						<p class="mb-0">
+							<strong>Fin :</strong>
+							{{ subscription.endsAt|date('d/m/Y H:i') }}
+						</p>
+					{% endif %}
+				</div>
+
+			{% elseif paymentState == 'processing' %}
+				<div class="alert alert-info" role="alert">
+					<h2 class="h4 alert-heading mb-3">Paiement en cours de confirmation</h2>
+					<p class="mb-2">
+						Votre paiement a bien été transmis. L'activation de votre abonnement peut prendre quelques instants.
+					</p>
+					<p class="mb-0">
+						Le statut de cette page est vérifié automatiquement toutes les quelques secondes.
+					</p>
+				</div>
+
+			{% elseif paymentState == 'suspended' %}
+				<div class="alert alert-warning" role="alert">
+					<h2 class="h4 alert-heading mb-3">Abonnement suspendu</h2>
+					<p class="mb-0">
+						Votre abonnement est actuellement suspendu. Merci de contacter le support.
+					</p>
+				</div>
+
+			{% elseif paymentState == 'cancelled' %}
+				<div class="alert alert-warning" role="alert">
+					<h2 class="h4 alert-heading mb-3">Souscription annulée</h2>
+					<p class="mb-0">
+						Cette souscription a été annulée.
+					</p>
+				</div>
+
+			{% elseif paymentState == 'expired' %}
+				<div class="alert alert-warning" role="alert">
+					<h2 class="h4 alert-heading mb-3">Souscription expirée</h2>
+					<p class="mb-0">
+						Cette souscription a expiré.
+					</p>
+				</div>
+			{% endif %}
+
+			<div class="card mt-4">
+				<div class="card-body">
+					<h2 class="h5 mb-3">Récapitulatif</h2>
+
+					<dl class="row mb-0">
+						<dt class="col-sm-4">Abonnement</dt>
+						<dd class="col-sm-8">{{ subscription.title }}</dd>
+
+						<dt class="col-sm-4">Montant</dt>
+						<dd class="col-sm-8">{{ subscription.priceCents|amount }}</dd>
+
+						<dt class="col-sm-4">Statut</dt>
+						<dd class="col-sm-8">{{ subscription.status.label }}</dd>
+
+						{% if subscription.paymentReference %}
+							<dt class="col-sm-4">Référence paiement</dt>
+							<dd class="col-sm-8">{{ subscription.paymentReference }}</dd>
+						{% endif %}
+					</dl>
+				</div>
+			</div>
+
+			<div class="d-flex flex-wrap gap-2 mt-4">
+				<a href="{{ path('app_home') }}" class="btn btn-dark">
+					Retour à l'accueil
+				</a>
+
+				<a href="{{ path('app_subscription_show') }}" class="btn btn-outline-secondary">
+					Voir l'abonnement
+				</a>
+			</div>
+		</div>
+	</div>
+{% endblock %}

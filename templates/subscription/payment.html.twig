@@ -1,0 +1,41 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Payer votre abonnement avec Stripe
+{% endblock %}
+
+{% block body %}
+	<div class="container pt-5">
+		<div class="d-flex flex-column align-items-center">
+			<h1>Payer votre abonnement avec Stripe</h1>
+
+			<div class="mb-4 text-center">
+				<p class="mb-1">
+					<strong>{{ subscription.title }}</strong>
+				</p>
+				<p class="text-muted mb-0">{{ subscription.priceCents|amount }}</p>
+			</div>
+
+			<form id="payment-form" class="mt-3 w-100">
+				<div id="payment-element"></div>
+
+				<button id="submit" class="btn btn-dark mt-4 w-100">
+					<div class="spinner hidden" id="spinner"></div>
+					<span id="button-text">Payer avec Stripe</span>
+				</button>
+
+				<div id="payment-message" class="hidden mt-3"></div>
+			</form>
+		</div>
+	</div>
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	<script src="https://js.stripe.com/v3/"></script>
+	<script>
+		const clientSecret = {{ clientSecret|json_encode|raw }};
+        const stripePublicKey = {{ stripePublicKey|json_encode|raw }};
+        const redirectAfterSuccessUrl = {{ url('app_subscription_payment_success', {id: subscription.id})|json_encode|raw }};
+	</script>
+	<script src="{{ asset('js/payment.js') }}" defer></script>
+{% endblock %}

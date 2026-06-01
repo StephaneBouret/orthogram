@@ -4,6 +4,7 @@ import ThemeController from './controllers/theme_controller.js';
 import ProgramFloatingNavController from './controllers/program_floating_nav_controller.js';
 import ResetPassword from './controllers/reset_password_controller.js';
 import TogglePasswordController from './controllers/toggle_password_controller.js';
+import SubscriptionPaymentStatusController from './controllers/subscription_payment_status_controller.js';
 
 const app = startStimulusApp();
 // register any custom, 3rd party controllers here
@@ -13,3 +14,4 @@ app.register('theme', ThemeController);
 app.register('program-floating-nav', ProgramFloatingNavController);
 app.register('reset-password', ResetPassword);
 app.register('toggle-password', TogglePasswordController);
+app.register('subscription-payment-status', SubscriptionPaymentStatusController);

@@ -229,6 +229,18 @@ h6,
     text-decoration: none;
 }
 
+html[data-bs-theme="dark"] .color-btn-logout {
+    color: #111827 !important;
+    background-color: var(--orthogram-brand) !important;
+}
+
+html[data-bs-theme="dark"] .color-btn-logout:hover,
+html[data-bs-theme="dark"] .color-btn-logout:focus,
+html[data-bs-theme="dark"] .color-btn-logout:active {
+    color: #111827 !important;
+    background-color: var(--orthogram-brand-hover) !important;
+}
+
 .btn-dropdown-user {
     display: flex;
     justify-content: center;
@@ -2654,4 +2666,166 @@ html[data-bs-theme="dark"] .xo2a4n a {
 
 html[data-bs-theme="dark"] .xo2a4n a:hover {
     color: #a8c7fa !important;
+}
+
+.subscription-cta {
+    color: #111827 !important;
+    background-color: var(--orthogram-brand) !important;
+    border-color: var(--orthogram-brand) !important;
+    font-weight: 600;
+}
+
+.subscription-cta:hover,
+.subscription-cta:focus,
+.subscription-cta:active {
+    color: #111827 !important;
+    background-color: var(--orthogram-brand-hover) !important;
+    border-color: var(--orthogram-brand-hover) !important;
+}
+
+/*--------------------------------------------------------------
+ # Checkout CSS STRIPE
+ --------------------------------------------------------------*/
+#payment-form {
+    width: min(100%, 620px);
+    min-width: 0;
+    align-self: center;
+    background-color: var(--orthogram-bg);
+    border: 1px solid var(--orthogram-border);
+    border-radius: 8px;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+    padding: 32px;
+}
+
+.hidden {
+    display: none;
+}
+
+#payment-message {
+    color: var(--orthogram-muted);
+    font-size: 16px;
+    line-height: 20px;
+    padding: 12px 14px;
+    border: 1px solid var(--orthogram-border);
+    border-radius: 8px;
+    background-color: var(--orthogram-surface);
+    text-align: center;
+}
+
+#payment-element {
+    margin-bottom: 24px;
+}
+
+/* Buttons and links */
+#submit {
+    background: var(--orthogram-brand);
+    color: #111827;
+    border-radius: 8px;
+    border: 1px solid var(--orthogram-brand);
+    padding: 14px 16px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: block;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    box-shadow: none;
+    width: 100%;
+}
+
+#submit:hover {
+    background: var(--orthogram-brand-hover);
+    border-color: var(--orthogram-brand-hover);
+    transform: translateY(-1px);
+}
+
+#submit:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+/* spinner/processing state, errors */
+#payment-form .spinner,
+#payment-form .spinner:before,
+#payment-form .spinner:after {
+    border-radius: 50%;
+}
+
+#payment-form .spinner {
+    color: #111827;
+    font-size: 22px;
+    text-indent: -99999px;
+    margin: 0px auto;
+    position: relative;
+    width: 20px;
+    height: 20px;
+    box-shadow: inset 0 0 0 2px;
+    transform: translateZ(0);
+}
+
+#payment-form .spinner:before,
+#payment-form .spinner:after {
+    position: absolute;
+    content: "";
+}
+
+#payment-form .spinner:before {
+    width: 10.4px;
+    height: 20.4px;
+    background: var(--orthogram-brand);
+    border-radius: 20.4px 0 0 20.4px;
+    top: -0.2px;
+    left: -0.2px;
+    transform-origin: 10.4px 10.2px;
+    -webkit-animation: loading 2s infinite ease 1.5s;
+    animation: loading 2s infinite ease 1.5s;
+}
+
+#payment-form .spinner:after {
+    width: 10.4px;
+    height: 10.2px;
+    background: var(--orthogram-brand);
+    border-radius: 0 10.2px 10.2px 0;
+    top: -0.1px;
+    left: 10.2px;
+    transform-origin: 0px 10.2px;
+    -webkit-animation: loading 2s infinite ease;
+    animation: loading 2s infinite ease;
+}
+
+@-webkit-keyframes loading {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes loading {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    #payment-form {
+        width: 100%;
+        padding: 24px 18px;
+    }
+}
+
+html[data-bs-theme="dark"] #payment-form {
+    background-color: var(--orthogram-surface);
+    border-color: var(--orthogram-border);
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.22);
+}
+
+html[data-bs-theme="dark"] #payment-form .spinner:before,
+html[data-bs-theme="dark"] #payment-form .spinner:after {
+    background: var(--orthogram-brand);
 }

@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html dir="ltr" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" lang="fr">
+	<head>
+		<meta charset="UTF-8">
+		<meta content="width=device-width, initial-scale=1" name="viewport">
+		<meta name="x-apple-disable-message-reformatting">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta content="telephone=no" name="format-detection">
+		<title>Confirmation de votre abonnement</title>
+		<link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet">
+		<style>
+			type="text/css"
+			a.es-button {
+				text-decoration: none !important;
+			}
+			.es-wrapper {
+				width: 100%;
+				background: #EFF7F6;
+			}
+			.es-content-body,
+			.es-header-body {
+				width: 600px;
+				background: #FFFFFF;
+			}
+			@media only screen and (max-width:600px) {
+				.es-content-body,
+				.es-header-body {
+					width: 100% !important;
+					max-width: 600px !important;
+				}
+				h1,
+				h2,
+				h3 {
+					text-align: center !important;
+				}
+			}
+			.btn {
+				display: inline-block;
+				padding: 10px 30px;
+				border-radius: 5px;
+				background: #ffc40d;
+				color: #191335 !important;
+				font-family: Raleway, Arial, sans-serif;
+			}
+			.btn-outline {
+				display: inline-block;
+				padding: 10px 30px;
+				border-radius: 5px;
+				background: #51c0a8;
+				color: #fff !important;
+				font-family: Raleway, Arial, sans-serif;
+			}
+			.title {
+				color: #386641;
+				font-family: Raleway, Arial, sans-serif;
+			}
+			.text {
+				color: #4D4D4D;
+				font-family: tahoma, verdana, segoe, sans-serif;
+			}
+			.divider {
+				border-bottom: 5px dotted #51c0a8;
+				height: 0;
+				width: 100%;
+			}
+			.card {
+				border: 1px solid #386641;
+				border-radius: 10px;
+			}
+		</style>
+	</head>
+	<body style="Margin:0;padding:0;">
+		<div class="es-wrapper">
+			<table role="none" cellpadding="0" cellspacing="0" border="0" align="center" class="es-header">
+				<tr>
+					<td align="center">
+						<table role="none" cellpadding="0" cellspacing="0" border="0" align="center" class="es-header-body">
+							<tr>
+								<td style="padding:20px;">
+									<table role="presentation" width="100%">
+										<tr>
+											<td align="left" style="padding:5px 0;">
+												<a target="_blank" href="{{ absolute_url(path('app_home')) }}">
+													<img src="https://ftlhqzi.stripocdn.email/content/guids/CABINET_038a96c2769cd2829d007a4ca151f4a9e4d70e73e1564f1af4ffcf14e2df33b6/images/logo.png" alt="Logo" width="99" style="display:block;border:0;outline:none;">
+												</a>
+											</td>
+											<td align="right">
+												<a href="{{ absolute_url(path('app_home')) }}" class="btn-outline">Accueil</a>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+
+			<table role="none" cellpadding="0" cellspacing="0" border="0" align="center" class="es-content">
+				<tr>
+					<td align="center">
+						<table role="none" cellpadding="0" cellspacing="0" border="0" align="center" class="es-content-body">
+							<tr>
+								<td style="background:#51c0a8;padding:30px 20px;">
+									<h3 class="title" style="color:#fff; margin:0;">
+										Bonjour {{ user.firstname|default(user.email) }}
+									</h3>
+									<p class="text" style="color:#fff; margin:20px 0 0;">
+										Merci pour votre paiement.
+										<br>
+										Votre abonnement est désormais
+										<strong>actif</strong>.
+									</p>
+									<div style="margin-top:30px;" align="center">
+										<a class="btn" href="{{ subscriptionUrl|default(absolute_url(path('app_home'))) }}" target="_blank">
+											Voir mon abonnement
+										</a>
+									</div>
+								</td>
+							</tr>
+
+							<tr>
+								<td style="padding:40px 20px 30px;">
+									<h1 class="title" style="font-size:40px;line-height:1.2;margin:0;text-align:center;">
+										Résumé de votre abonnement
+									</h1>
+
+									<div style="text-align:center; margin-top:30px;">
+										<h3 class="title" style="margin:0;">
+											{{ subscription.title }}<br>
+											activé le {{ "now"|date('d/m/Y H:i') }}
+										</h3>
+									</div>
+
+									<div style="margin:30px 0;" class="divider"></div>
+
+									<table role="presentation" width="100%" class="card" cellpadding="0" cellspacing="0" style="border-collapse:separate;">
+										<tr>
+											<td style="padding:25px 20px;">
+												<h3 class="title" style="margin:0 0 10px 0;">
+													{{ subscription.title }}
+												</h3>
+
+												<p class="text" style="margin:0 0 6px 0;">
+													Montant :
+													<strong class="title">{{ subscription.priceCents|amount }}</strong>
+												</p>
+
+												{% if subscription.startsAt %}
+													<p class="text" style="margin:0 0 6px 0;">
+														Début :
+														{{ subscription.startsAt|format_datetime('long','short', locale='fr', timezone='Europe/Paris') }}
+													</p>
+												{% endif %}
+
+												{% if subscription.endsAt %}
+													<p class="text" style="margin:0 0 6px 0;">
+														Fin :
+														{{ subscription.endsAt|format_datetime('long','short', locale='fr', timezone='Europe/Paris') }}
+													</p>
+												{% else %}
+													<p class="text" style="margin:0 0 6px 0;">
+														Durée :
+														Accès illimité
+													</p>
+												{% endif %}
+
+												{% if subscription.paymentReference %}
+													<p class="text" style="margin:0;">
+														Référence de paiement :
+														<strong>{{ subscription.paymentReference }}</strong>
+													</p>
+												{% endif %}
+											</td>
+										</tr>
+									</table>
+
+									<div style="margin:30px 0;" class="divider"></div>
+
+									<p class="text" style="margin:0;">
+										Vous pouvez dès maintenant profiter de votre espace orthogram et des fonctionnalités avancées incluses dans votre abonnement.
+									</p>
+
+									<div style="margin-top:25px;" align="center">
+										<a class="btn" href="{{ subscriptionUrl|default(absolute_url(path('app_home'))) }}" target="_blank">
+											Accéder à mon espace
+										</a>
+									</div>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>
