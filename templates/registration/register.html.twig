@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription
+{% endblock %}
+
+{% block body %}
+	<style>
+		.visually-hidden {
+			position: absolute !important;
+			width: 1px;
+			height: 1px;
+			padding: 0;
+			margin: -1px;
+			overflow: hidden;
+			clip: rect(0, 0, 0, 0);
+			border: 0;
+		}
+	</style>
+
+	<div class="container pt-5">
+		<div class="card card-fill">
+			<div class="card-body">
+				<div class="my-8 mx-auto w-100">
+					<h1 class="text-center mb-4 fs-4">S'inscrire à l'application</h1>
+					<div data-controller="register">
+						{{ form_errors(registrationForm) }}
+
+						{# Le loader Google doit absolument être présent AVANT tout JS qui utilise APILoader #}
+						<gmpx-api-loader key="{{ google_api_key }}" solution-channel="GMP_QB_addressselection_v3_cAC"></gmpx-api-loader>
+
+						{{ form_start(registrationForm, {
+                            attr: {'id': 'registration_form'},
+                            action: path('app_register', {
+                                _target_path: app.request.query.get('_target_path')
+                            })
+                        }) }}
+						<div class="row">
+							<div class="col-md-6">
+								{{ form_row(registrationForm.email, {'attr': {'class': 'form-control-login', 'autocomplete': 'email', 'data-register-target': 'email'}}) }}
+							</div>
+							<div class="col-md-6">
+								{{ form_row(registrationForm.plainPassword, {'attr': {'class': 'form-control-login', 'data-register-target': 'password'}}) }}
+								{% include "partials/security/_entropy.html.twig" %}
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								{{ form_row(registrationForm.firstname, {'attr': {'class': 'form-control-login', 'autocomplete': 'given-name', 'data-register-target': 'firstname'}}) }}
+							</div>
+							<div class="col-md-6">
+								{{ form_row(registrationForm.lastname, {'attr': {'class': 'form-control-login', 'autocomplete': 'family-name', 'data-register-target': 'lastname'}}) }}
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								{{ form_row(registrationForm.phone, {'attr': {'class': 'form-control-login', 'autocomplete': 'tel-national', 'data-register-target': 'phone'}}) }}
+							</div>
+							<div class="col-md-6">
+								<div data-controller="address-autocomplete">
+									<label for="google-autocomplete" class="lh-label fw-medium form-label">Adresse :</label>
+									<input id="google-autocomplete" type="text" class="form-control-login form-control mb-2" autocomplete="street-address" placeholder="Commencez à taper votre adresse" data-address-autocomplete-target="autocomplete" data-action="focus->address-autocomplete#focus input->address-autocomplete#syncManualAddress change->address-autocomplete#syncManualAddress blur->address-autocomplete#syncManualAddress"/>
+
+									{{ form_row(registrationForm.address, {
+                                        'attr': {
+                                            'class': 'visually-hidden',
+                                            'data-address-autocomplete-target': 'address',
+                                            'data-register-target': 'address'
+                                        },
+                                        'label': false
+                                    }) }}
+
+									<div id="additional-fields" data-address-autocomplete-target="additionalFields" style="display: none;">
+										{{ form_row(registrationForm.postalCode, {
+                                            'attr': {
+												'class': 'form-control-login',
+												'autocomplete': 'postal-code',
+												'data-address-autocomplete-target': 'postalCode',
+												'data-register-target': 'postalCode'
+                                            }
+                                        }) }}
+										{{ form_row(registrationForm.city, {
+                                            'attr': {
+												'class': 'form-control-login',
+												'autocomplete': 'address-level2',
+												'data-address-autocomplete-target': 'city',
+												'data-register-target': 'city'
+                                            }
+                                        }) }}
+									</div>
+									<a href="#" id="reset-address" class="small text-muted d-block mt-1" data-action="address-autocomplete#reset">
+										Changer l'adresse
+									</a>
+								</div>
+							</div>
+							<div class="text-center mt-4">
+								<span class="text-muted d-flex">
+									{{ form_row(registrationForm.agreeTerms, {
+                                    label : 'En m\'inscrivant à ce site, j\'accepte les <a href="'~path('app_privacy')~'">conditions générales d\'utilisation</a>',
+                                    label_html: true,
+                                    attr: {'data-register-target': 'rgpd'}
+                                    }) }}
+                                </span>
+                            </div>
+                        </div>
+						<button id="submit-button" type="submit" class="btn btn-md btn-dark" data-register-target="submit" disabled>
+							<span>S'enregistrer</span>
+						</button>
+						{{ form_end(registrationForm) }}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			{% endblock %}

@@ -52,7 +52,10 @@
 							</div>
 						</div>
 					</form>
-                    <div class="d-flex flex-column text-center mt-4">
+					<div class="d-flex flex-column text-center mt-4">
+						<span class="text-muted">Pas encore inscrit(e) ?
+							<a href="{{ path('app_register', { _target_path: app.request.query.get('_target_path') }) }}">M'inscrire</a>
+						</span>
 						<span class="text-muted">
 							Vous avez oublié votre mot de passe&nbsp;?
 							<u>
