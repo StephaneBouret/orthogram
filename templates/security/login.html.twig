@@ -34,7 +34,10 @@
 							</div>
 						</div>
 
-						<input type="hidden" name="_target_path" value="{{ app.request.query.get('_target_path', path('app_home')) }}">
+						{% set targetPath = app.request.query.get('_target_path') %}
+						{% if targetPath %}
+							<input type="hidden" name="_target_path" value="{{ targetPath }}">
+						{% endif %}
 						<input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
 
 						<button class="btn btn-md btn-dark" type="submit">
