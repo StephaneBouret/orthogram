@@ -19,6 +19,8 @@ class UserFixtures extends Fixture implements FixtureGroupInterface
         return ['user'];
     }
 
+    public const ADMIN_USER_REFERENCE = 'admin_user';
+
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
@@ -42,6 +44,8 @@ class UserFixtures extends Fixture implements FixtureGroupInterface
 
         $manager->persist($admin);
 
+        $this->addReference(self::ADMIN_USER_REFERENCE, $admin);
+
         $users = [];
         for ($u = 0; $u < 3; $u++) {
             $user = new User();
@@ -60,6 +64,7 @@ class UserFixtures extends Fixture implements FixtureGroupInterface
                 ->setPassword($hash);
 
             $manager->persist($user);
+            $this->addReference('user_' . $u, $user);
             $users[] = $user;
         }
 

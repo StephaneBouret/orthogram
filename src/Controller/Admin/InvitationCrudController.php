@@ -55,6 +55,23 @@ class InvitationCrudController extends AbstractCrudController
                     InvitationType::FREE_YEAR->value => 'info',
                     InvitationType::LIFETIME->value => 'success',
                 ]),
+            TextField::new('adminStatus', 'État')
+                ->onlyOnIndex()
+                ->formatValue(function ($value, Invitation $invitation): string {
+                    $class = match (true) {
+                        $invitation->isUsed() => 'success',
+                        $invitation->isExpired() => 'danger',
+                        $invitation->isSent() => 'info',
+                        default => 'secondary',
+                    };
+
+                    return sprintf(
+                        '<span class="badge badge-%s">%s</span>',
+                        $class,
+                        $value
+                    );
+                })
+                ->renderAsHtml(),
             TextField::new('token', 'Token')
                 ->hideOnForm(),
             DateTimeField::new('expiresAt', 'Expire le')
@@ -79,14 +96,35 @@ class InvitationCrudController extends AbstractCrudController
         $sendInvitation = Action::new('sendInvitation', 'Envoyer', 'fa fa-paper-plane')
             ->linkToCrudAction('sendInvitation')
             ->displayIf(static function (Invitation $invitation): bool {
-                return !$invitation->isUsed() && !$invitation->isExpired();
+                return !$invitation->isSent()
+                    && !$invitation->isUsed()
+                    && !$invitation->isExpired();
             })
             ->addCssClass('btn btn-primary');
 
         return $actions
             ->add(Crud::PAGE_INDEX, $sendInvitation)
             ->add(Crud::PAGE_DETAIL, $sendInvitation)
-            ->update(Crud::PAGE_INDEX, Action::NEW, static fn(Action $action) => $action->setLabel('Créer une invitation'));
+
+            ->update(
+                Crud::PAGE_INDEX,
+                Action::NEW,
+                static fn(Action $action) => $action->setLabel('Créer une invitation')
+            )
+
+            ->update(
+                Crud::PAGE_INDEX,
+                Action::EDIT,
+                static fn(Action $action) => $action
+                    ->displayIf(static fn(Invitation $invitation): bool => !$invitation->isSent())
+            )
+
+            ->update(
+                Crud::PAGE_DETAIL,
+                Action::EDIT,
+                static fn(Action $action) => $action
+                    ->displayIf(static fn(Invitation $invitation): bool => !$invitation->isSent())
+            );
     }
 
     public function configureFilters(Filters $filters): Filters
@@ -103,12 +141,45 @@ class InvitationCrudController extends AbstractCrudController
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if (!$entityInstance instanceof Invitation) {
+            parent::persistEntity($entityManager, $entityInstance);
+
             return;
         }
 
-        $this->invitationService->initializeInvitation($entityInstance);
+        try {
+            $this->invitationService->assertCanCreateInvitation($entityInstance);
 
-        parent::persistEntity($entityManager, $entityInstance);
+            $this->invitationService->initializeInvitation($entityInstance);
+
+            parent::persistEntity($entityManager, $entityInstance);
+        } catch (\RuntimeException $e) {
+            $this->addFlash('danger', $e->getMessage());
+        }
+    }
+
+    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        if (!$entityInstance instanceof Invitation) {
+            parent::updateEntity($entityManager, $entityInstance);
+
+            return;
+        }
+
+        if ($entityInstance->isSent()) {
+            $this->addFlash(
+                'warning',
+                'Cette invitation a déjà été envoyée et ne peut plus être modifiée.'
+            );
+
+            return;
+        }
+
+        try {
+            $this->invitationService->assertCanCreateInvitation($entityInstance);
+            parent::updateEntity($entityManager, $entityInstance);
+        } catch (\RuntimeException $e) {
+            $this->addFlash('danger', $e->getMessage());
+        }
     }
 
     #[AdminRoute(path: '/send-invitation', name: 'send_invitation')]
@@ -128,6 +199,12 @@ class InvitationCrudController extends AbstractCrudController
 
         if (!$invitation instanceof Invitation) {
             $this->addFlash('warning', 'Invitation introuvable.');
+
+            return $this->redirectToInvitationIndex();
+        }
+
+        if ($invitation->isSent()) {
+            $this->addFlash('warning', 'Cette invitation a déjà été envoyée.');
 
             return $this->redirectToInvitationIndex();
         }

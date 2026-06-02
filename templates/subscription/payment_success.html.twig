@@ -93,13 +93,16 @@
 				</div>
 			</div>
 
+			{% set subscriptionLinkRoute = paymentState == 'success' ? 'app_user_subscription_show' : 'app_subscription_show' %}
+			{% set subscriptionLinkLabel = paymentState == 'success' ? 'Voir mon abonnement' : "Voir l'abonnement" %}
+
 			<div class="d-flex flex-wrap gap-2 mt-4">
 				<a href="{{ path('app_home') }}" class="btn btn-dark">
 					Retour à l'accueil
 				</a>
 
-				<a href="{{ path('app_subscription_show') }}" class="btn btn-outline-secondary">
-					Voir l'abonnement
+				<a href="{{ path(subscriptionLinkRoute) }}" class="btn btn-outline-secondary">
+					{{ subscriptionLinkLabel }}
 				</a>
 			</div>
 		</div>

@@ -1,0 +1,123 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon abonnement
+{% endblock %}
+
+{% block body %}
+	<section class="subscription-account py-5">
+		<div class="container">
+			<div class="mx-auto" style="max-width: 920px;">
+
+				<h1 class="mb-4">💎 Mon abonnement</h1>
+
+				{% if subscription %}
+					{% set statusValue = isExpired ? 'expired' : subscription.status.value %}
+					{% set statusLabel = isExpired ? 'Expirée' : subscription.status.label %}
+					{% set badgeClass = {
+					'active': 'success',
+					'expired': 'danger',
+					'cancelled': 'secondary',
+					'suspended': 'warning',
+					'pending': 'info'
+				}[statusValue]|default('secondary') %}
+
+					<div class="subscription-card">
+						<div class="subscription-card-header">
+							<div>
+								<span class="badge text-bg-{{ badgeClass }} mb-2">
+									{{ statusLabel }}
+								</span>
+								<h2>{{ subscription.title }}</h2>
+								<p>{{ subscription.description }}</p>
+							</div>
+						</div>
+
+						<div class="subscription-card-body">
+							<div class="subscription-progress-wrapper">
+								<div class="subscription-progress" style="--progress: {{ progress }}%;">
+									<div class="subscription-progress-inner">
+										{% if subscription.isLifetime %}
+											<i class="fa-solid fa-infinity"></i>
+										{% elseif statusValue == 'active' %}
+											<i class="fa-solid fa-shield-heart"></i>
+										{% elseif statusValue == 'expired' %}
+											<i class="fa-solid fa-hourglass-end"></i>
+										{% else %}
+											<i class="fa-solid fa-gem"></i>
+										{% endif %}
+									</div>
+								</div>
+
+								{% if subscription.isLifetime %}
+									<p class="subscription-remaining">Accès à vie</p>
+								{% elseif isExpired %}
+									<p class="subscription-remaining">Expiré</p>
+								{% elseif remainingDays is not null %}
+									<p class="subscription-remaining">
+										{{ remainingDays }}
+										jour{{ remainingDays > 1 ? 's' : '' }}
+										restant{{ remainingDays > 1 ? 's' : '' }}
+									</p>
+								{% endif %}
+							</div>
+
+							<div class="subscription-details">
+								<div>
+									<span>Type</span>
+									<strong>{{ subscription.isLifetime ? 'Ad vitam' : 'Annuel' }}</strong>
+								</div>
+
+								{% if subscription.startsAt %}
+									<div>
+										<span>Début</span>
+										<strong>{{ subscription.startsAt|date('d/m/Y') }}</strong>
+									</div>
+								{% endif %}
+
+								{% if subscription.endsAt %}
+									<div>
+										<span>Fin</span>
+										<strong>{{ subscription.endsAt|date('d/m/Y') }}</strong>
+									</div>
+								{% endif %}
+
+								{% if subscription.paymentReference %}
+									<div>
+										<span>Référence</span>
+										<strong>{{ subscription.paymentReference }}</strong>
+									</div>
+								{% endif %}
+							</div>
+						</div>
+
+						<div class="subscription-card-footer">
+							{% if subscription.isLifetime %}
+								<p class="mb-0">Votre accès est permanent. Tranquille comme un moine avec la fibre.</p>
+							{% elseif statusValue == 'active' and remainingDays <= 30 %}
+								<a href="{{ path('app_subscription_show') }}" class="btn btn-dark">
+									Renouveler mon abonnement
+								</a>
+							{% elseif statusValue == 'active' %}
+								<p class="mb-0">Votre abonnement est actif. Rien à faire pour le moment.</p>
+							{% else %}
+								<a href="{{ path('app_subscription_show') }}" class="btn btn-dark">
+									Voir les offres
+								</a>
+							{% endif %}
+						</div>
+					</div>
+
+				{% else %}
+					<div class="subscription-card subscription-card-empty">
+						<h2>Aucun abonnement actif</h2>
+						<p>Vous pouvez souscrire à l'abonnement praticien pour accéder aux fonctionnalités avancées.</p>
+						<a href="{{ path('app_subscription_show') }}" class="btn btn-dark">
+							Voir l'abonnement praticien
+						</a>
+					</div>
+				{% endif %}
+
+			</div>
+		</div>
+	</section>
+{% endblock %}

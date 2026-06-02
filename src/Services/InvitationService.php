@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Enum\InvitationType;
 use App\Enum\SubscriptionStatus;
 use App\Repository\InvitationRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -18,6 +19,7 @@ class InvitationService
         private readonly InvitationRepository $invitationRepository,
         private readonly SendMailService $sendMailService,
         private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly UserRepository $userRepository,
     ) {}
 
     public function generateToken(): string
@@ -51,8 +53,9 @@ class InvitationService
         $invitation
             ->setEmail($email)
             ->setType($type)
-            ->setToken($this->generateToken())
             ->setExpiresAt($expiresAt);
+
+        $this->initializeInvitation($invitation);
 
         $this->em->persist($invitation);
         $this->em->flush();
@@ -114,5 +117,25 @@ class InvitationService
         $this->em->flush();
 
         return $subscription;
+    }
+
+    public function assertCanCreateInvitation(Invitation $invitation): void
+    {
+        $email = mb_strtolower(trim((string) $invitation->getEmail()));
+
+        if ($this->userRepository->findOneBy(['email' => $email])) {
+            throw new \RuntimeException(
+                'Impossible de créer une invitation : un utilisateur existe déjà avec cette adresse email.'
+            );
+        }
+
+        if ($this->invitationRepository->hasBlockingInvitationForEmail(
+            $email,
+            $invitation->getId()
+        )) {
+            throw new \RuntimeException(
+                'Une invitation valide ou déjà utilisée existe pour cette adresse email.'
+            );
+        }
     }
 }

@@ -97,10 +97,22 @@ final class StripeWebhookController extends AbstractController
                     ]);
                 }
 
+                $previousActiveAnnualSubscriptions = [];
+                $user = $subscription->getUser();
+
+                if (null !== $user) {
+                    $previousActiveAnnualSubscriptions = $subscriptionRepository
+                        ->findActiveAnnualSubscriptionsForUserExcept($user, $subscription);
+                }
+
                 $subscription->activateForOneYear(
                     new \DateTimeImmutable(),
                     $paymentIntent->id
                 );
+
+                foreach ($previousActiveAnnualSubscriptions as $previousSubscription) {
+                    $previousSubscription->markExpired();
+                }
 
                 $em->flush();
 

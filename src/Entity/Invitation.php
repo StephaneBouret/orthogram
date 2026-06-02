@@ -220,4 +220,21 @@ class Invitation
             $this->type->label()
         );
     }
+
+    public function getAdminStatus(): string
+    {
+        if ($this->isUsed()) {
+            return 'Utilisée';
+        }
+
+        if ($this->isExpired()) {
+            return 'Expirée';
+        }
+
+        if ($this->isSent()) {
+            return 'Envoyée';
+        }
+
+        return 'Brouillon';
+    }
 }

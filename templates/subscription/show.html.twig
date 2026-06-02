@@ -17,7 +17,7 @@
 
 					<p class="lead text-muted mb-4">
 						Progressez en orthographe grâce à des contenus pédagogiques, des exercices ciblés
-						et un parcours de formation accessible depuis votre espace personnel.
+												et un parcours de formation accessible depuis votre espace personnel.
 					</p>
 
 					<ul class="list-unstyled mb-4">
@@ -29,7 +29,11 @@
 
 					<div class="d-flex flex-wrap gap-3">
 						<a href="{{ app.user ? checkoutPath : loginPath }}" class="btn btn-lg subscription-cta">
-							Souscrire maintenant
+							{% if app.user and currentSubscription and currentSubscription.isActive and not currentSubscription.isLifetime %}
+								Renouveler
+							{% else %}
+								Souscrire maintenant
+							{% endif %}
 						</a>
 
 						<a href="{{ path('app_terms') }}" class="btn btn-outline-secondary btn-lg">
@@ -89,5 +93,5 @@
 			</div>
 		</div>
 	</section>
-{% include "shared/_footer_second.html.twig" %}
+	{% include "shared/_footer_second.html.twig" %}
 {% endblock %}

@@ -27,6 +27,30 @@ class InvitationRepository extends ServiceEntityRepository
         return $invitation;
     }
 
+    public function hasBlockingInvitationForEmail(string $email, ?int $excludedId = null): bool
+    {
+        $qb = $this->createQueryBuilder('i')
+            ->andWhere('i.email = :email')
+            ->setParameter('email', mb_strtolower(trim($email)));
+
+        if ($excludedId !== null) {
+            $qb
+                ->andWhere('i.id != :excludedId')
+                ->setParameter('excludedId', $excludedId);
+        }
+
+        /** @var Invitation[] $invitations */
+        $invitations = $qb->getQuery()->getResult();
+
+        foreach ($invitations as $invitation) {
+            if ($invitation->isUsed() || $invitation->isValid()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     //    /**
     //     * @return Invitation[] Returns an array of Invitation objects
     //     */

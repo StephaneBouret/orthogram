@@ -28,15 +28,13 @@ final class SubscriptionCheckoutController extends AbstractController
         $user = $this->getUser();
 
         // 1. Vérifier si un abonnement bloque
-        $blockingSubscription = $subscriptionRepository->findBlockingSubscriptionForUser($user);
+        $blockingSubscription = $subscriptionRepository->findActiveLifetimeOrSuspendedForUser($user);
 
         if ($blockingSubscription) {
             if ($blockingSubscription->isLifetime()) {
                 $this->addFlash('info', 'Vous disposez déjà d\'un accès illimité.');
             } elseif ($blockingSubscription->isSuspended()) {
                 $this->addFlash('warning', 'Votre abonnement est suspendu. Merci de contacter le support.');
-            } else {
-                $this->addFlash('info', 'Vous disposez déjà d\'un abonnement actif.');
             }
 
             return $this->redirectToRoute('app_home');
