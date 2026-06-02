@@ -31,6 +31,8 @@ class RegistrationFormType extends AbstractType
                 'attr' => [
                     'placeholder' => 'Merci de saisir votre adresse email.'
                 ],
+                'data' => $options['invitation_email'],
+                'disabled' => $options['lock_email'],
             ])
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
@@ -131,6 +133,11 @@ class RegistrationFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'invitation_email' => null,
+            'lock_email' => false,
         ]);
+
+        $resolver->setAllowedTypes('invitation_email', ['null', 'string']);
+        $resolver->setAllowedTypes('lock_email', 'bool');
     }
 }

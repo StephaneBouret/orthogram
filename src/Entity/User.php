@@ -109,6 +109,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Subscription::class, mappedBy: 'user')]
     private Collection $subscriptions;
 
+    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
+    private ?Invitation $invitation = null;
+
     public function __construct()
     {
         $this->subscriptions = new ArrayCollection();
@@ -328,6 +331,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $subscription->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getInvitation(): ?Invitation
+    {
+        return $this->invitation;
+    }
+
+    public function setInvitation(?Invitation $invitation): static
+    {
+        $this->invitation = $invitation;
+
+        if ($invitation !== null && $invitation->getUser() !== $this) {
+            $invitation->setUser($this);
+        }
+
 
         return $this;
     }

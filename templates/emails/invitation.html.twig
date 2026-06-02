@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width">
-		<title>Réinitialisation de votre mot de passe Orthogram</title>
+		<title>Votre invitation Orthogram</title>
 
 		<style>
 			body {
@@ -80,7 +80,7 @@
 				font-size: 1px;
 			}
 
-			@media only screen and(max-width: 620px) {
+			@media only screen and (max-width: 620px) {
 				.container {
 					width: 100% !important;
 					max-width: 100% !important;
@@ -155,22 +155,18 @@
 						<tr>
 							<td class="px" style="background:#FF9F0A;padding-top:36px;padding-bottom:36px;">
 								<h2 style="margin:0;color:#111111;font-size:26px;line-height:1.3;">
-									Réinitialisation de mot de passe
+									Vous êtes invité(e)
 								</h2>
 
 								<p class="text" style="margin:22px 0 0;color:#111111;">
-									Bonjour {{ user.firstname }} {{ user.lastname }},
-								</p>
-
-								<p class="text" style="margin:14px 0 0;color:#111111;">
-									Vous avez demandé à modifier le mot de passe de votre compte Orthogram.
+									Une invitation vous permet de créer votre compte et de bénéficier d'un accès offert à l'application Orthogram.
 								</p>
 
 								<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:32px;">
 									<tr>
 										<td align="center">
-											<a href="{{ url }}" target="_blank" class="btn btn-black">
-												Modifier mon mot de passe
+											<a href="{{ invitationUrl }}" target="_blank" class="btn btn-black">
+												Créer mon compte
 											</a>
 										</td>
 									</tr>
@@ -181,11 +177,11 @@
 						<tr>
 							<td class="px" style="padding-top:44px;padding-bottom:34px;">
 								<h1 class="title main-title" style="margin:0;text-align:center;font-size:42px;line-height:1.2;">
-									Votre lien sécurisé
+									Votre accès offert
 								</h1>
 
 								<h3 class="title" style="margin:28px 0 0;text-align:center;font-size:20px;">
-									Valable pendant 3 heures
+									{{ invitation.type.label }}
 								</h3>
 
 								<div class="divider" style="margin:34px 0;"></div>
@@ -194,27 +190,45 @@
 									<tr>
 										<td style="padding:24px 22px;">
 											<h3 class="title" style="margin:0 0 12px;font-size:20px;">
-												Que faire maintenant ?
+												Détails de l'invitation
 											</h3>
 
 											<p class="text" style="margin:0 0 8px;">
-												Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe.
+												Adresse invitée :
+												<strong>{{ invitation.email }}</strong>
 											</p>
 
-											<p class="text" style="margin:0;">
-												Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email.
+											<p class="text" style="margin:0 0 8px;">
+												Offre :
+												<strong class="title">{{ invitation.type.label }}</strong>
 											</p>
+
+											{% if invitation.expiresAt %}
+												<p class="text" style="margin:0;">
+													Invitation valable jusqu'au :
+													<strong>{{ invitation.expiresAt|date('d/m/Y H:i', 'Europe/Paris') }}</strong>
+												</p>
+											{% else %}
+												<p class="text" style="margin:0;">
+													Expiration :
+													<strong>Aucune date limite définie</strong>
+												</p>
+											{% endif %}
 										</td>
 									</tr>
 								</table>
 
 								<div class="divider" style="margin:34px 0;"></div>
 
+								<p class="text" style="margin:0;">
+									Pour activer votre accès, cliquez sur le bouton ci-dessous puis finalisez votre inscription avec l'adresse e-mail associée à cette invitation.
+								</p>
+
 								<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:30px;">
 									<tr>
 										<td align="center">
-											<a href="{{ url }}" target="_blank" class="btn btn-orange">
-												Réinitialiser mon mot de passe
+											<a href="{{ invitationUrl }}" target="_blank" class="btn btn-orange">
+												Activer mon invitation
 											</a>
 										</td>
 									</tr>
@@ -223,8 +237,8 @@
 								<p class="text" style="margin:30px 0 0;font-size:13px;line-height:1.5;">
 									Si le bouton ne fonctionne pas, copiez-collez ce lien dans votre navigateur :
 									<br>
-									<a href="{{ url }}" target="_blank" style="color:#D87900;word-break:break-all;overflow-wrap:break-word;">
-										{{ url }}
+									<a href="{{ invitationUrl }}" target="_blank" style="color:#D87900;word-break:break-all;overflow-wrap:break-word;">
+										{{ invitationUrl }}
 									</a>
 								</p>
 							</td>

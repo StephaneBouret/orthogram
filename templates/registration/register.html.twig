@@ -31,10 +31,19 @@
 						{{ form_start(registrationForm, {
                             attr: {'id': 'registration_form'},
                             action: path('app_register', {
+                                invitation: app.request.query.get('invitation'),
                                 _target_path: app.request.query.get('_target_path')
                             })
                         }) }}
 						<div class="row">
+							{% if invitation %}
+								<div class="alert alert-info">
+									Vous avez été invité à créer un compte avec l'adresse
+									<strong>{{ invitation.email }}</strong>
+									pour bénéficier de l'offre
+									<strong>{{ invitation.type.label }}</strong>
+								</div>
+							{% endif %}
 							<div class="col-md-6">
 								{{ form_row(registrationForm.email, {'attr': {'class': 'form-control-login', 'autocomplete': 'email', 'data-register-target': 'email'}}) }}
 							</div>

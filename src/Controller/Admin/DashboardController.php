@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Controller\Admin\InvitationCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -37,6 +38,9 @@ class DashboardController extends AbstractDashboardController
 
             MenuItem::section('Entreprise'),
             MenuItem::linkTo(CompanyCrudController::class, 'Entreprise', 'fa-solid fa-building'),
+
+            MenuItem::section('Invitation'),
+            MenuItem::linkTo(InvitationCrudController::class, 'Invitation', 'fa-solid fa-hand-dots'),
 
             MenuItem::section('Formation'),
             MenuItem::linkTo(ProgramCrudController::class, 'Programme de formation', 'fas fa-list-check'),
