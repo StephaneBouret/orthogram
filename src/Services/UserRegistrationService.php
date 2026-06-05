@@ -11,6 +11,7 @@ class UserRegistrationService
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly EntityManagerInterface $em,
+        private readonly AvatarService $avatarService,
     ) {}
 
     public function register(User $user, string $plainPassword): User
@@ -19,6 +20,8 @@ class UserRegistrationService
             ->setPassword($this->passwordHasher->hashPassword($user, $plainPassword))
             ->setFirstname($this->normalizeFirstname((string) $user->getFirstname()))
             ->setLastname($this->normalizeLastname((string) $user->getLastname()));
+
+        $this->avatarService->createAndAssignAvatar($user);
 
         $this->em->persist($user);
         $this->em->flush();

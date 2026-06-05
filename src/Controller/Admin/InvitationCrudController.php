@@ -33,7 +33,7 @@ class InvitationCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            // ->setEntityPermission('ROLE_ADMIN')
+            ->setEntityPermission('ROLE_ADMIN')
             ->setEntityLabelInSingular('Invitation')
             ->setEntityLabelInPlural('Invitations')
             ->setPageTitle(Crud::PAGE_INDEX, 'Invitations')

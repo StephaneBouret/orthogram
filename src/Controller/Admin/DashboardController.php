@@ -50,6 +50,9 @@ class DashboardController extends AbstractDashboardController
             MenuItem::linkTo(ProgramCrudController::class, 'Programme de formation', 'fas fa-list-check'),
             MenuItem::linkTo(SectionsCrudController::class, 'Sections du programme', 'fa-fw fas fa-section'),
 
+            MenuItem::section('Utilisateurs'),
+            MenuItem::linkTo(UserCrudController::class, 'Utilisateurs', 'fas fa-user'),
+
             MenuItem::section('Site'),
             MenuItem::linkToUrl('Retour au site', 'fas fa-home', $this->generateUrl('app_home')),
         ];

@@ -33,8 +33,33 @@
 			</ul>
 			<ul class="navbar-nav q6csu5">
 				{% if app.user %}
-					<li class="py-2 px-2">
-						<a class="dropdown-item dropdown-user color-btn-logout" href="{{ path('app_logout') }}">Se déconnecter</a>
+					{% if is_granted('ROLE_ADMIN') %}
+						<li class="nav-item">
+							<a href="{{ path('admin') }}" class="nav-link">Administration</a>
+						</li>
+					{% endif %}
+					{% set avatarPath = app.user.avatar ? vich_uploader_asset(app.user.avatar, 'imageFile') : null %}
+					<li class="nav-item dropdown">
+						<button class="dropdown-toggle btn-dropdown-user" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" aria-label="Menu utilisateur">
+							<span class="sc-gravatar">
+								{% if avatarPath %}
+									<img src="{{ avatarPath|imagine_filter('avatar_admin') }}" alt="{{ app.user.fullname }}" class="sc-img-gravatar">
+								{% else %}
+									<span class="sc-img-gravatar sc-avatar-placeholder">{{ app.user.firstname|first|upper }}</span>
+								{% endif %}
+							</span>
+						</button>
+						<ul class="dropdown-menu dropdown-menu-lg-end py-0">
+							<li class="py-2 px-2">
+								<a class="dropdown-item dropdown-user color-btn-logout" href="#">Profil</a>
+							</li>
+							<li>
+								<div class="space-between"></div>
+							</li>
+							<li class="py-2 px-2">
+								<a class="dropdown-item dropdown-user color-btn-logout" href="{{ path('app_logout') }}">Se déconnecter</a>
+							</li>
+						</ul>
 					</li>
 				{% else %}
 					<li class="nav-item me-2">

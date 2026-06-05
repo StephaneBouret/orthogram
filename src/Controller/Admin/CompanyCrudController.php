@@ -27,7 +27,7 @@ class CompanyCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            // ->setEntityPermission('ROLE_ADMIN')
+            ->setEntityPermission('ROLE_ADMIN')
             ->setEntityLabelInSingular('Entreprise')
             ->setEntityLabelInPlural('Entreprises')
             ->setPageTitle(Crud::PAGE_INDEX, 'Entreprise')
