@@ -4,7 +4,6 @@ namespace App\Form;
 
 use App\Entity\Avatar;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormBuilderInterface;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -29,7 +28,6 @@ class AvatarFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Avatar::class,
-            'empty_data' => static fn (FormInterface $form): Avatar => new Avatar(),
         ]);
     }
 }

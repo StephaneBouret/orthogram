@@ -22,3 +22,7 @@
 ###> liip/imagine-bundle ###
 /public/media/cache/
 ###< liip/imagine-bundle ###
+
+###> uploaded images ###
+/public/images/avatars/
+###< uploaded images ###

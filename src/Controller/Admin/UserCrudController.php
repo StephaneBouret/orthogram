@@ -88,9 +88,6 @@ class UserCrudController extends AbstractCrudController
                 ->hideOnForm(),
             TextField::new('avatar', 'Avatar')
                 ->setFormType(AvatarFormType::class)
-                ->setFormTypeOptions([
-                    'by_reference' => false,
-                ])
                 ->onlyOnForms(),
             FormField::addFieldset('Rôles de l\'utilisateur'),
             ChoiceField::new('roles', 'Rôles')

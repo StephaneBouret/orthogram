@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Entity\Avatar;
 use App\Entity\User;
+use App\Repository\AvatarRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Imagine\Gd\Imagine;
 use Imagine\Image\Box;
@@ -21,13 +22,14 @@ final class AvatarService
 
     public function __construct(
         private readonly EntityManagerInterface $em,
+        private readonly AvatarRepository $avatarRepository,
         private readonly KernelInterface $kernel,
         private readonly Filesystem $filesystem,
     ) {}
 
     public function createAndAssignAvatar(User $user): Avatar
     {
-        $avatar = $user->getAvatar() ?? new Avatar();
+        $avatar = $user->getAvatar() ?? $this->findExistingAvatar($user) ?? new Avatar();
 
         if ($avatar->getImageName() === null && $avatar->getImageFile() === null) {
             $this->createDefaultAvatar($avatar, $user);
@@ -46,7 +48,9 @@ final class AvatarService
         }
 
         $formAvatar = $avatarForm->getData();
-        $avatar = $formAvatar instanceof Avatar ? $formAvatar : ($avatar ?? $user->getAvatar() ?? new Avatar());
+        $avatar = $formAvatar instanceof Avatar
+            ? $this->resolveAvatar($user, $formAvatar)
+            : ($avatar ?? $user->getAvatar() ?? $this->findExistingAvatar($user) ?? new Avatar());
 
         if ($avatar->getImageFile() === null && $avatar->getImageName() === null) {
             $this->createDefaultAvatar($avatar, $user);
@@ -106,6 +110,34 @@ final class AvatarService
     private function getFontPath(): string
     {
         return $this->kernel->getProjectDir() . DIRECTORY_SEPARATOR . self::FONT_PATH;
+    }
+
+    private function resolveAvatar(User $user, Avatar $formAvatar): Avatar
+    {
+        if ($formAvatar->getId() !== null) {
+            return $formAvatar;
+        }
+
+        $existingAvatar = $this->findExistingAvatar($user);
+
+        if (!$existingAvatar instanceof Avatar) {
+            return $formAvatar;
+        }
+
+        if ($formAvatar->getImageFile() !== null) {
+            $existingAvatar->setImageFile($formAvatar->getImageFile());
+        }
+
+        return $existingAvatar;
+    }
+
+    private function findExistingAvatar(User $user): ?Avatar
+    {
+        if ($user->getId() === null) {
+            return null;
+        }
+
+        return $this->avatarRepository->findOneBy(['user' => $user]);
     }
 
     private function getInitial(User $user): string
