@@ -106,6 +106,17 @@ final class AvatarService
         return true;
     }
 
+    public function hasStoredImage(Avatar $avatar): bool
+    {
+        $imageName = $avatar->getImageName();
+
+        if ($imageName === null) {
+            return false;
+        }
+
+        return is_file($this->getAvatarDirectory() . DIRECTORY_SEPARATOR . $imageName);
+    }
+
     public function createDefaultAvatar(Avatar $avatar, User $user): void
     {
         $avatarDirectory = $this->getAvatarDirectory();
