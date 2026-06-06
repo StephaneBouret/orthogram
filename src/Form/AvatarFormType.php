@@ -16,8 +16,10 @@ class AvatarFormType extends AbstractType
             ->add('imageFile', VichImageType::class, [
                 'required' => false,
                 'label' => false,
+                'allow_delete' => $options['allow_delete'],
                 'delete_label' => 'Supprimer l\'image',
                 'download_uri' => false,
+                'image_uri' => $options['image_uri'],
                 'attr' => [
                     'class' => 'form-control mb-2'
                 ],
@@ -28,6 +30,11 @@ class AvatarFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Avatar::class,
+            'allow_delete' => true,
+            'image_uri' => true,
         ]);
+
+        $resolver->setAllowedTypes('allow_delete', 'bool');
+        $resolver->setAllowedTypes('image_uri', ['bool', 'string', 'callable']);
     }
 }

@@ -1,0 +1,286 @@
+{% extends "base.html.twig" %}
+
+{% block title %}
+	Modifier mon profil
+{% endblock %}
+
+{% block body %}
+	{% set avatarPath = user.avatar ? vich_uploader_asset(user.avatar, 'imageFile') : null %}
+
+	<main class="profile-page">
+		<div class="profile-shell">
+			<section class="profile-section">
+				<div class="row g-4">
+					<div class="col-lg-3">
+						<div class="profile-sidebar">
+							<div class="card edit-nav-card">
+								<div class="card-body p-0">
+									<nav class="edit-nav" aria-label="Navigation du profil">
+										<a href="#section-avatar" class="edit-nav-item active">
+											<i class="bi bi-person-circle" aria-hidden="true"></i>
+											<span>Avatar &amp; statut</span>
+										</a>
+										<a href="#section-personal" class="edit-nav-item">
+											<i class="bi bi-person" aria-hidden="true"></i>
+											<span>Informations</span>
+										</a>
+										<a href="#section-contact" class="edit-nav-item">
+											<i class="bi bi-envelope" aria-hidden="true"></i>
+											<span>Coordonnées</span>
+										</a>
+										<a href="#section-access" class="edit-nav-item">
+											<i class="bi bi-shield-lock" aria-hidden="true"></i>
+											<span>Accès &amp; sécurité</span>
+										</a>
+										<a href="#section-danger" class="edit-nav-item text-danger">
+											<i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+											<span>Zone sensible</span>
+										</a>
+									</nav>
+								</div>
+							</div>
+
+							<div class="card profile-quick-actions">
+								<div class="card-header">
+									<h2 class="card-title h6 mb-0">Actions rapides</h2>
+								</div>
+								<div class="card-body">
+									<div class="d-grid gap-2">
+										<a href="#section-access" class="btn btn-outline-warning btn-sm">
+											<i class="bi bi-key me-2" aria-hidden="true"></i>Modifier le mot de passe
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-lg-9">
+						<div class="card" id="section-avatar">
+							<div class="card-header">
+								<h1 class="card-title h5 mb-0">
+									<i class="bi bi-person-circle me-2" aria-hidden="true"></i>Avatar &amp; statut du compte
+								</h1>
+							</div>
+							<div class="card-body">
+								<div class="row align-items-center g-3">
+									<div class="col-auto">
+										{{ form_start(avatarForm, {'attr': {'class': 'profile-avatar-form', 'data-controller': 'avatar-upload'}}) }}
+											<div class="avatar-upload-wrapper">
+												<div class="avatar-upload-preview">
+													{% if avatarPath %}
+														<img src="{{ avatarPath|imagine_filter('avatar') }}" alt="{{ user.fullname }}">
+													{% else %}
+														<span>{{ user.firstname|first|upper }}</span>
+													{% endif %}
+												</div>
+												<label class="avatar-upload-btn" for="{{ avatarForm.imageFile.file.vars.id }}" title="Changer l’avatar">
+													<i class="bi bi-camera" aria-hidden="true"></i>
+													<span class="visually-hidden">Changer l’avatar</span>
+												</label>
+												<div class="profile-avatar-field">
+													{{ form_widget(avatarForm.imageFile, {
+														'attr': {
+															'class': 'profile-avatar-input',
+															'data-action': 'change->avatar-upload#submit'
+														}
+													}) }}
+												</div>
+											</div>
+											{{ form_errors(avatarForm.imageFile) }}
+										{{ form_end(avatarForm) }}
+									</div>
+									<div class="col">
+										<h2 class="h5 mb-1">{{ user.fullname }}</h2>
+										<p class="text-muted mb-2">{{ user.email }}</p>
+										<div class="d-flex flex-wrap gap-2">
+											<span class="badge {{ user.accountStatusBadgeClass }}">{{ user.accountStatusLabel }}</span>
+											{% if is_granted('ROLE_ADMIN') %}
+												<span class="badge text-bg-primary">Administrateur</span>
+											{% else %}
+												<span class="badge bg-primary-light text-primary">Utilisateur</span>
+											{% endif %}
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						{{ form_start(profileForm) }}
+							<div class="card" id="section-personal">
+								<div class="card-header">
+									<h2 class="card-title h5 mb-0">
+										<i class="bi bi-person me-2" aria-hidden="true"></i>Informations personnelles
+									</h2>
+								</div>
+								<div class="card-body">
+									{{ form_errors(profileForm) }}
+									<div class="row g-3">
+										<div class="col-md-6">
+											{{ form_row(profileForm.firstname) }}
+										</div>
+										<div class="col-md-6">
+											{{ form_row(profileForm.lastname) }}
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="card" id="section-contact">
+								<div class="card-header">
+									<h2 class="card-title h5 mb-0">
+										<i class="bi bi-envelope me-2" aria-hidden="true"></i>Coordonnées
+									</h2>
+								</div>
+								<div class="card-body">
+									<div class="row g-3">
+										<div class="col-md-6">
+											{{ form_label(profileForm.email) }}
+											<div class="input-group">
+												{{ form_widget(profileForm.email) }}
+												<span class="input-group-text text-success" title="Adresse utilisée pour la connexion">
+													<i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+												</span>
+											</div>
+											{{ form_errors(profileForm.email) }}
+										</div>
+										<div class="col-md-6">
+											{{ form_row(profileForm.phone) }}
+										</div>
+										<div class="col-12">
+											{{ form_row(profileForm.address) }}
+										</div>
+										<div class="col-md-6">
+											{{ form_row(profileForm.city) }}
+										</div>
+										<div class="col-md-6">
+											{{ form_row(profileForm.postalCode) }}
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="form-actions-bar">
+								<div class="form-actions-info">
+									<span class="text-muted">Vos informations de profil sont utilisées pour votre espace Orthogram.</span>
+								</div>
+								<div class="form-actions-buttons">
+									<a href="{{ path('app_home') }}" class="btn btn-secondary">Annuler</a>
+									<button type="submit" class="btn btn-primary">
+										<i class="bi bi-check-lg me-1" aria-hidden="true"></i>Enregistrer
+									</button>
+								</div>
+							</div>
+						{{ form_end(profileForm) }}
+
+						<div class="card" id="section-access">
+							<div class="card-header">
+								<h2 class="card-title h5 mb-0">
+									<i class="bi bi-shield-lock me-2" aria-hidden="true"></i>Accès &amp; sécurité
+								</h2>
+							</div>
+							<div class="card-body">
+								<h3 class="h6 mb-3">Paramètres de sécurité</h3>
+								<div class="security-options">
+									<div class="security-option">
+										<div class="security-option-info">
+											<div class="security-option-title">Changement de mot de passe obligatoire</div>
+											<div class="security-option-desc">Demander un nouveau mot de passe à la prochaine connexion</div>
+										</div>
+										<div class="d-flex align-items-center gap-2">
+											<span class="badge text-bg-light">Prévu</span>
+											<div class="form-check form-switch m-0">
+												<input class="form-check-input" type="checkbox" id="forcePassword" disabled>
+											</div>
+										</div>
+									</div>
+									<div class="security-option">
+										<div class="security-option-info">
+											<div class="security-option-title">Expiration de session</div>
+											<div class="security-option-desc">Déconnexion automatique après inactivité</div>
+										</div>
+										<select class="form-select form-select-sm profile-timeout-select" disabled>
+											<option selected>Paramètre global</option>
+										</select>
+									</div>
+								</div>
+
+								<hr>
+
+								<h3 class="h6 mb-3">Modifier le mot de passe</h3>
+								{{ form_start(passwordForm, {'attr': {'data-controller': 'reset-password'}}) }}
+									{{ form_errors(passwordForm) }}
+									<div class="row g-3">
+										<div class="col-md-12">
+											{{ form_row(passwordForm.oldPassword) }}
+										</div>
+										<div class="col-md-6">
+											{{ form_label(passwordForm.newPassword.first) }}
+											{{ form_widget(passwordForm.newPassword.first) }}
+											{% include "partials/security/_entropy.html.twig" %}
+											{{ form_errors(passwordForm.newPassword.first) }}
+										</div>
+										<div class="col-md-6">
+											{{ form_row(passwordForm.newPassword.second) }}
+										</div>
+									</div>
+									<div class="d-flex justify-content-end mt-3">
+										<button type="submit" class="btn btn-dark" data-reset-password-target="submit" disabled>
+											<i class="bi bi-key me-1" aria-hidden="true"></i>Enregistrer le mot de passe
+										</button>
+									</div>
+								{{ form_end(passwordForm) }}
+							</div>
+						</div>
+
+						<div class="card border-danger" id="section-danger">
+							<div class="card-header bg-danger-light">
+								<h2 class="card-title h5 mb-0 text-danger">
+									<i class="bi bi-exclamation-triangle me-2" aria-hidden="true"></i>Zone sensible
+								</h2>
+							</div>
+							<div class="card-body">
+								<div class="danger-actions">
+									<div class="danger-action">
+										<div class="danger-action-info">
+											<div class="danger-action-title">Supprimer le compte</div>
+											<div class="danger-action-desc">Supprime définitivement votre compte utilisateur.</div>
+										</div>
+										<button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteUserModal">Supprimer</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalTitle" aria-hidden="true" data-controller="delete-account">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-body text-center py-4">
+							<div class="modal-icon-wrapper danger mb-3">
+								<i class="bi bi-trash" aria-hidden="true"></i>
+							</div>
+							<h2 class="h5 mb-2" id="deleteUserModalTitle">Supprimer le compte ?</h2>
+							<p class="text-muted mb-4">La suppression de <strong>{{ user.fullname }}</strong> est définitive.</p>
+							<form method="post" action="{{ path('app_profile_delete') }}">
+								<input type="hidden" name="_token" value="{{ csrf_token('delete-profile' ~ user.id) }}">
+								<div class="mb-3 text-start">
+									<label class="form-label" for="deleteConfirm">Saisissez <strong>SUPPRIMER</strong> pour confirmer :</label>
+									<input type="text" class="form-control" id="deleteConfirm" name="confirm" autocomplete="off" data-delete-account-target="input" data-action="input->delete-account#check">
+								</div>
+								<div class="d-flex gap-2 justify-content-center">
+									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+									<button type="submit" class="btn btn-danger" data-delete-account-target="button" disabled>Supprimer le compte</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	{% include "shared/_footer_second.html.twig" %}
+{% endblock %}

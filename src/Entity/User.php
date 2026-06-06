@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\UserAccountStatus;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -102,6 +103,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $resetTokenCreatedAt = null;
+
+    #[ORM\Column(length: 32, enumType: UserAccountStatus::class)]
+    private UserAccountStatus $accountStatus = UserAccountStatus::ACTIVE;
 
     /**
      * @var Collection<int, Subscription>
@@ -306,6 +310,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->resetTokenCreatedAt = $resetTokenCreatedAt;
 
         return $this;
+    }
+
+    public function getAccountStatus(): UserAccountStatus
+    {
+        return $this->accountStatus;
+    }
+
+    public function setAccountStatus(UserAccountStatus $accountStatus): static
+    {
+        $this->accountStatus = $accountStatus;
+
+        return $this;
+    }
+
+    public function getAccountStatusLabel(): string
+    {
+        return $this->accountStatus->label();
+    }
+
+    public function getAccountStatusBadgeClass(): string
+    {
+        return $this->accountStatus->badgeClass();
+    }
+
+    public function isAccountActive(): bool
+    {
+        return $this->accountStatus->isActive();
     }
 
     /**
