@@ -66,6 +66,7 @@ class CompanyCrudController extends AbstractCrudController
                 ->setFormTypeOptions([
                     'default_region' => 'FR',
                     'format' => PhoneNumberFormat::NATIONAL,
+                    'number_type' => PhoneNumberType::NUMBER_TYPE_TEL,
                     'attr' => ['placeholder' => 'Téléphone de l\'entreprise']
                 ])
                 ->setColumns(6)

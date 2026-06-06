@@ -61,6 +61,46 @@ final class AvatarService
 
         if ($flush) {
             $this->em->flush();
+            $this->convertStoredImageToWebp($avatar);
+        }
+
+        return true;
+    }
+
+    public function convertStoredImageToWebp(Avatar $avatar, bool $flush = true): bool
+    {
+        $imageName = $avatar->getImageName();
+
+        if ($imageName === null || $this->isWebpImage($imageName)) {
+            return false;
+        }
+
+        $sourcePath = $this->getAvatarDirectory() . DIRECTORY_SEPARATOR . $imageName;
+
+        if (!is_file($sourcePath)) {
+            return false;
+        }
+
+        $webpName = $this->createWebpFilename($imageName);
+        $webpPath = $this->getAvatarDirectory() . DIRECTORY_SEPARATOR . $webpName;
+
+        (new Imagine())
+            ->open($sourcePath)
+            ->save($webpPath, [
+                'format' => 'webp',
+                'quality' => 90,
+            ]);
+
+        $this->filesystem->remove($sourcePath);
+
+        $avatar
+            ->setImageName($webpName)
+            ->setUpdatedAt(new \DateTimeImmutable());
+
+        $this->em->persist($avatar);
+
+        if ($flush) {
+            $this->em->flush();
         }
 
         return true;
@@ -110,6 +150,23 @@ final class AvatarService
     private function getFontPath(): string
     {
         return $this->kernel->getProjectDir() . DIRECTORY_SEPARATOR . self::FONT_PATH;
+    }
+
+    private function isWebpImage(string $imageName): bool
+    {
+        return mb_strtolower(pathinfo($imageName, PATHINFO_EXTENSION), 'UTF-8') === 'webp';
+    }
+
+    private function createWebpFilename(string $imageName): string
+    {
+        $filename = pathinfo($imageName, PATHINFO_FILENAME) . '.webp';
+        $path = $this->getAvatarDirectory() . DIRECTORY_SEPARATOR . $filename;
+
+        if (!is_file($path)) {
+            return $filename;
+        }
+
+        return pathinfo($imageName, PATHINFO_FILENAME) . '-' . bin2hex(random_bytes(4)) . '.webp';
     }
 
     private function resolveAvatar(User $user, Avatar $formAvatar): Avatar

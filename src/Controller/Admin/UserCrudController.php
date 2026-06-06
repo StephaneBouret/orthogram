@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\User;
 use App\Form\AvatarFormType;
+use App\Services\AvatarService;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -21,7 +22,10 @@ use Misd\PhoneNumberBundle\Templating\Helper\PhoneNumberHelper;
 
 class UserCrudController extends AbstractCrudController
 {
-    public function __construct(private readonly PhoneNumberHelper $phoneNumberHelper) {}
+    public function __construct(
+        private readonly PhoneNumberHelper $phoneNumberHelper,
+        private readonly AvatarService $avatarService,
+    ) {}
 
     public static function getEntityFqcn(): string
     {
@@ -75,6 +79,7 @@ class UserCrudController extends AbstractCrudController
                 ->setFormTypeOptions([
                     'default_region' => 'FR',
                     'format' => PhoneNumberFormat::NATIONAL,
+                    'number_type' => PhoneNumberType::NUMBER_TYPE_TEL,
                     'attr' => ['placeholder' => 'Téléphone de l\'utilisateur'],
                 ])
                 ->setColumns(6)
@@ -118,6 +123,12 @@ class UserCrudController extends AbstractCrudController
         $this->normalizeUser($entityInstance);
 
         parent::updateEntity($entityManager, $entityInstance);
+
+        $avatar = $entityInstance->getAvatar();
+
+        if ($avatar !== null) {
+            $this->avatarService->convertStoredImageToWebp($avatar);
+        }
     }
 
     private function normalizeUser(User $user): void
