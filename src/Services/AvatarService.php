@@ -117,6 +117,22 @@ final class AvatarService
         return is_file($this->getAvatarDirectory() . DIRECTORY_SEPARATOR . $imageName);
     }
 
+    public function deleteAvatar(Avatar $avatar): void
+    {
+        $imageName = $avatar->getImageName();
+
+        if ($imageName !== null) {
+            $this->filesystem->remove($this->getAvatarDirectory() . DIRECTORY_SEPARATOR . $imageName);
+        }
+
+        $user = $avatar->getUser();
+        if ($user !== null && $user->getAvatar() === $avatar) {
+            $user->setAvatar(null);
+        }
+
+        $this->em->remove($avatar);
+    }
+
     public function createDefaultAvatar(Avatar $avatar, User $user): void
     {
         $avatarDirectory = $this->getAvatarDirectory();

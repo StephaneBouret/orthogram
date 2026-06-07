@@ -8,6 +8,7 @@ enum UserAccountStatus: string
     case INACTIVE = 'inactive';
     case SUSPENDED = 'suspended';
     case PENDING_VERIFICATION = 'pending_verification';
+    case DELETED = 'deleted';
 
     public function label(): string
     {
@@ -16,6 +17,7 @@ enum UserAccountStatus: string
             self::INACTIVE => 'Inactif',
             self::SUSPENDED => 'Suspendu',
             self::PENDING_VERIFICATION => 'En attente de vérification',
+            self::DELETED => 'Supprimé',
         };
     }
 
@@ -26,6 +28,7 @@ enum UserAccountStatus: string
             self::INACTIVE => 'bg-secondary',
             self::SUSPENDED => 'bg-danger',
             self::PENDING_VERIFICATION => 'bg-warning text-dark',
+            self::DELETED => 'bg-dark',
         };
     }
 
