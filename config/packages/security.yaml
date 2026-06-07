@@ -29,6 +29,14 @@ security:
                 path: app_logout
                 # where to redirect after logout
                 # target: app_any_route
+
+            two_factor:
+                enable_csrf: true
+                auth_form_path: 2fa_login    # The route name you have used in the routes.yaml
+                check_path: 2fa_login_check  # The route name you have used in the routes.yaml
+                trusted_parameter_name: _trusted  # Name of the parameter for the trusted device option
+                remember_me_sets_trusted: true # If remember-me option should also set the trusted device cookie
+
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800 # 1 week in seconds
@@ -51,6 +59,8 @@ security:
 
     # Note: Only the *first* matching rule is applied
     access_control:
+        - { path: ^/logout, roles: PUBLIC_ACCESS }
+        - { path: ^/2fa, roles: IS_AUTHENTICATED_2FA_IN_PROGRESS }
         - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 

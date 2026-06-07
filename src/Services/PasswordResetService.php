@@ -77,6 +77,7 @@ class PasswordResetService
     {
         $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
         $user->setPassword($hashedPassword);
+        $user->invalidateTrustedDevices();
 
         $user->setResetToken(null)
             ->setResetTokenCreatedAt(null);

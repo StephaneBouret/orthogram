@@ -3280,3 +3280,111 @@ html[data-bs-theme="dark"] .profile-page .text-muted {
         width: 100%;
     }
 }
+
+/*--------------------------------------------------------------
+# 2fa page
+--------------------------------------------------------------*/
+.label-for-2fa {
+    line-height: 1.35rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.form-2fa-text {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.875rem !important;
+    line-height: 1.7142857143 !important;
+    font-weight: 400;
+}
+
+.form-control-2fa {
+    display: block;
+    width: 100%;
+    height: calc(1.75em + 0.875rem + 2px);
+    padding: 0.4375rem 1rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.75;
+    color: #0d161b;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #d5d7d9;
+    border-radius: 0.5rem;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.form-control-2fa:focus {
+    color: #0d161b;
+    background-color: #fff;
+    border-color: #0d161b;
+    outline: 0;
+    box-shadow: 0 0 0 0.1875rem #d5d7d9;
+}
+
+.custom-control-label-2fa {
+    font-weight: 400;
+    cursor: pointer;
+    line-height: 1.75;
+    color: var(--app-text);
+    position: relative;
+    margin-bottom: 0;
+    vertical-align: top;
+}
+
+.custom-control-2fa {
+    position: relative;
+    z-index: 1;
+    display: block;
+    min-height: 1.75rem;
+    padding-left: 2rem;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+.custom-control-input-2fa {
+    position: absolute;
+    left: 0;
+    z-index: -1;
+    width: 1.5rem;
+    height: 1.625rem;
+    opacity: 0;
+}
+
+.custom-control-label-2fa::before {
+    position: absolute;
+    top: 0.125rem;
+    left: -2rem;
+    display: block;
+    width: 1.5rem;
+    height: 1.5rem;
+    pointer-events: none;
+    content: "";
+    background-color: #fff;
+    border: 1px solid #d5d7d9;
+    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    border-radius: 0.375rem;
+}
+
+.custom-control-label-2fa::after {
+    position: absolute;
+    top: 0.125rem;
+    left: -2rem;
+    display: block;
+    width: 1.5rem;
+    height: 1.5rem;
+    content: "";
+    background: 50%/100% 100% no-repeat;
+}
+
+.custom-control-input-2fa:not(.is-invalid):checked~.custom-control-label-2fa::before {
+    background-color: #0d161b !important;
+    border-color: #0d161b !important;
+}
+
+.custom-control-input-2fa:checked~.custom-control-label-2fa::after {
+    background-image: url(../img/check.svg);
+}

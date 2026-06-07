@@ -15,6 +15,18 @@
 							<div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
 						{% endif %}
 
+                        {% if device_limit_error %}
+							<div class="alert alert-danger">
+								Vous avez déjà 2 appareils actifs. Déconnectez un ancien appareil avant d'en ajouter un nouveau.
+							</div>
+						{% endif %}
+
+						{% if device_revoked %}
+							<div class="alert alert-success">
+								Cet appareil a été révoqué. Vous avez été déconnecté.
+							</div>
+						{% endif %}
+
 						{% if app.user %}
 							<div class="mb-3">
 								You are logged in as

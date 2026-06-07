@@ -9,6 +9,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use libphonenumber\PhoneNumber;
 use Misd\PhoneNumberBundle\Validator\Constraints\PhoneNumber as AssertPhoneNumber;
+use Scheb\TwoFactorBundle\Model\Email\TwoFactorInterface;
+use Scheb\TwoFactorBundle\Model\TrustedDeviceInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -19,7 +21,7 @@ use ZipCodeValidator\Constraints\ZipCode;
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[ORM\UniqueConstraint(name: 'UNIQ_RESET_TOKEN', fields: ['resetToken'])]
 #[UniqueEntity(fields: ['email'], message: 'Il existe un compte avec cet email')]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFactorInterface, TrustedDeviceInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -34,6 +36,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         message: 'L\'adresse email {{ value }} est incorrecte.',
     )]
     private ?string $email = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $authCode = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $authCodeExpiresAt = null;
+
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    private int $trustedVersion = 0;
 
     /**
      * @var list<string> The user roles
@@ -125,9 +136,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?Avatar $avatar = null;
 
+    /**
+     * @var Collection<int, UserDevice>
+     */
+    #[ORM\OneToMany(targetEntity: UserDevice::class, mappedBy: 'user')]
+    private Collection $devices;
+
     public function __construct()
     {
         $this->subscriptions = new ArrayCollection();
+        $this->devices = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -441,5 +459,58 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->avatar = $avatar;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, UserDevice>
+     */
+    public function getDevices(): Collection
+    {
+        return $this->devices;
+    }
+
+    public function addDevice(UserDevice $device): static
+    {
+        if (!$this->devices->contains($device)) {
+            $this->devices->add($device);
+            $device->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function isEmailAuthEnabled(): bool
+    {
+        return true;
+    }
+
+    public function getEmailAuthRecipient(): string
+    {
+        return $this->email;
+    }
+
+    public function getEmailAuthCode(): ?string
+    {
+        if (null !== $this->authCodeExpiresAt && $this->authCodeExpiresAt < new \DateTimeImmutable()) {
+            return null;
+        }
+
+        return $this->authCode;
+    }
+
+    public function setEmailAuthCode(string $authCode): void
+    {
+        $this->authCode = $authCode;
+        $this->authCodeExpiresAt = new \DateTimeImmutable('+30 minutes');
+    }
+
+    public function getTrustedTokenVersion(): int
+    {
+        return $this->trustedVersion;
+    }
+
+    public function invalidateTrustedDevices(): void
+    {
+        $this->trustedVersion++;
     }
 }

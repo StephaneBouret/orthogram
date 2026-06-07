@@ -32,6 +32,7 @@ final class UserProfileService
     public function updatePassword(User $user, string $plainPassword): void
     {
         $user->setPassword($this->passwordHasher->hashPassword($user, $plainPassword));
+        $user->invalidateTrustedDevices();
 
         $this->em->flush();
     }
@@ -67,6 +68,8 @@ final class UserProfileService
             ->setAccountStatus(UserAccountStatus::DELETED)
             ->setDeletedAt($now)
             ->setAnonymizedAt($now);
+
+        $user->invalidateTrustedDevices();
 
         foreach ($user->getSubscriptions() as $subscription) {
             $subscription->setEmail($anonymousEmail);

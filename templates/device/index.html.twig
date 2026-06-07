@@ -1,0 +1,66 @@
+{% extends "base.html.twig" %}
+
+{% block title %}
+    Mes appareils
+{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<div>
+				<h1 class="fs-3 mb-1">Mes appareils</h1>
+				<p class="text-muted mb-0">Vous pouvez utiliser jusqu'à 2 appareils actifs.</p>
+			</div>
+		</div>
+
+        {% if devices is empty %}
+            <div class="alert alert-info">
+                Aucun appareil actif pour le moment.
+            </div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Appareil</th>
+                            <th>Navigateur</th>
+                            <th>Système</th>
+                            <th>Dernière IP</th>
+                            <th>Première connexion</th>
+                            <th>Dernière activité</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for device in devices %}
+                            {% set isCurrentDevice = device.deviceUuid == current_device_uuid %}
+
+                            <tr>
+                                <td>
+                                    <strong>{{ device.deviceType|default('Appareil') }}</strong>
+
+                                    {% if isCurrentDevice %}
+                                        <span class="badge text-bg-success ms-2">Cet appareil</span>
+                                    {% endif %}
+                                </td>
+								<td>{{ device.browser|default('Inconnu') }}</td>
+								<td>{{ device.platform|default('Inconnu') }}</td>
+								<td>{{ device.lastIp|default('Inconnue') }}</td>
+								<td>{{ device.firstSeenAt ? device.firstSeenAt|format_datetime(locale: 'fr', timezone: 'Europe/Paris') : '-' }}</td>
+                                <td>{{ device.lastUsedAt ? device.lastUsedAt|format_datetime(locale: 'fr', timezone: 'Europe/Paris') : '-' }}</td>
+								<td class="text-end">
+									<form method="post" action="{{ path('app_device_revoke', { id: device.id }) }}" onsubmit="return confirm('Révoquer cet appareil ?');">
+										<input type="hidden" name="_token" value="{{ csrf_token('revoke_device_' ~ device.id) }}">
+										<button type="submit" class="btn btn-sm btn-outline-danger">
+											Révoquer
+										</button>
+									</form>
+								</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

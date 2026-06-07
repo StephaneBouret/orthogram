@@ -26,6 +26,7 @@ final class UserAdminActionService
         );
 
         $user->setAccountStatus(UserAccountStatus::SUSPENDED);
+        $user->invalidateTrustedDevices();
 
         return $this->flushAndNotify(
             $user,
@@ -46,6 +47,7 @@ final class UserAdminActionService
         );
 
         $user->setAccountStatus(UserAccountStatus::ACTIVE);
+        $user->invalidateTrustedDevices();
 
         return $this->flushAndNotify(
             $user,
