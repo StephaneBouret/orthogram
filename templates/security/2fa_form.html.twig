@@ -18,7 +18,7 @@
 						<div class="alert alert-danger">{{ authenticationError|trans(authenticationErrorData, 'SchebTwoFactorBundle') }}</div>
 					{% endif %}
 
-					<form class="form" action="{{ checkPathUrl ? checkPathUrl: path(checkPathRoute) }}" method="post">
+					<form class="form" action="{{ checkPathUrl ? checkPathUrl: path(checkPathRoute) }}" method="post" data-turbo="false">
 						<div class="form-group mb-3">
 							<label for="_auth_code" class="label-for-2fa">Code de vérification</label>
 							<p class="widget mb-0">

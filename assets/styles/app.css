@@ -1581,6 +1581,18 @@ html[data-bs-theme="dark"] .color-btn-logout:active {
 /*--------------------------------------------------------------
 # Login page
 --------------------------------------------------------------*/
+.login-page {
+    padding-bottom: 48px;
+    padding-top: 48px;
+}
+
+.login-panel {
+    margin-bottom: 32px;
+    margin-top: 32px;
+    max-width: 480px;
+    width: 100%;
+}
+
 .card-fill {
     background-color: #fff !important;
     background-clip: border-box !important;
@@ -1607,6 +1619,48 @@ html[data-bs-theme="dark"] .color-btn-logout:active {
 .my-8 {
     margin-top: 32px !important;
     margin-bottom: 32px !important;
+}
+
+@media (max-width: 575.98px) {
+    .login-page {
+        padding: 24px 14px 88px;
+    }
+
+    .login-page .card-fill .card-body {
+        align-items: stretch;
+        padding: 18px !important;
+    }
+
+    .login-panel {
+        margin-bottom: 16px;
+        margin-top: 16px;
+    }
+
+    .login-panel h1 {
+        font-size: 1.35rem !important;
+        line-height: 1.25;
+        margin-bottom: 1.5rem !important;
+    }
+
+    .login-panel .alert {
+        font-size: 0.95rem;
+        line-height: 1.45;
+        padding: 0.9rem 1rem;
+    }
+
+    .login-panel .form-group {
+        margin-bottom: 1rem !important;
+    }
+
+    .login-panel .btn[type="submit"] {
+        width: 100%;
+    }
+
+    .remember-me-label,
+    .login-panel .text-muted {
+        font-size: 0.98rem;
+        line-height: 1.45;
+    }
 }
 
 .lh-label {

@@ -4,13 +4,13 @@
 {% endblock %}
 
 {% block body %}
-	<div class="container pt-5">
+	<div class="container login-page">
 		<div class="card card-fill">
 			<div class="card-body">
-				<div class="my-8 mx-auto" style="width: 480px;">
+				<div class="login-panel mx-auto">
 					<h1 class="text-center mb-4 fs-4">Se connecter à l'application
 						{{ appName }}</h1>
-					<form method="post" id="login_form" action="{{ path('app_login') }}">
+					<form method="post" id="login_form" action="{{ path('app_login') }}" data-turbo="false">
 						{% if error %}
 							<div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
 						{% endif %}
