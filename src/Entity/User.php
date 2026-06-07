@@ -504,6 +504,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         $this->authCodeExpiresAt = new \DateTimeImmutable('+30 minutes');
     }
 
+    public function clearEmailAuthCode(): void
+    {
+        $this->authCode = null;
+        $this->authCodeExpiresAt = null;
+    }
+
     public function getTrustedTokenVersion(): int
     {
         return $this->trustedVersion;
