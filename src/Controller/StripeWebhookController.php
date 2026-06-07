@@ -71,7 +71,13 @@ final class StripeWebhookController extends AbstractController
                 $subscription = $subscriptionRepository->find($subscriptionId);
 
                 if (!$subscription) {
-                    return new Response('Souscription introuvable.', Response::HTTP_NOT_FOUND);
+                    $this->logger->warning('Souscription Stripe introuvable.', [
+                        'subscription_id' => $subscriptionId,
+                        'payment_intent' => $paymentIntent->id,
+                        'event_type' => $event->type,
+                    ]);
+
+                    return new Response('Event traité.', Response::HTTP_OK);
                 }
 
                 // Idempotence : si déjà active, on ne refait rien
@@ -149,7 +155,13 @@ final class StripeWebhookController extends AbstractController
                 $subscription = $subscriptionRepository->find($subscriptionId);
 
                 if (!$subscription) {
-                    return new Response('Souscription introuvable.', Response::HTTP_NOT_FOUND);
+                    $this->logger->warning('Souscription Stripe introuvable.', [
+                        'subscription_id' => $subscriptionId,
+                        'payment_intent' => $paymentIntent->id,
+                        'event_type' => $event->type,
+                    ]);
+
+                    return new Response('Event traité.', Response::HTTP_OK);
                 }
 
                 // Ici on ne change pas forcément le statut.

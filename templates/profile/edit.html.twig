@@ -180,33 +180,6 @@
 								</h2>
 							</div>
 							<div class="card-body">
-								<h3 class="h6 mb-3">Paramètres de sécurité</h3>
-								<div class="security-options">
-									<div class="security-option">
-										<div class="security-option-info">
-											<div class="security-option-title">Changement de mot de passe obligatoire</div>
-											<div class="security-option-desc">Demander un nouveau mot de passe à la prochaine connexion</div>
-										</div>
-										<div class="d-flex align-items-center gap-2">
-											<span class="badge text-bg-light">Prévu</span>
-											<div class="form-check form-switch m-0">
-												<input class="form-check-input" type="checkbox" id="forcePassword" disabled>
-											</div>
-										</div>
-									</div>
-									<div class="security-option">
-										<div class="security-option-info">
-											<div class="security-option-title">Expiration de session</div>
-											<div class="security-option-desc">Déconnexion automatique après inactivité</div>
-										</div>
-										<select class="form-select form-select-sm profile-timeout-select" disabled>
-											<option selected>Paramètre global</option>
-										</select>
-									</div>
-								</div>
-
-								<hr>
-
 								<h3 class="h6 mb-3">Modifier le mot de passe</h3>
 								{{ form_start(passwordForm, {'attr': {'data-controller': 'reset-password'}}) }}
 									{{ form_errors(passwordForm) }}
