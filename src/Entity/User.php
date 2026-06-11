@@ -20,6 +20,7 @@ use ZipCodeValidator\Constraints\ZipCode;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[ORM\UniqueConstraint(name: 'UNIQ_RESET_TOKEN', fields: ['resetToken'])]
+#[ORM\UniqueConstraint(name: 'UNIQ_EMAIL_CHANGE_TOKEN', fields: ['emailChangeToken'])]
 #[UniqueEntity(fields: ['email'], message: 'Il existe un compte avec cet email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFactorInterface, TrustedDeviceInterface
 {
@@ -36,6 +37,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         message: 'L\'adresse email {{ value }} est incorrecte.',
     )]
     private ?string $email = null;
+
+    #[ORM\Column(length: 180, nullable: true)]
+    private ?string $pendingEmail = null;
+
+    #[ORM\Column(length: 64, nullable: true)]
+    private ?string $emailChangeToken = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $emailChangeRequestedAt = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $authCode = null;
@@ -166,6 +176,51 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     public function setEmail(string $email): static
     {
         $this->email = mb_strtolower(trim($email));
+
+        return $this;
+    }
+
+    public function getPendingEmail(): ?string
+    {
+        return $this->pendingEmail;
+    }
+
+    public function setPendingEmail(?string $pendingEmail): static
+    {
+        $this->pendingEmail = null === $pendingEmail ? null : mb_strtolower(trim($pendingEmail));
+
+        return $this;
+    }
+
+    public function getEmailChangeToken(): ?string
+    {
+        return $this->emailChangeToken;
+    }
+
+    public function setEmailChangeToken(?string $emailChangeToken): static
+    {
+        $this->emailChangeToken = $emailChangeToken;
+
+        return $this;
+    }
+
+    public function getEmailChangeRequestedAt(): ?\DateTimeImmutable
+    {
+        return $this->emailChangeRequestedAt;
+    }
+
+    public function setEmailChangeRequestedAt(?\DateTimeImmutable $emailChangeRequestedAt): static
+    {
+        $this->emailChangeRequestedAt = $emailChangeRequestedAt;
+
+        return $this;
+    }
+
+    public function clearPendingEmailChange(): static
+    {
+        $this->pendingEmail = null;
+        $this->emailChangeToken = null;
+        $this->emailChangeRequestedAt = null;
 
         return $this;
     }

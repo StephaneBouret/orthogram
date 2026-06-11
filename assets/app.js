@@ -20,13 +20,17 @@ document.addEventListener("turbo:load", () => {
 });
 
 const closeAlertMessage = () => {
-    const alert = document.querySelector(".alert");
-    if (alert) {
+    document.querySelectorAll('[data-auto-dismiss="alert"]').forEach((alert) => {
+        if (alert.dataset.autoDismissBound === "true") {
+            return;
+        }
+
+        alert.dataset.autoDismissBound = "true";
         setTimeout(() => {
             alert.classList.add("fade-out");
             setTimeout(() => alert.remove(), 1000);
         }, 4000);
-    }
+    });
 };
 
 const initPage = () => {

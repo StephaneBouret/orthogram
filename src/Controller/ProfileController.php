@@ -8,10 +8,13 @@ use App\Form\AvatarFormType;
 use App\Form\UpdatePasswordUserFormType;
 use App\Form\UpdateUserProfileFormType;
 use App\Services\AvatarService;
+use App\Services\UserEmailChangeService;
 use App\Services\UserProfileService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -24,9 +27,12 @@ final class ProfileController extends AbstractController
         Request $request,
         AvatarService $avatarService,
         UserProfileService $profileService,
+        UserEmailChangeService $emailChangeService,
+        UserPasswordHasherInterface $passwordHasher,
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
+        $currentEmail = (string) $user->getEmail();
 
         $avatar = $user->getAvatar() ?? new Avatar($user);
         $avatarForm = $this->createForm(AvatarFormType::class, $avatar, [
@@ -41,19 +47,65 @@ final class ProfileController extends AbstractController
             return $this->redirectToRoute('app_profile');
         }
 
-        $profileForm = $this->createForm(UpdateUserProfileFormType::class, $user);
+        $passwordForm = $this->createForm(UpdatePasswordUserFormType::class, $user);
+        $passwordForm->handleRequest($request);
+
+        $profileForm = $this->createForm(UpdateUserProfileFormType::class, $user, [
+            'current_email' => $currentEmail,
+        ]);
         $profileForm->handleRequest($request);
 
         if ($profileForm->isSubmitted() && $profileForm->isValid()) {
+            $requestedEmail = $emailChangeService->normalizeEmail((string) $profileForm->get('email')->getData());
+            $emailChanged = $requestedEmail !== $emailChangeService->normalizeEmail($currentEmail);
+
+            if ($emailChanged) {
+                $emailChangePassword = (string) $profileForm->get('emailChangePassword')->getData();
+
+                if ('' === trim($emailChangePassword)) {
+                    $profileForm->get('emailChangePassword')->addError(new FormError('Merci de confirmer le changement d\'identifiant avec votre mot de passe actuel.'));
+                } elseif (!$passwordHasher->isPasswordValid($user, $emailChangePassword)) {
+                    $profileForm->get('emailChangePassword')->addError(new FormError('Le mot de passe actuel est incorrect.'));
+                }
+
+                try {
+                    $emailChangeService->assertEmailCanBeRequested($user, $requestedEmail);
+                } catch (\InvalidArgumentException $exception) {
+                    $profileForm->get('email')->addError(new FormError($exception->getMessage()));
+                }
+            }
+
+            if (!$profileForm->isValid()) {
+                return $this->render('profile/edit.html.twig', [
+                    'user' => $user,
+                    'avatarForm' => $avatarForm,
+                    'profileForm' => $profileForm,
+                    'passwordForm' => $passwordForm,
+                ]);
+            }
+
             $profileService->updateProfile($user);
 
-            $this->addFlash('success', 'Vos informations ont bien été mises à jour.');
+            if ($emailChanged) {
+                try {
+                    $emailChangeService->requestEmailChange($user, $requestedEmail);
+                    $this->addFlash('success', 'Vos informations ont bien été mises à jour. Un email de confirmation vient d’être envoyé à votre nouvelle adresse.');
+                } catch (\RuntimeException $exception) {
+                    $profileForm->get('email')->addError(new FormError($exception->getMessage()));
+
+                    return $this->render('profile/edit.html.twig', [
+                        'user' => $user,
+                        'avatarForm' => $avatarForm,
+                        'profileForm' => $profileForm,
+                        'passwordForm' => $passwordForm,
+                    ]);
+                }
+            } else {
+                $this->addFlash('success', 'Vos informations ont bien été mises à jour.');
+            }
 
             return $this->redirectToRoute('app_profile');
         }
-
-        $passwordForm = $this->createForm(UpdatePasswordUserFormType::class, $user);
-        $passwordForm->handleRequest($request);
 
         if ($passwordForm->isSubmitted() && $passwordForm->isValid()) {
             $profileService->updatePassword($user, (string) $passwordForm->get('newPassword')->getData());
@@ -69,6 +121,42 @@ final class ProfileController extends AbstractController
             'profileForm' => $profileForm,
             'passwordForm' => $passwordForm,
         ]);
+    }
+
+    #[Route('/profil/email/confirmer/{token}', name: 'app_profile_email_confirm', methods: ['GET'])]
+    public function confirmEmailChange(string $token, UserEmailChangeService $emailChangeService): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $result = $emailChangeService->confirmEmailChange($user, $token);
+
+        match ($result) {
+            'confirmed' => $this->addFlash('success', 'Votre identifiant de connexion a bien été modifié.'),
+            'expired' => $this->addFlash('warning', 'Le lien de confirmation a expiré. Merci de refaire une demande.'),
+            'unavailable' => $this->addFlash('danger', 'Cette adresse email est déjà utilisée par un autre compte.'),
+            default => $this->addFlash('danger', 'Le lien de confirmation est invalide.'),
+        };
+
+        return $this->redirectToRoute('app_profile');
+    }
+
+    #[Route('/profil/email/annuler', name: 'app_profile_email_cancel', methods: ['POST'])]
+    public function cancelEmailChange(Request $request, UserEmailChangeService $emailChangeService): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if (!$this->isCsrfTokenValid('cancel-email-change' . $user->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('danger', 'Le jeton de sécurité est invalide.');
+
+            return $this->redirectToRoute('app_profile');
+        }
+
+        $emailChangeService->cancelEmailChange($user);
+        $this->addFlash('success', 'La demande de changement d\'identifiant a été annulée.');
+
+        return $this->redirectToRoute('app_profile');
     }
 
     #[Route('/profil/supprimer', name: 'app_profile_delete', methods: ['POST'])]

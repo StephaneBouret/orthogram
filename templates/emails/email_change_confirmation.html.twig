@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="fr">
+	<head>
+		<meta charset="utf-8">
+		<title>Confirmez votre nouvelle adresse email</title>
+	</head>
+	<body style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6;">
+		<h1 style="font-size: 22px;">Confirmez votre nouvelle adresse email</h1>
+
+		<p>Bonjour {{ user.firstname|default(user.email) }},</p>
+
+		<p>
+			Une demande de changement d'identifiant a été effectuée pour votre compte Orthogram.
+			Pour utiliser <strong>{{ pendingEmail }}</strong> comme nouvelle adresse de connexion, confirmez cette demande.
+		</p>
+
+		<p>
+			<a href="{{ confirmationUrl }}" style="display: inline-block; padding: 12px 18px; background: #f59e0b; color: #111827; text-decoration: none; border-radius: 6px; font-weight: 700;">
+				Confirmer ma nouvelle adresse
+			</a>
+		</p>
+
+		<p>Ce lien expire dans {{ expiresInHours }} heures. Tant qu'il n'est pas validé, votre identifiant reste <strong>{{ currentEmail }}</strong>.</p>
+
+		<p>Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email.</p>
+	</body>
+</html>

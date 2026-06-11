@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="fr">
+	<head>
+		<meta charset="utf-8">
+		<title>Demande de changement d'identifiant</title>
+	</head>
+	<body style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6;">
+		<h1 style="font-size: 22px;">Demande de changement d'identifiant</h1>
+
+		<p>Bonjour {{ user.firstname|default(user.email) }},</p>
+
+		<p>
+			Une demande de changement d'adresse email vient d'être initiée pour votre compte Orthogram.
+			L'adresse demandée est <strong>{{ pendingEmail }}</strong>.
+		</p>
+
+		<p>
+			Votre identifiant actuel reste <strong>{{ currentEmail }}</strong> tant que la nouvelle adresse n'a pas été confirmée.
+		</p>
+
+		<p>Si vous n'êtes pas à l'origine de cette demande, changez votre mot de passe dès que possible.</p>
+	</body>
+</html>

@@ -69,6 +69,7 @@ final class UserProfileService
             ->setDeletedAt($now)
             ->setAnonymizedAt($now);
 
+        $user->clearPendingEmailChange();
         $user->invalidateTrustedDevices();
 
         foreach ($user->getSubscriptions() as $subscription) {
