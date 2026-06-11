@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Form\ForgotIdentifierRequestFormType;
 use App\Form\ResetPasswordFormType;
 use App\Form\ResetPasswordRequestFormType;
 use App\Repository\UserRepository;
+use App\Services\ForgotIdentifierRequestService;
 use App\Services\PasswordResetService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -30,6 +32,31 @@ class SecurityController extends AbstractController
             'error' => $error,
             'device_limit_error' => $request->query->getBoolean('device_limit'),
             'device_revoked' => $request->query->getBoolean('device_revoked'),
+        ]);
+    }
+
+    #[Route('/identifiant-oublie', name: 'app_forgot_identifier', methods: ['GET', 'POST'])]
+    public function forgotIdentifier(Request $request, ForgotIdentifierRequestService $forgotIdentifierRequestService): Response
+    {
+        $form = $this->createForm(ForgotIdentifierRequestFormType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var array<string, mixed> $data */
+            $data = $form->getData();
+            $data['website'] = $form->get('website')->getData();
+
+            if ($forgotIdentifierRequestService->notifySupport($data, $request)) {
+                $this->addFlash('success', 'Si les informations transmises permettent d’identifier un compte, une réponse vous sera envoyée.');
+
+                return $this->redirectToRoute('app_login');
+            }
+
+            $form->addError(new FormError('Votre demande n’a pas pu être envoyée pour le moment. Merci de réessayer dans quelques instants.'));
+        }
+
+        return $this->render('security/forgot_identifier.html.twig', [
+            'form' => $form,
         ]);
     }
 

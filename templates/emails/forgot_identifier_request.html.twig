@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+	<head>
+		<meta charset="utf-8">
+		<title>Demande d’aide pour identifiant oublié</title>
+	</head>
+	<body style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6;">
+		<h1 style="font-size: 22px;">Demande d’aide pour identifiant oublié</h1>
+
+		<p>Une demande d’assistance vient d’être envoyée depuis Orthogram.</p>
+
+		<table style="border-collapse: collapse; width: 100%; max-width: 640px;">
+			<tr>
+				<th align="left" style="padding: 8px; border-bottom: 1px solid #e5e7eb;">Prénom</th>
+				<td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">{{ firstname }}</td>
+			</tr>
+			<tr>
+				<th align="left" style="padding: 8px; border-bottom: 1px solid #e5e7eb;">Nom</th>
+				<td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">{{ lastname }}</td>
+			</tr>
+			<tr>
+				<th align="left" style="padding: 8px; border-bottom: 1px solid #e5e7eb;">Téléphone</th>
+				<td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">{{ phone }}</td>
+			</tr>
+			<tr>
+				<th align="left" style="padding: 8px; border-bottom: 1px solid #e5e7eb;">Code postal</th>
+				<td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">{{ postalCode|default('Non renseigné') }}</td>
+			</tr>
+			<tr>
+				<th align="left" style="padding: 8px; border-bottom: 1px solid #e5e7eb;">Message</th>
+				<td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">{{ message|default('Non renseigné')|nl2br }}</td>
+			</tr>
+			<tr>
+				<th align="left" style="padding: 8px; border-bottom: 1px solid #e5e7eb;">IP</th>
+				<td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">{{ ip|default('Inconnue') }}</td>
+			</tr>
+			<tr>
+				<th align="left" style="padding: 8px; border-bottom: 1px solid #e5e7eb;">User-Agent</th>
+				<td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">{{ userAgent|default('Inconnu') }}</td>
+			</tr>
+			<tr>
+				<th align="left" style="padding: 8px;">Date</th>
+				<td style="padding: 8px;">{{ requestedAt|date('d/m/Y H:i') }}</td>
+			</tr>
+		</table>
+
+		<p>Répondez uniquement après vérification manuelle du compte concerné.</p>
+	</body>
+</html>

@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Identifiant oublié{% endblock %}
+
+{% block body %}
+	<div class="container pt-5">
+		<div class="card card-fill">
+			<div class="card-body">
+				<div class="my-8 mx-auto" style="width: 520px; max-width: 100%;">
+					<h1 class="text-center mb-4 fs-4 fw-bold">Identifiant oublié</h1>
+					<p class="text-lg mb-4 text-center text-muted">
+						Transmettez les informations associées à votre compte. Par sécurité, aucune adresse email ne sera affichée sur cette page.
+					</p>
+
+					{{ form_start(form) }}
+						{{ form_errors(form) }}
+						{{ form_widget(form.website, {'attr': {'tabindex': '-1', 'autocomplete': 'off'}}) }}
+
+						<div class="row g-3">
+							<div class="col-md-6">
+								{{ form_row(form.firstname) }}
+							</div>
+							<div class="col-md-6">
+								{{ form_row(form.lastname) }}
+							</div>
+							<div class="col-md-6">
+								{{ form_row(form.phone) }}
+							</div>
+							<div class="col-md-6">
+								{{ form_row(form.postalCode) }}
+							</div>
+							<div class="col-12">
+								{{ form_row(form.message) }}
+							</div>
+						</div>
+
+						<div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mt-4">
+							<a href="{{ path('app_login') }}" class="text-decoration-none">Retour à la connexion</a>
+							<button type="submit" class="btn btn-md btn-dark">
+								<span>Envoyer la demande</span>
+							</button>
+						</div>
+					{{ form_end(form) }}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
