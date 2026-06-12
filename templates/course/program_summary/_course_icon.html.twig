@@ -1,0 +1,19 @@
+{% set contentType = course.contentType.value ?? course.contentType %}
+
+{% if contentType == 'twig' %}
+    <div class="list-group-icon">
+        {% include 'course/program_summary/icons/_cloud.html.twig' %}
+    </div>
+{% elseif contentType == 'audio' or contentType == 'video' %}
+    <div class="list-group-icon">
+        {% include 'course/program_summary/icons/_play.html.twig' %}
+    </div>
+{% elseif contentType == 'quiz' %}
+    <div class="list-group-icon">
+        {% include 'course/program_summary/icons/_quiz.html.twig' %}
+    </div>
+{% else %}
+    <div class="list-group-icon">
+        {% include 'course/program_summary/icons/_four_lines.html.twig' %}
+    </div>
+{% endif %}

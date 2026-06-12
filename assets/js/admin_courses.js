@@ -19,7 +19,7 @@ const initCourseFields = () => {
     const updateFields = () => {
         const type = contentTypeSelect.value;
 
-        toggle(twigFields, type === 'twig');
+        toggle(twigFields, type === 'twig' || type === 'link');
         toggle(audioFields, type === 'audio');
         toggle(videoFields, type === 'video');
         toggle(dictationFields, type === 'audio');

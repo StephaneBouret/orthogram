@@ -9,6 +9,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.css";
 import "bootstrap-icons/font/bootstrap-icons.min.css";
 import "./styles/app.css";
+import "./styles/courses.css";
 // import 'bootstrap';
 import * as bootstrap from "bootstrap";
 

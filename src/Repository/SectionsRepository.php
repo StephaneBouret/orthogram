@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Program;
 use App\Entity\Sections;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,28 +17,20 @@ class SectionsRepository extends ServiceEntityRepository
         parent::__construct($registry, Sections::class);
     }
 
-    //    /**
-    //     * @return Sections[] Returns an array of Sections objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Sections
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * @return Sections[]
+     */
+    public function findByProgramWithCourses(Program $program): array
+    {
+        return $this->createQueryBuilder('s')
+            ->leftJoin('s.courses', 'c')
+            ->addSelect('c')
+            ->andWhere('s.program = :program')
+            ->setParameter('program', $program)
+            ->orderBy('s.id', 'ASC')
+            ->addOrderBy('c.position', 'ASC')
+            ->addOrderBy('c.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

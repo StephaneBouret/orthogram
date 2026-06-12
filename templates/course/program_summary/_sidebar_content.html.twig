@@ -1,0 +1,76 @@
+{% set collapsePrefix = collapsePrefix|default('course') %}
+
+<ol class="sticky-contents pl-0 list-unstyled">
+    <li class="list-group list-group-xs list-group-menu mb-6">
+        <section class="d-flex align-items-start">
+            <div>
+                <a href="{{ path('app_course_program_summary', {'slug': program.slug}) }}" class="thumb thumb-lg thumb-photo thumb-link">
+                    {% if program.imageName %}
+                        <img src="{{ vich_uploader_asset(program, 'imageFile') }}" alt="{{ program.name }}" class="thumb-img">
+                    {% else %}
+                        <span class="thumb-img d-flex align-items-center justify-content-center">{{ program.name|slice(0, 1)|upper }}</span>
+                    {% endif %}
+                </a>
+            </div>
+            <div class="ml-3">
+                <header>
+                    <h1 class="h4-title">
+                        <a class="text-grey-dark text-decoration-none" href="{{ path('app_course_program_summary', {'slug': program.slug}) }}">
+                            {{ program.name }}
+                        </a>
+                    </h1>
+                    {% if nbrCourses > 0 %}
+                        <div class="bulleted">
+                            <span class="bulleted-item w-100 mt-2">
+                                <div class="d-flex align-items-start flex-column">
+                                    <div class="d-block w-100">
+                                        <div class="progress" role="progressbar" aria-label="Progression du programme" aria-valuenow="{{ nbrLessonsDone }}" aria-valuemin="0" aria-valuemax="{{ nbrCourses }}">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: {{ (nbrLessonsDone / nbrCourses) * 100 }}%"></div>
+                                        </div>
+                                    </div>
+                                    <span>{{ nbrLessonsDone }}/{{ nbrCourses }} complété(s)</span>
+                                </div>
+                            </span>
+                        </div>
+                    {% endif %}
+                </header>
+            </div>
+        </section>
+    </li>
+
+    {% for section in sections %}
+        {% set sectionDuration = sectionsTotalDuration[section.id] ?? 0 %}
+        {% set collapseId = collapsePrefix ~ '-collapse-' ~ section.id %}
+        <li class="list-group list-group-menu list-group-xs mb-6">
+            <nav aria-label="{{ section.name }}">
+                <header class="d-flex align-items-center n2ymm7">
+                    <a href="#section-{{ section.id }}" data-action="course-menu#closeOnNavigate">
+                        <h2 class="h4 text-md mb-2">
+                            {{ section.name }}
+                            {% if sectionDuration > 0 %}
+                                ({{ sectionDuration }} min)
+                            {% endif %}
+                        </h2>
+                    </a>
+                    <span class="icon closed f4lgy4" data-bs-toggle="collapse" data-bs-target="#{{ collapseId }}" aria-expanded="false" aria-controls="{{ collapseId }}">
+                        {% include 'course/program_summary/icons/_closed.html.twig' %}
+                    </span>
+                    <span class="icon opened d-none f4lgy4" data-bs-toggle="collapse" data-bs-target="#{{ collapseId }}" aria-expanded="false" aria-controls="{{ collapseId }}">
+                        {% include 'course/program_summary/icons/_opened.html.twig' %}
+                    </span>
+                </header>
+                <div id="{{ collapseId }}" class="collapse show">
+                    <ol class="pl-0 mb-0 list-unstyled">
+                        {% for course in section.courses %}
+                            <li data-action="click->course-menu#closeOnNavigate">
+                                {% include 'course/program_summary/_course_item.html.twig' with { course: course } %}
+                            </li>
+                        {% else %}
+                            <li class="text-muted">Aucun cours pour le moment</li>
+                        {% endfor %}
+                    </ol>
+                </div>
+            </nav>
+        </li>
+    {% endfor %}
+</ol>

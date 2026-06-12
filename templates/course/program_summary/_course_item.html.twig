@@ -1,0 +1,17 @@
+{% set isAccessible = is_granted('VIEW_COURSE', course) %}
+
+<div class="list-group-item list-group-item-action" aria-label="{{ course.slug }}">
+    {% if isAccessible %}
+        {% include 'course/program_summary/_course_icon.html.twig' with { course: course } %}
+    {% else %}
+        <div class="list-group-icon">
+            {% include 'course/program_summary/icons/_lock.html.twig' %}
+        </div>
+    {% endif %}
+
+    <span class="course-item-title">{{ course.name }}</span>
+
+    {% if course.durationMinutes %}
+        <span class="course-item-duration text-muted">{{ course.durationMinutes }} min</span>
+    {% endif %}
+</div>

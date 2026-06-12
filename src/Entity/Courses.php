@@ -40,6 +40,10 @@ class Courses
     #[Assert\PositiveOrZero(message: "La position ne peut pas être négative.")]
     private ?int $position = 0;
 
+    #[ORM\Column(nullable: true)]
+    #[Assert\PositiveOrZero(message: "La durée estimée ne peut pas être négative.")]
+    private ?int $durationMinutes = null;
+
     #[Vich\UploadableField(mapping: 'courses_files', fileNameProperty: 'partialFileName')]
     private ?File $partialFile = null;
 
@@ -150,6 +154,18 @@ class Courses
     public function setPosition(int $position): static
     {
         $this->position = $position;
+
+        return $this;
+    }
+
+    public function getDurationMinutes(): ?int
+    {
+        return $this->durationMinutes;
+    }
+
+    public function setDurationMinutes(?int $durationMinutes): static
+    {
+        $this->durationMinutes = $durationMinutes;
 
         return $this;
     }

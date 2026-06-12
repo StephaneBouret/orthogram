@@ -1,0 +1,93 @@
+<div class="main-content">
+    <div class="d-flex">
+        <div class="w-100">
+            <div class="d-md-flex justify-content-md-between align-items-center spacer-section">
+                <div class="flex-fill mb-6 mb-md-0">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{{ path('app_home') }}" class="text-muted">Accueil</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Sommaire</li>
+                        </ol>
+                    </nav>
+                    <div class="course-mobile-menu d-md-none" data-controller="course-menu">
+                        <button type="button" class="course-mobile-menu-toggle" aria-expanded="false" data-action="course-menu#toggle" data-course-menu-target="button">
+                            <span>{{ program.name }}</span>
+                            {% include 'course/program_summary/icons/_opened.html.twig' %}
+                        </button>
+                        <div class="course-mobile-menu-panel d-none" data-course-menu-target="panel">
+                            {% include 'course/program_summary/_sidebar_content.html.twig' with { collapsePrefix: 'mobile' } %}
+                        </div>
+                    </div>
+                    <h1 class="pr-md-6 d-md-block fw-semibold d-none">{{ program.name }}</h1>
+                </div>
+                <div class="mt-n2 mt-md-0">
+                    <div class="btn-row d-none d-md-flex">
+                        <button type="button" title="Agrandir le sommaire" aria-label="Agrandir le sommaire" aria-pressed="false" data-action="fullscreen#toggle" data-fullscreen-target="openButton" class="btn btn-md btn-outline-grey btn-icon">
+                            {% include 'course/program_summary/icons/_fullscreen_open.html.twig' %}
+                        </button>
+                        <button type="button" title="Réduire le sommaire" aria-label="Réduire le sommaire" aria-pressed="true" data-action="fullscreen#toggle" data-fullscreen-target="closeButton" class="btn btn-md btn-outline-grey btn-icon d-none">
+                            {% include 'course/program_summary/icons/_fullscreen_close.html.twig' %}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if program.description %}
+        <div class="text-muted text-lg mt-n4 spacer-section">
+            <div>{{ program.description|raw|nl2br }}</div>
+        </div>
+    {% endif %}
+
+    {% for section in sections %}
+        {% set courseCount = coursesBySection[section.id] ?? section.courses|length %}
+        {% set courseLabel = 'cours' %}
+        {% set sectionDuration = sectionsTotalDuration[section.id] ?? 0 %}
+        <div class="card v9d3ks" id="section-{{ section.id }}">
+            <div class="card-body">
+                <div class="list-group list-group-menu list-group-sm">
+                    <nav aria-label="{{ section.name }}">
+                        <header class="pb7jep">
+                            <a class="lk25pol" href="#section-{{ section.id }}">
+                                <h2>
+                                    {{ section.name }}
+                                    {% if sectionDuration > 0 %}
+                                        ({{ sectionDuration }} min)
+                                    {% endif %}
+                                </h2>
+                            </a>
+                            {% if section.shortDescription %}
+                                <div class="text-longform text-lg text-muted mb-2">
+                                    <div>{{ section.shortDescription|raw|nl2br }}</div>
+                                </div>
+                            {% endif %}
+                            <h3 class="mt-8 mb-4">
+                                {{ courseCount }} {{ courseLabel }}
+                            </h3>
+                        </header>
+                        <ol class="pl-0 mb-0 list-unstyled">
+                            {% for course in section.courses %}
+                                <li>
+                                    {% include 'course/program_summary/_course_item.html.twig' with { course: course } %}
+                                </li>
+                            {% else %}
+                                <li class="text-muted">Aucun cours pour le moment</li>
+                            {% endfor %}
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="card v9d3ks">
+            <div class="card-body">
+                <p class="mb-0 text-muted">Le sommaire de ce programme sera bientôt disponible.</p>
+            </div>
+        </div>
+    {% endfor %}
+
+    <div class="spacer-section"></div>
+</div>
