@@ -46,7 +46,19 @@ class Sections
 
     public function __toString(): string
     {
-        return $this->name ?? 'Section sans nom';
+        return $this->getAdminLabel();
+    }
+
+    public function getAdminLabel(): string
+    {
+        $sectionName = $this->name ?? 'Section sans nom';
+        $programName = $this->program?->getName();
+
+        if ($programName === null || $programName === '') {
+            return $sectionName;
+        }
+
+        return sprintf('%s - %s', $programName, $sectionName);
     }
 
     public function getId(): ?int

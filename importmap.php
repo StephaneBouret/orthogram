@@ -47,4 +47,8 @@ return [
         'path' => './assets/js/admin_check_name.js',
         'entrypoint' => true,
     ],
+    'admin_courses' => [
+        'path' => './assets/js/admin_courses.js',
+        'entrypoint' => true,
+    ],
 ];
