@@ -1,0 +1,63 @@
+{% set contentType = course.contentType.value ?? course.contentType %}
+
+{% if contentType == 'twig' or contentType == 'link' %}
+    {% if fileContent %}
+        {{ fileContent|raw }}
+    {% else %}
+        <div class="card v9d3ks">
+            <div class="card-body">
+                <p class="mb-0 text-muted">Le contenu de ce cours sera bientôt disponible.</p>
+            </div>
+        </div>
+    {% endif %}
+{% elseif contentType == 'audio' %}
+    <div class="card v9d3ks course-media-card">
+        <div class="card-body">
+            {% set audioPath = vich_uploader_asset(course, 'audioFile') %}
+            {% if audioPath %}
+                <audio class="course-audio-player" controls src="{{ audioPath }}">
+                    Votre navigateur ne prend pas en charge la lecture audio.
+                </audio>
+            {% else %}
+                <p class="mb-0 text-muted">Le fichier audio de cette dictée sera bientôt disponible.</p>
+            {% endif %}
+
+            <div class="course-dictation-panel">
+                <label class="form-label" for="course-dictation-answer">Votre dictée</label>
+                <textarea id="course-dictation-answer" class="form-control" rows="8" placeholder="La zone de saisie sera activée avec la logique de dictée."></textarea>
+            </div>
+
+            {% if course.correctionText %}
+                <details class="course-correction">
+                    <summary>Afficher la correction</summary>
+                    <div>{{ course.correctionText|raw|nl2br }}</div>
+                </details>
+            {% endif %}
+        </div>
+    </div>
+{% elseif contentType == 'video' %}
+    <div class="card v9d3ks course-media-card">
+        <div class="card-body">
+            {% set videoPath = vich_uploader_asset(course, 'videoFile') %}
+            {% if videoPath %}
+                <video class="course-video-player" controls src="{{ videoPath }}">
+                    Votre navigateur ne prend pas en charge la lecture vidéo.
+                </video>
+            {% else %}
+                <p class="mb-0 text-muted">La vidéo de ce cours sera bientôt disponible.</p>
+            {% endif %}
+        </div>
+    </div>
+{% elseif contentType == 'quiz' %}
+    <div class="card v9d3ks">
+        <div class="card-body">
+            <p class="mb-0 text-muted">Le quiz sera branché dans une prochaine étape.</p>
+        </div>
+    </div>
+{% else %}
+    <div class="card v9d3ks">
+        <div class="card-body">
+            <p class="mb-0 text-muted">Ce type de contenu sera bientôt disponible.</p>
+        </div>
+    </div>
+{% endif %}

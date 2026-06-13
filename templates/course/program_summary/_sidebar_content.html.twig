@@ -1,5 +1,6 @@
 {% set collapsePrefix = collapsePrefix|default('course') %}
 {% set currentSection = currentSection|default(null) %}
+{% set currentCourse = currentCourse|default(null) %}
 
 <ol class="sticky-contents pl-0 list-unstyled">
     <li class="list-group list-group-xs list-group-menu mb-6">
@@ -65,7 +66,7 @@
                     <ol class="pl-0 mb-0 list-unstyled">
                         {% for course in section.courses %}
                             <li data-action="click->course-menu#closeOnNavigate">
-                                {% include 'course/program_summary/_course_item.html.twig' with { course: course } %}
+                                {% include 'course/program_summary/_course_item.html.twig' with { course: course, currentCourse: currentCourse } %}
                             </li>
                         {% else %}
                             <li class="text-muted">Aucun cours pour le moment</li>

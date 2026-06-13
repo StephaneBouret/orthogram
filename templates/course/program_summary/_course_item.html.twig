@@ -1,13 +1,22 @@
 {% set isAccessible = is_granted('VIEW_COURSE', course) %}
+{% set currentCourse = currentCourse|default(null) %}
+{% set isCurrentCourse = currentCourse and currentCourse.id == course.id %}
 
-<div class="list-group-item list-group-item-action" aria-label="{{ course.slug }}">
-    {% if isAccessible %}
+{% if isAccessible %}
+    <a class="list-group-item list-group-item-action{{ isCurrentCourse ? ' active' : '' }}" aria-label="{{ course.slug }}" href="{{ path('app_course_show', {'programSlug': course.section.program.slug, 'sectionSlug': course.section.slug, 'courseSlug': course.slug}) }}">
         {% include 'course/program_summary/_course_icon.html.twig' with { course: course } %}
-    {% else %}
-        <div class="list-group-icon">
-            {% include 'course/program_summary/icons/_lock.html.twig' %}
-        </div>
-    {% endif %}
+
+        <span class="course-item-title">{{ course.name }}</span>
+
+        {% if course.durationMinutes %}
+            <span class="course-item-duration text-muted">{{ course.durationMinutes }} min</span>
+        {% endif %}
+    </a>
+{% else %}
+<div class="list-group-item" aria-label="{{ course.slug }}">
+    <div class="list-group-icon">
+        {% include 'course/program_summary/icons/_lock.html.twig' %}
+    </div>
 
     <span class="course-item-title">{{ course.name }}</span>
 
@@ -15,3 +24,4 @@
         <span class="course-item-duration text-muted">{{ course.durationMinutes }} min</span>
     {% endif %}
 </div>
+{% endif %}

@@ -1,0 +1,15 @@
+{% if previousCourse %}
+    <span>
+        <a href="{{ path('app_course_show', {'programSlug': program.slug, 'sectionSlug': previousCourse.section.slug, 'courseSlug': previousCourse.slug}) }}" title="Précédent" rel="prev" class="btn btn-md btn-outline-grey btn-icon">
+            {% include 'course/show/icons/_left_arrow.html.twig' %}
+        </a>
+    </span>
+{% endif %}
+
+{% if nextCourse %}
+    <span>
+        <a href="{{ path('app_course_show', {'programSlug': program.slug, 'sectionSlug': nextCourse.section.slug, 'courseSlug': nextCourse.slug}) }}" aria-label="Continuer" title="Continuer" rel="next" class="btn btn-md btn-outline-grey btn-icon">
+            {% include 'course/show/icons/_right_arrow.html.twig' %}
+        </a>
+    </span>
+{% endif %}

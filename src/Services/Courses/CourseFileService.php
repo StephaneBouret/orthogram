@@ -8,6 +8,7 @@ use App\Entity\Courses;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
+use Twig\Environment;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 final class CourseFileService
@@ -17,6 +18,7 @@ final class CourseFileService
         private readonly string $projectDir,
         private readonly UploaderHelper $uploaderHelper,
         private readonly Filesystem $filesystem,
+        private readonly Environment $twig,
     ) {}
 
     public function getFileContent(Courses $course): ?string
@@ -35,6 +37,14 @@ final class CourseFileService
 
         $content = file_get_contents($fullPath);
 
-        return $content === false ? null : $content;
+        if ($content === false) {
+            return null;
+        }
+
+        return $this->twig->createTemplate($content)->render([
+            'course' => $course,
+            'section' => $course->getSection(),
+            'program' => $course->getSection()?->getProgram(),
+        ]);
     }
 }

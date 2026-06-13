@@ -88,7 +88,8 @@ class CoursesRepository extends ServiceEntityRepository
             ->select('s.id AS section_id, COUNT(c.id) AS course_count')
             ->join('c.section', 's')
             ->groupBy('s.id')
-            ->orderBy('s.id', 'ASC');
+            ->orderBy('s.position', 'ASC')
+            ->addOrderBy('s.id', 'ASC');
 
         if ($program !== null) {
             $queryBuilder
@@ -103,5 +104,33 @@ class CoursesRepository extends ServiceEntityRepository
         }
 
         return $counts;
+    }
+
+    public function findOneBySectionAndSlug(Sections $section, string $slug): ?Courses
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.section = :section')
+            ->andWhere('c.slug = :slug')
+            ->setParameter('section', $section)
+            ->setParameter('slug', $slug)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * @return list<Courses>
+     */
+    public function findOrderedByProgram(Program $program): array
+    {
+        return $this->createQueryBuilder('c')
+            ->join('c.section', 's')
+            ->andWhere('s.program = :program')
+            ->setParameter('program', $program)
+            ->orderBy('s.position', 'ASC')
+            ->addOrderBy('s.id', 'ASC')
+            ->addOrderBy('c.position', 'ASC')
+            ->addOrderBy('c.id', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 }

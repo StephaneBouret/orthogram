@@ -1,0 +1,66 @@
+<div class="main-content">
+    <div id="lesson-header">
+        <div class="d-flex">
+            <div class="w-100">
+                <div class="d-md-flex justify-content-md-between align-items-center spacer-section">
+                    <div class="flex-fill mb-6 mb-md-0">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">
+                                    <a href="{{ path('app_home') }}" class="text-muted">Accueil</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="{{ path('app_course_program_summary', {'slug': program.slug}) }}" class="text-muted">Sommaire</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="{{ path('app_course_section', {'programSlug': program.slug, 'sectionSlug': section.slug}) }}" class="text-muted">Section</a>
+                                </li>
+                                <li class="breadcrumb-item active" aria-current="page">Cours</li>
+                            </ol>
+                        </nav>
+                        <div class="course-mobile-menu d-md-none" data-controller="course-menu">
+                            <button type="button" class="course-mobile-menu-toggle" aria-expanded="false" data-action="course-menu#toggle" data-course-menu-target="button">
+                                <span>{{ course.name }}</span>
+                                {% include 'course/program_summary/icons/_opened.html.twig' %}
+                            </button>
+                            <div class="course-mobile-menu-panel d-none" data-course-menu-target="panel">
+                                {% include 'course/program_summary/_sidebar_content.html.twig' with { collapsePrefix: 'mobile', currentSection: section, currentCourse: course } %}
+                            </div>
+                        </div>
+                        <h1 class="pr-md-6 d-md-block fw-semibold d-none">{{ course.name }}</h1>
+                    </div>
+                    <div class="mt-n2 mt-md-0">
+                        <div class="btn-row d-none d-md-flex">
+                            <button type="button" title="Agrandir le cours" aria-label="Agrandir le cours" aria-pressed="false" data-action="fullscreen#toggle" data-fullscreen-target="openButton" class="btn btn-md btn-outline-grey btn-icon">
+                                {% include 'course/program_summary/icons/_fullscreen_open.html.twig' %}
+                            </button>
+                            <button type="button" title="Réduire le cours" aria-label="Réduire le cours" aria-pressed="true" data-action="fullscreen#toggle" data-fullscreen-target="closeButton" class="btn btn-md btn-outline-grey btn-icon d-none">
+                                {% include 'course/program_summary/icons/_fullscreen_close.html.twig' %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="lesson-content">
+        {% include 'course/show/_content.html.twig' %}
+    </div>
+
+    {% if course.shortDescription %}
+        <div class="spacer-section"></div>
+        <div class="text-longform">
+            <div>{{ course.shortDescription|raw|nl2br }}</div>
+        </div>
+    {% endif %}
+
+    <div class="spacer-section"></div>
+
+    <div id="lesson-navigation">
+        <nav class="btn-row justify-content-end" aria-label="Navigation du cours">
+            {% include 'course/show/_navigation.html.twig' %}
+            {% include 'course/show/_completion_button.html.twig' %}
+        </nav>
+    </div>
+</div>

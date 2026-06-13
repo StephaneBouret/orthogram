@@ -1601,6 +1601,42 @@ button.btn.btn-abandonment:hover {
     color: #111827 !important;
 }
 
+.course-page #completion-button .btn-dark svg {
+    fill: currentColor;
+}
+
+.course-media-card .card-body {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.course-audio-player,
+.course-video-player {
+    width: 100%;
+}
+
+.course-video-player {
+    aspect-ratio: 16 / 9;
+    background-color: #000;
+    border-radius: 0.5rem;
+}
+
+.course-dictation-panel {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.course-correction {
+    border-top: 1px solid var(--course-border);
+    padding-top: 1rem;
+}
+
+.course-correction summary {
+    color: var(--course-link);
+    cursor: pointer;
+    font-weight: 600;
+}
+
 .course-page #completion-button .btn-secondary {
     background-color: var(--course-soft-bg) !important;
     border-color: var(--course-soft-bg) !important;

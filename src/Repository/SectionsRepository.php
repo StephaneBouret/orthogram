@@ -27,7 +27,8 @@ class SectionsRepository extends ServiceEntityRepository
             ->addSelect('c')
             ->andWhere('s.program = :program')
             ->setParameter('program', $program)
-            ->orderBy('s.id', 'ASC')
+            ->orderBy('s.position', 'ASC')
+            ->addOrderBy('s.id', 'ASC')
             ->addOrderBy('c.position', 'ASC')
             ->addOrderBy('c.id', 'ASC')
             ->getQuery()
@@ -47,5 +48,37 @@ class SectionsRepository extends ServiceEntityRepository
             ->addOrderBy('c.id', 'ASC')
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    public function getNextPositionForProgram(Program $program): int
+    {
+        $maxPosition = $this->createQueryBuilder('s')
+            ->select('MAX(s.position)')
+            ->andWhere('s.program = :program')
+            ->setParameter('program', $program)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $maxPosition === null ? 0 : ((int) $maxPosition) + 1;
+    }
+
+    /**
+     * @return list<Sections>
+     */
+    public function findOrderedByProgramExcluding(Program $program, ?Sections $excludedSection = null): array
+    {
+        $queryBuilder = $this->createQueryBuilder('s')
+            ->andWhere('s.program = :program')
+            ->setParameter('program', $program)
+            ->orderBy('s.position', 'ASC')
+            ->addOrderBy('s.id', 'ASC');
+
+        if ($excludedSection?->getId() !== null) {
+            $queryBuilder
+                ->andWhere('s.id != :excludedSectionId')
+                ->setParameter('excludedSectionId', $excludedSection->getId());
+        }
+
+        return $queryBuilder->getQuery()->getResult();
     }
 }

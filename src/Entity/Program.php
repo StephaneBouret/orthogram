@@ -91,6 +91,7 @@ class Program
      * @var Collection<int, Sections>
      */
     #[ORM\OneToMany(targetEntity: Sections::class, mappedBy: 'program', cascade: ['persist'], orphanRemoval: true)]
+    #[ORM\OrderBy(['position' => 'ASC', 'id' => 'ASC'])]
     private Collection $sections;
 
     public function __construct()

@@ -72,9 +72,8 @@ class CoursesCrudController extends AbstractCrudController
                 ])
                 ->setRequired(true),
             IntegerField::new('position', 'Ordre d’affichage')
-                ->setHelp($pageName === Crud::PAGE_NEW
-                    ? 'Laisser 0 pour ajouter automatiquement le cours en fin de section.'
-                    : 'Changer la position réordonne automatiquement les autres cours de la section.'),
+                ->hideWhenCreating()
+                ->setHelp('0 place le cours au début. Changer la position réordonne automatiquement les autres cours de la section.'),
             IntegerField::new('durationMinutes', 'Durée estimée (min)')
                 ->setHelp('Laisser vide pour estimer automatiquement la durée d’un template Twig.'),
             AssociationField::new('section', 'Programme / section')

@@ -28,6 +28,10 @@ class Sections
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $shortDescription = null;
 
+    #[ORM\Column(options: ['default' => 0])]
+    #[Assert\PositiveOrZero(message: "La position ne peut pas être négative.")]
+    private ?int $position = 0;
+
     #[ORM\ManyToOne(inversedBy: 'sections')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Program $program = null;
@@ -98,6 +102,18 @@ class Sections
     public function setShortDescription(?string $shortDescription): static
     {
         $this->shortDescription = $shortDescription;
+
+        return $this;
+    }
+
+    public function getPosition(): ?int
+    {
+        return $this->position;
+    }
+
+    public function setPosition(int $position): static
+    {
+        $this->position = $position;
 
         return $this;
     }
