@@ -3,7 +3,9 @@
 namespace App\Controller\Course;
 
 use App\Entity\Program;
+use App\Entity\User;
 use App\Repository\CoursesRepository;
+use App\Repository\LessonRepository;
 use App\Repository\SectionsRepository;
 use App\Security\Voter\CourseVoter;
 use App\Services\Courses\SectionDurationService;
@@ -18,6 +20,7 @@ final class ProgramSummaryController extends AbstractController
         private readonly CoursesRepository $coursesRepository,
         private readonly SectionsRepository $sectionsRepository,
         private readonly SectionDurationService $sectionDurationService,
+        private readonly LessonRepository $lessonRepository,
     ) {}
 
     #[Route('/courses/{slug}', name: 'app_course_program_summary', methods: ['GET'])]
@@ -31,14 +34,17 @@ final class ProgramSummaryController extends AbstractController
         $coursesBySection = $this->coursesRepository->countCoursesBySections($program);
         $nbrCourses = $this->coursesRepository->countByProgram($program);
         $sectionsTotalDuration = $this->sectionDurationService->calculateTotalDuration($sections);
+        $user = $this->getUser();
+        $nbrLessonsDone = $user instanceof User ? $this->lessonRepository->countDoneByUserAndProgram($user, $program) : 0;
+        $completedCourseIds = $user instanceof User ? $this->lessonRepository->findDoneCourseIdsByUserAndProgram($user, $program) : [];
 
         return $this->render('course/program_summary.html.twig', [
             'program' => $program,
             'sections' => $sections,
             'coursesBySection' => $coursesBySection,
             'nbrCourses' => $nbrCourses,
-            'nbrLessonsDone' => 0,
-            'lessons' => [],
+            'nbrLessonsDone' => $nbrLessonsDone,
+            'completedCourseIds' => $completedCourseIds,
             'sectionsTotalDuration' => $sectionsTotalDuration,
         ]);
     }

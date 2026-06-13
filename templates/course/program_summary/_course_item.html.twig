@@ -1,10 +1,18 @@
 {% set isAccessible = is_granted('VIEW_COURSE', course) %}
 {% set currentCourse = currentCourse|default(null) %}
+{% set completedCourseIds = completedCourseIds|default([]) %}
 {% set isCurrentCourse = currentCourse and currentCourse.id == course.id %}
+{% set isCompleted = course.id in completedCourseIds %}
 
 {% if isAccessible %}
     <a class="list-group-item list-group-item-action{{ isCurrentCourse ? ' active' : '' }}" aria-label="{{ course.slug }}" href="{{ path('app_course_show', {'programSlug': course.section.program.slug, 'sectionSlug': course.section.slug, 'courseSlug': course.slug}) }}">
-        {% include 'course/program_summary/_course_icon.html.twig' with { course: course } %}
+        {% if isCompleted %}
+            <div class="list-group-icon completed">
+                {% include 'course/program_summary/icons/_check.html.twig' %}
+            </div>
+        {% else %}
+            {% include 'course/program_summary/_course_icon.html.twig' with { course: course } %}
+        {% endif %}
 
         <span class="course-item-title">{{ course.name }}</span>
 

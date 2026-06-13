@@ -152,10 +152,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\OneToMany(targetEntity: UserDevice::class, mappedBy: 'user')]
     private Collection $devices;
 
+    /**
+     * @var Collection<int, Lesson>
+     */
+    #[ORM\OneToMany(targetEntity: Lesson::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $lessons;
+
     public function __construct()
     {
         $this->subscriptions = new ArrayCollection();
         $this->devices = new ArrayCollection();
+        $this->lessons = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -529,6 +536,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         if (!$this->devices->contains($device)) {
             $this->devices->add($device);
             $device->setUser($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Lesson>
+     */
+    public function getLessons(): Collection
+    {
+        return $this->lessons;
+    }
+
+    public function addLesson(Lesson $lesson): static
+    {
+        if (!$this->lessons->contains($lesson)) {
+            $this->lessons->add($lesson);
+            $lesson->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLesson(Lesson $lesson): static
+    {
+        if ($this->lessons->removeElement($lesson)) {
+            if ($lesson->getUser() === $this) {
+                $lesson->setUser(null);
+            }
         }
 
         return $this;

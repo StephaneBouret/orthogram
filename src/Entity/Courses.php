@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Enum\CourseContentType;
 use App\Repository\CoursesRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
@@ -75,6 +77,17 @@ class Courses
     #[ORM\ManyToOne(inversedBy: 'courses')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Sections $section = null;
+
+    /**
+     * @var Collection<int, Lesson>
+     */
+    #[ORM\OneToMany(targetEntity: Lesson::class, mappedBy: 'course', orphanRemoval: true)]
+    private Collection $lessons;
+
+    public function __construct()
+    {
+        $this->lessons = new ArrayCollection();
+    }
 
     public function __toString(): string
     {
@@ -270,6 +283,35 @@ class Courses
     public function setSection(?Sections $section): static
     {
         $this->section = $section;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Lesson>
+     */
+    public function getLessons(): Collection
+    {
+        return $this->lessons;
+    }
+
+    public function addLesson(Lesson $lesson): static
+    {
+        if (!$this->lessons->contains($lesson)) {
+            $this->lessons->add($lesson);
+            $lesson->setCourse($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLesson(Lesson $lesson): static
+    {
+        if ($this->lessons->removeElement($lesson)) {
+            if ($lesson->getCourse() === $this) {
+                $lesson->setCourse(null);
+            }
+        }
 
         return $this;
     }

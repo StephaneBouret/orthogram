@@ -28,4 +28,9 @@
 /public/images/avatars/
 ###< uploaded images ###
 
+###> uploaded courses ###
+/public/courses/*
+!/public/courses/.htaccess
+###< uploaded courses ###
+
 /prep_cours

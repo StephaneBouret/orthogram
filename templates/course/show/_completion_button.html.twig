@@ -1,6 +1,15 @@
 <div id="completion-button">
-    <button type="button" class="btn btn-md btn-dark btn-icon" aria-disabled="true" title="La validation sera branchée prochainement">
-        {% include 'course/show/icons/_square.html.twig' %}
-        <span>Valider</span>
-    </button>
+    {% set isDone = lesson is defined and lesson and lesson.done %}
+    <form method="post" action="{{ path('app_course_confirmation', {'id': course.id}) }}">
+        <input type="hidden" name="_token" value="{{ csrf_token('lesson_toggle_' ~ course.id) }}">
+        <button type="submit" class="btn btn-md {{ isDone ? 'btn-secondary' : 'btn-dark' }} btn-icon">
+            {% if isDone %}
+                {% include 'course/show/icons/_check_square.html.twig' %}
+                <span>Terminé</span>
+            {% else %}
+                {% include 'course/show/icons/_square.html.twig' %}
+                <span>Valider</span>
+            {% endif %}
+        </button>
+    </form>
 </div>
