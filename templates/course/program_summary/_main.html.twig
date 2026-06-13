@@ -51,7 +51,7 @@
                 <div class="list-group list-group-menu list-group-sm">
                     <nav aria-label="{{ section.name }}">
                         <header class="pb7jep">
-                            <a class="lk25pol" href="#section-{{ section.id }}">
+                            <a class="lk25pol" href="{{ path('app_course_section', {'programSlug': program.slug, 'sectionSlug': section.slug}) }}">
                                 <h2>
                                     {{ section.name }}
                                     {% if sectionDuration > 0 %}

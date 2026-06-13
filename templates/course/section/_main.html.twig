@@ -1,0 +1,80 @@
+<div class="main-content">
+    <div class="d-flex">
+        <div class="w-100">
+            <div class="d-md-flex justify-content-md-between align-items-center spacer-section">
+                <div class="flex-fill mb-6 mb-md-0">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{{ path('app_home') }}" class="text-muted">Accueil</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{{ path('app_course_program_summary', {'slug': program.slug}) }}" class="text-muted">Sommaire</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Section</li>
+                        </ol>
+                    </nav>
+                    <div class="course-mobile-menu d-md-none" data-controller="course-menu">
+                        <button type="button" class="course-mobile-menu-toggle" aria-expanded="false" data-action="course-menu#toggle" data-course-menu-target="button">
+                            <span>{{ section.name }}</span>
+                            {% include 'course/program_summary/icons/_opened.html.twig' %}
+                        </button>
+                        <div class="course-mobile-menu-panel d-none" data-course-menu-target="panel">
+                            {% include 'course/program_summary/_sidebar_content.html.twig' with { collapsePrefix: 'mobile', currentSection: section } %}
+                        </div>
+                    </div>
+                    <h1 class="pr-md-6 d-md-block fw-semibold d-none">
+                        {{ section.name }}
+                        {% set sectionDuration = sectionsTotalDuration[section.id] ?? 0 %}
+                        {% if sectionDuration > 0 %}
+                            ({{ sectionDuration }} min)
+                        {% endif %}
+                    </h1>
+                </div>
+                <div class="mt-n2 mt-md-0">
+                    <div class="btn-row d-none d-md-flex">
+                        <button type="button" title="Agrandir la section" aria-label="Agrandir la section" aria-pressed="false" data-action="fullscreen#toggle" data-fullscreen-target="openButton" class="btn btn-md btn-outline-grey btn-icon">
+                            {% include 'course/program_summary/icons/_fullscreen_open.html.twig' %}
+                        </button>
+                        <button type="button" title="Réduire la section" aria-label="Réduire la section" aria-pressed="true" data-action="fullscreen#toggle" data-fullscreen-target="closeButton" class="btn btn-md btn-outline-grey btn-icon d-none">
+                            {% include 'course/program_summary/icons/_fullscreen_close.html.twig' %}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if section.shortDescription %}
+        <div class="text-muted text-lg mt-n4 spacer-section">
+            <div>{{ section.shortDescription|raw|nl2br }}</div>
+        </div>
+    {% endif %}
+
+    <div class="card v9d3ks">
+        <div class="card-header">
+            <div class="d-flex justify-content-between">
+                <div class="card-title">
+                    {{ count }} cours
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="list-group list-group-menu list-group-sm">
+                <nav aria-label="{{ section.name }}">
+                    <ol class="pl-0 mb-0 list-unstyled">
+                        {% for course in section.courses %}
+                            <li>
+                                {% include 'course/program_summary/_course_item.html.twig' with { course: course } %}
+                            </li>
+                        {% else %}
+                            <li class="text-muted">Aucun cours pour le moment</li>
+                        {% endfor %}
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <div class="spacer-section"></div>
+</div>

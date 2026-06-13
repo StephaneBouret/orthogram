@@ -33,4 +33,19 @@ class SectionsRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findOneByProgramAndSlug(Program $program, string $slug): ?Sections
+    {
+        return $this->createQueryBuilder('s')
+            ->leftJoin('s.courses', 'c')
+            ->addSelect('c')
+            ->andWhere('s.program = :program')
+            ->andWhere('s.slug = :slug')
+            ->setParameter('program', $program)
+            ->setParameter('slug', $slug)
+            ->addOrderBy('c.position', 'ASC')
+            ->addOrderBy('c.id', 'ASC')
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

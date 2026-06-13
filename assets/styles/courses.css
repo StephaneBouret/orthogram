@@ -1513,6 +1513,11 @@ button.btn.btn-abandonment:hover {
     color: var(--course-link-hover) !important;
 }
 
+.course-page .course-section-link.is-active,
+.course-page .course-section-link.is-active h2 {
+    color: var(--course-link-hover) !important;
+}
+
 .course-page .thumb,
 .course-page .list-group .list-group-item .list-group-icon,
 .course-page .list-group .list-group-item .list-group-icon.completed {

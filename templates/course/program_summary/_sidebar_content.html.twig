@@ -1,4 +1,5 @@
 {% set collapsePrefix = collapsePrefix|default('course') %}
+{% set currentSection = currentSection|default(null) %}
 
 <ol class="sticky-contents pl-0 list-unstyled">
     <li class="list-group list-group-xs list-group-menu mb-6">
@@ -41,10 +42,11 @@
     {% for section in sections %}
         {% set sectionDuration = sectionsTotalDuration[section.id] ?? 0 %}
         {% set collapseId = collapsePrefix ~ '-collapse-' ~ section.id %}
+        {% set isCurrentSection = currentSection and currentSection.id == section.id %}
         <li class="list-group list-group-menu list-group-xs mb-6">
             <nav aria-label="{{ section.name }}">
                 <header class="d-flex align-items-center n2ymm7">
-                    <a href="#section-{{ section.id }}" data-action="course-menu#closeOnNavigate">
+                    <a href="{{ path('app_course_section', {'programSlug': program.slug, 'sectionSlug': section.slug}) }}" class="course-section-link{{ isCurrentSection ? ' is-active' : '' }}" data-action="course-menu#closeOnNavigate">
                         <h2 class="h4 text-md mb-2">
                             {{ section.name }}
                             {% if sectionDuration > 0 %}

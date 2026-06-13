@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ section.name }}{% endblock %}
+
+{% block body %}
+    <div class="course-page container-fluid container-padding">
+        <div class="sidebar-container" id="fullContainer" data-controller="fullscreen">
+            {% include 'course/program_summary/_sidebar.html.twig' with { currentSection: section } %}
+            {% include 'course/section/_main.html.twig' %}
+        </div>
+    </div>
+{% endblock %}
