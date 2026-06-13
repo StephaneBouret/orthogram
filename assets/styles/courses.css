@@ -1643,6 +1643,69 @@ button.btn.btn-abandonment:hover {
     color: var(--course-text) !important;
 }
 
+.course-search-form {
+    width: 100%;
+}
+
+.course-search-inner {
+    align-items: stretch;
+    display: flex;
+    width: 100%;
+}
+
+.course-search-field {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.course-page .course-search .ts-wrapper.single .ts-control {
+    background-color: var(--course-card-bg);
+    border-color: var(--course-border);
+    border-radius: 0.5rem 0 0 0.5rem;
+    color: var(--course-text);
+    min-height: 3.25rem;
+    padding: 0.75rem 1rem;
+}
+
+.course-page .course-search .ts-wrapper.focus .ts-control {
+    border-color: var(--orthogram-brand);
+    box-shadow: 0 0 0 0.25rem var(--orthogram-focus-ring);
+}
+
+.course-page .course-search .ts-dropdown {
+    background-color: var(--course-card-bg);
+    border-color: var(--course-border);
+    color: var(--course-text);
+    z-index: 30;
+}
+
+.course-page .course-search .ts-dropdown .option {
+    color: var(--course-text);
+}
+
+.course-page .course-search .ts-dropdown .active {
+    background-color: var(--course-soft-bg-hover);
+    color: var(--course-text);
+}
+
+.course-search-submit {
+    align-items: center;
+    background-color: #1f2933;
+    border: 1px solid #1f2933;
+    border-radius: 0 0.5rem 0.5rem 0;
+    color: #fff;
+    display: inline-flex;
+    flex: 0 0 3.5rem;
+    justify-content: center;
+    min-height: 3.25rem;
+}
+
+.course-search-submit:hover,
+.course-search-submit:focus-visible {
+    background-color: #111827;
+    border-color: #111827;
+}
+
 .course-page .h4ktbg {
     background-color: var(--course-code-bg) !important;
     border-color: var(--course-border) !important;

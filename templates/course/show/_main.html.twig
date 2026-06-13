@@ -1,4 +1,6 @@
 <div class="main-content">
+    {{ render(controller('App\\Controller\\Course\\CourseSearchController::searchBar', { programSlug: program.slug })) }}
+
     <div id="lesson-header">
         <div class="d-flex">
             <div class="w-100">

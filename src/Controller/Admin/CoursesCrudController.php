@@ -126,7 +126,7 @@ class CoursesCrudController extends AbstractCrudController
     {
         $this->setPositionIfMissing($entityInstance);
         $this->reorderCourse($entityInstance);
-        $this->estimateDurationIfMissing($entityInstance);
+        $this->estimateDuration($entityInstance);
 
         parent::persistEntity($entityManager, $entityInstance);
     }
@@ -136,18 +136,18 @@ class CoursesCrudController extends AbstractCrudController
         $previousSection = $this->getPreviousSection($entityManager, $entityInstance);
 
         $this->reorderCourse($entityInstance, $previousSection);
-        $this->estimateDurationIfMissing($entityInstance);
+        $this->estimateDuration($entityInstance, $entityInstance instanceof Courses && $entityInstance->getPartialFile() !== null);
 
         parent::updateEntity($entityManager, $entityInstance);
     }
 
-    private function estimateDurationIfMissing(object $entityInstance): void
+    private function estimateDuration(object $entityInstance, bool $force = false): void
     {
         if (!$entityInstance instanceof Courses) {
             return;
         }
 
-        if ($entityInstance->getDurationMinutes() !== null) {
+        if (!$force && $entityInstance->getDurationMinutes() !== null) {
             return;
         }
 

@@ -1,0 +1,12 @@
+<div class="course-search mb-3" data-controller="course-search" data-course-search-details-url-value="{{ path('app_course_details', {'id': '__id__'}) }}">
+    {{ form_start(form, { attr: { class: 'course-search-form' } }) }}
+        <div class="course-search-inner">
+            <div class="course-search-field">
+                {{ form_widget(form.course) }}
+            </div>
+            <button type="submit" class="course-search-submit" aria-label="Rechercher un cours">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            </button>
+        </div>
+    {{ form_end(form) }}
+</div>
