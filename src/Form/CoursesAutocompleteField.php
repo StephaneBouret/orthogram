@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Courses;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -17,14 +18,27 @@ final class CoursesAutocompleteField extends AbstractType
     {
         $resolver->setDefaults([
             'class' => Courses::class,
-            'placeholder' => 'Choisissez un cours',
+            'placeholder' => 'Tapez au moins 2 lettres',
             'choice_label' => static fn (Courses $course): string => $course->getName() ?? '',
-            'searchable_fields' => ['name'],
+            'choice_lazy' => true,
+            'min_characters' => 2,
+            'preload' => 'false',
             'security' => 'ROLE_USER',
             'max_results' => 10,
             'extra_options' => [
                 'program_slug' => null,
             ],
+            'filter_query' => static function (QueryBuilder $queryBuilder, string $query): void {
+                $queryBuilder->setMaxResults(10);
+
+                if ($query === '') {
+                    return;
+                }
+
+                $queryBuilder
+                    ->andWhere("LOWER(c.name) LIKE :courseSearch ESCAPE '\\'")
+                    ->setParameter('courseSearch', '%' . addcslashes(mb_strtolower($query), '\\%_') . '%');
+            },
             'query_builder' => static function (Options $options): callable {
                 return static function (EntityRepository $repository) use ($options) {
                     $queryBuilder = $repository->createQueryBuilder('c')

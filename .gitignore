@@ -31,6 +31,15 @@
 ###> uploaded courses ###
 /public/courses/*
 !/public/courses/.htaccess
+!/public/courses/files/
+/public/courses/files/*
+!/public/courses/files/.gitkeep
+!/public/courses/audios/
+/public/courses/audios/*
+!/public/courses/audios/.gitkeep
+!/public/courses/videos/
+/public/courses/videos/*
+!/public/courses/videos/.gitkeep
 ###< uploaded courses ###
 
 /prep_cours
