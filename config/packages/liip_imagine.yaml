@@ -2,6 +2,13 @@
 liip_imagine:
     driver: "gd"
 
+    loaders:
+        default:
+            filesystem:
+                data_root:
+                    - '%kernel.project_dir%/public'
+                    - '%kernel.project_dir%/public/images/avatars'
+
     webp:
         generate: true
         quality: 90
