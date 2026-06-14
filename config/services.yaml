@@ -31,6 +31,10 @@ services:
         arguments:
             $supportEmail: "%app.support_email%"
 
+    App\Services\CommentReportService:
+        arguments:
+            $supportEmail: "%app.support_email%"
+
     App\Stripe\StripeService:
         arguments:
             $secretKey: '%env(STRIPE_SECRET_KEY)%'

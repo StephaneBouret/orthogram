@@ -1643,6 +1643,68 @@ button.btn.btn-abandonment:hover {
     color: var(--course-text) !important;
 }
 
+.course-page #lesson-comments {
+    color: var(--course-text);
+}
+
+.course-page #lesson-comments .text-longform {
+    overflow-wrap: anywhere;
+}
+
+.course-page #lesson-comments .avatar .sc-img-gravatar {
+    align-items: center;
+    background-color: var(--orthogram-brand);
+    color: #111827;
+    display: inline-flex;
+    font-weight: 700;
+    justify-content: center;
+    line-height: 1;
+}
+
+.course-page #lesson-comments .comment-form-title {
+    color: var(--course-text);
+    font-weight: 600;
+}
+
+.course-page #lesson-comments textarea.form-control {
+    background-color: var(--course-card-bg);
+    border-color: var(--course-border);
+    color: var(--course-text);
+}
+
+.course-page #lesson-comments textarea.form-control:focus {
+    border-color: var(--orthogram-brand);
+    box-shadow: 0 0 0 0.25rem var(--orthogram-focus-ring);
+}
+
+.course-page #lesson-comments textarea.form-control::placeholder {
+    color: var(--course-muted);
+}
+
+.course-page #lesson-comments .dropdown-menu {
+    min-width: 17rem;
+}
+
+.course-page #lesson-comments .btn[disabled] {
+    opacity: 1;
+}
+
+.course-page #lesson-comments .btn-icon i + span {
+    margin-left: 0.25rem;
+}
+
+.course-page #lesson-comments .like-button.is-liked {
+    color: var(--orthogram-brand-hover) !important;
+}
+
+.course-page #lesson-comments .like-button.is-liked i {
+    color: var(--orthogram-brand-hover);
+}
+
+.course-page #lesson-comments .dropdown-item i + span {
+    margin-left: 0.35rem;
+}
+
 .course-search-form {
     width: 100%;
 }

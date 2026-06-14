@@ -1,0 +1,117 @@
+{% set author = comment.user %}
+{% set avatarPath = author and author.avatar ? vich_uploader_asset(author.avatar, 'imageFile') : null %}
+{% set canEdit = is_granted('COMMENT_EDIT', comment) %}
+{% set canDelete = is_granted('ROLE_ADMIN') and not comment.hasReplies %}
+{% set canReply = not isReply and app.user and author and author.id != app.user.id %}
+{% set canReport = app.user and author and author.id != app.user.id and not is_granted('ROLE_ADMIN') %}
+{% set canLike = app.user and author and author.id != app.user.id %}
+{% set isLiked = app.user ? comment.isLikedBy(app.user) : false %}
+{% set visibleReplies = comment.replies|filter(reply => not reply.hidden) %}
+
+<article class="comments mb-5{% if isReply %} comment-reply{% endif %}" id="comment-{{ comment.id }}">
+    <div class="d-flex mb-2">
+        <div class="w-100">
+            <span class="d-flex align-items-center gap-x-2 flex-wrap mt-n1">
+                <span class="avatar avatar-xs">
+                    {% if avatarPath %}
+                        <img src="{{ avatarPath|imagine_filter('avatar_admin') }}" alt="{{ author.fullname }}" class="sc-img-gravatar">
+                    {% else %}
+                        <span class="sc-img-gravatar sc-avatar-placeholder">{{ author ? author.firstname|first|upper : '?' }}</span>
+                    {% endif %}
+                </span>
+                <span class="font-weight-bold text-sm text-grey-dark my-1">{{ author ? author.fullname : 'Utilisateur inconnu' }}</span>
+                <span class="text-muted">{{ comment.createdAt|date('d/m/Y') }}</span>
+            </span>
+        </div>
+    </div>
+
+    <div class="text-longform mb-3">
+        {{ comment.content|nl2br }}
+    </div>
+
+    <div class="btn-row btn-row-xxs ml-n2 mt-n1 piped piped-slim">
+        {% if canReply %}
+            <button
+                type="button"
+                class="d-inline-flex btn btn-xs btn-transparent-soft btn-rounded btn-tight btn-icon"
+                data-action="comments#reply"
+                data-comment-id="{{ comment.id }}"
+            >
+                <i class="bi bi-chat" aria-hidden="true"></i>
+                <span>Commenter{% if visibleReplies|length > 0 %} {{ visibleReplies|length }}{% endif %}</span>
+            </button>
+        {% endif %}
+        <button
+            type="button"
+            class="like-button d-inline-flex btn btn-xs btn-transparent-soft btn-rounded btn-tight btn-icon{% if isLiked %} is-liked{% endif %}"
+            data-action="comments#toggleLike"
+            data-like-url="{{ path('app_comments_like', { id: comment.id }) }}"
+            data-like-token="{{ csrf_token('comment_like_' ~ comment.id) }}"
+            data-comment-id="{{ comment.id }}"
+            aria-pressed="{{ isLiked ? 'true' : 'false' }}"
+            {% if not canLike %}disabled{% endif %}
+        >
+            <i class="bi {{ isLiked ? 'bi-heart-fill' : 'bi-heart' }}" aria-hidden="true"></i>
+            <span>J'aime <span class="like-count" data-comment-id="{{ comment.id }}">{{ comment.likes|length }}</span></span>
+        </button>
+        {% if canEdit or canReport or is_granted('ROLE_ADMIN') %}
+            <span>
+                <div class="dropdown dropright position-static">
+                    <button type="button" class="btn btn-xs btn-transparent-soft btn-rounded btn-icon" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Actions du commentaire">
+                        <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
+                    <ul class="dropdown-menu p-2">
+                        {% if canEdit %}
+                            <li>
+                                <button class="btn dropdown-item py-1 px-2 fw-normal btn-delete" data-bs-toggle="modal" data-bs-target="#commentEditModal{{ comment.id }}">
+                                    Modifier le commentaire
+                                </button>
+                            </li>
+                        {% endif %}
+                        {% if canReport %}
+                            {% if canEdit %}
+                                <li><hr class="dropdown-divider"></li>
+                            {% endif %}
+                            <li>
+                                <form method="post" action="{{ path('app_comments_report', { id: comment.id }) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('comment_report_' ~ comment.id) }}">
+                                    <button class="btn dropdown-item py-1 px-2 fw-normal text-warning">
+                                        <i class="bi bi-flag" aria-hidden="true"></i>
+                                        <span>Signaler le commentaire</span>
+                                    </button>
+                                </form>
+                            </li>
+                        {% endif %}
+                        {% if is_granted('ROLE_ADMIN') %}
+                            {% if canEdit or canReport %}
+                                <li><hr class="dropdown-divider"></li>
+                            {% endif %}
+                            <li>
+                                {% if canDelete %}
+                                    <form method="post" action="{{ path('app_comments_delete', { id: comment.id }) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('comment_delete_' ~ comment.id) }}">
+                                        <button class="btn dropdown-item text-danger py-1 px-2 fw-normal btn-delete">Supprimer le commentaire</button>
+                                    </form>
+                                {% else %}
+                                    <span class="dropdown-item text-muted small fst-italic">Suppression désactivée (réponses existantes)</span>
+                                {% endif %}
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </span>
+        {% endif %}
+    </div>
+
+    {% if canEdit %}
+        {% include 'course/show/_comment_edit_modal.html.twig' with { comment: comment } %}
+    {% endif %}
+
+    {% if not isReply and visibleReplies|length > 0 %}
+        <div class="border-left pl-6 mt-4">
+            {% for reply in visibleReplies %}
+                {% include 'course/show/_comment_item.html.twig' with { comment: reply, isReply: true } %}
+            {% endfor %}
+        </div>
+    {% endif %}
+</article>

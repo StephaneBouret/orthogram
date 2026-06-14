@@ -1,0 +1,17 @@
+<div class="modal fade" id="commentEditModal{{ comment.id }}" tabindex="-1" aria-labelledby="commentEditModalLabel{{ comment.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post" action="{{ path('app_comments_edit', { id: comment.id }) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('comment_edit_' ~ comment.id) }}">
+                <div class="modal-body">
+                    <label class="visually-hidden" for="commentEditContent{{ comment.id }}">Modifier le commentaire</label>
+                    <textarea id="commentEditContent{{ comment.id }}" rows="4" name="content" required placeholder="Tapez/pour formater et insérer" class="form-control">{{ comment.content }}</textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-abandonment" data-bs-dismiss="modal">Abandonner</button>
+                    <button class="btn btn-dark btn-submit-dark">Modification</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -84,9 +84,17 @@ class Courses
     #[ORM\OneToMany(targetEntity: Lesson::class, mappedBy: 'course', orphanRemoval: true)]
     private Collection $lessons;
 
+    /**
+     * @var Collection<int, Comment>
+     */
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'course', orphanRemoval: true)]
+    #[ORM\OrderBy(['createdAt' => 'ASC', 'id' => 'ASC'])]
+    private Collection $comments;
+
     public function __construct()
     {
         $this->lessons = new ArrayCollection();
+        $this->comments = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -311,6 +319,33 @@ class Courses
             if ($lesson->getCourse() === $this) {
                 $lesson->setCourse(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): static
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
+            $comment->setCourse($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): static
+    {
+        if ($this->comments->removeElement($comment) && $comment->getCourse() === $this) {
+            $comment->setCourse(null);
         }
 
         return $this;

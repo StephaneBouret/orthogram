@@ -158,11 +158,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\OneToMany(targetEntity: Lesson::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $lessons;
 
+    /**
+     * @var Collection<int, Comment>
+     */
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $comments;
+
+    /**
+     * @var Collection<int, CommentLike>
+     */
+    #[ORM\OneToMany(targetEntity: CommentLike::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $commentLikes;
+
     public function __construct()
     {
         $this->subscriptions = new ArrayCollection();
         $this->devices = new ArrayCollection();
         $this->lessons = new ArrayCollection();
+        $this->comments = new ArrayCollection();
+        $this->commentLikes = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -565,6 +579,60 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
             if ($lesson->getUser() === $this) {
                 $lesson->setUser(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): static
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
+            $comment->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): static
+    {
+        if ($this->comments->removeElement($comment) && $comment->getUser() === $this) {
+            $comment->setUser(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CommentLike>
+     */
+    public function getCommentLikes(): Collection
+    {
+        return $this->commentLikes;
+    }
+
+    public function addCommentLike(CommentLike $commentLike): static
+    {
+        if (!$this->commentLikes->contains($commentLike)) {
+            $this->commentLikes->add($commentLike);
+            $commentLike->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommentLike(CommentLike $commentLike): static
+    {
+        if ($this->commentLikes->removeElement($commentLike) && $commentLike->getUser() === $this) {
+            $commentLike->setUser(null);
         }
 
         return $this;

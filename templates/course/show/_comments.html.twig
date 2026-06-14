@@ -1,0 +1,56 @@
+<div id="lesson-comments" data-controller="comments">
+    <div class="spacer-section"></div>
+    <div class="border-top spacer-section"></div>
+
+    <section id="comments" aria-labelledby="replies_header">
+        {% set commentsLabel = commentsCount > 1 ? 'Commentaires' : 'Commentaire' %}
+        <div class="d-flex align-items-center mb-4">
+            <h2 id="replies_header">{{ commentsCount }} {{ commentsLabel }}</h2>
+        </div>
+
+        <div class="list-comments">
+            {% for comment in comments %}
+                {% include 'course/show/_comment_item.html.twig' with { comment: comment, isReply: false } %}
+            {% else %}
+                <p class="text-muted mb-4">Aucun commentaire pour le moment.</p>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-6 w-100" id="ajout-commentaire">
+            {% if userRootComment is empty %}
+                <button
+                    type="button"
+                    class="btn btn-sm btn-outline-grey btn-icon"
+                    data-action="comments#showRootForm"
+                    data-comments-target="rootButton"
+                >
+                    <i class="bi bi-chat" aria-hidden="true"></i>
+                    <span>Ajouter un commentaire</span>
+                </button>
+            {% else %}
+                <p class="text-muted mb-2">
+                    Vous avez déjà publié un commentaire principal pour ce cours. Vous pouvez le modifier ou répondre à un commentaire d’un autre utilisateur.
+                </p>
+            {% endif %}
+
+            <div class="collapse mt-2" id="collapseComment" data-comments-target="collapse">
+                <p class="comment-form-title mb-2" data-comments-target="title">Ajouter un commentaire</p>
+                {{ form_start(commentForm, {
+                    action: path('app_course_comment_create', { id: course.id }),
+                    attr: { novalidate: 'novalidate' }
+                }) }}
+                    {{ form_row(commentForm.content) }}
+                    {{ form_widget(commentForm.parent) }}
+                    <div class="d-flex justify-content-end flex-wrap btn-separator">
+                        <button type="button" class="btn btn-sm btn-abandonment me-1" data-action="comments#abandon">
+                            <span>Abandonner</span>
+                        </button>
+                        <button type="submit" id="submit-comment" class="btn btn-dark btn-submit-dark" data-comments-target="submit" disabled>
+                            Publication
+                        </button>
+                    </div>
+                {{ form_end(commentForm) }}
+            </div>
+        </div>
+    </section>
+</div>

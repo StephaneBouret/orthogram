@@ -3,8 +3,11 @@
 namespace App\Controller\Course;
 
 use App\Entity\Courses;
+use App\Entity\Comment;
 use App\Entity\Program;
 use App\Entity\User;
+use App\Form\CommentFormType;
+use App\Repository\CommentRepository;
 use App\Repository\CoursesRepository;
 use App\Repository\LessonRepository;
 use App\Repository\SectionsRepository;
@@ -24,6 +27,7 @@ final class CourseViewController extends AbstractController
         private readonly SectionDurationService $sectionDurationService,
         private readonly CourseFileService $courseFileService,
         private readonly LessonRepository $lessonRepository,
+        private readonly CommentRepository $commentRepository,
     ) {}
 
     #[Route('/courses/{programSlug}/{sectionSlug}/{courseSlug}', name: 'app_course_show', methods: ['GET'])]
@@ -53,6 +57,8 @@ final class CourseViewController extends AbstractController
         $lesson = $user instanceof User ? $this->lessonRepository->findOneByUserAndCourse($user, $course) : null;
         $nbrLessonsDone = $user instanceof User ? $this->lessonRepository->countDoneByUserAndProgram($user, $program) : 0;
         $completedCourseIds = $user instanceof User ? $this->lessonRepository->findDoneCourseIdsByUserAndProgram($user, $program) : [];
+        $userRootComment = $user instanceof User ? $this->commentRepository->findRootByUserAndCourse($user, $course) : null;
+        $commentForm = $this->createForm(CommentFormType::class, new Comment());
 
         return $this->render('course/show.html.twig', [
             'program' => $program,
@@ -67,6 +73,10 @@ final class CourseViewController extends AbstractController
             'nbrLessonsDone' => $nbrLessonsDone,
             'completedCourseIds' => $completedCourseIds,
             'sectionsTotalDuration' => $this->sectionDurationService->calculateTotalDuration($sections),
+            'comments' => $this->commentRepository->findRootCommentsByCourse($course),
+            'commentsCount' => $this->commentRepository->countByCourse($course),
+            'commentForm' => $commentForm,
+            'userRootComment' => $userRootComment,
         ]);
     }
 

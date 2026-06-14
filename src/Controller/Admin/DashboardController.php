@@ -50,6 +50,8 @@ class DashboardController extends AbstractDashboardController
             MenuItem::linkTo(ProgramCrudController::class, 'Programme de formation', 'fas fa-list-check'),
             MenuItem::linkTo(SectionsCrudController::class, 'Sections du programme', 'fa-fw fas fa-section'),
             MenuItem::linkTo(CoursesCrudController::class, 'Cours', 'fas fa-book-open'),
+            MenuItem::linkTo(CommentCrudController::class, 'Commentaires', 'fa-regular fa-comments'),
+            MenuItem::linkTo(CommentReportCrudController::class, 'Signalements', 'fa-solid fa-flag'),
 
             MenuItem::section('Utilisateurs'),
             MenuItem::linkTo(UserCrudController::class, 'Utilisateurs', 'fas fa-user'),
