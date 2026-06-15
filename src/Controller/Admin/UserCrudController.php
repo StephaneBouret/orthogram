@@ -57,8 +57,13 @@ class UserCrudController extends AbstractCrudController
     {
         $suspendUser = Action::new('suspendUser', 'Suspendre', 'fa fa-pause')
             ->linkToCrudAction('suspendUser')
-            ->displayIf(fn (User $user): bool => $user->getAccountStatus() === UserAccountStatus::ACTIVE
-                && $user->getId() !== $this->getUser()?->getId())
+            ->displayIf(function (User $user): bool {
+                $currentUser = $this->getUser();
+
+                return $currentUser instanceof User
+                    && $user->getAccountStatus() === UserAccountStatus::ACTIVE
+                    && $user->getId() !== $currentUser->getId();
+            })
             ->addCssClass('btn btn-warning');
 
         $reactivateUser = Action::new('reactivateUser', 'Réactiver', 'fa fa-play')
@@ -188,7 +193,8 @@ class UserCrudController extends AbstractCrudController
             return $this->redirectToUserIndex();
         }
 
-        if ($user->getId() === $this->getUser()?->getId()) {
+        $currentUser = $this->getUser();
+        if ($currentUser instanceof User && $user->getId() === $currentUser->getId()) {
             $this->addFlash('warning', 'Vous ne pouvez pas suspendre votre propre compte administrateur.');
 
             return $this->redirectToUserIndex();

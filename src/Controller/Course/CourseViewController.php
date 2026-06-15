@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Form\CommentFormType;
 use App\Repository\CommentRepository;
 use App\Repository\CoursesRepository;
+use App\Repository\ExerciceAttemptRepository;
 use App\Repository\LessonRepository;
 use App\Repository\SectionsRepository;
 use App\Security\Voter\CourseVoter;
@@ -28,6 +29,7 @@ final class CourseViewController extends AbstractController
         private readonly CourseFileService $courseFileService,
         private readonly LessonRepository $lessonRepository,
         private readonly CommentRepository $commentRepository,
+        private readonly ExerciceAttemptRepository $exerciceAttemptRepository,
     ) {}
 
     #[Route('/courses/{programSlug}/{sectionSlug}/{courseSlug}', name: 'app_course_show', methods: ['GET'])]
@@ -58,6 +60,9 @@ final class CourseViewController extends AbstractController
         $nbrLessonsDone = $user instanceof User ? $this->lessonRepository->countDoneByUserAndProgram($user, $program) : 0;
         $completedCourseIds = $user instanceof User ? $this->lessonRepository->findDoneCourseIdsByUserAndProgram($user, $program) : [];
         $userRootComment = $user instanceof User ? $this->commentRepository->findRootByUserAndCourse($user, $course) : null;
+        $latestExerciceAttempt = $user instanceof User && $course->getExercice() !== null
+            ? $this->exerciceAttemptRepository->findLatestByUserAndExercice($user, $course->getExercice())
+            : null;
         $commentForm = $this->createForm(CommentFormType::class, new Comment());
 
         return $this->render('course/show.html.twig', [
@@ -77,6 +82,7 @@ final class CourseViewController extends AbstractController
             'commentsCount' => $this->commentRepository->countByCourse($course),
             'commentForm' => $commentForm,
             'userRootComment' => $userRootComment,
+            'latestExerciceAttempt' => $latestExerciceAttempt,
         ]);
     }
 

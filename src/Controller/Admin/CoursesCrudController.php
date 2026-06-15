@@ -68,6 +68,7 @@ class CoursesCrudController extends AbstractCrudController
                     CourseContentType::Audio->value => 'info',
                     CourseContentType::Video->value => 'warning',
                     CourseContentType::Quiz->value => 'success',
+                    CourseContentType::Exercise->value => 'success',
                     CourseContentType::Link->value => 'secondary',
                 ])
                 ->setRequired(true),
@@ -87,6 +88,10 @@ class CoursesCrudController extends AbstractCrudController
                 ->setFormTypeOption('choice_label', fn (Sections $section) => $section->getAdminLabel())
                 ->formatValue(fn (?Sections $section) => $section?->getAdminLabel() ?? ''),
             TextareaField::new('shortDescription', 'Description courte')->hideOnIndex(),
+
+            AssociationField::new('exercice', 'Exercice')
+                ->addCssClass('field-exercice')
+                ->hideOnIndex(),
 
             FormField::addFieldset('Fichiers')->hideOnIndex(),
             TextField::new('partialFile', 'Template Twig')
@@ -126,6 +131,7 @@ class CoursesCrudController extends AbstractCrudController
     {
         $this->setPositionIfMissing($entityInstance);
         $this->reorderCourse($entityInstance);
+        $this->normalizeExerciceAssociation($entityInstance);
         $this->estimateDuration($entityInstance);
 
         parent::persistEntity($entityManager, $entityInstance);
@@ -136,6 +142,7 @@ class CoursesCrudController extends AbstractCrudController
         $previousSection = $this->getPreviousSection($entityManager, $entityInstance);
 
         $this->reorderCourse($entityInstance, $previousSection);
+        $this->normalizeExerciceAssociation($entityInstance);
         $this->estimateDuration($entityInstance, $entityInstance instanceof Courses && $entityInstance->getPartialFile() !== null);
 
         parent::updateEntity($entityManager, $entityInstance);
@@ -162,6 +169,17 @@ class CoursesCrudController extends AbstractCrudController
         }
 
         $entityInstance->setDurationMinutes($this->courseDurationEstimator->estimateReadingDuration($content));
+    }
+
+    private function normalizeExerciceAssociation(object $entityInstance): void
+    {
+        if (!$entityInstance instanceof Courses) {
+            return;
+        }
+
+        if ($entityInstance->getContentType() !== CourseContentType::Exercise) {
+            $entityInstance->setExercice(null);
+        }
     }
 
     private function setPositionIfMissing(object $entityInstance): void

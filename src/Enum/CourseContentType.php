@@ -8,6 +8,7 @@ enum CourseContentType: string
     case Audio = 'audio';
     case Video = 'video';
     case Quiz = 'quiz';
+    case Exercise = 'exercise';
     case Link = 'link';
 
     public function label(): string
@@ -17,6 +18,7 @@ enum CourseContentType: string
             self::Audio => 'Audio',
             self::Video => 'Vidéo',
             self::Quiz => 'Quiz',
+            self::Exercise => 'Exercice',
             self::Link => 'Lien',
         };
     }

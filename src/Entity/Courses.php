@@ -78,6 +78,10 @@ class Courses
     #[ORM\JoinColumn(nullable: false)]
     private ?Sections $section = null;
 
+    #[ORM\ManyToOne(inversedBy: 'courses')]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
+    private ?Exercice $exercice = null;
+
     /**
      * @var Collection<int, Lesson>
      */
@@ -291,6 +295,18 @@ class Courses
     public function setSection(?Sections $section): static
     {
         $this->section = $section;
+
+        return $this;
+    }
+
+    public function getExercice(): ?Exercice
+    {
+        return $this->exercice;
+    }
+
+    public function setExercice(?Exercice $exercice): static
+    {
+        $this->exercice = $exercice;
 
         return $this;
     }

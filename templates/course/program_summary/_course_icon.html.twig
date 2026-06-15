@@ -12,6 +12,10 @@
     <div class="list-group-icon">
         {% include 'course/program_summary/icons/_quiz.html.twig' %}
     </div>
+{% elseif contentType == 'exercise' %}
+    <div class="list-group-icon">
+        {% include 'course/program_summary/icons/_exercise.html.twig' %}
+    </div>
 {% else %}
     <div class="list-group-icon">
         {% include 'course/program_summary/icons/_four_lines.html.twig' %}

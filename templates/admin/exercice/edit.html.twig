@@ -1,0 +1,24 @@
+{% extends '@EasyAdmin/crud/edit.html.twig' %}
+
+{% block main %}
+    {% if entity.primaryKeyValue %}
+        <div class="content-panel">
+            <div class="content-panel-body">
+                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-md-between gap-3">
+                    <div>
+                        <strong>Importer les phrases depuis un JSON</strong>
+                        <p class="mb-0 text-muted">
+                            Collez un JSON généré par ChatGPT, puis ajustez les mots dans le formulaire si nécessaire.
+                        </p>
+                    </div>
+                    <a class="btn btn-primary" href="{{ path('admin_exercice_import_json', { entityId: entity.primaryKeyValue }) }}">
+                        <i class="fa fa-file-import"></i>
+                        Importer JSON
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {{ parent() }}
+{% endblock %}

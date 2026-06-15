@@ -54,6 +54,16 @@
             <p class="mb-0 text-muted">Le quiz sera branché dans une prochaine étape.</p>
         </div>
     </div>
+{% elseif contentType == 'exercise' %}
+    {% if course.exercice %}
+        {% include 'exercise/_click_words.html.twig' with { exercice: course.exercice, latestAttempt: latestExerciceAttempt|default(null) } %}
+    {% else %}
+        <div class="card v9d3ks">
+            <div class="card-body">
+                <p class="mb-0 text-muted">L’exercice de ce cours sera bientôt disponible.</p>
+            </div>
+        </div>
+    {% endif %}
 {% else %}
     <div class="card v9d3ks">
         <div class="card-body">

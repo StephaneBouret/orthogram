@@ -1,0 +1,60 @@
+{% set sentences = exercice.data.sentences|default([]) %}
+{% set latestAttempt = latestAttempt|default(null) %}
+
+<section
+    class="card v9d3ks exercise-card"
+    data-controller="click-words"
+    data-click-words-submit-url-value="{{ path('app_exercise_submit', { id: exercice.id }) }}"
+>
+    <div class="card-body">
+        <div class="exercise-header">
+            <h2 class="exercise-title">{{ exercice.title }}</h2>
+            <p class="exercise-instruction">{{ exercice.instruction }}</p>
+        </div>
+
+        {% if latestAttempt %}
+            <div class="exercise-last-attempt">
+                <div>
+                    <strong>Dernier résultat : {{ latestAttempt.score }}/{{ latestAttempt.total }} ({{ latestAttempt.percentage }} %)</strong>
+                    <span>réalisé le {{ latestAttempt.submittedAt|date('d/m/Y à H:i') }}</span>
+                </div>
+                <button type="button" class="btn btn-outline-grey" data-action="click->click-words#reset">
+                    Repasser l'exercice
+                </button>
+            </div>
+        {% endif %}
+
+        <ol class="click-words-sentences">
+            {% for sentence in sentences %}
+                <li class="click-words-sentence" data-sentence-id="{{ sentence.id }}">
+                    <p>
+                        {% for word in sentence.words|default([]) %}
+                            <span class="word-token-wrap">
+                                <button
+                                    type="button"
+                                    class="word-token"
+                                    data-token-id="{{ word.id }}"
+                                    data-click-words-target="token"
+                                    data-action="click->click-words#toggle"
+                                    aria-pressed="false"
+                                >{{ word.text }}</button>{{ word.punctuationAfter|default(word.after|default('')) }}
+                            </span>
+                        {% endfor %}
+                    </p>
+                </li>
+            {% else %}
+                <p class="mb-0 text-muted">Les phrases de cet exercice seront bientôt disponibles.</p>
+            {% endfor %}
+        </ol>
+
+        {% if sentences %}
+            <div class="exercise-actions">
+                <button type="button" class="btn btn-submit-dark" data-click-words-target="submit" data-action="click->click-words#submit">
+                    Valider les réponses
+                </button>
+            </div>
+        {% endif %}
+
+        <div class="exercise-result" data-click-words-target="result" aria-live="polite"></div>
+    </div>
+</section>

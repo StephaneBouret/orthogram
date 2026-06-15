@@ -1,0 +1,22 @@
+{% extends '@EasyAdmin/crud/new.html.twig' %}
+
+{% block main %}
+    <div class="content-panel">
+        <div class="content-panel-body">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-md-between gap-3">
+                <div>
+                    <strong>Créer l’exercice depuis un JSON</strong>
+                    <p class="mb-0 text-muted">
+                        Collez un JSON généré par ChatGPT pour créer directement les phrases et les réponses.
+                    </p>
+                </div>
+                <a class="btn btn-primary" href="{{ path('admin_exercice_import_json_new') }}">
+                    <i class="fa fa-file-import"></i>
+                    Importer JSON
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {{ parent() }}
+{% endblock %}

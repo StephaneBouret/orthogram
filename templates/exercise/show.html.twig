@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ exercice.title }}{% endblock %}
+
+{% block body %}
+    <div class="course-page container-fluid container-padding">
+        <main class="main-content">
+            {% include 'exercise/_click_words.html.twig' with { exercice: exercice } %}
+        </main>
+    </div>
+{% endblock %}
