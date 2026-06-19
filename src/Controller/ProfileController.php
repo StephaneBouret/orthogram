@@ -8,6 +8,7 @@ use App\Form\AvatarFormType;
 use App\Form\UpdatePasswordUserFormType;
 use App\Form\UpdateUserProfileFormType;
 use App\Services\AvatarService;
+use App\Services\DeviceService;
 use App\Services\UserEmailChangeService;
 use App\Services\UserProfileService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -89,7 +90,7 @@ final class ProfileController extends AbstractController
             if ($emailChanged) {
                 try {
                     $emailChangeService->requestEmailChange($user, $requestedEmail);
-                    $this->addFlash('success', 'Vos informations ont bien été mises à jour. Un email de confirmation vient d’être envoyé à votre nouvelle adresse.');
+                    $this->addFlash('success', 'Vos informations ont bien été mises à jour. Un email de confirmation vient d\'être envoyé à votre nouvelle adresse.');
                 } catch (\RuntimeException $exception) {
                     $profileForm->get('email')->addError(new FormError($exception->getMessage()));
 
@@ -186,6 +187,11 @@ final class ProfileController extends AbstractController
 
         $this->addFlash('success', 'Votre compte a bien été supprimé.');
 
-        return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
+        $response = $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
+        $response->headers->clearCookie(DeviceService::COOKIE_NAME);
+        $response->headers->clearCookie('REMEMBERME');
+        $response->headers->clearCookie('trusted_device');
+
+        return $response;
     }
 }

@@ -71,6 +71,7 @@ final class UserProfileService
 
         $user->clearPendingEmailChange();
         $user->invalidateTrustedDevices();
+        $this->revokeDevices($user);
 
         foreach ($user->getSubscriptions() as $subscription) {
             $subscription->setEmail($anonymousEmail);
@@ -95,6 +96,15 @@ final class UserProfileService
         $avatar = $user->getAvatar();
         if ($avatar !== null) {
             $this->avatarService->deleteAvatar($avatar);
+        }
+    }
+
+    private function revokeDevices(User $user): void
+    {
+        foreach ($user->getDevices() as $device) {
+            if ($device->isActive()) {
+                $device->revoke();
+            }
         }
     }
 
@@ -131,7 +141,7 @@ final class UserProfileService
 
         return preg_replace_callback(
             '/[\p{L}\p{N}]+(?:[\'’\-][\p{L}\p{N}]+)*/u',
-            fn (array $matches): string => $this->normalizeAddressWord($matches[0]),
+            fn(array $matches): string => $this->normalizeAddressWord($matches[0]),
             $address
         ) ?? $address;
     }
@@ -180,7 +190,7 @@ final class UserProfileService
     {
         if (str_contains($word, '-')) {
             return implode('-', array_map(
-                fn (string $part): string => $this->titleAddressName($part),
+                fn(string $part): string => $this->titleAddressName($part),
                 explode('-', $word)
             ));
         }
