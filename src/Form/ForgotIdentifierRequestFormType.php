@@ -3,11 +3,14 @@
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Blank;
+use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -16,6 +19,18 @@ final class ForgotIdentifierRequestFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('requestedIdentifier', EmailType::class, [
+                'label' => 'Nouvel identifiant souhaité',
+                'constraints' => [
+                    new NotBlank(message: 'Merci d’indiquer le nouvel identifiant souhaité.'),
+                    new Email(message: 'L’adresse email {{ value }} n’est pas valide.'),
+                    new Length(max: 180, maxMessage: 'L’identifiant ne peut pas dépasser {{ limit }} caractères.'),
+                ],
+                'attr' => [
+                    'autocomplete' => 'email',
+                    'placeholder' => 'nouvelle-adresse@email.fr',
+                ],
+            ])
             ->add('firstname', TextType::class, [
                 'label' => 'Prénom',
                 'constraints' => [
@@ -74,6 +89,9 @@ final class ForgotIdentifierRequestFormType extends AbstractType
             ->add('website', HiddenType::class, [
                 'mapped' => false,
                 'required' => false,
+                'constraints' => [
+                    new Blank(),
+                ],
             ]);
     }
 

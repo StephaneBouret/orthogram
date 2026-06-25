@@ -27,6 +27,7 @@ final class ForgotIdentifierRequestService
         }
 
         $context = [
+            'requestedIdentifier' => mb_strtolower(trim((string) ($data['requestedIdentifier'] ?? ''))),
             'firstname' => trim((string) ($data['firstname'] ?? '')),
             'lastname' => trim((string) ($data['lastname'] ?? '')),
             'phone' => trim((string) ($data['phone'] ?? '')),

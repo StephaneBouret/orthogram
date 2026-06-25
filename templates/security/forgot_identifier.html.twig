@@ -9,7 +9,7 @@
 				<div class="my-8 mx-auto" style="width: 520px; max-width: 100%;">
 					<h1 class="text-center mb-4 fs-4 fw-bold">Identifiant oublié</h1>
 					<p class="text-lg mb-4 text-center text-muted">
-						Transmettez les informations associées à votre compte. Par sécurité, aucune adresse email ne sera affichée sur cette page.
+						Indiquez l’adresse email que vous souhaitez utiliser, puis les informations associées à votre compte. Par sécurité, aucun identifiant existant ne sera affiché sur cette page.
 					</p>
 
 					{{ form_start(form) }}
@@ -17,6 +17,9 @@
 						{{ form_widget(form.website, {'attr': {'tabindex': '-1', 'autocomplete': 'off'}}) }}
 
 						<div class="row g-3">
+							<div class="col-12">
+								{{ form_row(form.requestedIdentifier) }}
+							</div>
 							<div class="col-md-6">
 								{{ form_row(form.firstname) }}
 							</div>
