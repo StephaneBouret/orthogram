@@ -48,6 +48,10 @@ services:
         arguments:
             $defaultFrom: "%env(MAILER_DEFAULT_FROM)%"
 
+    App\EventSubscriber\LoginRateLimiterSubscriber:
+        arguments:
+            $loginGlobalLimiter: '@limiter.login_global'
+
     App\Google\GoogleService:
         arguments:
             $googleKey: "%env(GOOGLE_API_KEY)%"

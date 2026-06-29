@@ -48,8 +48,8 @@ security:
                 #always_remember_me: true
             # configure the maximum login attempts
             login_throttling:
-                max_attempts: 3
-                interval: '1 minute'
+                max_attempts: 5
+                interval: '15 minutes'
 
             # Activate different ways to authenticate:
             # https://symfony.com/doc/current/security.html#the-firewall

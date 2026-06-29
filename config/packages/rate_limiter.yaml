@@ -1,0 +1,6 @@
+framework:
+    rate_limiter:
+        login_global:
+            policy: fixed_window
+            limit: 30
+            interval: '1 minute'
