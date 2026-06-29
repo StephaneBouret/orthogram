@@ -52,6 +52,10 @@ services:
         arguments:
             $loginGlobalLimiter: '@limiter.login_global'
 
+    App\Service\Security\LoginFailureAlertService:
+        arguments:
+            $defaultFrom: "%env(MAILER_DEFAULT_FROM)%"
+
     App\Google\GoogleService:
         arguments:
             $googleKey: "%env(GOOGLE_API_KEY)%"

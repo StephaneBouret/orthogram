@@ -8,6 +8,7 @@ use App\Entity\LoginFailureLog;
 use App\Entity\User;
 use App\EventSubscriber\LoginFailureSubscriber;
 use App\Repository\UserRepository;
+use App\Service\Security\LoginFailureAlertService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,7 +35,11 @@ final class LoginFailureSubscriberTest extends TestCase
             ->willReturn(null);
 
         $entityManager = $this->createEntityManagerCapturingPersistedLog($persistedLog);
-        $subscriber = new LoginFailureSubscriber($entityManager, $userRepository);
+        $loginFailureAlertService = $this->createMock(LoginFailureAlertService::class);
+        $loginFailureAlertService
+            ->expects(self::never())
+            ->method('notifyIfNeeded');
+        $subscriber = new LoginFailureSubscriber($entityManager, $userRepository, $loginFailureAlertService);
 
         $subscriber->onLoginFailure($this->createLoginFailureEvent(
             username: 'unknown@example.test',
@@ -70,7 +75,12 @@ final class LoginFailureSubscriberTest extends TestCase
             });
 
         $entityManager = $this->createEntityManagerCapturingPersistedLog($persistedLog);
-        $subscriber = new LoginFailureSubscriber($entityManager, $userRepository);
+        $loginFailureAlertService = $this->createMock(LoginFailureAlertService::class);
+        $loginFailureAlertService
+            ->expects(self::once())
+            ->method('notifyIfNeeded')
+            ->with($user, '203.0.113.10');
+        $subscriber = new LoginFailureSubscriber($entityManager, $userRepository, $loginFailureAlertService);
 
         $subscriber->onLoginFailure($this->createLoginFailureEvent(
             username: ' Existing@Example.Test ',
@@ -93,7 +103,11 @@ final class LoginFailureSubscriberTest extends TestCase
             ->willReturn(null);
 
         $entityManager = $this->createEntityManagerCapturingPersistedLog($persistedLog);
-        $subscriber = new LoginFailureSubscriber($entityManager, $userRepository);
+        $loginFailureAlertService = $this->createMock(LoginFailureAlertService::class);
+        $loginFailureAlertService
+            ->expects(self::never())
+            ->method('notifyIfNeeded');
+        $subscriber = new LoginFailureSubscriber($entityManager, $userRepository, $loginFailureAlertService);
         $event = $this->createLoginFailureEvent(
             username: 'unknown@example.test',
             password: 'SecretPassword123!',

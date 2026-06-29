@@ -13,7 +13,7 @@ use Doctrine\Persistence\ManagerRegistry;
 /**
  * @extends ServiceEntityRepository<LoginFailureLog>
  */
-final class LoginFailureLogRepository extends ServiceEntityRepository
+class LoginFailureLogRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
