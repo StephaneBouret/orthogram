@@ -43,6 +43,9 @@ security:
                 token_provider:
                     doctrine: true
                 path: /
+                secure: auto
+                httponly: true
+                samesite: lax
                 # by default, the feature is enabled by checking a checkbox in the
                 # login form, uncomment the following line to always enable it.
                 #always_remember_me: true
