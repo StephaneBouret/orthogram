@@ -23,8 +23,7 @@ final class DeviceController extends AbstractController
         Request $request,
         UserDeviceRepository $userDeviceRepository,
         DeviceService $deviceService,
-    ): Response
-    {
+    ): Response {
         $user = $this->getUser();
 
         if (!$user instanceof User) {
@@ -42,21 +41,21 @@ final class DeviceController extends AbstractController
         UserDevice $device,
         Request $request,
         DeviceService $deviceService,
-        TokenStorageInterface $tokenStorage
-    ): RedirectResponse
-    {
+        TokenStorageInterface $tokenStorage,
+    ): RedirectResponse {
         $user = $this->getUser();
 
         if (!$user instanceof User || $device->getUser()?->getId() !== $user->getId()) {
             throw $this->createAccessDeniedException();
         }
 
-        if (!$this->isCsrfTokenValid('revoke_device_' . $device->getId(), (string) $request->request->get('_token'))) {
+        if (!$this->isCsrfTokenValid('revoke_device_'.$device->getId(), (string) $request->request->get('_token'))) {
             throw $this->createAccessDeniedException('Jeton CSRF invalide.');
         }
 
         if (!$device->isActive()) {
             $this->addFlash('warning', 'Cet appareil est déjà révoqué.');
+
             return $this->redirectToRoute('app_device_index');
         }
 

@@ -25,7 +25,7 @@ final readonly class LoginRateLimiterSubscriber implements EventSubscriberInterf
 
         $request = $event->getRequest();
 
-        if ($request->attributes->get('_route') !== 'app_login') {
+        if ('app_login' !== $request->attributes->get('_route')) {
             return;
         }
 
@@ -37,10 +37,7 @@ final readonly class LoginRateLimiterSubscriber implements EventSubscriberInterf
         $limit = $limiter->consume(1);
 
         if (!$limit->isAccepted()) {
-            throw new TooManyRequestsHttpException(
-                $limit->getRetryAfter()->getTimestamp() - time(),
-                'Trop de tentatives de connexion. Veuillez réessayer dans quelques instants.',
-            );
+            throw new TooManyRequestsHttpException($limit->getRetryAfter()->getTimestamp() - time(), 'Trop de tentatives de connexion. Veuillez réessayer dans quelques instants.');
         }
     }
 

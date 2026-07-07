@@ -9,8 +9,9 @@ class SubscriptionSuccessEvent
     public const NAME = 'subscription.success';
 
     public function __construct(
-        private readonly Subscription $subscription
-    ) {}
+        private readonly Subscription $subscription,
+    ) {
+    }
 
     public function getSubscription(): Subscription
     {

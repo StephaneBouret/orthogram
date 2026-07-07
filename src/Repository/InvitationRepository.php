@@ -33,7 +33,7 @@ class InvitationRepository extends ServiceEntityRepository
             ->andWhere('i.email = :email')
             ->setParameter('email', mb_strtolower(trim($email)));
 
-        if ($excludedId !== null) {
+        if (null !== $excludedId) {
             $qb
                 ->andWhere('i.id != :excludedId')
                 ->setParameter('excludedId', $excludedId);

@@ -30,7 +30,7 @@ final class MarkExpiredSubscriptionsCommand extends Command
             ...$this->subscriptionRepository->findSupersededActiveAnnualSubscriptions(),
         ]);
 
-        if ($subscriptions === []) {
+        if ([] === $subscriptions) {
             $output->writeln('Aucun abonnement à expirer.');
 
             return Command::SUCCESS;

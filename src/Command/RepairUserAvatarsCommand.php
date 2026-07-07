@@ -39,7 +39,7 @@ final class RepairUserAvatarsCommand extends Command
         foreach ($this->userRepository->findAll() as $user) {
             $avatar = $user->getAvatar();
 
-            if ($avatar === null) {
+            if (null === $avatar) {
                 ++$created;
                 $output->writeln(sprintf('Avatar à créer pour %s', $user->getEmail()));
 

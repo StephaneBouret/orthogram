@@ -148,7 +148,7 @@ final class ProfileController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if (!$this->isCsrfTokenValid('cancel-email-change' . $user->getId(), (string) $request->request->get('_token'))) {
+        if (!$this->isCsrfTokenValid('cancel-email-change'.$user->getId(), (string) $request->request->get('_token'))) {
             $this->addFlash('danger', 'Le jeton de sécurité est invalide.');
 
             return $this->redirectToRoute('app_profile');
@@ -169,13 +169,13 @@ final class ProfileController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if (!$this->isCsrfTokenValid('delete-profile' . $user->getId(), (string) $request->request->get('_token'))) {
+        if (!$this->isCsrfTokenValid('delete-profile'.$user->getId(), (string) $request->request->get('_token'))) {
             $this->addFlash('danger', 'Le jeton de sécurité est invalide.');
 
             return $this->redirectToRoute('app_profile');
         }
 
-        if (mb_strtoupper(trim((string) $request->request->get('confirm'))) !== 'SUPPRIMER') {
+        if ('SUPPRIMER' !== mb_strtoupper(trim((string) $request->request->get('confirm')))) {
             $this->addFlash('warning', 'Merci de confirmer la suppression du compte.');
 
             return $this->redirectToRoute('app_profile');

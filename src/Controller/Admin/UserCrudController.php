@@ -5,8 +5,8 @@ namespace App\Controller\Admin;
 use App\Entity\User;
 use App\Enum\UserAccountStatus;
 use App\Form\AvatarFormType;
-use App\Services\AvatarService;
 use App\Repository\UserRepository;
+use App\Services\AvatarService;
 use App\Services\UserAdminActionService;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
@@ -33,7 +33,8 @@ class UserCrudController extends AbstractCrudController
     public function __construct(
         private readonly PhoneNumberHelper $phoneNumberHelper,
         private readonly AvatarService $avatarService,
-    ) {}
+    ) {
+    }
 
     public static function getEntityFqcn(): string
     {
@@ -61,7 +62,7 @@ class UserCrudController extends AbstractCrudController
                 $currentUser = $this->getUser();
 
                 return $currentUser instanceof User
-                    && $user->getAccountStatus() === UserAccountStatus::ACTIVE
+                    && UserAccountStatus::ACTIVE === $user->getAccountStatus()
                     && $user->getId() !== $currentUser->getId();
             })
             ->addCssClass('btn btn-warning');
@@ -69,7 +70,7 @@ class UserCrudController extends AbstractCrudController
         $reactivateUser = Action::new('reactivateUser', 'Réactiver', 'fa fa-play')
             ->linkToCrudAction('reactivateUser')
             ->displayIf(static function (User $user): bool {
-                return $user->getAccountStatus() === UserAccountStatus::SUSPENDED;
+                return UserAccountStatus::SUSPENDED === $user->getAccountStatus();
             })
             ->addCssClass('btn btn-success');
 
@@ -176,7 +177,7 @@ class UserCrudController extends AbstractCrudController
 
         $avatar = $entityInstance->getAvatar();
 
-        if ($avatar !== null) {
+        if (null !== $avatar) {
             $this->avatarService->convertStoredImageToWebp($avatar);
         }
     }
@@ -185,7 +186,7 @@ class UserCrudController extends AbstractCrudController
     public function suspendUser(
         AdminContext $context,
         UserRepository $userRepository,
-        UserAdminActionService $userAdminActionService
+        UserAdminActionService $userAdminActionService,
     ): RedirectResponse {
         $user = $this->getUserFromContext($context, $userRepository);
 
@@ -218,7 +219,7 @@ class UserCrudController extends AbstractCrudController
     public function reactivateUser(
         AdminContext $context,
         UserRepository $userRepository,
-        UserAdminActionService $userAdminActionService
+        UserAdminActionService $userAdminActionService,
     ): RedirectResponse {
         $user = $this->getUserFromContext($context, $userRepository);
 

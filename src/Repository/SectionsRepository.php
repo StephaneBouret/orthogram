@@ -59,7 +59,7 @@ class SectionsRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
 
-        return $maxPosition === null ? 0 : ((int) $maxPosition) + 1;
+        return null === $maxPosition ? 0 : ((int) $maxPosition) + 1;
     }
 
     /**
@@ -73,7 +73,7 @@ class SectionsRepository extends ServiceEntityRepository
             ->orderBy('s.position', 'ASC')
             ->addOrderBy('s.id', 'ASC');
 
-        if ($excludedSection?->getId() !== null) {
+        if (null !== $excludedSection?->getId()) {
             $queryBuilder
                 ->andWhere('s.id != :excludedSectionId')
                 ->setParameter('excludedSectionId', $excludedSection->getId());

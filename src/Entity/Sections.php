@@ -18,8 +18,8 @@ class Sections
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "Le nom de la section est obligatoire !")]
-    #[Assert\Length(min: 3, minMessage: "Le nom de la section doit avoir au moins {{ limit }} caractères")]
+    #[Assert\NotBlank(message: 'Le nom de la section est obligatoire !')]
+    #[Assert\Length(min: 3, minMessage: 'Le nom de la section doit avoir au moins {{ limit }} caractères')]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
@@ -29,7 +29,7 @@ class Sections
     private ?string $shortDescription = null;
 
     #[ORM\Column(options: ['default' => 0])]
-    #[Assert\PositiveOrZero(message: "La position ne peut pas être négative.")]
+    #[Assert\PositiveOrZero(message: 'La position ne peut pas être négative.')]
     private ?int $position = 0;
 
     #[ORM\ManyToOne(inversedBy: 'sections')]
@@ -58,7 +58,7 @@ class Sections
         $sectionName = $this->name ?? 'Section sans nom';
         $programName = $this->program?->getName();
 
-        if ($programName === null || $programName === '') {
+        if (null === $programName || '' === $programName) {
             return $sectionName;
         }
 

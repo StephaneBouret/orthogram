@@ -25,13 +25,14 @@ final class AvatarService
         private readonly AvatarRepository $avatarRepository,
         private readonly KernelInterface $kernel,
         private readonly Filesystem $filesystem,
-    ) {}
+    ) {
+    }
 
     public function createAndAssignAvatar(User $user): Avatar
     {
         $avatar = $user->getAvatar() ?? $this->findExistingAvatar($user) ?? new Avatar();
 
-        if ($avatar->getImageName() === null && $avatar->getImageFile() === null) {
+        if (null === $avatar->getImageName() && null === $avatar->getImageFile()) {
             $this->createDefaultAvatar($avatar, $user);
         }
 
@@ -52,7 +53,7 @@ final class AvatarService
             ? $this->resolveAvatar($user, $formAvatar)
             : ($avatar ?? $user->getAvatar() ?? $this->findExistingAvatar($user) ?? new Avatar());
 
-        if ($avatar->getImageFile() === null && $avatar->getImageName() === null) {
+        if (null === $avatar->getImageFile() && null === $avatar->getImageName()) {
             $this->createDefaultAvatar($avatar, $user);
         }
 
@@ -71,18 +72,18 @@ final class AvatarService
     {
         $imageName = $avatar->getImageName();
 
-        if ($imageName === null || $this->isWebpImage($imageName)) {
+        if (null === $imageName || $this->isWebpImage($imageName)) {
             return false;
         }
 
-        $sourcePath = $this->getAvatarDirectory() . DIRECTORY_SEPARATOR . $imageName;
+        $sourcePath = $this->getAvatarDirectory().DIRECTORY_SEPARATOR.$imageName;
 
         if (!is_file($sourcePath)) {
             return false;
         }
 
         $webpName = $this->createWebpFilename($imageName);
-        $webpPath = $this->getAvatarDirectory() . DIRECTORY_SEPARATOR . $webpName;
+        $webpPath = $this->getAvatarDirectory().DIRECTORY_SEPARATOR.$webpName;
 
         (new Imagine())
             ->open($sourcePath)
@@ -110,23 +111,23 @@ final class AvatarService
     {
         $imageName = $avatar->getImageName();
 
-        if ($imageName === null) {
+        if (null === $imageName) {
             return false;
         }
 
-        return is_file($this->getAvatarDirectory() . DIRECTORY_SEPARATOR . $imageName);
+        return is_file($this->getAvatarDirectory().DIRECTORY_SEPARATOR.$imageName);
     }
 
     public function deleteAvatar(Avatar $avatar): void
     {
         $imageName = $avatar->getImageName();
 
-        if ($imageName !== null) {
-            $this->filesystem->remove($this->getAvatarDirectory() . DIRECTORY_SEPARATOR . $imageName);
+        if (null !== $imageName) {
+            $this->filesystem->remove($this->getAvatarDirectory().DIRECTORY_SEPARATOR.$imageName);
         }
 
         $user = $avatar->getUser();
-        if ($user !== null && $user->getAvatar() === $avatar) {
+        if (null !== $user && $user->getAvatar() === $avatar) {
             $user->setAvatar(null);
         }
 
@@ -143,8 +144,8 @@ final class AvatarService
             throw new \RuntimeException(sprintf('Le fichier de police est introuvable : %s', $fontPath));
         }
 
-        $filename = bin2hex(random_bytes(16)) . '.webp';
-        $outputPath = $avatarDirectory . DIRECTORY_SEPARATOR . $filename;
+        $filename = bin2hex(random_bytes(16)).'.webp';
+        $outputPath = $avatarDirectory.DIRECTORY_SEPARATOR.$filename;
 
         $imagine = new Imagine();
         $palette = new RGB();
@@ -171,34 +172,34 @@ final class AvatarService
 
     private function getAvatarDirectory(): string
     {
-        return $this->kernel->getProjectDir() . DIRECTORY_SEPARATOR . self::AVATAR_DIRECTORY;
+        return $this->kernel->getProjectDir().DIRECTORY_SEPARATOR.self::AVATAR_DIRECTORY;
     }
 
     private function getFontPath(): string
     {
-        return $this->kernel->getProjectDir() . DIRECTORY_SEPARATOR . self::FONT_PATH;
+        return $this->kernel->getProjectDir().DIRECTORY_SEPARATOR.self::FONT_PATH;
     }
 
     private function isWebpImage(string $imageName): bool
     {
-        return mb_strtolower(pathinfo($imageName, PATHINFO_EXTENSION), 'UTF-8') === 'webp';
+        return 'webp' === mb_strtolower(pathinfo($imageName, PATHINFO_EXTENSION), 'UTF-8');
     }
 
     private function createWebpFilename(string $imageName): string
     {
-        $filename = pathinfo($imageName, PATHINFO_FILENAME) . '.webp';
-        $path = $this->getAvatarDirectory() . DIRECTORY_SEPARATOR . $filename;
+        $filename = pathinfo($imageName, PATHINFO_FILENAME).'.webp';
+        $path = $this->getAvatarDirectory().DIRECTORY_SEPARATOR.$filename;
 
         if (!is_file($path)) {
             return $filename;
         }
 
-        return pathinfo($imageName, PATHINFO_FILENAME) . '-' . bin2hex(random_bytes(4)) . '.webp';
+        return pathinfo($imageName, PATHINFO_FILENAME).'-'.bin2hex(random_bytes(4)).'.webp';
     }
 
     private function resolveAvatar(User $user, Avatar $formAvatar): Avatar
     {
-        if ($formAvatar->getId() !== null) {
+        if (null !== $formAvatar->getId()) {
             return $formAvatar;
         }
 
@@ -208,7 +209,7 @@ final class AvatarService
             return $formAvatar;
         }
 
-        if ($formAvatar->getImageFile() !== null) {
+        if (null !== $formAvatar->getImageFile()) {
             $existingAvatar->setImageFile($formAvatar->getImageFile());
         }
 
@@ -217,7 +218,7 @@ final class AvatarService
 
     private function findExistingAvatar(User $user): ?Avatar
     {
-        if ($user->getId() === null) {
+        if (null === $user->getId()) {
             return null;
         }
 
@@ -228,7 +229,7 @@ final class AvatarService
     {
         $firstname = trim((string) $user->getFirstname());
 
-        if ($firstname === '') {
+        if ('' === $firstname) {
             return '?';
         }
 

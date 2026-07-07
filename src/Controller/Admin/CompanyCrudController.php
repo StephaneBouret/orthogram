@@ -17,7 +17,9 @@ use Misd\PhoneNumberBundle\Templating\Helper\PhoneNumberHelper;
 
 class CompanyCrudController extends AbstractCrudController
 {
-    public function __construct(protected PhoneNumberHelper $phoneNumberHelper) {}
+    public function __construct(protected PhoneNumberHelper $phoneNumberHelper)
+    {
+    }
 
     public static function getEntityFqcn(): string
     {
@@ -67,7 +69,7 @@ class CompanyCrudController extends AbstractCrudController
                     'default_region' => 'FR',
                     'format' => PhoneNumberFormat::NATIONAL,
                     'number_type' => PhoneNumberType::NUMBER_TYPE_TEL,
-                    'attr' => ['placeholder' => 'Téléphone de l\'entreprise']
+                    'attr' => ['placeholder' => 'Téléphone de l\'entreprise'],
                 ])
                 ->setColumns(6)
                 ->onlyOnForms(),

@@ -15,7 +15,8 @@ final class EasyAdminAvatarSubscriber implements EventSubscriberInterface
     public function __construct(
         private readonly AvatarService $avatarService,
         private readonly AvatarRepository $avatarRepository,
-    ) {}
+    ) {
+    }
 
     public static function getSubscribedEvents(): array
     {
@@ -41,7 +42,7 @@ final class EasyAdminAvatarSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if ($avatar->getImageFile() === null && $avatar->getImageName() === null) {
+        if (null === $avatar->getImageFile() && null === $avatar->getImageName()) {
             $this->avatarService->createDefaultAvatar($avatar, $entity);
         }
     }
@@ -50,7 +51,7 @@ final class EasyAdminAvatarSubscriber implements EventSubscriberInterface
     {
         $avatar = $user->getAvatar();
 
-        if (!$avatar instanceof Avatar || $avatar->getId() !== null || $user->getId() === null) {
+        if (!$avatar instanceof Avatar || null !== $avatar->getId() || null === $user->getId()) {
             return $avatar;
         }
 
@@ -60,7 +61,7 @@ final class EasyAdminAvatarSubscriber implements EventSubscriberInterface
             return $avatar;
         }
 
-        if ($avatar->getImageFile() !== null) {
+        if (null !== $avatar->getImageFile()) {
             $existingAvatar->setImageFile($avatar->getImageFile());
         }
 

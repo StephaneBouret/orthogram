@@ -96,7 +96,7 @@ class CommentCrudController extends AbstractCrudController
     public function hideComment(
         AdminContext $context,
         CommentRepository $commentRepository,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): RedirectResponse {
         $comment = $this->getCommentFromContext($context, $commentRepository);
 
@@ -117,7 +117,7 @@ class CommentCrudController extends AbstractCrudController
     public function showComment(
         AdminContext $context,
         CommentRepository $commentRepository,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): RedirectResponse {
         $comment = $this->getCommentFromContext($context, $commentRepository);
 

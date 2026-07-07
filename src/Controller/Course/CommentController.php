@@ -27,7 +27,8 @@ final class CommentController extends AbstractController
     public function __construct(
         private readonly CommentRepository $commentRepository,
         private readonly EntityManagerInterface $entityManager,
-    ) {}
+    ) {
+    }
 
     #[Route('/course/comment/{id}', name: 'app_course_comment_create', methods: ['POST'])]
     public function create(Courses $course, Request $request): Response
@@ -53,7 +54,7 @@ final class CommentController extends AbstractController
         $parentId = (string) $form->get('parent')->getData();
         $parent = null;
 
-        if ($parentId !== '') {
+        if ('' !== $parentId) {
             $parent = $this->commentRepository->find((int) $parentId);
 
             if (!$parent instanceof Comment || $parent->getCourse() !== $course || !$parent->isRoot()) {
@@ -67,7 +68,7 @@ final class CommentController extends AbstractController
             }
         }
 
-        if ($parent === null && $this->commentRepository->findRootByUserAndCourse($user, $course) instanceof Comment) {
+        if (null === $parent && $this->commentRepository->findRootByUserAndCourse($user, $course) instanceof Comment) {
             $this->addFlash('warning', 'Vous avez déjà publié un commentaire principal pour ce cours. Vous pouvez le modifier ou répondre à un commentaire d’un autre utilisateur.');
 
             return $this->redirectToCourse($course);
@@ -97,7 +98,7 @@ final class CommentController extends AbstractController
             throw $this->createAccessDeniedException('Vous devez être connecté pour signaler un commentaire.');
         }
 
-        if (!$this->isCsrfTokenValid('comment_report_' . $comment->getId(), (string) $request->request->get('_token'))) {
+        if (!$this->isCsrfTokenValid('comment_report_'.$comment->getId(), (string) $request->request->get('_token'))) {
             throw $this->createAccessDeniedException('Le jeton CSRF est invalide.');
         }
 
@@ -115,7 +116,7 @@ final class CommentController extends AbstractController
 
         $emailSent = $commentReportService->report($comment, $user);
 
-        if ($emailSent === null) {
+        if (null === $emailSent) {
             $this->addFlash('info', 'Vous avez déjà signalé ce commentaire.');
 
             return $this->redirectToCourse($comment->getCourse());
@@ -142,7 +143,7 @@ final class CommentController extends AbstractController
             throw $this->createAccessDeniedException('Vous devez être connecté pour aimer un commentaire.');
         }
 
-        if (!$this->isCsrfTokenValid('comment_like_' . $comment->getId(), (string) $request->request->get('_token'))) {
+        if (!$this->isCsrfTokenValid('comment_like_'.$comment->getId(), (string) $request->request->get('_token'))) {
             throw $this->createAccessDeniedException('Le jeton CSRF est invalide.');
         }
 
@@ -191,13 +192,13 @@ final class CommentController extends AbstractController
         $this->denyAccessUnlessGranted(CommentVoter::EDIT, $comment, "Vous n'êtes pas l'auteur de ce commentaire.");
         $this->denyAccessUnlessGranted(CourseVoter::VIEW, $comment->getCourse(), "Vous n'avez plus accès à ce cours.");
 
-        if (!$this->isCsrfTokenValid('comment_edit_' . $comment->getId(), (string) $request->request->get('_token'))) {
+        if (!$this->isCsrfTokenValid('comment_edit_'.$comment->getId(), (string) $request->request->get('_token'))) {
             throw $this->createAccessDeniedException('Le jeton CSRF est invalide.');
         }
 
         $content = trim((string) $request->request->get('content'));
 
-        if ($content === '') {
+        if ('' === $content) {
             $this->addFlash('danger', 'Un commentaire ne peut pas être vide.');
 
             return $this->redirectToCourse($comment->getCourse());
@@ -218,7 +219,7 @@ final class CommentController extends AbstractController
     #[Route('/comments/{id}/delete', name: 'app_comments_delete', methods: ['POST'])]
     public function delete(Comment $comment, Request $request): Response
     {
-        if (!$this->isCsrfTokenValid('comment_delete_' . $comment->getId(), (string) $request->request->get('_token'))) {
+        if (!$this->isCsrfTokenValid('comment_delete_'.$comment->getId(), (string) $request->request->get('_token'))) {
             throw $this->createAccessDeniedException('Le jeton CSRF est invalide.');
         }
 

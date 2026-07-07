@@ -6,7 +6,6 @@ namespace App\Repository;
 
 use App\Entity\LoginFailureLog;
 use App\Entity\User;
-use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -20,7 +19,7 @@ class LoginFailureLogRepository extends ServiceEntityRepository
         parent::__construct($registry, LoginFailureLog::class);
     }
 
-    public function countRecentFailuresForUser(User $user, DateTimeImmutable $since): int
+    public function countRecentFailuresForUser(User $user, \DateTimeImmutable $since): int
     {
         return (int) $this->createQueryBuilder('loginFailureLog')
             ->select('COUNT(loginFailureLog.id)')

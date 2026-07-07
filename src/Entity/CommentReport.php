@@ -59,7 +59,7 @@ class CommentReport
     {
         $this->comment = $comment;
 
-        if ($comment !== null && $this->commentContent === null) {
+        if (null !== $comment && null === $this->commentContent) {
             $this->commentContent = (string) $comment->getContent();
         }
 
@@ -102,7 +102,7 @@ class CommentReport
 
     public function isPending(): bool
     {
-        return $this->status === CommentReportStatus::PENDING;
+        return CommentReportStatus::PENDING === $this->status;
     }
 
     public function getCommentContent(): ?string

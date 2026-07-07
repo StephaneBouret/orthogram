@@ -23,7 +23,9 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class InvitationCrudController extends AbstractCrudController
 {
-    public function __construct(private readonly InvitationService $invitationService) {}
+    public function __construct(private readonly InvitationService $invitationService)
+    {
+    }
 
     public static function getEntityFqcn(): string
     {
@@ -87,7 +89,7 @@ class InvitationCrudController extends AbstractCrudController
                 ->hideOnForm()
                 ->hideOnIndex(),
             AssociationField::new('user', 'Utilisateur')
-                ->hideOnForm()
+                ->hideOnForm(),
         ];
     }
 
@@ -109,21 +111,21 @@ class InvitationCrudController extends AbstractCrudController
             ->update(
                 Crud::PAGE_INDEX,
                 Action::NEW,
-                static fn(Action $action) => $action->setLabel('Créer une invitation')
+                static fn (Action $action) => $action->setLabel('Créer une invitation')
             )
 
             ->update(
                 Crud::PAGE_INDEX,
                 Action::EDIT,
-                static fn(Action $action) => $action
-                    ->displayIf(static fn(Invitation $invitation): bool => !$invitation->isSent())
+                static fn (Action $action) => $action
+                    ->displayIf(static fn (Invitation $invitation): bool => !$invitation->isSent())
             )
 
             ->update(
                 Crud::PAGE_DETAIL,
                 Action::EDIT,
-                static fn(Action $action) => $action
-                    ->displayIf(static fn(Invitation $invitation): bool => !$invitation->isSent())
+                static fn (Action $action) => $action
+                    ->displayIf(static fn (Invitation $invitation): bool => !$invitation->isSent())
             );
     }
 
@@ -185,7 +187,7 @@ class InvitationCrudController extends AbstractCrudController
     #[AdminRoute(path: '/send-invitation', name: 'send_invitation')]
     public function sendInvitation(
         AdminContext $context,
-        InvitationRepository $invitationRepository
+        InvitationRepository $invitationRepository,
     ): RedirectResponse {
         $entityId = $context->getRequest()->query->get('entityId');
 

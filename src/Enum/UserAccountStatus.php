@@ -34,6 +34,6 @@ enum UserAccountStatus: string
 
     public function isActive(): bool
     {
-        return $this === self::ACTIVE;
+        return self::ACTIVE === $this;
     }
 }

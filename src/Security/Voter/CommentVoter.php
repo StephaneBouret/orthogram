@@ -15,11 +15,12 @@ final class CommentVoter extends Voter
 
     public function __construct(
         private readonly Security $security,
-    ) {}
+    ) {
+    }
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        return $attribute === self::EDIT && $subject instanceof Comment;
+        return self::EDIT === $attribute && $subject instanceof Comment;
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool

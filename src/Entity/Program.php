@@ -7,8 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 #[ORM\Entity(repositoryClass: ProgramRepository::class)]
@@ -21,19 +21,19 @@ class Program
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "Le nom du programme est obligatoire !")]
-    #[Assert\Length(min: 3, minMessage: "Le nom du programme doit avoir au moins {{ limit }} caractères", max: 30, maxMessage: "Le nom du programme ne peut excéder {{ limit }} caractères")]
+    #[Assert\NotBlank(message: 'Le nom du programme est obligatoire !')]
+    #[Assert\Length(min: 3, minMessage: 'Le nom du programme doit avoir au moins {{ limit }} caractères', max: 30, maxMessage: 'Le nom du programme ne peut excéder {{ limit }} caractères')]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
     private ?string $slug = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank(message: "La description est obligatoire !")]
+    #[Assert\NotBlank(message: 'La description est obligatoire !')]
     private ?string $description = null;
 
     #[ORM\Column]
-    #[Assert\PositiveOrZero(message: "Le prix ne peut pas être négatif.")]
+    #[Assert\PositiveOrZero(message: 'Le prix ne peut pas être négatif.')]
     private ?int $price = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -62,7 +62,7 @@ class Program
             'image/jpeg',
             'image/jpg',
             'image/png',
-            'image/webp'
+            'image/webp',
         ],
         mimeTypesMessage: 'Le type MIME du fichier n\'est pas valide ({{ type }}). Les formats autorisés sont {{ types }}'
     )]

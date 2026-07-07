@@ -142,7 +142,7 @@ class Exercice
     {
         $dataAsJson = trim((string) $dataAsJson);
 
-        if ($dataAsJson === '') {
+        if ('' === $dataAsJson) {
             $this->data = [];
 
             return $this;
@@ -201,7 +201,7 @@ class Exercice
 
                     $text = trim((string) ($word['text'] ?? ''));
 
-                    if ($text === '') {
+                    if ('' === $text) {
                         continue;
                     }
 
@@ -212,12 +212,12 @@ class Exercice
                     ];
 
                     $punctuationAfter = (string) ($word['punctuationAfter'] ?? $word['after'] ?? '');
-                    if (trim($punctuationAfter) !== '') {
+                    if ('' !== trim($punctuationAfter)) {
                         $normalizedWord['punctuationAfter'] = $this->normalizePunctuationAfter($punctuationAfter);
                     }
 
                     $explanation = trim((string) ($word['explanation'] ?? ''));
-                    if ($explanation !== '') {
+                    if ('' !== $explanation) {
                         $normalizedWord['explanation'] = $explanation;
                     }
 
@@ -240,7 +240,7 @@ class Exercice
     {
         $value = is_string($value) ? trim($value) : '';
 
-        return $value !== '' ? $value : $fallback;
+        return '' !== $value ? $value : $fallback;
     }
 
     private function normalizePunctuationAfter(string $punctuationAfter): string
@@ -248,7 +248,7 @@ class Exercice
         $trimmed = trim($punctuationAfter);
 
         if (in_array($trimmed, [':', ';', '?', '!'], true)) {
-            return ' ' . $trimmed;
+            return ' '.$trimmed;
         }
 
         return $punctuationAfter;

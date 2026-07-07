@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Entity\Subscription;
-use App\Services\SendMailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -12,8 +11,9 @@ final class SubscriptionReminderService
     public function __construct(
         private readonly SendMailService $sendMailService,
         private readonly EntityManagerInterface $em,
-        private readonly UrlGeneratorInterface $urlGenerator
-    ) {}
+        private readonly UrlGeneratorInterface $urlGenerator,
+    ) {
+    }
 
     public function sendReminder(Subscription $subscription, int $daysBeforeExpiration): void
     {
@@ -36,11 +36,11 @@ final class SubscriptionReminderService
             null
         );
 
-        if ($daysBeforeExpiration === 30) {
+        if (30 === $daysBeforeExpiration) {
             $subscription->markReminder30Sent();
         }
 
-        if ($daysBeforeExpiration === 15) {
+        if (15 === $daysBeforeExpiration) {
             $subscription->markReminder15Sent();
         }
 

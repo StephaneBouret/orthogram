@@ -17,7 +17,8 @@ final class CourseSearchController extends AbstractController
 {
     public function __construct(
         private readonly ProgramRepository $programRepository,
-    ) {}
+    ) {
+    }
 
     public function searchBar(string $programSlug): Response
     {

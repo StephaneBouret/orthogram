@@ -5,8 +5,8 @@ namespace App\Form;
 use App\Entity\Avatar;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Vich\UploaderBundle\Form\Type\VichImageType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class AvatarFormType extends AbstractType
 {
@@ -21,7 +21,7 @@ class AvatarFormType extends AbstractType
                 'download_uri' => false,
                 'image_uri' => $options['image_uri'],
                 'attr' => [
-                    'class' => 'form-control mb-2'
+                    'class' => 'form-control mb-2',
                 ],
             ]);
     }

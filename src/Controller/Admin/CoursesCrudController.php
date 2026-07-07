@@ -28,7 +28,8 @@ class CoursesCrudController extends AbstractCrudController
         private readonly CourseDurationEstimator $courseDurationEstimator,
         private readonly CourseFileService $courseFileService,
         private readonly CoursesRepository $coursesRepository,
-    ) {}
+    ) {
+    }
 
     public static function getEntityFqcn(): string
     {
@@ -143,7 +144,7 @@ class CoursesCrudController extends AbstractCrudController
 
         $this->reorderCourse($entityInstance, $previousSection);
         $this->normalizeExerciceAssociation($entityInstance);
-        $this->estimateDuration($entityInstance, $entityInstance instanceof Courses && $entityInstance->getPartialFile() !== null);
+        $this->estimateDuration($entityInstance, $entityInstance instanceof Courses && null !== $entityInstance->getPartialFile());
 
         parent::updateEntity($entityManager, $entityInstance);
     }
@@ -154,7 +155,7 @@ class CoursesCrudController extends AbstractCrudController
             return;
         }
 
-        if (!$force && $entityInstance->getDurationMinutes() !== null) {
+        if (!$force && null !== $entityInstance->getDurationMinutes()) {
             return;
         }
 
@@ -164,7 +165,7 @@ class CoursesCrudController extends AbstractCrudController
 
         $content = $this->getTwigContent($entityInstance);
 
-        if ($content === null || trim($content) === '') {
+        if (null === $content || '' === trim($content)) {
             return;
         }
 
@@ -177,7 +178,7 @@ class CoursesCrudController extends AbstractCrudController
             return;
         }
 
-        if ($entityInstance->getContentType() !== CourseContentType::Exercise) {
+        if (CourseContentType::Exercise !== $entityInstance->getContentType()) {
             $entityInstance->setExercice(null);
         }
     }
@@ -190,7 +191,7 @@ class CoursesCrudController extends AbstractCrudController
 
         $section = $entityInstance->getSection();
 
-        if ($section === null || $entityInstance->getPosition() !== 0) {
+        if (null === $section || 0 !== $entityInstance->getPosition()) {
             return;
         }
 
@@ -205,11 +206,11 @@ class CoursesCrudController extends AbstractCrudController
 
         $section = $entityInstance->getSection();
 
-        if ($section === null) {
+        if (null === $section) {
             return;
         }
 
-        if ($previousSection !== null && !$this->isSameSection($previousSection, $section)) {
+        if (null !== $previousSection && !$this->isSameSection($previousSection, $section)) {
             $this->reindexSection($previousSection, $entityInstance);
         }
 
@@ -248,17 +249,17 @@ class CoursesCrudController extends AbstractCrudController
             return true;
         }
 
-        return $firstSection->getId() !== null && $firstSection->getId() === $secondSection->getId();
+        return null !== $firstSection->getId() && $firstSection->getId() === $secondSection->getId();
     }
 
     private function getTwigContent(Courses $course): ?string
     {
         $uploadedFile = $course->getPartialFile();
 
-        if ($uploadedFile !== null && is_readable($uploadedFile->getPathname())) {
+        if (null !== $uploadedFile && is_readable($uploadedFile->getPathname())) {
             $content = file_get_contents($uploadedFile->getPathname());
 
-            return $content === false ? null : $content;
+            return false === $content ? null : $content;
         }
 
         return $this->courseFileService->getFileContent($course);

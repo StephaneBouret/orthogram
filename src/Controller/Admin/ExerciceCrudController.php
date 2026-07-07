@@ -95,7 +95,7 @@ class ExerciceCrudController extends AbstractCrudController
         AdminContext $context,
         Request $request,
         ExerciceRepository $exerciceRepository,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): Response {
         $exercice = $this->getExerciceFromContext($context, $request, $exerciceRepository);
 
@@ -108,7 +108,7 @@ class ExerciceCrudController extends AbstractCrudController
         $jsonContent = $request->request->getString('json_content');
 
         if ($request->isMethod('POST')) {
-            if (!$this->isCsrfTokenValid('import_exercice_json_' . $exercice->getId(), $request->request->getString('_token'))) {
+            if (!$this->isCsrfTokenValid('import_exercice_json_'.$exercice->getId(), $request->request->getString('_token'))) {
                 $this->addFlash('warning', 'Le jeton de sécurité est invalide.');
 
                 return $this->redirectToRoute('admin_exercice_import_json', ['entityId' => $exercice->getId()]);
@@ -142,7 +142,7 @@ class ExerciceCrudController extends AbstractCrudController
     #[AdminRoute(path: '/import-json/new', name: 'import_json_new')]
     public function importNewJson(
         Request $request,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): Response {
         $jsonContent = $request->request->getString('json_content');
         $title = $request->request->getString('title');
@@ -190,9 +190,8 @@ class ExerciceCrudController extends AbstractCrudController
     private function getExerciceFromContext(
         AdminContext $context,
         Request $request,
-        ExerciceRepository $exerciceRepository
-    ): ?Exercice
-    {
+        ExerciceRepository $exerciceRepository,
+    ): ?Exercice {
         $entity = $context->getEntity()?->getInstance();
 
         if ($entity instanceof Exercice) {
@@ -211,7 +210,7 @@ class ExerciceCrudController extends AbstractCrudController
     {
         $jsonContent = $this->extractJsonObject($jsonContent);
 
-        if ($jsonContent === '') {
+        if ('' === $jsonContent) {
             throw new \InvalidArgumentException('Collez un contenu JSON avant de lancer l’import.');
         }
 
@@ -234,7 +233,7 @@ class ExerciceCrudController extends AbstractCrudController
         $start = strpos($jsonContent, '{');
         $end = strrpos($jsonContent, '}');
 
-        if ($start === false || $end === false || $end < $start) {
+        if (false === $start || false === $end || $end < $start) {
             return $jsonContent;
         }
 
@@ -246,15 +245,15 @@ class ExerciceCrudController extends AbstractCrudController
      */
     private function applyImportedPayload(Exercice $exercice, array $payload): void
     {
-        if (isset($payload['title']) && is_string($payload['title']) && trim($payload['title']) !== '') {
+        if (isset($payload['title']) && is_string($payload['title']) && '' !== trim($payload['title'])) {
             $exercice->setTitle(trim($payload['title']));
         }
 
-        if (isset($payload['instruction']) && is_string($payload['instruction']) && trim($payload['instruction']) !== '') {
+        if (isset($payload['instruction']) && is_string($payload['instruction']) && '' !== trim($payload['instruction'])) {
             $exercice->setInstruction(trim($payload['instruction']));
         }
 
-        if (isset($payload['type']) && is_string($payload['type']) && trim($payload['type']) !== '') {
+        if (isset($payload['type']) && is_string($payload['type']) && '' !== trim($payload['type'])) {
             $exercice->setType(trim($payload['type']));
         }
 
@@ -275,7 +274,7 @@ class ExerciceCrudController extends AbstractCrudController
         $value = isset($payload[$key]) && is_string($payload[$key]) ? $payload[$key] : $fallback;
         $value = trim($value);
 
-        if ($value === '') {
+        if ('' === $value) {
             throw new \InvalidArgumentException($errorMessage);
         }
 

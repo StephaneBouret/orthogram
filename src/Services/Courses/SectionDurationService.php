@@ -22,7 +22,7 @@ final class SectionDurationService
                 $totalDuration += $course->getDurationMinutes() ?? 0;
             }
 
-            if ($section->getId() !== null) {
+            if (null !== $section->getId()) {
                 $sectionsTotalDuration[$section->getId()] = $totalDuration;
             }
         }

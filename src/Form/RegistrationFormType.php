@@ -25,11 +25,11 @@ class RegistrationFormType extends AbstractType
             ->add('email', EmailType::class, [
                 'label' => 'Votre email :',
                 'label_attr' => [
-                    'class' => 'lh-label fw-medium'
+                    'class' => 'lh-label fw-medium',
                 ],
                 'required' => true,
                 'attr' => [
-                    'placeholder' => 'Merci de saisir votre adresse email.'
+                    'placeholder' => 'Merci de saisir votre adresse email.',
                 ],
                 'data' => $options['invitation_email'],
                 'disabled' => $options['lock_email'],
@@ -48,12 +48,12 @@ class RegistrationFormType extends AbstractType
                 'visible_label' => 'Afficher',
                 'label' => 'Votre mot de passe :',
                 'label_attr' => [
-                    'class' => 'lh-label fw-medium'
+                    'class' => 'lh-label fw-medium',
                 ],
                 'mapped' => false,
                 'attr' => [
                     'autocomplete' => 'new-password',
-                    'placeholder' => '••••••••'
+                    'placeholder' => '••••••••',
                 ],
                 'constraints' => [
                     new NotBlank(
@@ -67,31 +67,31 @@ class RegistrationFormType extends AbstractType
                     new PasswordStrength(
                         minScore: PasswordStrength::STRENGTH_STRONG,
                         message: 'Le mot de passe est trop faible. Veuillez utiliser un mot de passe plus fort.'
-                    )
+                    ),
                 ],
             ])
             ->add('firstname', TextType::class, [
                 'label' => 'Votre prénom :',
                 'label_attr' => [
-                    'class' => 'lh-label fw-medium'
+                    'class' => 'lh-label fw-medium',
                 ],
                 'attr' => [
-                    'placeholder' => 'Merci de saisir votre prénom.'
+                    'placeholder' => 'Merci de saisir votre prénom.',
                 ],
             ])
             ->add('lastname', TextType::class, [
                 'label' => 'Votre nom :',
                 'label_attr' => [
-                    'class' => 'lh-label fw-medium'
+                    'class' => 'lh-label fw-medium',
                 ],
                 'attr' => [
-                    'placeholder' => 'Merci de saisir votre nom.'
+                    'placeholder' => 'Merci de saisir votre nom.',
                 ],
             ])
             ->add('address', TextType::class, [
                 'label' => 'Votre adresse :',
                 'label_attr' => [
-                    'class' => 'lh-label fw-medium'
+                    'class' => 'lh-label fw-medium',
                 ],
                 'attr' => [
                     'placeholder' => 'Merci de saisir votre adresse',
@@ -100,19 +100,19 @@ class RegistrationFormType extends AbstractType
             ->add('postalCode', TextType::class, [
                 'label' => 'Votre code postal :',
                 'label_attr' => [
-                    'class' => 'lh-label fw-medium'
+                    'class' => 'lh-label fw-medium',
                 ],
                 'attr' => [
-                    'placeholder' => 'Merci de saisir votre code postal'
+                    'placeholder' => 'Merci de saisir votre code postal',
                 ],
             ])
             ->add('city', TextType::class, [
                 'label' => 'Votre ville :',
                 'label_attr' => [
-                    'class' => 'lh-label fw-medium'
+                    'class' => 'lh-label fw-medium',
                 ],
                 'attr' => [
-                    'placeholder' => 'Merci de saisir votre ville'
+                    'placeholder' => 'Merci de saisir votre ville',
                 ],
             ])
             ->add('phone', PhoneNumberType::class, [
@@ -121,10 +121,10 @@ class RegistrationFormType extends AbstractType
                 'number_type' => PhoneNumberType::NUMBER_TYPE_TEL,
                 'label' => 'Votre téléphone :',
                 'label_attr' => [
-                    'class' => 'lh-label fw-medium'
+                    'class' => 'lh-label fw-medium',
                 ],
                 'attr' => [
-                    'placeholder' => 'Merci de saisir votre téléphone'
+                    'placeholder' => 'Merci de saisir votre téléphone',
                 ],
             ])
         ;

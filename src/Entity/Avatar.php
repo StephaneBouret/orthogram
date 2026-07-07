@@ -4,8 +4,8 @@ namespace App\Entity;
 
 use App\Repository\AvatarRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 #[ORM\Entity(repositoryClass: AvatarRepository::class)]
@@ -31,7 +31,7 @@ class Avatar
             'image/jpeg',
             'image/jpg',
             'image/png',
-            'image/webp'
+            'image/webp',
         ],
         mimeTypesMessage: 'Le type MIME du fichier n\'est pas valide ({{ type }}). Les formats autorisés sont {{ types }}'
     )]
@@ -119,7 +119,7 @@ class Avatar
             'id' => $this->id,
             'imageName' => $this->imageName,
             'updatedAt' => $this->updatedAt,
-            'user' => $this->user
+            'user' => $this->user,
         ];
     }
 

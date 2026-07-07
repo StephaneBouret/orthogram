@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use DateTimeImmutable;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
@@ -21,12 +20,13 @@ class PasswordResetService
         protected SendMailService $email,
         protected UserRepository $userRepository,
         protected UserPasswordHasherInterface $passwordHasher,
-    ) {}
+    ) {
+    }
 
     public function processPasswordReset(User $user): void
     {
         $token = $this->tokenGenerator->generateToken();
-        $now = new DateTimeImmutable();
+        $now = new \DateTimeImmutable();
 
         $user->setResetToken($this->hashToken($token))
             ->setResetTokenCreatedAt($now);
@@ -38,7 +38,7 @@ class PasswordResetService
 
         $context = [
             'url' => $url,
-            'user' => $user
+            'user' => $user,
         ];
 
         $this->email->sendMail(
@@ -65,11 +65,12 @@ class PasswordResetService
     public function isTokenExpired(User $user, int $expirationInHours = self::RESET_TOKEN_EXPIRATION_HOURS): bool
     {
         $resetTokenAt = $user->getResetTokenCreatedAt();
-        $now = new DateTimeImmutable();
+        $now = new \DateTimeImmutable();
 
         if (null === $resetTokenAt) {
             return true;
         }
+
         return $now > $resetTokenAt->modify("+{$expirationInHours} hour");
     }
 

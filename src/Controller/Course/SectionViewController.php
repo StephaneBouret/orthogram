@@ -21,7 +21,8 @@ final class SectionViewController extends AbstractController
         private readonly SectionsRepository $sectionsRepository,
         private readonly SectionDurationService $sectionDurationService,
         private readonly LessonRepository $lessonRepository,
-    ) {}
+    ) {
+    }
 
     #[Route('/courses/{programSlug}/{sectionSlug}', name: 'app_course_section', methods: ['GET'])]
     public function __invoke(
@@ -31,7 +32,7 @@ final class SectionViewController extends AbstractController
     ): Response {
         $section = $this->sectionsRepository->findOneByProgramAndSlug($program, $sectionSlug);
 
-        if ($section === null) {
+        if (null === $section) {
             throw $this->createNotFoundException("La section demandée n'existe pas.");
         }
 

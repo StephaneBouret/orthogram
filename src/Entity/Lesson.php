@@ -68,7 +68,7 @@ class Lesson
 
     public function isDone(): bool
     {
-        return $this->status === LessonStatus::DONE;
+        return LessonStatus::DONE === $this->status;
     }
 
     public function getStudiedAt(): ?\DateTimeImmutable

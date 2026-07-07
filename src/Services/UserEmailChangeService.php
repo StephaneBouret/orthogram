@@ -18,7 +18,8 @@ final class UserEmailChangeService
         private readonly SendMailService $email,
         private readonly UserRepository $userRepository,
         private readonly LoggerInterface $logger,
-    ) {}
+    ) {
+    }
 
     public function requestEmailChange(User $user, string $newEmail): void
     {
@@ -162,7 +163,7 @@ final class UserEmailChangeService
             return true;
         }
 
-        return new \DateTimeImmutable() > $requestedAt->modify('+' . self::CONFIRMATION_EXPIRATION_HOURS . ' hours');
+        return new \DateTimeImmutable() > $requestedAt->modify('+'.self::CONFIRMATION_EXPIRATION_HOURS.' hours');
     }
 
     private function hashToken(string $token): string

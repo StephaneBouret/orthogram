@@ -12,7 +12,8 @@ class UserRegistrationService
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly EntityManagerInterface $em,
         private readonly AvatarService $avatarService,
-    ) {}
+    ) {
+    }
 
     public function register(User $user, string $plainPassword): User
     {

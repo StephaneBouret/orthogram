@@ -45,6 +45,7 @@ class ProgramCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         $actions = parent::configureActions($actions);
+
         return $actions;
     }
 

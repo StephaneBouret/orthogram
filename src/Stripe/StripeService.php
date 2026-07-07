@@ -11,7 +11,7 @@ class StripeService
 
     public function __construct(
         private readonly string $secretKey,
-        private readonly string $publicKey
+        private readonly string $publicKey,
     ) {
         $this->client = new StripeClient($this->secretKey);
     }
@@ -22,21 +22,21 @@ class StripeService
     }
 
     /**
-     * Méthode générique : création d'un PaymentIntent avec metadata et description
+     * Méthode générique : création d'un PaymentIntent avec metadata et description.
      */
     public function createPaymentIntent(int $amount, array $metadata = [], ?string $description = null)
     {
         return $this->client->paymentIntents->create([
-            'amount'               => $amount,
-            'currency'             => 'eur',
+            'amount' => $amount,
+            'currency' => 'eur',
             'payment_method_types' => ['card'], // 'paypal' à ajouter dans le tableau ['card', 'paypal'] si activé dans Stripe
-            'metadata'             => array_filter($metadata, static fn ($value) => null !== $value && '' !== $value),
-            'description'          => $description,
+            'metadata' => array_filter($metadata, static fn ($value) => null !== $value && '' !== $value),
+            'description' => $description,
         ]);
     }
 
     /**
-     * Souscription (Subscription) — PaymentIntent avec metadata et description dédiée
+     * Souscription (Subscription) — PaymentIntent avec metadata et description dédiée.
      */
     public function getPaymentIntentForSubscription(Subscription $subscription)
     {
@@ -45,12 +45,12 @@ class StripeService
         return $this->createPaymentIntent(
             $subscription->getPriceCents(),
             [
-                'kind'               => 'subscription',
-                'subscription_id'    => (string) $subscription->getId(),
+                'kind' => 'subscription',
+                'subscription_id' => (string) $subscription->getId(),
                 'subscription_title' => $subscription->getTitle(),
-                'user_id'            => $user ? (string) $user->getId() : null,
-                'user_email'         => $user ? (string) $user->getEmail() : null,
-                'status'             => $subscription->getStatus()->value,
+                'user_id' => $user ? (string) $user->getId() : null,
+                'user_email' => $user ? (string) $user->getEmail() : null,
+                'status' => $subscription->getStatus()->value,
             ],
             sprintf(
                 'Abonnement • %s',

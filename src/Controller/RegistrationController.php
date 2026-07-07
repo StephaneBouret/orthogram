@@ -25,7 +25,7 @@ final class RegistrationController extends AbstractController
         Security $security,
         GoogleService $googleService,
         InvitationRepository $invitationRepository,
-        InvitationService $invitationService
+        InvitationService $invitationService,
     ): Response {
         // Gestion propre du _target_path
         $session = $requestStack->getSession();

@@ -121,14 +121,14 @@ class Subscription
 
     public function getEffectiveStatus(): SubscriptionStatus
     {
-        if ($this->status === SubscriptionStatus::EXPIRED) {
+        if (SubscriptionStatus::EXPIRED === $this->status) {
             return SubscriptionStatus::EXPIRED;
         }
 
         if (
-            $this->status === SubscriptionStatus::ACTIVE
+            SubscriptionStatus::ACTIVE === $this->status
             && !$this->isLifetime
-            && $this->endsAt !== null
+            && null !== $this->endsAt
             && new \DateTimeImmutable() > $this->endsAt
         ) {
             return SubscriptionStatus::EXPIRED;
@@ -367,12 +367,12 @@ class Subscription
 
     public function isPending(): bool
     {
-        return $this->status === SubscriptionStatus::PENDING;
+        return SubscriptionStatus::PENDING === $this->status;
     }
 
     public function isActive(): bool
     {
-        if ($this->status !== SubscriptionStatus::ACTIVE) {
+        if (SubscriptionStatus::ACTIVE !== $this->status) {
             return false;
         }
 
@@ -395,7 +395,7 @@ class Subscription
 
     public function isExpired(): bool
     {
-        if ($this->status === SubscriptionStatus::EXPIRED) {
+        if (SubscriptionStatus::EXPIRED === $this->status) {
             return true;
         }
 
@@ -408,17 +408,17 @@ class Subscription
 
     public function isCancelled(): bool
     {
-        return $this->status === SubscriptionStatus::CANCELLED;
+        return SubscriptionStatus::CANCELLED === $this->status;
     }
 
     public function isSuspended(): bool
     {
-        return $this->status === SubscriptionStatus::SUSPENDED;
+        return SubscriptionStatus::SUSPENDED === $this->status;
     }
 
     public function activateForOneYear(
         ?\DateTimeImmutable $startDate = null,
-        ?string $paymentReference = null
+        ?string $paymentReference = null,
     ): static {
         $startDate ??= new \DateTimeImmutable();
 
@@ -466,6 +466,7 @@ class Subscription
     public function reactivate(): static
     {
         $this->status = SubscriptionStatus::ACTIVE;
+
         return $this;
     }
 

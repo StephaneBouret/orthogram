@@ -16,7 +16,8 @@ final class TwigFileNamer implements NamerInterface
 
     public function __construct(
         private readonly Transliterator $transliterator,
-    ) {}
+    ) {
+    }
 
     public function name(object|array $object, PropertyMapping $mapping): string
     {
@@ -30,12 +31,12 @@ final class TwigFileNamer implements NamerInterface
         $slug = $this->transliterator->transliterate($basename);
         $slug = trim($slug, '-');
 
-        if ($slug === '') {
+        if ('' === $slug) {
             $slug = 'cours';
         }
 
         $suffix = bin2hex(random_bytes(self::UNIQUE_BYTES));
-        $maxSlugLength = 255 - strlen('-' . $suffix . self::TWIG_EXTENSION);
+        $maxSlugLength = 255 - strlen('-'.$suffix.self::TWIG_EXTENSION);
 
         return sprintf(
             '%s-%s%s',

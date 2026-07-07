@@ -13,7 +13,8 @@ class SubscriptionEmailSuccessSubscriber implements EventSubscriberInterface
         private readonly SendMailService $sendMail,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly string $defaultFrom,
-    ) {}
+    ) {
+    }
 
     public static function getSubscribedEvents(): array
     {

@@ -12,7 +12,9 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserFixtures extends Fixture implements FixtureGroupInterface
 {
-    public function __construct(protected UserPasswordHasherInterface $passwordHasher) {}
+    public function __construct(protected UserPasswordHasherInterface $passwordHasher)
+    {
+    }
 
     public static function getGroups(): array
     {
@@ -27,14 +29,14 @@ class UserFixtures extends Fixture implements FixtureGroupInterface
         $phoneNumberUtil = PhoneNumberUtil::getInstance();
 
         $admin = new User();
-        $hash = $this->passwordHasher->hashPassword($admin, "password");
+        $hash = $this->passwordHasher->hashPassword($admin, 'password');
 
         $adminRawPhoneNumber = $faker->mobileNumber();
         $adminPhoneNumberObject = $phoneNumberUtil->parse($adminRawPhoneNumber, 'FR');
 
-        $admin->setEmail("admin@gmail.com")
-            ->setFirstname("Admin")
-            ->setLastname("Admin")
+        $admin->setEmail('admin@gmail.com')
+            ->setFirstname('Admin')
+            ->setLastname('Admin')
             ->setRoles(['ROLE_ADMIN'])
             ->setAddress($faker->streetAddress())
             ->setPostalCode($faker->postcode())
@@ -47,9 +49,9 @@ class UserFixtures extends Fixture implements FixtureGroupInterface
         $this->addReference(self::ADMIN_USER_REFERENCE, $admin);
 
         $users = [];
-        for ($u = 0; $u < 3; $u++) {
+        for ($u = 0; $u < 3; ++$u) {
             $user = new User();
-            $hash = $this->passwordHasher->hashPassword($user, "password");
+            $hash = $this->passwordHasher->hashPassword($user, 'password');
 
             $rawPhoneNumber = $faker->mobileNumber();
             $phoneNumberObject = $phoneNumberUtil->parse($rawPhoneNumber, 'FR');
@@ -64,7 +66,7 @@ class UserFixtures extends Fixture implements FixtureGroupInterface
                 ->setPassword($hash);
 
             $manager->persist($user);
-            $this->addReference('user_' . $u, $user);
+            $this->addReference('user_'.$u, $user);
             $users[] = $user;
         }
 

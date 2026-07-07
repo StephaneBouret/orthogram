@@ -16,9 +16,8 @@ final class UserSubscriptionController extends AbstractController
 {
     public function __invoke(
         SubscriptionRepository $subscriptionRepository,
-        SubscriptionViewService $subscriptionViewService
-    ): Response
-    {
+        SubscriptionViewService $subscriptionViewService,
+    ): Response {
         /** @var User $user */
         $user = $this->getUser();
 

@@ -107,7 +107,7 @@ class CommentReportCrudController extends AbstractCrudController
     public function markReviewed(
         AdminContext $context,
         CommentReportRepository $commentReportRepository,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): RedirectResponse {
         $report = $this->getReportFromContext($context, $commentReportRepository);
 
@@ -127,7 +127,7 @@ class CommentReportCrudController extends AbstractCrudController
     public function dismiss(
         AdminContext $context,
         CommentReportRepository $commentReportRepository,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): RedirectResponse {
         $report = $this->getReportFromContext($context, $commentReportRepository);
 
@@ -147,7 +147,7 @@ class CommentReportCrudController extends AbstractCrudController
     public function hideReportedComment(
         AdminContext $context,
         CommentReportRepository $commentReportRepository,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): RedirectResponse {
         $report = $this->getReportFromContext($context, $commentReportRepository);
 

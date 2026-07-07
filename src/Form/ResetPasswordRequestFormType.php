@@ -16,14 +16,14 @@ class ResetPasswordRequestFormType extends AbstractType
             ->add('email', EmailType::class, [
                 'label' => 'Votre email :',
                 'label_attr' => [
-                    'class' => 'lh-label fw-bold'
+                    'class' => 'lh-label fw-bold',
                 ],
                 'required' => true,
                 'attr' => [
                     'placeholder' => 'e.g. picard@starfleet.org',
-                    'class' => 'form-control form-control-login'
+                    'class' => 'form-control form-control-login',
                 ],
-                'constraints' => new Email()
+                'constraints' => new Email(),
             ])
         ;
     }

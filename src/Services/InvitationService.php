@@ -20,7 +20,8 @@ class InvitationService
         private readonly SendMailService $sendMailService,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly UserRepository $userRepository,
-    ) {}
+    ) {
+    }
 
     public function generateToken(): string
     {
@@ -47,7 +48,7 @@ class InvitationService
     public function createInvitation(
         string $email,
         InvitationType $type,
-        ?\DateTimeImmutable $expiresAt = null
+        ?\DateTimeImmutable $expiresAt = null,
     ): Invitation {
         $invitation = new Invitation();
         $invitation
@@ -124,18 +125,14 @@ class InvitationService
         $email = mb_strtolower(trim((string) $invitation->getEmail()));
 
         if ($this->userRepository->findOneBy(['email' => $email])) {
-            throw new \RuntimeException(
-                'Impossible de créer une invitation : un utilisateur existe déjà avec cette adresse email.'
-            );
+            throw new \RuntimeException('Impossible de créer une invitation : un utilisateur existe déjà avec cette adresse email.');
         }
 
         if ($this->invitationRepository->hasBlockingInvitationForEmail(
             $email,
             $invitation->getId()
         )) {
-            throw new \RuntimeException(
-                'Une invitation valide ou déjà utilisée existe pour cette adresse email.'
-            );
+            throw new \RuntimeException('Une invitation valide ou déjà utilisée existe pour cette adresse email.');
         }
     }
 }

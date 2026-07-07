@@ -3,13 +3,14 @@
 namespace App\Services;
 
 use App\Entity\User;
-use App\Services\SendMailService;
 use Scheb\TwoFactorBundle\Mailer\AuthCodeMailerInterface;
 use Scheb\TwoFactorBundle\Model\Email\TwoFactorInterface;
 
 final class SendEmail2faService implements AuthCodeMailerInterface
 {
-    public function __construct(protected SendMailService $email) {}
+    public function __construct(private SendMailService $email)
+    {
+    }
 
     public function sendAuthCode(TwoFactorInterface $user): void
     {
@@ -31,7 +32,7 @@ final class SendEmail2faService implements AuthCodeMailerInterface
             'authentication',
             [
                 'user' => $user,
-                'authCode' => $authCode
+                'authCode' => $authCode,
             ],
             null
         );

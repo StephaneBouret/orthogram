@@ -20,7 +20,8 @@ final class CourseConfirmationController extends AbstractController
     public function __construct(
         private readonly LessonRepository $lessonRepository,
         private readonly EntityManagerInterface $entityManager,
-    ) {}
+    ) {
+    }
 
     #[IsGranted('ROLE_USER')]
     #[Route('/course/confirmation/{id}', name: 'app_course_confirmation', methods: ['POST'])]
@@ -28,7 +29,7 @@ final class CourseConfirmationController extends AbstractController
     {
         $this->denyAccessUnlessGranted(CourseVoter::VIEW, $course, "Vous n'avez pas accès à ce cours.");
 
-        if (!$this->isCsrfTokenValid('lesson_toggle_' . $course->getId(), (string) $request->request->get('_token'))) {
+        if (!$this->isCsrfTokenValid('lesson_toggle_'.$course->getId(), (string) $request->request->get('_token'))) {
             throw $this->createAccessDeniedException('Le jeton CSRF est invalide.');
         }
 
@@ -41,7 +42,7 @@ final class CourseConfirmationController extends AbstractController
         $lesson = $this->lessonRepository->findOneByUserAndCourse($user, $course);
         $now = new \DateTimeImmutable();
 
-        if ($lesson === null) {
+        if (null === $lesson) {
             $lesson = (new Lesson())
                 ->setName($course->getName() ?? 'Cours sans nom')
                 ->setCourse($course)

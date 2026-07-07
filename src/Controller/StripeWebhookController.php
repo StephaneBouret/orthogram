@@ -19,15 +19,16 @@ final class StripeWebhookController extends AbstractController
 {
     public function __construct(
         private readonly string $stripeWebhookSecret,
-        private readonly LoggerInterface $logger
-    ) {}
+        private readonly LoggerInterface $logger,
+    ) {
+    }
 
     #[Route('/stripe/webhook', name: 'app_stripe_webhook', methods: ['POST'])]
     public function __invoke(
         Request $request,
         SubscriptionRepository $subscriptionRepository,
         EntityManagerInterface $em,
-        EventDispatcherInterface $dispatcher
+        EventDispatcherInterface $dispatcher,
     ): Response {
         $payload = $request->getContent();
         $signature = $request->headers->get('Stripe-Signature');
@@ -91,8 +92,8 @@ final class StripeWebhookController extends AbstractController
                 }
 
                 if (
-                    (int) $paymentIntent->amount !== $subscription->getPriceCents() ||
-                    strtolower((string) $paymentIntent->currency) !== 'eur'
+                    (int) $paymentIntent->amount !== $subscription->getPriceCents()
+                    || 'eur' !== strtolower((string) $paymentIntent->currency)
                 ) {
                     $this->logger->warning('Stripe PaymentIntent incohérent pour une souscription.', [
                         'payment_intent' => $paymentIntent->id,

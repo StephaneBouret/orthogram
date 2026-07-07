@@ -20,7 +20,8 @@ class SectionsCrudController extends AbstractCrudController
 {
     public function __construct(
         private readonly SectionsRepository $sectionsRepository,
-    ) {}
+    ) {
+    }
 
     public static function getEntityFqcn(): string
     {
@@ -43,6 +44,7 @@ class SectionsCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         $actions = parent::configureActions($actions);
+
         return $actions;
     }
 
@@ -88,7 +90,7 @@ class SectionsCrudController extends AbstractCrudController
 
         $program = $entityInstance->getProgram();
 
-        if ($program === null || $entityInstance->getPosition() !== 0) {
+        if (null === $program || 0 !== $entityInstance->getPosition()) {
             return;
         }
 
@@ -103,11 +105,11 @@ class SectionsCrudController extends AbstractCrudController
 
         $program = $entityInstance->getProgram();
 
-        if ($program === null) {
+        if (null === $program) {
             return;
         }
 
-        if ($previousProgram !== null && !$this->isSameProgram($previousProgram, $program)) {
+        if (null !== $previousProgram && !$this->isSameProgram($previousProgram, $program)) {
             $this->reindexProgram($previousProgram, $entityInstance);
         }
 
@@ -146,6 +148,6 @@ class SectionsCrudController extends AbstractCrudController
             return true;
         }
 
-        return $firstProgram->getId() !== null && $firstProgram->getId() === $secondProgram->getId();
+        return null !== $firstProgram->getId() && $firstProgram->getId() === $secondProgram->getId();
     }
 }

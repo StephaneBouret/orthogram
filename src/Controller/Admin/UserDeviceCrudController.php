@@ -24,7 +24,9 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 class UserDeviceCrudController extends AbstractCrudController
 {
-    public function __construct(private readonly AdminUrlGeneratorInterface $adminUrlGenerator) {}
+    public function __construct(private readonly AdminUrlGeneratorInterface $adminUrlGenerator)
+    {
+    }
 
     public static function getEntityFqcn(): string
     {
@@ -46,7 +48,7 @@ class UserDeviceCrudController extends AbstractCrudController
     {
         return [
             AssociationField::new('user', 'Utilisateur')
-                ->formatValue(fn($value, $entity) => $entity->getUser()?->getFullname() ?? 'Utilisateur inconnu'),
+                ->formatValue(fn ($value, $entity) => $entity->getUser()?->getFullname() ?? 'Utilisateur inconnu'),
             TextField::new('deviceType', 'Type')
                 ->formatValue(static function ($value): string {
                     return match ($value) {
@@ -104,12 +106,12 @@ class UserDeviceCrudController extends AbstractCrudController
     {
         $revokeDevice = Action::new('revokeDevice', 'Révoquer', 'fa fa-ban')
             ->linkToCrudAction('revokeDevice')
-            ->displayIf(static fn(UserDevice $device): bool => $device->isActive())
+            ->displayIf(static fn (UserDevice $device): bool => $device->isActive())
             ->addCssClass('btn btn-danger');
 
         $activateDevice = Action::new('activateDevice', 'Activer', 'fa fa-check')
             ->linkToCrudAction('activateDevice')
-            ->displayIf(static fn(UserDevice $device): bool => $device->isRevoked())
+            ->displayIf(static fn (UserDevice $device): bool => $device->isRevoked())
             ->addCssClass('btn btn-success');
 
         return $actions

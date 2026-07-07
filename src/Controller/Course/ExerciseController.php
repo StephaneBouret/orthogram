@@ -22,7 +22,8 @@ class ExerciseController extends AbstractController
         private readonly ExerciceCorrectionService $exerciceCorrectionService,
         private readonly ExerciceAttemptRepository $exerciceAttemptRepository,
         private readonly EntityManagerInterface $entityManager,
-    ) {}
+    ) {
+    }
 
     #[Route('/{id}', name: 'app_exercise_show', methods: ['GET'])]
     public function show(Exercice $exercice): Response
@@ -41,7 +42,7 @@ class ExerciseController extends AbstractController
     {
         $this->denyAccessUnlessGrantedToExercice($exercice);
 
-        if ($exercice->getType() !== Exercice::TYPE_CLICK_WORDS) {
+        if (Exercice::TYPE_CLICK_WORDS !== $exercice->getType()) {
             return $this->json(['message' => 'Ce type d’exercice n’est pas encore pris en charge.'], Response::HTTP_BAD_REQUEST);
         }
 
@@ -51,7 +52,7 @@ class ExerciseController extends AbstractController
             : [];
         $selected = array_values(array_unique(array_filter(
             $selected,
-            static fn (mixed $tokenId): bool => is_string($tokenId) && $tokenId !== ''
+            static fn (mixed $tokenId): bool => is_string($tokenId) && '' !== $tokenId
         )));
         $result = $this->exerciceCorrectionService->correctClickWords($exercice, $selected);
         $user = $this->getUser();

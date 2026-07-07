@@ -23,7 +23,8 @@ final class CommentReportService
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly LoggerInterface $logger,
         private readonly string $supportEmail,
-    ) {}
+    ) {
+    }
 
     public function report(Comment $comment, User $reporter): ?bool
     {
@@ -80,7 +81,7 @@ final class CommentReportService
     {
         $course = $comment?->getCourse();
 
-        if ($course === null) {
+        if (null === $course) {
             return null;
         }
 

@@ -18,7 +18,8 @@ final class SuspendedUserSessionSubscriber implements EventSubscriberInterface
         private readonly Security $security,
         private readonly TokenStorageInterface $tokenStorage,
         private readonly UrlGeneratorInterface $urlGenerator,
-    ) {}
+    ) {
+    }
 
     public static function getSubscribedEvents(): array
     {

@@ -6,7 +6,6 @@ namespace App\Repository;
 
 use App\Entity\LoginFailureAlert;
 use App\Entity\User;
-use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -20,7 +19,7 @@ class LoginFailureAlertRepository extends ServiceEntityRepository
         parent::__construct($registry, LoginFailureAlert::class);
     }
 
-    public function hasRecentAlertForUser(User $user, DateTimeImmutable $since): bool
+    public function hasRecentAlertForUser(User $user, \DateTimeImmutable $since): bool
     {
         return null !== $this->createQueryBuilder('loginFailureAlert')
             ->select('loginFailureAlert.id')

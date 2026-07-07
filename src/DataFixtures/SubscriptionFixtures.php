@@ -82,7 +82,7 @@ class SubscriptionFixtures extends Fixture implements DependentFixtureInterface,
         string $title,
         \DateTimeImmutable $startsAt,
         \DateTimeImmutable $endsAt,
-        string $paymentReference
+        string $paymentReference,
     ): void {
         $subscription = new Subscription();
 

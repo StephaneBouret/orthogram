@@ -15,7 +15,8 @@ final class UserAdminActionService
         private readonly SendMailService $sendMailService,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly LoggerInterface $logger,
-    ) {}
+    ) {
+    }
 
     public function suspend(User $user): bool
     {
@@ -75,7 +76,7 @@ final class UserAdminActionService
         string $title,
         string $message,
         string $actionLabel,
-        string $actionUrl
+        string $actionUrl,
     ): bool {
         $this->em->flush();
 

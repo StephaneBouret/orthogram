@@ -39,7 +39,7 @@ class Company
     )]
     #[ZipCode([
         'iso' => 'FR',
-        'message' => 'Le code postal n\'est pas valide'
+        'message' => 'Le code postal n\'est pas valide',
     ])]
     private ?string $postalCode = null;
 

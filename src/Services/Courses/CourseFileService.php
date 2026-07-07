@@ -19,13 +19,14 @@ final class CourseFileService
         private readonly UploaderHelper $uploaderHelper,
         private readonly Filesystem $filesystem,
         private readonly Environment $twig,
-    ) {}
+    ) {
+    }
 
     public function getFileContent(Courses $course): ?string
     {
         $filePath = $this->uploaderHelper->asset($course, 'partialFile');
 
-        if ($filePath === null || $filePath === '') {
+        if (null === $filePath || '' === $filePath) {
             return null;
         }
 
@@ -37,7 +38,7 @@ final class CourseFileService
 
         $content = file_get_contents($fullPath);
 
-        if ($content === false) {
+        if (false === $content) {
             return null;
         }
 

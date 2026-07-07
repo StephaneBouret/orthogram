@@ -13,14 +13,14 @@ final class AmountExtension
         int $decimals = 2,
         string $decimalSeparator = ',',
         string $thousandsSeparator = ' ',
-        string $suffix = ' €'
+        string $suffix = ' €',
     ): string {
         if (null === $amount) {
-            return '0' . $suffix;
+            return '0'.$suffix;
         }
 
         $value = $amount / $divisor;
 
-        return number_format($value, $decimals, $decimalSeparator, $thousandsSeparator) . $suffix;
+        return number_format($value, $decimals, $decimalSeparator, $thousandsSeparator).$suffix;
     }
 }

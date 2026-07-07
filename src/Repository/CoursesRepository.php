@@ -37,7 +37,7 @@ class CoursesRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
 
-        return $maxPosition === null ? 0 : ((int) $maxPosition) + 1;
+        return null === $maxPosition ? 0 : ((int) $maxPosition) + 1;
     }
 
     /**
@@ -51,7 +51,7 @@ class CoursesRepository extends ServiceEntityRepository
             ->orderBy('c.position', 'ASC')
             ->addOrderBy('c.id', 'ASC');
 
-        if ($excludedCourse?->getId() !== null) {
+        if (null !== $excludedCourse?->getId()) {
             $queryBuilder
                 ->andWhere('c.id != :excludedCourseId')
                 ->setParameter('excludedCourseId', $excludedCourse->getId());
@@ -91,7 +91,7 @@ class CoursesRepository extends ServiceEntityRepository
             ->orderBy('s.position', 'ASC')
             ->addOrderBy('s.id', 'ASC');
 
-        if ($program !== null) {
+        if (null !== $program) {
             $queryBuilder
                 ->andWhere('s.program = :program')
                 ->setParameter('program', $program);

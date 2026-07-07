@@ -15,7 +15,8 @@ final class SubscriptionAdminActionService
         private readonly SendMailService $sendMailService,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly LoggerInterface $logger,
-    ) {}
+    ) {
+    }
 
     public function grantFreeYear(Subscription $subscription): bool
     {
@@ -106,12 +107,10 @@ final class SubscriptionAdminActionService
 
         if (
             !$subscription->isLifetime()
-            && $subscription->getEndsAt() !== null
+            && null !== $subscription->getEndsAt()
             && $subscription->getEndsAt() < new \DateTimeImmutable()
         ) {
-            throw new \RuntimeException(
-                'Cet abonnement est arrivé à expiration pendant sa suspension. Il faut plutôt offrir 1 an ou un accès à vie.'
-            );
+            throw new \RuntimeException('Cet abonnement est arrivé à expiration pendant sa suspension. Il faut plutôt offrir 1 an ou un accès à vie.');
         }
 
         $subscription->reactivate();
@@ -130,7 +129,7 @@ final class SubscriptionAdminActionService
     private function assertStatusAllowed(
         Subscription $subscription,
         array $allowedStatuses,
-        string $message
+        string $message,
     ): void {
         if (!in_array($subscription->getEffectiveStatus(), $allowedStatuses, true)) {
             throw new \RuntimeException($message);
@@ -141,7 +140,7 @@ final class SubscriptionAdminActionService
         Subscription $subscription,
         string $subject,
         string $title,
-        string $message
+        string $message,
     ): bool {
         $this->em->flush();
 

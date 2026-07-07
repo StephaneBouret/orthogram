@@ -31,13 +31,13 @@ final class CoursesAutocompleteField extends AbstractType
             'filter_query' => static function (QueryBuilder $queryBuilder, string $query): void {
                 $queryBuilder->setMaxResults(10);
 
-                if ($query === '') {
+                if ('' === $query) {
                     return;
                 }
 
                 $queryBuilder
                     ->andWhere("LOWER(c.name) LIKE :courseSearch ESCAPE '\\'")
-                    ->setParameter('courseSearch', '%' . addcslashes(mb_strtolower($query), '\\%_') . '%');
+                    ->setParameter('courseSearch', '%'.addcslashes(mb_strtolower($query), '\\%_').'%');
             },
             'query_builder' => static function (Options $options): callable {
                 return static function (EntityRepository $repository) use ($options) {
@@ -51,7 +51,7 @@ final class CoursesAutocompleteField extends AbstractType
 
                     $programSlug = $options['extra_options']['program_slug'] ?? null;
 
-                    if (is_string($programSlug) && $programSlug !== '') {
+                    if (is_string($programSlug) && '' !== $programSlug) {
                         $queryBuilder
                             ->andWhere('p.slug = :programSlug')
                             ->setParameter('programSlug', $programSlug);

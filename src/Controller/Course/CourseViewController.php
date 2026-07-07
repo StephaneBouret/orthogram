@@ -2,8 +2,8 @@
 
 namespace App\Controller\Course;
 
-use App\Entity\Courses;
 use App\Entity\Comment;
+use App\Entity\Courses;
 use App\Entity\Program;
 use App\Entity\User;
 use App\Form\CommentFormType;
@@ -30,7 +30,8 @@ final class CourseViewController extends AbstractController
         private readonly LessonRepository $lessonRepository,
         private readonly CommentRepository $commentRepository,
         private readonly ExerciceAttemptRepository $exerciceAttemptRepository,
-    ) {}
+    ) {
+    }
 
     #[Route('/courses/{programSlug}/{sectionSlug}/{courseSlug}', name: 'app_course_show', methods: ['GET'])]
     public function __invoke(
@@ -41,13 +42,13 @@ final class CourseViewController extends AbstractController
     ): Response {
         $section = $this->sectionsRepository->findOneByProgramAndSlug($program, $sectionSlug);
 
-        if ($section === null) {
+        if (null === $section) {
             throw $this->createNotFoundException("La section demandée n'existe pas.");
         }
 
         $course = $this->coursesRepository->findOneBySectionAndSlug($section, $courseSlug);
 
-        if ($course === null) {
+        if (null === $course) {
             throw $this->createNotFoundException("Le cours demandé n'existe pas.");
         }
 
@@ -60,7 +61,7 @@ final class CourseViewController extends AbstractController
         $nbrLessonsDone = $user instanceof User ? $this->lessonRepository->countDoneByUserAndProgram($user, $program) : 0;
         $completedCourseIds = $user instanceof User ? $this->lessonRepository->findDoneCourseIdsByUserAndProgram($user, $program) : [];
         $userRootComment = $user instanceof User ? $this->commentRepository->findRootByUserAndCourse($user, $course) : null;
-        $latestExerciceAttempt = $user instanceof User && $course->getExercice() !== null
+        $latestExerciceAttempt = $user instanceof User && null !== $course->getExercice()
             ? $this->exerciceAttemptRepository->findLatestByUserAndExercice($user, $course->getExercice())
             : null;
         $commentForm = $this->createForm(CommentFormType::class, new Comment());

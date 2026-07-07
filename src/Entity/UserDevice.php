@@ -251,12 +251,12 @@ class UserDevice
 
     public function isActive(): bool
     {
-        return $this->status === DeviceStatus::ACTIVE && null === $this->revokedAt;
+        return DeviceStatus::ACTIVE === $this->status && null === $this->revokedAt;
     }
 
     public function isRevoked(): bool
     {
-        return $this->status === DeviceStatus::REVOKED || null !== $this->revokedAt;
+        return DeviceStatus::REVOKED === $this->status || null !== $this->revokedAt;
     }
 
     public function markUsed(?string $ip = null): static

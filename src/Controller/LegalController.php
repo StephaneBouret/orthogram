@@ -10,7 +10,9 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class LegalController extends AbstractController
 {
-    public function __construct(private CompanyRepository $companyRepository) {}
+    public function __construct(private CompanyRepository $companyRepository)
+    {
+    }
 
     #[Route('/mentions-legales', name: 'app_legal', methods: ['GET'])]
     public function index(): Response

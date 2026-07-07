@@ -181,7 +181,7 @@ class Comment
 
     public function isRoot(): bool
     {
-        return $this->parent === null;
+        return null === $this->parent;
     }
 
     public function hasReplies(): bool

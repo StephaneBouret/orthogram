@@ -79,11 +79,11 @@ class SubscriptionRepository extends ServiceEntityRepository
             ->setParameter('end', $targetEnd)
             ->orderBy('s.endsAt', 'ASC');
 
-        if ($days === 30) {
+        if (30 === $days) {
             $qb->andWhere('s.reminder30SentAt IS NULL');
         }
 
-        if ($days === 15) {
+        if (15 === $days) {
             $qb->andWhere('s.reminder15SentAt IS NULL');
         }
 

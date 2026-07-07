@@ -11,7 +11,8 @@ final class ForgotIdentifierRequestService
         private readonly SendMailService $sendMailService,
         private readonly LoggerInterface $logger,
         private readonly string $supportEmail,
-    ) {}
+    ) {
+    }
 
     /**
      * @param array<string, mixed> $data

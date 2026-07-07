@@ -22,8 +22,8 @@ class Courses
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "Le nom du cours est obligatoire !")]
-    #[Assert\Length(min: 3, max: 255, minMessage: "Le nom du cours doit avoir au moins {{ limit }} caractères")]
+    #[Assert\NotBlank(message: 'Le nom du cours est obligatoire !')]
+    #[Assert\Length(min: 3, max: 255, minMessage: 'Le nom du cours doit avoir au moins {{ limit }} caractères')]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
@@ -39,11 +39,11 @@ class Courses
     private ?string $correctionText = null;
 
     #[ORM\Column(options: ['default' => 0])]
-    #[Assert\PositiveOrZero(message: "La position ne peut pas être négative.")]
+    #[Assert\PositiveOrZero(message: 'La position ne peut pas être négative.')]
     private ?int $position = 0;
 
     #[ORM\Column(nullable: true)]
-    #[Assert\PositiveOrZero(message: "La durée estimée ne peut pas être négative.")]
+    #[Assert\PositiveOrZero(message: 'La durée estimée ne peut pas être négative.')]
     private ?int $durationMinutes = null;
 
     #[Vich\UploadableField(mapping: 'courses_files', fileNameProperty: 'partialFileName')]

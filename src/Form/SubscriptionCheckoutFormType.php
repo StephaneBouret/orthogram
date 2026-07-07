@@ -19,7 +19,7 @@ class SubscriptionCheckoutFormType extends AbstractType
                     new IsTrue(
                         message: 'Vous devez accepter les conditions générales de vente.',
                     ),
-                ]
+                ],
             ])
             ->add('waiveWithdrawalRight', CheckboxType::class, [
                 'mapped' => false,

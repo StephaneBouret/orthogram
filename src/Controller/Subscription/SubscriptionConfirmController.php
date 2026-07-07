@@ -13,7 +13,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/abonnement')]
 final class SubscriptionConfirmController extends AbstractController
 {
-    public function __construct(private readonly StripeService $stripeService) {}
+    public function __construct(private readonly StripeService $stripeService)
+    {
+    }
 
     #[IsGranted('ROLE_USER', message: 'Vous devez être connecté pour accéder à cette page')]
     #[Route('/confirm/{id}', name: 'app_subscription_confirm', methods: ['GET'])]
@@ -45,9 +47,9 @@ final class SubscriptionConfirmController extends AbstractController
         }
 
         if (
-            null === $subscription->getTermsAcceptedAt() ||
-            null === $subscription->getImmediateAccessRequestedAt() ||
-            null === $subscription->getWithdrawalRightWaivedAt()
+            null === $subscription->getTermsAcceptedAt()
+            || null === $subscription->getImmediateAccessRequestedAt()
+            || null === $subscription->getWithdrawalRightWaivedAt()
         ) {
             $this->addFlash('warning', 'Veuillez confirmer les conditions de souscription avant de procéder au paiement.');
 

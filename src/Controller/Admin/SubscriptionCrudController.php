@@ -111,9 +111,9 @@ class SubscriptionCrudController extends AbstractCrudController
             ->displayIf(static function (Subscription $subscription): bool {
                 $status = $subscription->getEffectiveStatus();
 
-                return $status === SubscriptionStatus::ACTIVE
-                    || $status === SubscriptionStatus::EXPIRED
-                    || $status === SubscriptionStatus::SUSPENDED;
+                return SubscriptionStatus::ACTIVE === $status
+                    || SubscriptionStatus::EXPIRED === $status
+                    || SubscriptionStatus::SUSPENDED === $status;
             })
             ->addCssClass('btn btn-info');
 
@@ -122,16 +122,16 @@ class SubscriptionCrudController extends AbstractCrudController
             ->displayIf(static function (Subscription $subscription): bool {
                 $status = $subscription->getEffectiveStatus();
 
-                return $status === SubscriptionStatus::ACTIVE
-                    || $status === SubscriptionStatus::EXPIRED
-                    || $status === SubscriptionStatus::SUSPENDED;
+                return SubscriptionStatus::ACTIVE === $status
+                    || SubscriptionStatus::EXPIRED === $status
+                    || SubscriptionStatus::SUSPENDED === $status;
             })
             ->addCssClass('btn btn-success');
 
         $suspendSubscription = Action::new('suspendSubscription', 'Suspendre', 'fa fa-pause')
             ->linkToCrudAction('suspendSubscription')
             ->displayIf(static function (Subscription $subscription): bool {
-                return $subscription->getEffectiveStatus() === SubscriptionStatus::ACTIVE;
+                return SubscriptionStatus::ACTIVE === $subscription->getEffectiveStatus();
             })
             ->addCssClass('btn btn-warning');
 
@@ -140,18 +140,18 @@ class SubscriptionCrudController extends AbstractCrudController
             ->displayIf(static function (Subscription $subscription): bool {
                 $status = $subscription->getEffectiveStatus();
 
-                return $status === SubscriptionStatus::ACTIVE
-                    || $status === SubscriptionStatus::SUSPENDED;
+                return SubscriptionStatus::ACTIVE === $status
+                    || SubscriptionStatus::SUSPENDED === $status;
             })
             ->addCssClass('btn btn-danger');
 
         $reactivateSubscription = Action::new('reactivateSubscription', 'Réactiver', 'fa fa-play')
             ->linkToCrudAction('reactivateSubscription')
             ->displayIf(static function (Subscription $subscription): bool {
-                return $subscription->getEffectiveStatus() === SubscriptionStatus::SUSPENDED
+                return SubscriptionStatus::SUSPENDED === $subscription->getEffectiveStatus()
                     && (
                         $subscription->isLifetime()
-                        || $subscription->getEndsAt() === null
+                        || null === $subscription->getEndsAt()
                         || $subscription->getEndsAt() >= new \DateTimeImmutable()
                     );
             })
@@ -198,7 +198,7 @@ class SubscriptionCrudController extends AbstractCrudController
     public function grantFreeYear(
         AdminContext $context,
         SubscriptionRepository $subscriptionRepository,
-        SubscriptionAdminActionService $subscriptionAdminActionService
+        SubscriptionAdminActionService $subscriptionAdminActionService,
     ): RedirectResponse {
         $subscription = $this->getSubscriptionFromContext($context, $subscriptionRepository);
 
@@ -210,6 +210,7 @@ class SubscriptionCrudController extends AbstractCrudController
             $emailSent = $subscriptionAdminActionService->grantFreeYear($subscription);
         } catch (\RuntimeException $e) {
             $this->addFlash('warning', $e->getMessage());
+
             return $this->redirectToSubscriptionIndex();
         }
 
@@ -223,7 +224,7 @@ class SubscriptionCrudController extends AbstractCrudController
     public function grantLifetime(
         AdminContext $context,
         SubscriptionRepository $subscriptionRepository,
-        SubscriptionAdminActionService $subscriptionAdminActionService
+        SubscriptionAdminActionService $subscriptionAdminActionService,
     ): RedirectResponse {
         $subscription = $this->getSubscriptionFromContext($context, $subscriptionRepository);
 
@@ -235,6 +236,7 @@ class SubscriptionCrudController extends AbstractCrudController
             $emailSent = $subscriptionAdminActionService->grantLifetime($subscription);
         } catch (\RuntimeException $e) {
             $this->addFlash('warning', $e->getMessage());
+
             return $this->redirectToSubscriptionIndex();
         }
 
@@ -248,7 +250,7 @@ class SubscriptionCrudController extends AbstractCrudController
     public function suspendSubscription(
         AdminContext $context,
         SubscriptionRepository $subscriptionRepository,
-        SubscriptionAdminActionService $subscriptionAdminActionService
+        SubscriptionAdminActionService $subscriptionAdminActionService,
     ): RedirectResponse {
         $subscription = $this->getSubscriptionFromContext($context, $subscriptionRepository);
 
@@ -260,6 +262,7 @@ class SubscriptionCrudController extends AbstractCrudController
             $emailSent = $subscriptionAdminActionService->suspend($subscription);
         } catch (\RuntimeException $e) {
             $this->addFlash('warning', $e->getMessage());
+
             return $this->redirectToSubscriptionIndex();
         }
 
@@ -273,7 +276,7 @@ class SubscriptionCrudController extends AbstractCrudController
     public function cancelSubscription(
         AdminContext $context,
         SubscriptionRepository $subscriptionRepository,
-        SubscriptionAdminActionService $subscriptionAdminActionService
+        SubscriptionAdminActionService $subscriptionAdminActionService,
     ): RedirectResponse {
         $subscription = $this->getSubscriptionFromContext($context, $subscriptionRepository);
 
@@ -285,6 +288,7 @@ class SubscriptionCrudController extends AbstractCrudController
             $emailSent = $subscriptionAdminActionService->cancel($subscription);
         } catch (\RuntimeException $e) {
             $this->addFlash('warning', $e->getMessage());
+
             return $this->redirectToSubscriptionIndex();
         }
 
@@ -298,7 +302,7 @@ class SubscriptionCrudController extends AbstractCrudController
     public function reactivateSubscription(
         AdminContext $context,
         SubscriptionRepository $subscriptionRepository,
-        SubscriptionAdminActionService $subscriptionAdminActionService
+        SubscriptionAdminActionService $subscriptionAdminActionService,
     ): RedirectResponse {
         $subscription = $this->getSubscriptionFromContext($context, $subscriptionRepository);
 
@@ -310,6 +314,7 @@ class SubscriptionCrudController extends AbstractCrudController
             $emailSent = $subscriptionAdminActionService->reactivate($subscription);
         } catch (\RuntimeException $e) {
             $this->addFlash('warning', $e->getMessage());
+
             return $this->redirectToSubscriptionIndex();
         }
 
@@ -321,7 +326,7 @@ class SubscriptionCrudController extends AbstractCrudController
 
     private function getSubscriptionFromContext(
         AdminContext $context,
-        SubscriptionRepository $subscriptionRepository
+        SubscriptionRepository $subscriptionRepository,
     ): ?Subscription {
         $entityId = $context->getRequest()->query->get('entityId');
 

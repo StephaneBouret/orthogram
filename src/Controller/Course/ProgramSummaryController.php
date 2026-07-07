@@ -21,7 +21,8 @@ final class ProgramSummaryController extends AbstractController
         private readonly SectionsRepository $sectionsRepository,
         private readonly SectionDurationService $sectionDurationService,
         private readonly LessonRepository $lessonRepository,
-    ) {}
+    ) {
+    }
 
     #[Route('/courses/{slug}', name: 'app_course_program_summary', methods: ['GET'])]
     public function __invoke(

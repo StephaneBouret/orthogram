@@ -2,8 +2,6 @@
 
 namespace App\Controller\Admin;
 
-use App\Controller\Admin\InvitationCrudController;
-use App\Controller\Admin\SubscriptionCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -22,6 +20,7 @@ class DashboardController extends AbstractDashboardController
         //
         // 1.2) Same example but using the "ugly URLs" that were used in previous EasyAdmin versions:
         $adminUrlGenerator = $this->container->get(AdminUrlGeneratorInterface::class);
+
         return $this->redirect($adminUrlGenerator->setController(ProgramCrudController::class)->generateUrl());
     }
 

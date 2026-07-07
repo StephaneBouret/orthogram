@@ -20,7 +20,7 @@ class ExerciceCorrectionService
     {
         $selectedTokenIds = array_values(array_unique(array_filter(
             $selectedTokenIds,
-            static fn (mixed $tokenId): bool => is_string($tokenId) && $tokenId !== ''
+            static fn (mixed $tokenId): bool => is_string($tokenId) && '' !== $tokenId
         )));
 
         $selected = array_fill_keys($selectedTokenIds, true);
@@ -37,7 +37,7 @@ class ExerciceCorrectionService
             $expectedTokenIds[$tokenId] = true;
 
             if (isset($selected[$tokenId])) {
-                $score++;
+                ++$score;
                 $items[] = $this->buildItem($tokenId, 'correct', $token);
             }
         }
@@ -61,7 +61,7 @@ class ExerciceCorrectionService
         return [
             'score' => $score,
             'total' => $total,
-            'percentage' => $total === 0 ? 0 : (int) round(($score / $total) * 100),
+            'percentage' => 0 === $total ? 0 : (int) round(($score / $total) * 100),
             'items' => $items,
         ];
     }
