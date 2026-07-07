@@ -100,7 +100,7 @@ class ExerciceAttempt
     }
 
     /**
-     * @param list<string> $selectedTokenIds
+     * @param array<int|string, string> $selectedTokenIds
      */
     public function setSelectedTokenIds(array $selectedTokenIds): static
     {
@@ -118,7 +118,7 @@ class ExerciceAttempt
     }
 
     /**
-     * @param list<array<string, mixed>> $correctionItems
+     * @param array<int|string, array<string, mixed>> $correctionItems
      */
     public function setCorrectionItems(array $correctionItems): static
     {

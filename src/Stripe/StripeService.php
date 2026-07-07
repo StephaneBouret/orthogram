@@ -3,6 +3,7 @@
 namespace App\Stripe;
 
 use App\Entity\Subscription;
+use Stripe\PaymentIntent;
 use Stripe\StripeClient;
 
 class StripeService
@@ -23,8 +24,10 @@ class StripeService
 
     /**
      * Méthode générique : création d'un PaymentIntent avec metadata et description.
+     *
+     * @param array<string, string|null> $metadata
      */
-    public function createPaymentIntent(int $amount, array $metadata = [], ?string $description = null)
+    public function createPaymentIntent(int $amount, array $metadata = [], ?string $description = null): PaymentIntent
     {
         return $this->client->paymentIntents->create([
             'amount' => $amount,
@@ -38,7 +41,7 @@ class StripeService
     /**
      * Souscription (Subscription) — PaymentIntent avec metadata et description dédiée.
      */
-    public function getPaymentIntentForSubscription(Subscription $subscription)
+    public function getPaymentIntentForSubscription(Subscription $subscription): PaymentIntent
     {
         $user = $subscription->getUser();
 

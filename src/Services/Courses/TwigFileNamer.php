@@ -9,6 +9,9 @@ use Vich\UploaderBundle\Mapping\PropertyMapping;
 use Vich\UploaderBundle\Naming\NamerInterface;
 use Vich\UploaderBundle\Util\Transliterator;
 
+/**
+ * @implements NamerInterface<object>
+ */
 final class TwigFileNamer implements NamerInterface
 {
     private const TWIG_EXTENSION = '.html.twig';
@@ -19,7 +22,7 @@ final class TwigFileNamer implements NamerInterface
     ) {
     }
 
-    public function name(object|array $object, PropertyMapping $mapping): string
+    public function name(object $object, PropertyMapping $mapping): string
     {
         $file = $mapping->getFile($object);
 

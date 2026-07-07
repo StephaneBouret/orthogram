@@ -12,6 +12,9 @@ class SendMailService
     {
     }
 
+    /**
+     * @param array<string, mixed> $context
+     */
     public function sendMail(
         string $name,
         string $to,

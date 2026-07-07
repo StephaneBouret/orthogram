@@ -7,7 +7,7 @@ use App\Entity\Exercice;
 class ExerciceCorrectionService
 {
     /**
-     * @param list<string> $selectedTokenIds
+     * @param array<int|string, mixed> $selectedTokenIds
      *
      * @return array{
      *     score: int,

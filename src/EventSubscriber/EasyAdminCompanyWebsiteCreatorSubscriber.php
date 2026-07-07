@@ -39,7 +39,7 @@ final class EasyAdminCompanyWebsiteCreatorSubscriber implements EventSubscriberI
 
         $parts = preg_split('/\s+/', $value, 2);
 
-        if (false === $parts || [] === $parts) {
+        if (false === $parts) {
             return null;
         }
 

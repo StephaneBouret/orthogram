@@ -112,7 +112,9 @@ class Avatar
         return $this->imageName;
     }
 
-    // Méthodes de sérialisation pour PHP 7.4+ et compatibilité avec PHP 8
+    /**
+     * @return array{id: int|null, imageName: string|null, updatedAt: \DateTimeImmutable|null, user: User|null}
+     */
     public function __serialize(): array
     {
         return [
@@ -123,6 +125,9 @@ class Avatar
         ];
     }
 
+    /**
+     * @param array{id: int|null, imageName: string|null, updatedAt: \DateTimeImmutable|null, user: User|null} $data
+     */
     public function __unserialize(array $data): void
     {
         $this->id = $data['id'];

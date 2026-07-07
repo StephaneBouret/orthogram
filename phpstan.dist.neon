@@ -1,0 +1,42 @@
+includes:
+    - vendor/phpstan/phpstan-symfony/extension.neon
+
+parameters:
+    level: 6
+    paths:
+        - bin/
+        - config/
+        - public/
+        - src/
+        - tests/
+
+    symfony:
+        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+    ignoreErrors:
+        # EasyAdmin utilise des génériques PHPDoc non documentés dans les exemples officiels.
+        # Les CRUD restent typés via getEntityFqcn()
+        -
+            identifier: missingType.generics
+            path: src/Controller/Admin/*
+
+        -
+            identifier: missingType.generics
+            path: src/Form/*
+
+        -
+            identifier: missingType.generics
+            path: src/Services/AvatarService.php
+
+        -
+            identifier: property.unusedType
+            path: src/Entity/*
+
+        # Génériques EasyAdmin non documentés dans les exemples officiels.
+        -
+            identifier: missingType.generics
+            path: src/EventSubscriber/EasyAdmin*Subscriber.php
+
+        # Bootstrap de test Symfony : bootEnv existe dans la version installée.
+        -
+            identifier: function.alreadyNarrowedType
+            path: tests/bootstrap.php

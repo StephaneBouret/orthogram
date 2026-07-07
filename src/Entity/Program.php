@@ -244,6 +244,11 @@ class Program
         return $this->imageName;
     }
 
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
     /**
      * @return Collection<int, ProgramHighlight>
      */

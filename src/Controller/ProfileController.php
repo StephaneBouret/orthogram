@@ -59,24 +59,28 @@ final class ProfileController extends AbstractController
         if ($profileForm->isSubmitted() && $profileForm->isValid()) {
             $requestedEmail = $emailChangeService->normalizeEmail((string) $profileForm->get('email')->getData());
             $emailChanged = $requestedEmail !== $emailChangeService->normalizeEmail($currentEmail);
+            $profileHasErrors = false;
 
             if ($emailChanged) {
                 $emailChangePassword = (string) $profileForm->get('emailChangePassword')->getData();
 
                 if ('' === trim($emailChangePassword)) {
                     $profileForm->get('emailChangePassword')->addError(new FormError('Merci de confirmer le changement d\'identifiant avec votre mot de passe actuel.'));
+                    $profileHasErrors = true;
                 } elseif (!$passwordHasher->isPasswordValid($user, $emailChangePassword)) {
                     $profileForm->get('emailChangePassword')->addError(new FormError('Le mot de passe actuel est incorrect.'));
+                    $profileHasErrors = true;
                 }
 
                 try {
                     $emailChangeService->assertEmailCanBeRequested($user, $requestedEmail);
                 } catch (\InvalidArgumentException $exception) {
                     $profileForm->get('email')->addError(new FormError($exception->getMessage()));
+                    $profileHasErrors = true;
                 }
             }
 
-            if (!$profileForm->isValid()) {
+            if ($profileHasErrors) {
                 return $this->render('profile/edit.html.twig', [
                     'user' => $user,
                     'avatarForm' => $avatarForm,

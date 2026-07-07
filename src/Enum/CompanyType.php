@@ -16,6 +16,9 @@ enum CompanyType: string
         return $this->value;
     }
 
+    /**
+     * @return array<string, self>
+     */
     public static function choices(): array
     {
         $choices = [];

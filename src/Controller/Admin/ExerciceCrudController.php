@@ -192,7 +192,7 @@ class ExerciceCrudController extends AbstractCrudController
         Request $request,
         ExerciceRepository $exerciceRepository,
     ): ?Exercice {
-        $entity = $context->getEntity()?->getInstance();
+        $entity = $context->getEntity()->getInstance();
 
         if ($entity instanceof Exercice) {
             return $entity;

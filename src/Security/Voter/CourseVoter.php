@@ -11,6 +11,9 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
+/**
+ * @extends Voter<'VIEW_COURSE'|'SECTION_VIEW'|'PROGRAM_VIEW', Courses|Sections|Program>
+ */
 final class CourseVoter extends Voter
 {
     public const VIEW = 'VIEW_COURSE';
@@ -39,12 +42,15 @@ final class CourseVoter extends Voter
             return false;
         }
 
-        return match ($attribute) {
-            self::VIEW => $subject instanceof Courses && $this->canViewCourse($subject, $user),
-            self::SECTION_VIEW => $subject instanceof Sections && $this->canViewSection($subject, $user),
-            self::PROGRAM_VIEW => $subject instanceof Program && $this->canViewProgram($subject, $user),
-            default => false,
-        };
+        if (self::VIEW === $attribute) {
+            return $subject instanceof Courses && $this->canViewCourse($subject, $user);
+        }
+
+        if (self::SECTION_VIEW === $attribute) {
+            return $subject instanceof Sections && $this->canViewSection($subject, $user);
+        }
+
+        return $subject instanceof Program && $this->canViewProgram($subject, $user);
     }
 
     private function canViewCourse(Courses $course, User $user): bool

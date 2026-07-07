@@ -7,6 +7,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
+use Faker\Generator;
 use libphonenumber\PhoneNumberUtil;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -31,7 +32,7 @@ class UserFixtures extends Fixture implements FixtureGroupInterface
         $admin = new User();
         $hash = $this->passwordHasher->hashPassword($admin, 'password');
 
-        $adminRawPhoneNumber = $faker->mobileNumber();
+        $adminRawPhoneNumber = $this->mobileNumber($faker);
         $adminPhoneNumberObject = $phoneNumberUtil->parse($adminRawPhoneNumber, 'FR');
 
         $admin->setEmail('admin@gmail.com')
@@ -53,7 +54,7 @@ class UserFixtures extends Fixture implements FixtureGroupInterface
             $user = new User();
             $hash = $this->passwordHasher->hashPassword($user, 'password');
 
-            $rawPhoneNumber = $faker->mobileNumber();
+            $rawPhoneNumber = $this->mobileNumber($faker);
             $phoneNumberObject = $phoneNumberUtil->parse($rawPhoneNumber, 'FR');
 
             $user->setEmail("user$u@gmail.com")
@@ -71,5 +72,10 @@ class UserFixtures extends Fixture implements FixtureGroupInterface
         }
 
         $manager->flush();
+    }
+
+    private function mobileNumber(Generator $faker): string
+    {
+        return $faker->numerify('06########');
     }
 }

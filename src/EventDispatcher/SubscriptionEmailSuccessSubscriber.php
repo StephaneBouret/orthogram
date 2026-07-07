@@ -12,7 +12,6 @@ class SubscriptionEmailSuccessSubscriber implements EventSubscriberInterface
     public function __construct(
         private readonly SendMailService $sendMail,
         private readonly UrlGeneratorInterface $urlGenerator,
-        private readonly string $defaultFrom,
     ) {
     }
 
@@ -48,20 +47,5 @@ class SubscriptionEmailSuccessSubscriber implements EventSubscriberInterface
                 null
             );
         }
-
-        // A décommenter en prod si tu veux notifier l'admin
-        // if (!empty($this->defaultFrom)) {
-        //     $this->sendMail->sendMail(
-        //         sprintf('✅ Abonnement activé — %s', $user?->getEmail() ?? 'user inconnu'),
-        //         $this->defaultFrom,
-        //         'Un abonnement praticien vient d'être activé',
-        //         'subscription_success_admin',
-        //         [
-        //             'subscription' => $subscription,
-        //             'user' => $user,
-        //         ],
-        //         null,
-        //     );
-        // }
     }
 }

@@ -44,10 +44,6 @@ services:
         arguments:
             $stripeWebhookSecret: '%env(STRIPE_WEBHOOK_SECRET)%'
 
-    App\EventDispatcher\SubscriptionEmailSuccessSubscriber:
-        arguments:
-            $defaultFrom: "%env(MAILER_DEFAULT_FROM)%"
-
     App\EventSubscriber\LoginRateLimiterSubscriber:
         arguments:
             $loginGlobalLimiter: '@limiter.login_global'

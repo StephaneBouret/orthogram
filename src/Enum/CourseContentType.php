@@ -23,6 +23,9 @@ enum CourseContentType: string
         };
     }
 
+    /**
+     * @return array<string, self>
+     */
     public static function choices(): array
     {
         $choices = [];
