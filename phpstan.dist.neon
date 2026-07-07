@@ -40,3 +40,8 @@ parameters:
         -
             identifier: function.alreadyNarrowedType
             path: tests/bootstrap.php
+
+        # Méthode appelée implicitement par Symfony 8.1 (Kernel)
+        -
+            identifier: method.unused
+            path: src/Kernel.php
