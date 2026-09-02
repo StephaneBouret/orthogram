@@ -2047,7 +2047,18 @@ html[data-bs-theme="dark"] .course-page .thinksfull {
 
 .word-token-wrap {
     display: inline;
-    margin-right: -0.04rem;
+}
+
+/* Token placé juste avant un token joint */
+.word-token-wrap:has(+ .word-token-wrap--joined) .word-token {
+    padding-right: 0;
+    margin-right: -1px;
+}
+
+/* Token devant être collé au précédent */
+.word-token-wrap--joined .word-token {
+    padding-left: 0;
+    margin-left: -0.08em;
 }
 
 .word-token {

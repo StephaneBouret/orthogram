@@ -211,6 +211,10 @@ class Exercice
                         'isAnswer' => filter_var($word['isAnswer'] ?? false, FILTER_VALIDATE_BOOL),
                     ];
 
+                    if (filter_var($word['joinPrevious'] ?? false, FILTER_VALIDATE_BOOL)) {
+                        $normalizedWord['joinPrevious'] = true;
+                    }
+
                     $punctuationAfter = (string) ($word['punctuationAfter'] ?? $word['after'] ?? '');
                     if ('' !== trim($punctuationAfter)) {
                         $normalizedWord['punctuationAfter'] = $this->normalizePunctuationAfter($punctuationAfter);
@@ -248,7 +252,7 @@ class Exercice
         $trimmed = trim($punctuationAfter);
 
         if (in_array($trimmed, [':', ';', '?', '!'], true)) {
-            return ' '.$trimmed;
+            return ' ' . $trimmed;
         }
 
         return $punctuationAfter;

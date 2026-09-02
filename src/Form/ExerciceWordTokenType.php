@@ -25,6 +25,11 @@ class ExerciceWordTokenType extends AbstractType
                 'required' => false,
                 'help' => 'Ex. ., ,, :',
             ])
+            ->add('joinPrevious', CheckboxType::class, [
+                'label' => 'Coller au mot précédent',
+                'required' => false,
+                'help' => 'Ex. l’agence : cochez cette option sur le token « agence ».',
+            ])
             ->add('isAnswer', CheckboxType::class, [
                 'label' => 'Bonne réponse',
                 'required' => false,

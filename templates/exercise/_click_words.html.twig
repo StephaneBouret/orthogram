@@ -15,10 +15,22 @@
         {% if latestAttempt %}
             <div class="exercise-last-attempt">
                 <div>
-                    <strong>Dernier résultat : {{ latestAttempt.score }}/{{ latestAttempt.total }} ({{ latestAttempt.percentage }} %)</strong>
-                    <span>réalisé le {{ latestAttempt.submittedAt|date('d/m/Y à H:i') }}</span>
+                    <strong>
+                        Dernier résultat :
+                        {{ latestAttempt.score }}/{{ latestAttempt.total }}
+                        ({{ latestAttempt.percentage }} %)
+                    </strong>
+
+                    <span>
+                        réalisé le {{ latestAttempt.submittedAt|date('d/m/Y à H:i') }}
+                    </span>
                 </div>
-                <button type="button" class="btn btn-outline-grey" data-action="click->click-words#reset">
+
+                <button
+                    type="button"
+                    class="btn btn-outline-grey"
+                    data-action="click->click-words#reset"
+                >
                     Repasser l'exercice
                 </button>
             </div>
@@ -26,35 +38,55 @@
 
         <ol class="click-words-sentences">
             {% for sentence in sentences %}
-                <li class="click-words-sentence" data-sentence-id="{{ sentence.id }}">
+                <li
+                    class="click-words-sentence"
+                    data-sentence-id="{{ sentence.id }}"
+                >
                     <p>
-                        {% for word in sentence.words|default([]) %}
-                            <span class="word-token-wrap">
-                                <button
+                        {%- for word in sentence.words|default([]) -%}
+
+                            {%- if not loop.first and not word.joinPrevious|default(false) -%}
+                                {{- ' ' -}}
+                            {%- endif -%}
+
+                            <span
+                                class="word-token-wrap{{ word.joinPrevious|default(false) ? ' word-token-wrap--joined' : '' }}"
+                            ><button
                                     type="button"
                                     class="word-token"
                                     data-token-id="{{ word.id }}"
                                     data-click-words-target="token"
                                     data-action="click->click-words#toggle"
                                     aria-pressed="false"
-                                >{{ word.text }}</button>{{ word.punctuationAfter|default(word.after|default('')) }}
-                            </span>
-                        {% endfor %}
+                                >{{ word.text }}</button>{{ word.punctuationAfter|default(word.after|default('')) }}</span>
+
+                        {%- endfor -%}
                     </p>
                 </li>
             {% else %}
-                <p class="mb-0 text-muted">Les phrases de cet exercice seront bientôt disponibles.</p>
+                <p class="mb-0 text-muted">
+                    Les phrases de cet exercice seront bientôt disponibles.
+                </p>
             {% endfor %}
         </ol>
 
         {% if sentences %}
             <div class="exercise-actions">
-                <button type="button" class="btn btn-submit-dark" data-click-words-target="submit" data-action="click->click-words#submit">
+                <button
+                    type="button"
+                    class="btn btn-submit-dark"
+                    data-click-words-target="submit"
+                    data-action="click->click-words#submit"
+                >
                     Valider les réponses
                 </button>
             </div>
         {% endif %}
 
-        <div class="exercise-result" data-click-words-target="result" aria-live="polite"></div>
+        <div
+            class="exercise-result"
+            data-click-words-target="result"
+            aria-live="polite"
+        ></div>
     </div>
 </section>
