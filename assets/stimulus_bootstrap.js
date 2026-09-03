@@ -15,6 +15,7 @@ import CourseMenuController from './controllers/course_menu_controller.js';
 import CourseSearchController from './controllers/course_search_controller.js';
 import CommentsController from './controllers/comments_controller.js';
 import ClickWordsController from './controllers/click_words_controller.js';
+import LearningReminderController from './controllers/learning_reminder_controller.js';
 
 const app = startStimulusApp();
 // register any custom, 3rd party controllers here
@@ -35,3 +36,4 @@ app.register('course-menu', CourseMenuController);
 app.register('course-search', CourseSearchController);
 app.register('comments', CommentsController);
 app.register('click-words', ClickWordsController);
+app.register('learning-reminder', LearningReminderController);

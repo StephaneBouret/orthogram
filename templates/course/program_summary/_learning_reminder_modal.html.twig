@@ -1,0 +1,445 @@
+<div
+    class="modal learning-reminder-modal"
+    id="learningReminderModal"
+    tabindex="-1"
+    aria-labelledby="learning-reminder-title"
+    aria-describedby="learning-reminder-description"
+    aria-hidden="true"
+    data-learning-reminder-target="modal"
+    data-action="
+        shown.bs.modal->learning-reminder#focusInitial
+        hidden.bs.modal->learning-reminder#resetAfterClose
+    "
+>
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg modal-fullscreen-sm-down">
+        <div class="modal-content">
+            <div class="modal-header learning-reminder-header">
+                <div class="learning-reminder-heading">
+                    <span class="learning-reminder-icon" aria-hidden="true">
+                        <i class="bi bi-alarm"></i>
+                    </span>
+                    <div>
+                        <h2 class="modal-title" id="learning-reminder-title">
+                            Programmer du temps pour apprendre
+                        </h2>
+                        <p id="learning-reminder-description">
+                            Choisissez le rythme qui convient à votre apprentissage.
+                        </p>
+                        <p
+                            class="learning-reminder-step-indicator"
+                            aria-live="polite"
+                            aria-atomic="true"
+                            data-learning-reminder-target="stepIndicator"
+                        >
+                            Étape 1 sur 2
+                        </p>
+                    </div>
+                </div>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Fermer"
+                ></button>
+            </div>
+
+            <form
+                novalidate
+                data-learning-reminder-target="form"
+                data-action="submit->learning-reminder#finish"
+            >
+                <div class="modal-body">
+                    <p
+                        class="learning-reminder-validation-summary"
+                        role="alert"
+                        aria-live="assertive"
+                        aria-atomic="true"
+                        hidden
+                        data-learning-reminder-target="validationSummary"
+                    >
+                        Veuillez corriger les champs signalés avant de continuer.
+                    </p>
+
+                    <section
+                        class="learning-reminder-step"
+                        data-learning-reminder-target="step"
+                        data-learning-reminder-step="1"
+                        aria-labelledby="learning-reminder-step-one-title"
+                    >
+                        <h3
+                            id="learning-reminder-step-one-title"
+                            class="learning-reminder-step-title"
+                            tabindex="-1"
+                            data-learning-reminder-target="stepHeading"
+                            data-learning-reminder-step="1"
+                        >
+                            Choisissez votre fréquence
+                        </h3>
+
+                        <fieldset class="learning-reminder-fieldset">
+                            <legend>À quelle fréquence souhaitez-vous apprendre&nbsp;?</legend>
+
+                            <p id="learning-reminder-frequency-help" class="learning-reminder-help">
+                                Sélectionnez une seule fréquence.
+                            </p>
+
+                            <div class="learning-reminder-frequency-grid">
+                                <div class="learning-reminder-choice">
+                                    <input
+                                        class="visually-hidden learning-reminder-choice-input"
+                                        type="radio"
+                                        name="learning_reminder_frequency"
+                                        id="learning-reminder-frequency-daily"
+                                        value="daily"
+                                        required
+                                        aria-describedby="learning-reminder-frequency-help learning-reminder-frequency-error"
+                                        data-learning-reminder-target="frequency"
+                                        data-action="change->learning-reminder#changeFrequency"
+                                    >
+                                    <label
+                                        class="learning-reminder-choice-label"
+                                        for="learning-reminder-frequency-daily"
+                                    >
+                                        <i class="bi bi-sun" aria-hidden="true"></i>
+                                        <span>
+                                            <strong>Quotidiennement</strong>
+                                            <small>Un rendez-vous chaque jour</small>
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <div class="learning-reminder-choice">
+                                    <input
+                                        class="visually-hidden learning-reminder-choice-input"
+                                        type="radio"
+                                        name="learning_reminder_frequency"
+                                        id="learning-reminder-frequency-weekly"
+                                        value="weekly"
+                                        required
+                                        aria-describedby="learning-reminder-frequency-help learning-reminder-frequency-error"
+                                        data-learning-reminder-target="frequency"
+                                        data-action="change->learning-reminder#changeFrequency"
+                                    >
+                                    <label
+                                        class="learning-reminder-choice-label"
+                                        for="learning-reminder-frequency-weekly"
+                                    >
+                                        <i class="bi bi-calendar-week" aria-hidden="true"></i>
+                                        <span>
+                                            <strong>Chaque semaine</strong>
+                                            <small>Un ou plusieurs jours choisis</small>
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <div class="learning-reminder-choice">
+                                    <input
+                                        class="visually-hidden learning-reminder-choice-input"
+                                        type="radio"
+                                        name="learning_reminder_frequency"
+                                        id="learning-reminder-frequency-once"
+                                        value="once"
+                                        required
+                                        aria-describedby="learning-reminder-frequency-help learning-reminder-frequency-error"
+                                        data-learning-reminder-target="frequency"
+                                        data-action="change->learning-reminder#changeFrequency"
+                                    >
+                                    <label
+                                        class="learning-reminder-choice-label"
+                                        for="learning-reminder-frequency-once"
+                                    >
+                                        <i class="bi bi-calendar-event" aria-hidden="true"></i>
+                                        <span>
+                                            <strong>Une fois</strong>
+                                            <small>Un rendez-vous à une date précise</small>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <p
+                                class="learning-reminder-error"
+                                id="learning-reminder-frequency-error"
+                                hidden
+                                data-learning-reminder-target="error"
+                                data-learning-reminder-error-for="frequency"
+                            >
+                                Sélectionnez une fréquence.
+                            </p>
+                        </fieldset>
+
+                        <div
+                            class="learning-reminder-conditional"
+                            hidden
+                            data-learning-reminder-target="dailyFields"
+                        >
+                            <label class="form-label" for="learning-reminder-daily-time">
+                                À quelle heure&nbsp;?
+                            </label>
+                            <input
+                                type="time"
+                                class="form-control"
+                                id="learning-reminder-daily-time"
+                                name="learning_reminder_daily_time"
+                                required
+                                disabled
+                                aria-describedby="learning-reminder-daily-time-error"
+                                data-learning-reminder-target="dailyTime"
+                                data-action="input->learning-reminder#clearValidation"
+                            >
+                            <p
+                                class="learning-reminder-error"
+                                id="learning-reminder-daily-time-error"
+                                hidden
+                                data-learning-reminder-target="error"
+                                data-learning-reminder-error-for="daily-time"
+                            >
+                                Renseignez une heure.
+                            </p>
+                        </div>
+
+                        <div
+                            class="learning-reminder-conditional"
+                            hidden
+                            data-learning-reminder-target="weeklyFields"
+                        >
+                            <div class="learning-reminder-control-group">
+                                <label class="form-label" for="learning-reminder-weekly-time">
+                                    À quelle heure&nbsp;?
+                                </label>
+                                <input
+                                    type="time"
+                                    class="form-control"
+                                    id="learning-reminder-weekly-time"
+                                    name="learning_reminder_weekly_time"
+                                    required
+                                    disabled
+                                    aria-describedby="learning-reminder-weekly-time-error"
+                                    data-learning-reminder-target="weeklyTime"
+                                    data-action="input->learning-reminder#clearValidation"
+                                >
+                                <p
+                                    class="learning-reminder-error"
+                                    id="learning-reminder-weekly-time-error"
+                                    hidden
+                                    data-learning-reminder-target="error"
+                                    data-learning-reminder-error-for="weekly-time"
+                                >
+                                    Renseignez une heure.
+                                </p>
+                            </div>
+
+                            <fieldset class="learning-reminder-fieldset">
+                                <legend>Quels jours&nbsp;?</legend>
+
+                                <div class="learning-reminder-day-grid">
+                                    {% set reminderDays = {
+                                        monday: ['Lun', 'lundis'],
+                                        tuesday: ['Mar', 'mardis'],
+                                        wednesday: ['Mer', 'mercredis'],
+                                        thursday: ['Jeu', 'jeudis'],
+                                        friday: ['Ven', 'vendredis'],
+                                        saturday: ['Sam', 'samedis'],
+                                        sunday: ['Dim', 'dimanches']
+                                    } %}
+
+                                    {% for value, day in reminderDays %}
+                                        <div class="learning-reminder-day">
+                                            <input
+                                                class="visually-hidden learning-reminder-choice-input"
+                                                type="checkbox"
+                                                id="learning-reminder-day-{{ value }}"
+                                                name="learning_reminder_days[]"
+                                                value="{{ value }}"
+                                                disabled
+                                                aria-describedby="learning-reminder-weekly-days-error"
+                                                data-day-label="{{ day[1] }}"
+                                                data-learning-reminder-target="weeklyDay"
+                                                data-action="change->learning-reminder#clearValidation"
+                                            >
+                                            <label
+                                                class="learning-reminder-day-label"
+                                                for="learning-reminder-day-{{ value }}"
+                                            >
+                                                {{ day[0] }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+
+                                <p
+                                    class="learning-reminder-error"
+                                    id="learning-reminder-weekly-days-error"
+                                    hidden
+                                    data-learning-reminder-target="error"
+                                    data-learning-reminder-error-for="weekly-days"
+                                >
+                                    Sélectionnez au moins un jour.
+                                </p>
+                            </fieldset>
+                        </div>
+
+                        <div
+                            class="learning-reminder-conditional learning-reminder-once-grid"
+                            hidden
+                            data-learning-reminder-target="onceFields"
+                        >
+                            <div>
+                                <label class="form-label" for="learning-reminder-once-date">
+                                    Date
+                                </label>
+                                <input
+                                    type="date"
+                                    class="form-control"
+                                    id="learning-reminder-once-date"
+                                    name="learning_reminder_once_date"
+                                    required
+                                    disabled
+                                    aria-describedby="learning-reminder-once-date-error learning-reminder-once-future-error"
+                                    data-learning-reminder-target="onceDate"
+                                    data-action="input->learning-reminder#clearValidation"
+                                >
+                                <p
+                                    class="learning-reminder-error"
+                                    id="learning-reminder-once-date-error"
+                                    hidden
+                                    data-learning-reminder-target="error"
+                                    data-learning-reminder-error-for="once-date"
+                                >
+                                    Renseignez une date.
+                                </p>
+                            </div>
+
+                            <div>
+                                <label class="form-label" for="learning-reminder-once-time">
+                                    Heure
+                                </label>
+                                <input
+                                    type="time"
+                                    class="form-control"
+                                    id="learning-reminder-once-time"
+                                    name="learning_reminder_once_time"
+                                    required
+                                    disabled
+                                    aria-describedby="learning-reminder-once-time-error learning-reminder-once-future-error"
+                                    data-learning-reminder-target="onceTime"
+                                    data-action="input->learning-reminder#clearValidation"
+                                >
+                                <p
+                                    class="learning-reminder-error"
+                                    id="learning-reminder-once-time-error"
+                                    hidden
+                                    data-learning-reminder-target="error"
+                                    data-learning-reminder-error-for="once-time"
+                                >
+                                    Renseignez une heure.
+                                </p>
+                            </div>
+
+                            <p
+                                class="learning-reminder-error learning-reminder-once-error"
+                                id="learning-reminder-once-future-error"
+                                hidden
+                                data-learning-reminder-target="error"
+                                data-learning-reminder-error-for="once-future"
+                            >
+                                Choisissez une date et une heure strictement futures.
+                            </p>
+                        </div>
+                    </section>
+
+                    <section
+                        class="learning-reminder-step"
+                        hidden
+                        data-learning-reminder-target="step"
+                        data-learning-reminder-step="2"
+                        aria-labelledby="learning-reminder-step-two-title"
+                    >
+                        <h3
+                            id="learning-reminder-step-two-title"
+                            class="learning-reminder-step-title"
+                            tabindex="-1"
+                            data-learning-reminder-target="stepHeading"
+                            data-learning-reminder-step="2"
+                        >
+                            Votre rendez-vous d’apprentissage
+                        </h3>
+
+                        <div class="learning-reminder-summary">
+                            <i class="bi bi-check2-circle" aria-hidden="true"></i>
+                            <p
+                                aria-live="polite"
+                                aria-atomic="true"
+                                data-learning-reminder-target="summary"
+                            ></p>
+                        </div>
+
+                        <p class="learning-reminder-prototype-note">
+                            L’enregistrement du rappel sera ajouté lors de la prochaine étape technique.
+                            Pour le moment, terminer ferme simplement cette fenêtre.
+                        </p>
+
+                        <div class="learning-reminder-calendar-actions">
+                            <button
+                                type="button"
+                                class="learning-reminder-calendar-button"
+                                disabled
+                                aria-describedby="learning-reminder-calendar-help"
+                            >
+                                <i class="bi bi-google" aria-hidden="true"></i>
+                                Ajouter à Google Agenda
+                            </button>
+
+                            <button
+                                type="button"
+                                class="learning-reminder-calendar-button"
+                                disabled
+                                aria-describedby="learning-reminder-calendar-help"
+                            >
+                                <i class="bi bi-calendar-plus" aria-hidden="true"></i>
+                                Télécharger pour Apple et Outlook
+                            </button>
+                        </div>
+
+                        <p id="learning-reminder-calendar-help" class="learning-reminder-help">
+                            Les actions calendrier seront disponibles dans une prochaine version.
+                        </p>
+                    </section>
+                </div>
+
+                <div class="modal-footer learning-reminder-footer">
+                    <button
+                        type="button"
+                        class="learning-reminder-button learning-reminder-button-secondary"
+                        hidden
+                        data-learning-reminder-target="previousButton"
+                        data-action="learning-reminder#previous"
+                    >
+                        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                        Précédent
+                    </button>
+
+                    <button
+                        type="button"
+                        class="learning-reminder-button learning-reminder-button-primary"
+                        data-learning-reminder-target="nextButton"
+                        data-action="learning-reminder#next"
+                    >
+                        Suivant
+                        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="learning-reminder-button learning-reminder-button-primary"
+                        hidden
+                        data-learning-reminder-target="finishButton"
+                    >
+                        Terminer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
