@@ -13,6 +13,7 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class ProgramSummaryController extends AbstractController
 {
@@ -21,20 +22,20 @@ final class ProgramSummaryController extends AbstractController
         private readonly SectionsRepository $sectionsRepository,
         private readonly SectionDurationService $sectionDurationService,
         private readonly LessonRepository $lessonRepository,
-    ) {
-    }
+    ) {}
 
+    #[Route('/ma-formation', name: 'app_user_training', defaults: ['slug' => 'formation-en-orthographe'], methods: ['GET'])]
     #[Route('/courses/{slug}', name: 'app_course_program_summary', methods: ['GET'])]
+    #[IsGranted(CourseVoter::PROGRAM_VIEW, subject: 'program', message: "Vous n'avez pas accès à ce programme.")]
     public function __invoke(
         #[MapEntity(mapping: ['slug' => 'slug'])]
         Program $program,
     ): Response {
-        $this->denyAccessUnlessGranted(CourseVoter::PROGRAM_VIEW, $program, "Vous n'avez pas accès à ce programme.");
-
         $sections = $this->sectionsRepository->findByProgramWithCourses($program);
         $coursesBySection = $this->coursesRepository->countCoursesBySections($program);
         $nbrCourses = $this->coursesRepository->countByProgram($program);
         $sectionsTotalDuration = $this->sectionDurationService->calculateTotalDuration($sections);
+        $programTotalDurationMinutes = array_sum($sectionsTotalDuration);
         $user = $this->getUser();
         $nbrLessonsDone = $user instanceof User ? $this->lessonRepository->countDoneByUserAndProgram($user, $program) : 0;
         $completedCourseIds = $user instanceof User ? $this->lessonRepository->findDoneCourseIdsByUserAndProgram($user, $program) : [];
@@ -47,6 +48,7 @@ final class ProgramSummaryController extends AbstractController
             'nbrLessonsDone' => $nbrLessonsDone,
             'completedCourseIds' => $completedCourseIds,
             'sectionsTotalDuration' => $sectionsTotalDuration,
+            'programTotalDurationMinutes' => $programTotalDurationMinutes,
         ]);
     }
 }

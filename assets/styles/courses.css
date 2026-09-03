@@ -1500,6 +1500,11 @@ button.btn.btn-abandonment:hover {
     width: 100%;
 }
 
+.course-page .sidebar-container.is-fullscreen .course-intro-panel {
+    width: 100%;
+    max-width: none;
+}
+
 .course-page nav .breadcrumb .breadcrumb-item a,
 .course-page .sticky-contents a,
 .course-page .lk25pol {
@@ -2199,3 +2204,217 @@ html[data-bs-theme="dark"] .word-token--missed {
     border-color: #fb923c;
     color: #ffedd5;
 }
+
+/*--------------------------------------------------------------
+# Program summary
+--------------------------------------------------------------*/
+.program-summary-overview {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: -1rem;
+}
+
+.program-summary-lead {
+    color: var(--course-muted);
+    font-size: 1.15rem;
+    line-height: 1.75;
+    max-width: 72rem;
+}
+
+.program-summary-lead p:last-child {
+    margin-bottom: 0;
+}
+
+.program-summary-stats {
+    align-items: stretch;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.program-summary-stat {
+    align-items: center;
+    display: flex;
+    gap: 0.85rem;
+    min-width: 13rem;
+    padding: 0.25rem 2rem;
+}
+
+.program-summary-stat:first-child {
+    padding-left: 0;
+}
+
+.program-summary-stat + .program-summary-stat {
+    border-left: 1px solid var(--course-border);
+}
+
+.program-summary-stat-icon,
+.program-schedule-icon {
+    align-items: center;
+    background-color: var(--course-soft-bg);
+    border-radius: 50%;
+    color: var(--orthogram-brand-hover);
+    display: inline-flex;
+    flex: 0 0 auto;
+    justify-content: center;
+}
+
+.program-summary-stat-icon {
+    font-size: 1.15rem;
+    height: 2.5rem;
+    width: 2.5rem;
+}
+
+.program-summary-stat-content {
+    display: grid;
+    gap: 0.1rem;
+}
+
+.program-summary-stat-content strong {
+    color: var(--course-text);
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.program-summary-stat-content span {
+    color: var(--course-muted);
+    font-size: 0.9rem;
+}
+
+.program-schedule-card {
+    align-items: start;
+    background-color: var(--course-card-bg);
+    border: 1px solid var(--course-border);
+    border-left: 5px solid var(--orthogram-brand);
+    border-radius: 0.875rem;
+    box-shadow: var(--course-shadow);
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: auto minmax(0, 1fr);
+    padding: 1.5rem;
+}
+
+.program-schedule-section {
+    border-bottom: 1px solid var(--course-border);
+    padding-bottom: 2rem;
+}
+
+.program-schedule-icon {
+    font-size: 1.5rem;
+    height: 3rem;
+    width: 3rem;
+}
+
+.program-schedule-content {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.program-schedule-heading {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.program-schedule-heading h2 {
+    color: var(--course-text);
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.program-schedule-badge {
+    background-color: var(--course-soft-bg);
+    border-radius: 999px;
+    color: var(--orthogram-brand-hover);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.65rem;
+}
+
+.program-schedule-content p {
+    color: var(--course-muted);
+    line-height: 1.7;
+    margin: 0;
+    max-width: 62rem;
+}
+
+.program-schedule-actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.6rem;
+}
+
+.program-schedule-button {
+    border-radius: 0.65rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 0.65rem 1.1rem;
+}
+
+.program-schedule-button-primary {
+    background-color: var(--course-card-bg);
+    border: 1px solid var(--orthogram-brand);
+    color: var(--orthogram-brand-hover);
+}
+
+.program-schedule-button-secondary {
+    background-color: transparent;
+    border: 1px solid transparent;
+    color: var(--orthogram-brand-hover);
+}
+
+.program-schedule-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.58;
+}
+
+.program-course-content-heading {
+    align-items: end;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+}
+
+.program-course-content-heading h2 {
+    color: var(--course-text);
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.program-course-content-heading p {
+    color: var(--course-muted);
+    margin-bottom: 0;
+}
+
+@media (max-width: 767.98px) {
+    .program-summary-overview {
+        margin-top: 0;
+    }
+
+    .program-summary-stats {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .program-summary-stat {
+        min-width: 0;
+        padding: 0;
+    }
+
+    .program-summary-stat + .program-summary-stat {
+        border-left: 0;
+    }
+
+    .program-schedule-card {
+        grid-template-columns: 1fr;
+        padding: 1.25rem;
+    }
+
+}
+

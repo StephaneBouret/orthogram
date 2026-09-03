@@ -14,6 +14,12 @@
 			<ul class="navbar-nav me-auto">
 				{% if app.user %}
 					<li class="nav-item">
+						<a href="{{ path('app_user_training') }}" class="nav-link">
+							🎓 Ma formation
+						</a>
+					</li>
+
+					<li class="nav-item">
 						<a href="{{ path('app_user_subscription_show') }}" class="nav-link">
 							💎 Mon abonnement
 						</a>
@@ -53,7 +59,7 @@
 							<li class="py-2 px-2">
 								<a class="dropdown-item dropdown-user color-btn-logout" href="{{ path('app_profile') }}">Profil</a>
 							</li>
-                            <li class="py-2 px-2">
+							<li class="py-2 px-2">
 								<a class="dropdown-item dropdown-user color-btn-logout" href="{{ path('app_device_index') }}">Mes appareils</a>
 							</li>
 							<li>
