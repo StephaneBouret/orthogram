@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width">
+		<title>Votre rappel d’apprentissage Orthogram</title>
+	</head>
+	<body style="margin:0;padding:0;background:#FFF8EC;font-family:Arial,Helvetica,sans-serif;">
+		<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:#FFF8EC;">
+			<tr>
+				<td align="center">
+					<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;max-width:600px;background:#ffffff;table-layout:fixed;">
+						<tr>
+							<td style="padding:32px;">
+								<a href="{{ trainingUrl }}" target="_blank" style="color:#111111;text-decoration:none;font-size:34px;font-weight:700;">
+									<span style="color:#FF9F0A;">O</span>rthogram
+								</a>
+							</td>
+						</tr>
+						<tr>
+							<td style="padding:36px 32px;background:#FF9F0A;color:#111111;">
+								<h1 style="margin:0;font-size:28px;line-height:1.3;">C’est le moment d’apprendre</h1>
+								<p style="margin:22px 0 0;font-size:16px;line-height:1.5;">
+									{% if firstname %}Bonjour {{ firstname }},{% else %}Bonjour,{% endif %}
+								</p>
+								<p style="margin:14px 0 0;font-size:16px;line-height:1.5;">
+									Voici votre rappel pour poursuivre votre formation Orthogram.
+								</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="padding:40px 32px;color:#222222;">
+								<h2 style="margin:0;color:#D87900;font-size:22px;line-height:1.3;">Votre rythme</h2>
+								<p style="margin:16px 0 0;font-size:18px;line-height:1.5;"><strong>{{ summary }}</strong></p>
+								<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-top:30px;">
+									<tr>
+										<td align="center">
+											<a href="{{ trainingUrl }}" target="_blank" style="display:inline-block;padding:14px 28px;border-radius:8px;background:#111111;color:#ffffff;text-decoration:none;font-size:16px;font-weight:700;">Poursuivre ma formation</a>
+										</td>
+									</tr>
+								</table>
+								<p style="margin:30px 0 0;font-size:13px;line-height:1.5;overflow-wrap:break-word;word-break:break-word;">
+									Si le bouton ne fonctionne pas, utilisez ce lien :<br>
+									<a href="{{ trainingUrl }}" target="_blank" style="color:#D87900;">{{ trainingUrl }}</a>
+								</p>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>
