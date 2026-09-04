@@ -8,6 +8,7 @@
     data-learning-reminder-target="modal"
     data-action="
         shown.bs.modal->learning-reminder#focusInitial
+        hide.bs.modal->learning-reminder#preventCloseWhileSubmitting
         hidden.bs.modal->learning-reminder#resetAfterClose
     "
 >
@@ -41,6 +42,7 @@
                     class="btn-close"
                     data-bs-dismiss="modal"
                     aria-label="Fermer"
+                    data-learning-reminder-target="closeButton"
                 ></button>
             </div>
 
@@ -55,6 +57,7 @@
                         role="alert"
                         aria-live="assertive"
                         aria-atomic="true"
+                        tabindex="-1"
                         hidden
                         data-learning-reminder-target="validationSummary"
                     >
@@ -235,13 +238,13 @@
 
                                 <div class="learning-reminder-day-grid">
                                     {% set reminderDays = {
-                                        monday: ['Lun', 'lundis'],
-                                        tuesday: ['Mar', 'mardis'],
-                                        wednesday: ['Mer', 'mercredis'],
-                                        thursday: ['Jeu', 'jeudis'],
-                                        friday: ['Ven', 'vendredis'],
-                                        saturday: ['Sam', 'samedis'],
-                                        sunday: ['Dim', 'dimanches']
+                                        1: ['Lun', 'lundis'],
+                                        2: ['Mar', 'mardis'],
+                                        3: ['Mer', 'mercredis'],
+                                        4: ['Jeu', 'jeudis'],
+                                        5: ['Ven', 'vendredis'],
+                                        6: ['Sam', 'samedis'],
+                                        7: ['Dim', 'dimanches']
                                     } %}
 
                                     {% for value, day in reminderDays %}
@@ -376,8 +379,8 @@
                         </div>
 
                         <p class="learning-reminder-prototype-note">
-                            L’enregistrement du rappel sera ajouté lors de la prochaine étape technique.
-                            Pour le moment, terminer ferme simplement cette fenêtre.
+                            Fuseau horaire utilisé :
+                            <strong data-learning-reminder-target="timezoneLabel"></strong>.
                         </p>
 
                         <div class="learning-reminder-calendar-actions">
@@ -436,7 +439,16 @@
                         hidden
                         data-learning-reminder-target="finishButton"
                     >
-                        Terminer
+                        <span
+                            class="spinner-border spinner-border-sm"
+                            role="status"
+                            aria-hidden="true"
+                            hidden
+                            data-learning-reminder-target="finishSpinner"
+                        ></span>
+                        <span data-learning-reminder-target="finishLabel">
+                            Terminer
+                        </span>
                     </button>
                 </div>
             </form>

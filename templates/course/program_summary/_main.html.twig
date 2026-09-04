@@ -5,6 +5,13 @@
     class="main-content"
     data-controller="learning-reminder"
     data-action="turbo:before-cache@document->learning-reminder#prepareForCache"
+    data-learning-reminder-upsert-url-value="{{ path('app_course_learning_reminder_upsert', {slug: program.slug}) }}"
+    data-learning-reminder-upsert-token-value="{{ csrf_token('learning_reminder_upsert') }}"
+    data-learning-reminder-disable-url-value="{{ path('app_course_learning_reminder_disable', {slug: program.slug}) }}"
+    data-learning-reminder-disable-token-value="{{ csrf_token('learning_reminder_disable') }}"
+    {% if learningReminder %}
+        data-learning-reminder-reminder-value="{{ learningReminder|json_encode|e('html_attr') }}"
+    {% endif %}
 >
     <div class="d-flex">
         <div class="w-100">
@@ -86,32 +93,85 @@
         class="program-schedule-section spacer-section"
         data-learning-reminder-target="section"
     >
-        <section class="program-schedule-card" aria-labelledby="program-schedule-title">
+        <section
+            class="program-schedule-card{% if learningReminder and learningReminder.enabled %} is-active{% elseif learningReminder %} is-disabled{% endif %}"
+            aria-labelledby="program-schedule-title"
+            data-learning-reminder-target="card"
+        >
             <div class="program-schedule-icon" aria-hidden="true">
                 <i class="bi bi-alarm"></i>
             </div>
             <div class="program-schedule-content">
                 <div class="program-schedule-heading">
                     <h2 id="program-schedule-title">Programmer du temps pour apprendre</h2>
-                    <span class="program-schedule-badge">Planification</span>
+                    <span
+                        class="program-schedule-badge"
+                        data-learning-reminder-target="cardBadge"
+                    >
+                        {% if learningReminder and learningReminder.enabled %}
+                            Actif
+                        {% elseif learningReminder %}
+                            Désactivé
+                        {% else %}
+                            Planification
+                        {% endif %}
+                    </span>
                 </div>
-                <p>
-                    Une pratique courte et régulière aide à ancrer durablement les règles.
-                    Préparez un rythme d’apprentissage adapté à votre emploi du temps.
+                <p
+                    data-learning-reminder-target="cardDescription"
+                    data-default-text="Une pratique courte et régulière aide à ancrer durablement les règles. Préparez un rythme d’apprentissage adapté à votre emploi du temps."
+                >
+                    {% if learningReminder and learningReminder.enabled %}
+                        {{ learningReminder.summary }}
+                    {% elseif learningReminder %}
+                        Votre rappel est désactivé. Dernière configuration : {{ learningReminder.summary }}.
+                    {% else %}
+                        Une pratique courte et régulière aide à ancrer durablement les règles.
+                        Préparez un rythme d’apprentissage adapté à votre emploi du temps.
+                    {% endif %}
                 </p>
+                <p
+                    class="program-schedule-status"
+                    role="status"
+                    aria-live="polite"
+                    aria-atomic="true"
+                    tabindex="-1"
+                    hidden
+                    data-learning-reminder-target="cardStatus"
+                ></p>
                 <div class="program-schedule-actions" aria-label="Actions de planification">
                     <button
                         type="button"
                         class="program-schedule-button learning-reminder-trigger learning-reminder-trigger-primary"
                         aria-haspopup="dialog"
                         aria-controls="learningReminderModal"
+                        data-learning-reminder-target="openButton"
                         data-action="learning-reminder#open"
                     >
-                        Commencer
+                        <span data-learning-reminder-target="openButtonLabel">
+                            {% if learningReminder and learningReminder.enabled %}
+                                Modifier
+                            {% elseif learningReminder %}
+                                Réactiver
+                            {% else %}
+                                Commencer
+                            {% endif %}
+                        </span>
                     </button>
                     <button
                         type="button"
                         class="program-schedule-button learning-reminder-trigger learning-reminder-trigger-secondary"
+                        {% if not learningReminder or not learningReminder.enabled %}hidden{% endif %}
+                        data-learning-reminder-target="disableButton"
+                        data-action="learning-reminder#disable"
+                    >
+                        Désactiver
+                    </button>
+                    <button
+                        type="button"
+                        class="program-schedule-button learning-reminder-trigger learning-reminder-trigger-secondary"
+                        {% if learningReminder and learningReminder.enabled %}hidden{% endif %}
+                        data-learning-reminder-target="rejectButton"
                         data-action="learning-reminder#reject"
                     >
                         Rejeter

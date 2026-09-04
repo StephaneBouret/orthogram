@@ -5,10 +5,12 @@ namespace App\Controller\Course;
 use App\Entity\Program;
 use App\Entity\User;
 use App\Repository\CoursesRepository;
+use App\Repository\LearningReminderRepository;
 use App\Repository\LessonRepository;
 use App\Repository\SectionsRepository;
 use App\Security\Voter\CourseVoter;
 use App\Services\Courses\SectionDurationService;
+use App\Services\LearningReminderViewService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +24,10 @@ final class ProgramSummaryController extends AbstractController
         private readonly SectionsRepository $sectionsRepository,
         private readonly SectionDurationService $sectionDurationService,
         private readonly LessonRepository $lessonRepository,
-    ) {}
+        private readonly LearningReminderRepository $learningReminderRepository,
+        private readonly LearningReminderViewService $learningReminderViewService,
+    ) {
+    }
 
     #[Route('/ma-formation', name: 'app_user_training', defaults: ['slug' => 'formation-en-orthographe'], methods: ['GET'])]
     #[Route('/courses/{slug}', name: 'app_course_program_summary', methods: ['GET'])]
@@ -39,6 +44,9 @@ final class ProgramSummaryController extends AbstractController
         $user = $this->getUser();
         $nbrLessonsDone = $user instanceof User ? $this->lessonRepository->countDoneByUserAndProgram($user, $program) : 0;
         $completedCourseIds = $user instanceof User ? $this->lessonRepository->findDoneCourseIdsByUserAndProgram($user, $program) : [];
+        $learningReminder = $user instanceof User
+            ? $this->learningReminderRepository->findOneByUser($user)
+            : null;
 
         return $this->render('course/program_summary.html.twig', [
             'program' => $program,
@@ -49,6 +57,9 @@ final class ProgramSummaryController extends AbstractController
             'completedCourseIds' => $completedCourseIds,
             'sectionsTotalDuration' => $sectionsTotalDuration,
             'programTotalDurationMinutes' => $programTotalDurationMinutes,
+            'learningReminder' => null === $learningReminder
+                ? null
+                : $this->learningReminderViewService->present($learningReminder),
         ]);
     }
 }

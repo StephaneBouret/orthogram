@@ -2295,6 +2295,21 @@ html[data-bs-theme="dark"] .word-token--missed {
     padding: 1.5rem;
 }
 
+.program-schedule-card.is-active .program-schedule-badge {
+    background-color: var(--orthogram-brand);
+    color: var(--learning-reminder-on-brand);
+}
+
+.program-schedule-card.is-disabled .program-schedule-badge {
+    background-color: var(--course-soft-bg);
+    border: 1px solid var(--course-border);
+}
+
+.program-schedule-card[aria-busy="true"],
+.learning-reminder-modal form[aria-busy="true"] {
+    cursor: progress;
+}
+
 .program-schedule-section {
     border-bottom: 1px solid var(--course-border);
     padding-bottom: 2rem;
@@ -2340,6 +2355,23 @@ html[data-bs-theme="dark"] .word-token--missed {
     line-height: 1.7;
     margin: 0;
     max-width: 62rem;
+}
+
+.program-schedule-status {
+    color: var(--course-text);
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.program-schedule-status.is-error {
+    color: var(--bs-danger-text-emphasis);
+}
+
+.program-schedule-status:focus,
+.learning-reminder-modal .learning-reminder-validation-summary:focus {
+    box-shadow: 0 0 0 3px var(--orthogram-focus-ring);
+    outline: 3px solid var(--course-text);
+    outline-offset: 3px;
 }
 
 .program-schedule-actions {
@@ -2679,6 +2711,10 @@ html[data-bs-theme="dark"] .word-token--missed {
     margin: 0;
 }
 
+.learning-reminder-modal .learning-reminder-prototype-note strong {
+    color: var(--course-text);
+}
+
 .learning-reminder-modal .learning-reminder-calendar-actions {
     display: grid;
     gap: 0.75rem;
@@ -2718,6 +2754,12 @@ html[data-bs-theme="dark"] .word-token--missed {
     gap: 0.5rem;
     justify-content: center;
     padding: 0.7rem 1.1rem;
+}
+
+.learning-reminder-modal .learning-reminder-button:disabled,
+.learning-reminder-modal .btn-close:disabled {
+    cursor: progress;
+    opacity: 0.65;
 }
 
 .learning-reminder-modal .learning-reminder-button-primary {
