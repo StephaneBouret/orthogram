@@ -95,6 +95,7 @@ final class LearningReminderController extends AbstractController
                 $weekdays,
                 $scheduledDate,
                 $payload->timezone,
+                $now,
             );
         } catch (\InvalidArgumentException $exception) {
             return $this->validationError('scheduledDate', $exception->getMessage());

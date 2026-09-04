@@ -389,12 +389,18 @@ final class LearningReminderControllerTest extends WebTestCase
             ->method('flush')
             ->willThrowException($uniqueConstraintViolation);
 
+        $clock = $this->createMock(ClockInterface::class);
+        $clock
+            ->expects(self::once())
+            ->method('now')
+            ->willReturn(new \DateTimeImmutable('2026-09-04 12:00:00 UTC'));
+
         $controller = new LearningReminderController(
             $this->repository,
             static::getContainer()->get(LearningReminderNextRunCalculator::class),
             static::getContainer()->get(LearningReminderViewService::class),
             $entityManager,
-            static::getContainer()->get(ClockInterface::class),
+            $clock,
         );
         $controller->setContainer(static::getContainer());
 

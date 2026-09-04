@@ -7,13 +7,12 @@ namespace App\Tests\Services;
 use App\Enum\LearningReminderFrequency;
 use App\Services\LearningReminderNextRunCalculator;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Clock\MockClock;
 
 final class LearningReminderNextRunCalculatorTest extends TestCase
 {
     public function testDailyOccurrenceBeforeConfiguredTimeUsesToday(): void
     {
-        $calculator = $this->calculator('2026-09-03 05:00:00 UTC');
+        $calculator = $this->calculator();
 
         $result = $calculator->calculate(
             LearningReminderFrequency::DAILY,
@@ -21,6 +20,7 @@ final class LearningReminderNextRunCalculatorTest extends TestCase
             [],
             null,
             'Europe/Paris',
+            $this->instant('2026-09-03 05:00:00 UTC'),
         );
 
         $this->assertUtcInstant('2026-09-03 06:00:00', $result);
@@ -28,7 +28,7 @@ final class LearningReminderNextRunCalculatorTest extends TestCase
 
     public function testDailyOccurrenceAfterConfiguredTimeUsesTomorrow(): void
     {
-        $calculator = $this->calculator('2026-09-03 07:00:00 UTC');
+        $calculator = $this->calculator();
 
         $result = $calculator->calculate(
             LearningReminderFrequency::DAILY,
@@ -36,6 +36,7 @@ final class LearningReminderNextRunCalculatorTest extends TestCase
             [],
             null,
             'Europe/Paris',
+            $this->instant('2026-09-03 07:00:00 UTC'),
         );
 
         $this->assertUtcInstant('2026-09-04 06:00:00', $result);
@@ -43,7 +44,7 @@ final class LearningReminderNextRunCalculatorTest extends TestCase
 
     public function testDailyOccurrenceAtCurrentInstantUsesTomorrow(): void
     {
-        $calculator = $this->calculator('2026-09-03 06:00:00 UTC');
+        $calculator = $this->calculator();
 
         $result = $calculator->calculate(
             LearningReminderFrequency::DAILY,
@@ -51,6 +52,7 @@ final class LearningReminderNextRunCalculatorTest extends TestCase
             [],
             null,
             'Europe/Paris',
+            $this->instant('2026-09-03 06:00:00 UTC'),
         );
 
         $this->assertUtcInstant('2026-09-04 06:00:00', $result);
@@ -58,7 +60,7 @@ final class LearningReminderNextRunCalculatorTest extends TestCase
 
     public function testWeeklyOccurrenceSupportsMultipleDays(): void
     {
-        $calculator = $this->calculator('2026-09-02 12:00:00 UTC');
+        $calculator = $this->calculator();
 
         $result = $calculator->calculate(
             LearningReminderFrequency::WEEKLY,
@@ -66,6 +68,7 @@ final class LearningReminderNextRunCalculatorTest extends TestCase
             [5, 1],
             null,
             'Europe/Paris',
+            $this->instant('2026-09-02 12:00:00 UTC'),
         );
 
         $this->assertUtcInstant('2026-09-04 06:00:00', $result);
@@ -73,7 +76,7 @@ final class LearningReminderNextRunCalculatorTest extends TestCase
 
     public function testWeeklyOccurrenceForCurrentDayAlreadyPassedUsesNextWeek(): void
     {
-        $calculator = $this->calculator('2026-09-07 10:00:00 UTC');
+        $calculator = $this->calculator();
 
         $result = $calculator->calculate(
             LearningReminderFrequency::WEEKLY,
@@ -81,6 +84,7 @@ final class LearningReminderNextRunCalculatorTest extends TestCase
             [1],
             null,
             'Europe/Paris',
+            $this->instant('2026-09-07 10:00:00 UTC'),
         );
 
         $this->assertUtcInstant('2026-09-14 07:00:00', $result);
@@ -88,7 +92,7 @@ final class LearningReminderNextRunCalculatorTest extends TestCase
 
     public function testOnceOccurrenceMustBeFutureAndIgnoresCivilValueTimezones(): void
     {
-        $calculator = $this->calculator('2026-09-03 12:00:00 UTC');
+        $calculator = $this->calculator();
 
         $result = $calculator->calculate(
             LearningReminderFrequency::ONCE,
@@ -96,6 +100,7 @@ final class LearningReminderNextRunCalculatorTest extends TestCase
             [],
             $this->date('2026-09-04', 'Asia/Tokyo'),
             'Europe/Paris',
+            $this->instant('2026-09-03 12:00:00 UTC'),
         );
 
         $this->assertUtcInstant('2026-09-04 08:15:00', $result);
@@ -103,7 +108,7 @@ final class LearningReminderNextRunCalculatorTest extends TestCase
 
     public function testOnceOccurrenceInPastIsRejected(): void
     {
-        $calculator = $this->calculator('2026-09-03 12:00:00 UTC');
+        $calculator = $this->calculator();
 
         $this->expectException(\InvalidArgumentException::class);
 
@@ -113,12 +118,13 @@ final class LearningReminderNextRunCalculatorTest extends TestCase
             [],
             $this->date('2026-09-03'),
             'Europe/Paris',
+            $this->instant('2026-09-03 12:00:00 UTC'),
         );
     }
 
     public function testInvalidTimezoneIsRejected(): void
     {
-        $calculator = $this->calculator('2026-09-03 12:00:00 UTC');
+        $calculator = $this->calculator();
 
         $this->expectException(\InvalidArgumentException::class);
 
@@ -128,12 +134,13 @@ final class LearningReminderNextRunCalculatorTest extends TestCase
             [],
             null,
             'Invalid/Timezone',
+            $this->instant('2026-09-03 12:00:00 UTC'),
         );
     }
 
     public function testNonexistentSpringTimeIsNormalizedForward(): void
     {
-        $calculator = $this->calculator('2026-03-28 12:00:00 UTC');
+        $calculator = $this->calculator();
 
         $result = $calculator->calculate(
             LearningReminderFrequency::DAILY,
@@ -141,6 +148,7 @@ final class LearningReminderNextRunCalculatorTest extends TestCase
             [],
             null,
             'Europe/Paris',
+            $this->instant('2026-03-28 12:00:00 UTC'),
         );
 
         $this->assertUtcInstant('2026-03-29 01:30:00', $result);
@@ -154,7 +162,7 @@ final class LearningReminderNextRunCalculatorTest extends TestCase
 
     public function testRepeatedAutumnTimeUsesSecondStandardOccurrence(): void
     {
-        $calculator = $this->calculator('2026-10-24 12:00:00 UTC');
+        $calculator = $this->calculator();
 
         $result = $calculator->calculate(
             LearningReminderFrequency::DAILY,
@@ -162,6 +170,7 @@ final class LearningReminderNextRunCalculatorTest extends TestCase
             [],
             null,
             'Europe/Paris',
+            $this->instant('2026-10-24 12:00:00 UTC'),
         );
 
         $this->assertUtcInstant('2026-10-25 01:30:00', $result);
@@ -175,7 +184,7 @@ final class LearningReminderNextRunCalculatorTest extends TestCase
 
     public function testWeeklyFrequencyRejectsEmptyWeekdays(): void
     {
-        $calculator = $this->calculator('2026-09-03 12:00:00 UTC');
+        $calculator = $this->calculator();
 
         $this->expectException(\InvalidArgumentException::class);
 
@@ -185,12 +194,13 @@ final class LearningReminderNextRunCalculatorTest extends TestCase
             [],
             null,
             'Europe/Paris',
+            $this->instant('2026-09-03 12:00:00 UTC'),
         );
     }
 
     public function testWeekdaysOutsideIsoRangeAreRejected(): void
     {
-        $calculator = $this->calculator('2026-09-03 12:00:00 UTC');
+        $calculator = $this->calculator();
 
         $this->expectException(\InvalidArgumentException::class);
 
@@ -200,12 +210,36 @@ final class LearningReminderNextRunCalculatorTest extends TestCase
             [0, 8],
             null,
             'Europe/Paris',
+            $this->instant('2026-09-03 12:00:00 UTC'),
         );
     }
 
-    private function calculator(string $now): LearningReminderNextRunCalculator
+    public function testVeryLateRecurringReminderProducesOnlyOneFutureOccurrence(): void
     {
-        return new LearningReminderNextRunCalculator(new MockClock($now));
+        $result = $this->calculator()->calculate(
+            LearningReminderFrequency::WEEKLY,
+            $this->time('09:00:00'),
+            [1, 3, 5],
+            null,
+            'Europe/Paris',
+            $this->instant('2027-04-15 12:00:00 UTC'),
+        );
+
+        $this->assertUtcInstant('2027-04-16 07:00:00', $result);
+        self::assertGreaterThan(
+            $this->instant('2027-04-15 12:00:00 UTC'),
+            $result,
+        );
+    }
+
+    private function calculator(): LearningReminderNextRunCalculator
+    {
+        return new LearningReminderNextRunCalculator();
+    }
+
+    private function instant(string $instant): \DateTimeImmutable
+    {
+        return new \DateTimeImmutable($instant);
     }
 
     private function time(string $time, string $timezone = 'UTC'): \DateTimeImmutable

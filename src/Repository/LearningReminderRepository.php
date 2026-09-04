@@ -25,4 +25,49 @@ final class LearningReminderRepository extends ServiceEntityRepository
             'user' => $user,
         ]);
     }
+
+    /**
+     * @return list<LearningReminder>
+     */
+    public function findDueBatch(
+        \DateTimeImmutable $dueAt,
+        int $limit = 100,
+        ?\DateTimeImmutable $afterNextRunAt = null,
+        ?int $afterId = null,
+    ): array {
+        if ($limit <= 0) {
+            throw new \InvalidArgumentException('La limite doit être strictement positive.');
+        }
+
+        if ((null === $afterNextRunAt) !== (null === $afterId)) {
+            throw new \InvalidArgumentException('Les deux éléments du curseur doivent être fournis ensemble.');
+        }
+
+        $queryBuilder = $this->createQueryBuilder('reminder')
+            ->addSelect('user')
+            ->innerJoin('reminder.user', 'user')
+            ->andWhere('reminder.enabled = :enabled')
+            ->andWhere('reminder.nextRunAt IS NOT NULL')
+            ->andWhere('reminder.nextRunAt <= :dueAt')
+            ->setParameter('enabled', true)
+            ->setParameter('dueAt', $dueAt->setTimezone(new \DateTimeZone('UTC')))
+            ->orderBy('reminder.nextRunAt', 'ASC')
+            ->addOrderBy('reminder.id', 'ASC')
+            ->setMaxResults($limit);
+
+        if (null !== $afterNextRunAt && null !== $afterId) {
+            $queryBuilder
+                ->andWhere(
+                    '(reminder.nextRunAt > :afterNextRunAt
+                    OR (reminder.nextRunAt = :afterNextRunAt AND reminder.id > :afterId))'
+                )
+                ->setParameter('afterNextRunAt', $afterNextRunAt->setTimezone(new \DateTimeZone('UTC')))
+                ->setParameter('afterId', $afterId);
+        }
+
+        /** @var list<LearningReminder> $reminders */
+        $reminders = $queryBuilder->getQuery()->getResult();
+
+        return $reminders;
+    }
 }

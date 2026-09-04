@@ -5,16 +5,10 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enum\LearningReminderFrequency;
-use Psr\Clock\ClockInterface;
 
 final class LearningReminderNextRunCalculator
 {
     private const TRANSITION_LOOKAROUND_SECONDS = 172800;
-
-    public function __construct(
-        private readonly ClockInterface $clock,
-    ) {
-    }
 
     /**
      * @param list<int> $weekdays
@@ -25,14 +19,13 @@ final class LearningReminderNextRunCalculator
         array $weekdays,
         ?\DateTimeImmutable $scheduledDate,
         string $timezone,
+        \DateTimeImmutable $reference,
     ): \DateTimeImmutable {
         $timeZone = $this->createTimeZone($timezone);
         $normalizedWeekdays = $this->normalizeWeekdays($frequency, $weekdays);
         $this->assertScheduledDateMatchesFrequency($frequency, $scheduledDate);
 
-        $now = $this->clock
-            ->now()
-            ->setTimezone(new \DateTimeZone('UTC'));
+        $now = $reference->setTimezone(new \DateTimeZone('UTC'));
 
         return match ($frequency) {
             LearningReminderFrequency::DAILY => $this->calculateDaily($now, $reminderTime, $timeZone),

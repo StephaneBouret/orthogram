@@ -372,6 +372,11 @@ class Subscription
 
     public function isActive(): bool
     {
+        return $this->isActiveAt(new \DateTimeImmutable());
+    }
+
+    public function isActiveAt(\DateTimeImmutable $at): bool
+    {
         if (SubscriptionStatus::ACTIVE !== $this->status) {
             return false;
         }
@@ -380,13 +385,11 @@ class Subscription
             return true;
         }
 
-        $now = new \DateTimeImmutable();
-
-        if (null !== $this->startsAt && $now < $this->startsAt) {
+        if (null !== $this->startsAt && $at < $this->startsAt) {
             return false;
         }
 
-        if (null !== $this->endsAt && $now > $this->endsAt) {
+        if (null !== $this->endsAt && $at > $this->endsAt) {
             return false;
         }
 
