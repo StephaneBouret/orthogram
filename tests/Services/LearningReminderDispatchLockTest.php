@@ -89,7 +89,7 @@ final class LearningReminderDispatchLockTest extends KernelTestCase
     }
 
     #[DataProvider('refusedAcquisitionProvider')]
-    public function testZeroOrNullMeansAcquisitionWasRefused(mixed $databaseResult): void
+    public function testZeroMeansAcquisitionWasRefused(mixed $databaseResult): void
     {
         $connection = $this->createConfiguredStub(Connection::class, [
             'fetchOne' => $databaseResult,
@@ -107,7 +107,25 @@ final class LearningReminderDispatchLockTest extends KernelTestCase
     {
         yield 'integer zero' => [0];
         yield 'string zero' => ['0'];
-        yield 'null' => [null];
+    }
+
+    public function testNullAcquisitionResultThrowsException(): void
+    {
+        $connection = $this->createMock(Connection::class);
+        $connection
+            ->expects(self::once())
+            ->method('fetchOne')
+            ->with(
+                'SELECT GET_LOCK(:name, 0)',
+                ['name' => 'orthogram.test.learning-reminders.dispatch'],
+            )
+            ->willReturn(null);
+        $lock = $this->track(new LearningReminderDispatchLock($connection, 'test'));
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('MySQL a signalé une erreur lors de l’acquisition du verrou.');
+
+        $lock->acquire();
     }
 
     public function testUnexpectedAcquisitionValueIsRejected(): void

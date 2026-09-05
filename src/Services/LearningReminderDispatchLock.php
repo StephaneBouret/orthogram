@@ -43,8 +43,12 @@ class LearningReminderDispatchLock
             return true;
         }
 
-        if (0 === $result || '0' === $result || null === $result) {
+        if (0 === $result || '0' === $result) {
             return false;
+        }
+
+        if (null === $result) {
+            throw new \RuntimeException('MySQL a signalé une erreur lors de l’acquisition du verrou.');
         }
 
         throw new \UnexpectedValueException('MySQL a retourné une valeur inattendue lors de l’acquisition du verrou.');

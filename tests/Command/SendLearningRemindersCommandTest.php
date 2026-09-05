@@ -226,6 +226,29 @@ final class SendLearningRemindersCommandTest extends KernelTestCase
         self::assertStringContainsString('Sélectionnés : 0', $tester->getDisplay());
     }
 
+    public function testAcquisitionExceptionReturnsFailureWithoutProcessingOrRelease(): void
+    {
+        $lock = $this->createMock(LearningReminderDispatchLock::class);
+        $lock
+            ->expects(self::once())
+            ->method('acquire')
+            ->willThrowException(new \RuntimeException('Test acquisition failure'));
+        $lock->expects(self::never())->method('release');
+        $processor = $this->createMock(LearningReminderProcessor::class);
+        $processor->expects(self::never())->method('process');
+        $clock = $this->createMock(ClockInterface::class);
+        $clock->expects(self::never())->method('now');
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects(self::never())->method('flush');
+        $entityManager->expects(self::never())->method('clear');
+
+        $tester = $this->tester($processor, $lock, $entityManager, clock: $clock);
+
+        self::assertSame(Command::FAILURE, $tester->execute([]));
+        self::assertStringContainsString('Sélectionnés : 0', $tester->getDisplay());
+        self::assertStringContainsString('Envoyés : 0', $tester->getDisplay());
+    }
+
     public function testReleaseFailureMakesSuccessfulProcessingFail(): void
     {
         $lock = $this->createMock(LearningReminderDispatchLock::class);
