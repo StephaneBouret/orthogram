@@ -2447,6 +2447,11 @@ html[data-bs-theme="dark"] .word-token--missed {
     opacity: 0.58;
 }
 
+.learning-reminder-modal .modal-dialog-scrollable {
+    max-height: calc(100dvh - 2 * var(--bs-modal-margin));
+    min-height: 0;
+}
+
 .learning-reminder-modal .modal-content {
     background-color: var(--course-card-bg);
     border: 1px solid var(--course-border);
@@ -2454,6 +2459,22 @@ html[data-bs-theme="dark"] .word-token--missed {
     box-shadow: var(--course-shadow);
     color: var(--course-text);
     overflow: hidden;
+    max-height: 100%;
+    min-height: 0;
+}
+
+.learning-reminder-modal .learning-reminder-form {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.learning-reminder-modal .modal-header,
+.learning-reminder-modal .modal-footer {
+    flex-shrink: 0;
 }
 
 .learning-reminder-modal .modal-header {
@@ -2467,6 +2488,7 @@ html[data-bs-theme="dark"] .word-token--missed {
     align-items: flex-start;
     display: flex;
     gap: 1rem;
+    min-width: 0;
 }
 
 .learning-reminder-modal .learning-reminder-icon {
@@ -2501,6 +2523,11 @@ html[data-bs-theme="dark"] .word-token--missed {
 }
 
 .learning-reminder-modal .modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    overflow-wrap: anywhere;
     padding: 1.5rem;
 }
 
@@ -2512,7 +2539,8 @@ html[data-bs-theme="dark"] .word-token--missed {
 .learning-reminder-modal .learning-reminder-step[hidden],
 .learning-reminder-modal .learning-reminder-conditional[hidden],
 .learning-reminder-modal [hidden] {
-    display: none;
+    /* Component display rules must never expose a hidden step, button or spinner. */
+    display: none !important;
 }
 
 .learning-reminder-modal .learning-reminder-step-title {
@@ -2706,13 +2734,50 @@ html[data-bs-theme="dark"] .word-token--missed {
     margin: 0;
 }
 
-.learning-reminder-modal .learning-reminder-prototype-note {
+.learning-reminder-modal .learning-reminder-slot-meta {
     color: var(--course-muted);
     margin: 0;
 }
 
-.learning-reminder-modal .learning-reminder-prototype-note strong {
+.learning-reminder-modal .learning-reminder-slot-meta strong {
     color: var(--course-text);
+}
+
+.learning-reminder-modal .learning-reminder-calendar-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.learning-reminder-modal .learning-reminder-calendar-details {
+    color: var(--course-muted);
+}
+
+.learning-reminder-modal .learning-reminder-calendar-details summary {
+    color: var(--course-text);
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.learning-reminder-modal .learning-reminder-calendar-details summary:focus-visible {
+    outline: 3px solid var(--course-text);
+    outline-offset: 3px;
+}
+
+.learning-reminder-modal .learning-reminder-calendar-details p {
+    margin: 0.75rem 0 0;
+}
+
+.learning-reminder-modal [data-learning-reminder-step="2"] {
+    gap: 1rem;
+}
+
+.learning-reminder-modal [data-learning-reminder-step="2"] .learning-reminder-help {
+    margin: 0;
+}
+
+.learning-reminder-modal [data-learning-reminder-target="calendarStatus"]:empty {
+    display: none;
 }
 
 .learning-reminder-modal .learning-reminder-calendar-actions {
@@ -2737,6 +2802,16 @@ html[data-bs-theme="dark"] .word-token--missed {
 .learning-reminder-modal .learning-reminder-calendar-button:disabled {
     cursor: not-allowed;
     opacity: 0.6;
+}
+
+.learning-reminder-modal .learning-reminder-calendar-button:not(:disabled):hover {
+    border-color: var(--orthogram-brand);
+    color: var(--course-text);
+}
+
+.learning-reminder-modal .learning-reminder-calendar-button:focus-visible {
+    outline: 3px solid var(--orthogram-brand);
+    outline-offset: 3px;
 }
 
 .learning-reminder-modal .modal-footer {
@@ -2807,6 +2882,10 @@ html[data-bs-theme="dark"] .word-token--missed {
 }
 
 @media (max-width: 575.98px) {
+    .learning-reminder-modal .modal-dialog-scrollable {
+        max-height: 100dvh;
+    }
+
     .learning-reminder-modal .modal-content {
         border: 0;
         border-radius: 0;
@@ -2830,6 +2909,25 @@ html[data-bs-theme="dark"] .word-token--missed {
 
     .learning-reminder-modal .learning-reminder-button {
         width: 100%;
+    }
+}
+
+@media (max-height: 600px) {
+    .learning-reminder-modal .modal-header,
+    .learning-reminder-modal .modal-footer {
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+    }
+
+    .learning-reminder-modal .modal-footer {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .learning-reminder-modal .modal-footer .learning-reminder-button {
+        flex: 1 1 auto;
+        width: auto;
+        min-width: 0;
     }
 }
 

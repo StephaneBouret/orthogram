@@ -7,6 +7,9 @@ export default class extends Controller {
         upsertToken: String,
         disableUrl: String,
         disableToken: String,
+        googleUrl: String,
+        icsUrl: String,
+        calendarToken: String,
         reminder: Object,
     };
 
@@ -45,6 +48,12 @@ export default class extends Controller {
         'finishSpinner',
         'timezoneLabel',
         'courseContentTitle',
+        'calendarButton',
+        'calendarDetails',
+        'separateFirstNotice',
+        'recurringDetails',
+        'calendarStatus',
+        'calendarLink',
     ];
 
     connect() {
@@ -71,6 +80,7 @@ export default class extends Controller {
     }
 
     disconnect() {
+        this.invalidateCalendar();
         this.isPreparingCache = true;
         this.abortRequest();
         this.isSubmitting = false;
@@ -159,11 +169,13 @@ export default class extends Controller {
         }
 
         this.summaryTarget.textContent = this.buildSummary();
+        this.recurringDetailsTarget.hidden = this.selectedFrequency() === 'once';
         this.showStep(2, true);
     }
 
     previous(event) {
         event.preventDefault();
+        this.invalidateCalendar();
         this.clearValidation();
         this.showStep(1, true);
     }
@@ -182,6 +194,7 @@ export default class extends Controller {
         }
 
         this.clearValidation();
+        this.invalidateCalendar();
         this.isSubmitting = true;
         this.setSubmissionBusy(true);
 
@@ -229,6 +242,8 @@ export default class extends Controller {
     preventCloseWhileSubmitting(event) {
         if (this.isSubmitting) {
             event.preventDefault();
+        } else {
+            this.invalidateCalendar();
         }
     }
 
@@ -248,6 +263,7 @@ export default class extends Controller {
     }
 
     prepareForCache() {
+        this.invalidateCalendar();
         this.isPreparingCache = true;
         this.abortRequest();
         this.isSubmitting = false;
@@ -340,19 +356,8 @@ export default class extends Controller {
                 );
             }
 
-            if (
-                hasDate
-                && hasTime
-                && !this.isStrictlyFuture(
-                    this.onceDateTarget.value,
-                    this.onceTimeTarget.value,
-                )
-            ) {
-                firstInvalidControl ??= this.markInvalid(
-                    'once-future',
-                    [this.onceDateTarget, this.onceTimeTarget],
-                );
-            }
+            // The server alone checks future instants in the selected timezone,
+            // including nonexistent and ambiguous local times.
         }
 
         if (!firstInvalidControl) {
@@ -360,6 +365,7 @@ export default class extends Controller {
         }
 
         this.validationSummaryTarget.hidden = false;
+        this.showStep(1);
         firstInvalidControl.focus();
 
         return false;
@@ -424,6 +430,9 @@ export default class extends Controller {
     }
 
     reset() {
+        this.invalidateCalendar();
+        this.calendarDetailsTarget.open = false;
+        this.recurringDetailsTarget.hidden = true;
         this.formTarget.reset();
         this.currentStep = 1;
         this.summaryTarget.textContent = '';
@@ -496,7 +505,10 @@ export default class extends Controller {
     }
 
     updateTimezoneLabel() {
-        this.timezoneLabelTarget.textContent = this.usedTimezone();
+        const timezone = this.usedTimezone();
+        this.timezoneLabelTarget.textContent = timezone === 'Europe/Paris'
+            ? 'Horaire indiqué à l’heure de Paris.'
+            : `Fuseau horaire : ${timezone}.`;
     }
 
     hasStoredReminder() {
@@ -593,6 +605,7 @@ export default class extends Controller {
 
         const violations = Array.isArray(data.violations) ? data.violations : [];
         let firstInvalidControl = null;
+        let hasPastTime = false;
 
         violations.forEach((violation) => {
             const key = this.errorKeyForProperty(
@@ -600,18 +613,25 @@ export default class extends Controller {
                 violation.title ?? '',
             );
             const controls = this.controlsForErrorKey(key);
+            const message = key === 'once-future'
+                ? 'Cet horaire est passé. Choisissez une nouvelle heure.'
+                : violation.title;
+            hasPastTime ||= key === 'once-future';
 
             if (key && controls.length > 0) {
-                firstInvalidControl ??= this.markInvalid(
+                const invalidControl = this.markInvalid(
                     key,
                     controls,
-                    violation.title,
+                    message,
                 );
+                firstInvalidControl ??= invalidControl;
             }
         });
 
         this.validationSummaryTarget.textContent =
-            data.detail ?? 'Veuillez corriger les champs signalés.';
+            hasPastTime
+                ? 'Cet horaire est passé. Choisissez une nouvelle heure.'
+                : data.detail ?? 'Veuillez corriger les champs signalés.';
         this.validationSummaryTarget.hidden = false;
 
         (firstInvalidControl ?? this.validationSummaryTarget).focus();
@@ -658,6 +678,9 @@ export default class extends Controller {
     }
 
     messageForResponse(status, data) {
+        if (status === 401 || status === 403) {
+            return 'Votre accès ou votre session a expiré. Rechargez la page puis réessayez.';
+        }
         const serverMessage = data?.error?.message ?? data?.detail ?? data?.message;
 
         if (serverMessage) {
@@ -676,13 +699,14 @@ export default class extends Controller {
     }
 
     setSubmissionBusy(busy) {
+        this.calendarButtonTargets.forEach((button) => { button.disabled = busy; });
         this.formTarget.toggleAttribute('aria-busy', busy);
         this.closeButtonTarget.disabled = busy;
         this.previousButtonTarget.disabled = busy;
         this.nextButtonTarget.disabled = busy;
         this.finishButtonTarget.disabled = busy;
         this.finishSpinnerTarget.hidden = !busy;
-        this.finishLabelTarget.textContent = busy ? 'Enregistrement…' : 'Terminer';
+        this.finishLabelTarget.textContent = busy ? 'Enregistrement…' : 'Enregistrer mon rappel';
     }
 
     setDisableBusy(busy) {
@@ -704,60 +728,16 @@ export default class extends Controller {
     }
 
     setMinimumDate() {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
+        const parts = new Intl.DateTimeFormat('en-CA', {
+            timeZone: this.usedTimezone(), year: 'numeric', month: '2-digit', day: '2-digit',
+        }).formatToParts(new Date());
+        const value = (type) => parts.find((part) => part.type === type).value;
 
-        this.onceDateTarget.min = `${year}-${month}-${day}`;
+        this.onceDateTarget.min = `${value('year')}-${value('month')}-${value('day')}`;
     }
 
     selectedFrequency() {
         return this.frequencyTargets.find((radio) => radio.checked)?.value ?? null;
-    }
-
-    isStrictlyFuture(dateValue, timeValue) {
-        const candidate = this.createLocalDateTime(dateValue, timeValue);
-
-        return candidate !== null && candidate.getTime() > Date.now();
-    }
-
-    createLocalDateTime(dateValue, timeValue) {
-        const dateParts = dateValue.split('-').map(Number);
-        const timeParts = timeValue.split(':').map(Number);
-
-        if (dateParts.length !== 3 || timeParts.length !== 2) {
-            return null;
-        }
-
-        const [year, month, day] = dateParts;
-        const [hours, minutes] = timeParts;
-
-        if (![year, month, day, hours, minutes].every(Number.isInteger)) {
-            return null;
-        }
-
-        const candidate = new Date(
-            year,
-            month - 1,
-            day,
-            hours,
-            minutes,
-            0,
-            0,
-        );
-
-        if (
-            candidate.getFullYear() !== year
-            || candidate.getMonth() !== month - 1
-            || candidate.getDate() !== day
-            || candidate.getHours() !== hours
-            || candidate.getMinutes() !== minutes
-        ) {
-            return null;
-        }
-
-        return candidate;
     }
 
     buildSummary() {
@@ -775,12 +755,10 @@ export default class extends Controller {
             return `Tous les ${this.joinFrench(days)} à ${this.formatTime(this.weeklyTimeTarget.value)}`;
         }
 
-        const date = this.createLocalDateTime(
-            this.onceDateTarget.value,
-            this.onceTimeTarget.value,
-        );
+        const date = new Date(`${this.onceDateTarget.value}T12:00:00Z`);
 
         const formattedDate = new Intl.DateTimeFormat('fr-FR', {
+            timeZone: 'UTC',
             day: 'numeric',
             month: 'long',
             year: 'numeric',
@@ -809,6 +787,150 @@ export default class extends Controller {
         }
 
         return `${items.slice(0, -1).join(', ')} et ${items.at(-1)}`;
+    }
+
+    invalidateCalendar({ restoreFocus = false } = {}) {
+        const linkHadFocus = this.element.ownerDocument.activeElement === this.calendarLinkTarget;
+        this.calendarRequest?.abort();
+        this.calendarRequest = null;
+        clearTimeout(this.calendarTimer);
+        if (this.calendarBlobUrl) {
+            URL.revokeObjectURL(this.calendarBlobUrl);
+            this.calendarBlobUrl = null;
+        }
+        this.calendarExpiresAt = null;
+        this.calendarPayload = null;
+        this.calendarLinkTarget.hidden = true;
+        this.calendarLinkTarget.removeAttribute('href');
+        this.calendarLinkTarget.removeAttribute('download');
+        this.calendarLinkTarget.removeAttribute('target');
+        this.calendarStatusTarget.textContent = '';
+        this.separateFirstNoticeTarget.textContent = '';
+        this.separateFirstNoticeTarget.hidden = true;
+        this.calendarButtonTargets.forEach((button) => { button.disabled = this.isSubmitting; });
+        if (restoreFocus && linkHadFocus) {
+            this.calendarButtonTargets.find((button) =>
+                !button.matches(':disabled') && button.getClientRects().length > 0
+            )?.focus();
+        }
+    }
+
+    async prepareCalendar(event) {
+        event.preventDefault();
+        if (this.isSubmitting || this.isDisabling || this.calendarRequest) {
+            return;
+        }
+        this.invalidateCalendar();
+        this.clearValidation();
+        if (!this.validateFirstStep()) {
+            this.showStep(1);
+            return;
+        }
+        const format = event.currentTarget.dataset.calendarFormat;
+        const payload = JSON.stringify(this.buildPayload());
+        const request = new AbortController();
+        this.calendarRequest = request;
+        this.calendarButtonTargets.forEach((button) => { button.disabled = true; });
+        this.calendarStatusTarget.textContent = 'Préparation en cours…';
+        try {
+            const response = await fetch(format === 'google' ? this.googleUrlValue : this.icsUrlValue, {
+                method: 'POST',
+                credentials: 'same-origin',
+                redirect: 'error',
+                signal: request.signal,
+                headers: {
+                    Accept: 'application/json, text/calendar',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': this.calendarTokenValue,
+                },
+                body: payload,
+            });
+            if (!response.ok) {
+                const data = await response.json().catch(() => ({}));
+                if (this.calendarRequest === request) {
+                    this.calendarStatusTarget.textContent = '';
+                    this.handleSaveError(response.status, data);
+                }
+                return;
+            }
+            const contentType = response.headers.get('Content-Type') ?? '';
+            let href;
+            let expires;
+            let download = false;
+            let separateFirstNotice = '';
+            if (contentType.startsWith('application/json') && format === 'google' && this.selectedFrequency() === 'once') {
+                const data = await response.json();
+                const url = new URL(data.url);
+                if (url.origin !== 'https://calendar.google.com' || url.pathname !== '/calendar/render') {
+                    throw new Error('Unexpected calendar URL');
+                }
+                href = url.href;
+                expires = Date.parse(data.expiresAt);
+            } else if (contentType.startsWith('text/calendar')) {
+                const blob = await response.blob();
+                if (this.calendarRequest !== request) {
+                    return;
+                }
+                href = URL.createObjectURL(blob);
+                this.calendarBlobUrl = href;
+                download = true;
+                expires = Date.parse(response.headers.get('X-Orthogram-Expires-At'));
+                separateFirstNotice = decodeURIComponent(response.headers.get('X-Orthogram-Separate-First-Notice') ?? '');
+            } else {
+                throw new Error('Unexpected calendar response');
+            }
+            if (this.calendarRequest !== request) {
+                return;
+            }
+            if (!Number.isFinite(expires) || expires <= Date.now()) {
+                throw new Error('Expired calendar preparation');
+            }
+            this.calendarExpiresAt = expires;
+            this.calendarPayload = payload;
+            this.calendarLinkTarget.href = href;
+            this.calendarLinkTarget.textContent = download
+                ? 'Télécharger le fichier'
+                : 'Continuer dans Google Agenda';
+            if (download) {
+                this.calendarLinkTarget.download = 'orthogram.ics';
+            } else {
+                this.calendarLinkTarget.target = '_blank';
+            }
+            this.calendarLinkTarget.hidden = false;
+            this.separateFirstNoticeTarget.textContent = separateFirstNotice;
+            this.separateFirstNoticeTarget.hidden = separateFirstNotice === '';
+            this.calendarStatusTarget.textContent = 'Préparation prête. Confirmez ensuite l’ajout dans votre agenda.';
+            this.calendarLinkTarget.focus();
+            this.calendarTimer = setTimeout(() => this.checkCalendarExpiry(), expires - Date.now());
+        } catch (error) {
+            if (error.name !== 'AbortError' && this.calendarRequest === request) {
+                this.invalidateCalendar();
+                this.showModalError('La préparation a échoué ou expiré. Rechargez la page puis réessayez.');
+            }
+        } finally {
+            if (this.calendarRequest === request) {
+                this.calendarRequest = null;
+                this.calendarButtonTargets.forEach((button) => { button.disabled = this.isSubmitting; });
+            }
+        }
+    }
+
+    checkCalendarExpiry() {
+        if (this.calendarExpiresAt && Date.now() >= this.calendarExpiresAt) {
+            this.invalidateCalendar({ restoreFocus: true });
+            this.calendarStatusTarget.textContent = 'La préparation a expiré. Préparez à nouveau votre export. Les fichiers téléchargés et les liens Google copiés restent utilisables.';
+        }
+    }
+
+    openPreparedCalendar(event) {
+        if (this.calendarExpiresAt && Date.now() >= this.calendarExpiresAt) {
+            event.preventDefault();
+            this.checkCalendarExpiry();
+        } else if (!this.calendarExpiresAt || JSON.stringify(this.buildPayload()) !== this.calendarPayload) {
+            event.preventDefault();
+            this.invalidateCalendar({ restoreFocus: true });
+            this.calendarStatusTarget.textContent = 'Préparez à nouveau l’export avec les valeurs actuelles.';
+        }
     }
 
     ensureModal() {

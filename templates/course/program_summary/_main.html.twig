@@ -9,6 +9,9 @@
     data-learning-reminder-upsert-token-value="{{ csrf_token('learning_reminder_upsert') }}"
     data-learning-reminder-disable-url-value="{{ path('app_course_learning_reminder_disable', {slug: program.slug}) }}"
     data-learning-reminder-disable-token-value="{{ csrf_token('learning_reminder_disable') }}"
+    data-learning-reminder-google-url-value="{{ path('app_course_learning_reminder_calendar', {slug: program.slug, format: 'google'}) }}"
+    data-learning-reminder-ics-url-value="{{ path('app_course_learning_reminder_calendar', {slug: program.slug, format: 'ics'}) }}"
+    data-learning-reminder-calendar-token-value="{{ csrf_token('learning_reminder_calendar') }}"
     {% if learningReminder %}
         data-learning-reminder-reminder-value="{{ learningReminder|json_encode|e('html_attr') }}"
     {% endif %}

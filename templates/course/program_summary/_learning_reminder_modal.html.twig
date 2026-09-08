@@ -10,6 +10,7 @@
         shown.bs.modal->learning-reminder#focusInitial
         hide.bs.modal->learning-reminder#preventCloseWhileSubmitting
         hidden.bs.modal->learning-reminder#resetAfterClose
+        focus@window->learning-reminder#checkCalendarExpiry
     "
 >
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg modal-fullscreen-sm-down">
@@ -47,9 +48,10 @@
             </div>
 
             <form
+                class="learning-reminder-form"
                 novalidate
                 data-learning-reminder-target="form"
-                data-action="submit->learning-reminder#finish"
+                data-action="submit->learning-reminder#finish input->learning-reminder#invalidateCalendar change->learning-reminder#invalidateCalendar"
             >
                 <div class="modal-body">
                     <p
@@ -347,7 +349,7 @@
                                 data-learning-reminder-target="error"
                                 data-learning-reminder-error-for="once-future"
                             >
-                                Choisissez une date et une heure strictement futures.
+                                Cet horaire est passé. Choisissez une nouvelle heure.
                             </p>
                         </div>
                     </section>
@@ -366,11 +368,11 @@
                             data-learning-reminder-target="stepHeading"
                             data-learning-reminder-step="2"
                         >
-                            Votre rendez-vous d’apprentissage
+                            Votre créneau
                         </h3>
 
                         <div class="learning-reminder-summary">
-                            <i class="bi bi-check2-circle" aria-hidden="true"></i>
+                            <i class="bi bi-clock" aria-hidden="true"></i>
                             <p
                                 aria-live="polite"
                                 aria-atomic="true"
@@ -378,36 +380,51 @@
                             ></p>
                         </div>
 
-                        <p class="learning-reminder-prototype-note">
-                            Fuseau horaire utilisé :
-                            <strong data-learning-reminder-target="timezoneLabel"></strong>.
-                        </p>
+                        <p class="learning-reminder-slot-meta" data-learning-reminder-target="timezoneLabel"></p>
 
+                        <h4 class="learning-reminder-calendar-title">Ajouter aussi à mon agenda — facultatif</h4>
+                        <p class="learning-reminder-help">Un créneau de 15 minutes sera ajouté à votre agenda.</p>
                         <div class="learning-reminder-calendar-actions">
                             <button
                                 type="button"
                                 class="learning-reminder-calendar-button"
-                                disabled
+                                data-learning-reminder-target="calendarButton"
+                                data-action="learning-reminder#prepareCalendar"
+                                data-calendar-format="google"
                                 aria-describedby="learning-reminder-calendar-help"
                             >
                                 <i class="bi bi-google" aria-hidden="true"></i>
-                                Ajouter à Google Agenda
+                                Google Agenda
                             </button>
 
                             <button
                                 type="button"
                                 class="learning-reminder-calendar-button"
-                                disabled
+                                data-learning-reminder-target="calendarButton"
+                                data-action="learning-reminder#prepareCalendar"
+                                data-calendar-format="ics"
                                 aria-describedby="learning-reminder-calendar-help"
                             >
                                 <i class="bi bi-calendar-plus" aria-hidden="true"></i>
-                                Télécharger pour Apple et Outlook
+                                Apple / Outlook
                             </button>
                         </div>
 
                         <p id="learning-reminder-calendar-help" class="learning-reminder-help">
-                            Les actions calendrier seront disponibles dans une prochaine version.
+                            L’ajout à votre agenda n’enregistre pas votre rappel Orthogram.
                         </p>
+                        <p class="learning-reminder-help" role="status" aria-live="polite" data-learning-reminder-target="calendarStatus"></p>
+                        <a class="learning-reminder-calendar-button" hidden data-learning-reminder-target="calendarLink"
+                           data-action="learning-reminder#openPreparedCalendar" data-turbo="false" rel="noopener noreferrer"></a>
+                        <details class="learning-reminder-calendar-details" data-learning-reminder-target="calendarDetails">
+                            <summary>À savoir</summary>
+                            <p hidden data-learning-reminder-target="separateFirstNotice"></p>
+                            <p>Les changements dans Orthogram ne mettent pas automatiquement à jour votre agenda. Des imports répétés peuvent créer des doublons.</p>
+                            <div hidden data-learning-reminder-target="recurringDetails">
+                                <p>Les séries exportées sont limitées à cinq ans, sans changer la durée de votre rappel Orthogram.</p>
+                                <p>Pour Google Agenda, importez le fichier ICS depuis un ordinateur.</p>
+                            </div>
+                        </details>
                     </section>
                 </div>
 
@@ -447,7 +464,7 @@
                             data-learning-reminder-target="finishSpinner"
                         ></span>
                         <span data-learning-reminder-target="finishLabel">
-                            Terminer
+                            Enregistrer mon rappel
                         </span>
                     </button>
                 </div>

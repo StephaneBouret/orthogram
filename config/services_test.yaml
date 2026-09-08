@@ -1,0 +1,5 @@
+services:
+    # Public only in tests, so a fixed clock can be supplied to HTTP tests.
+    Psr\Clock\ClockInterface:
+        alias: clock
+        public: true

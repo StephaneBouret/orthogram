@@ -6,8 +6,10 @@ namespace App\Tests\Controller\Course;
 
 use App\Controller\Course\LearningReminderController;
 use App\Dto\LearningReminderPayload;
+use App\Entity\LearningReminder;
 use App\Entity\Program;
 use App\Entity\User;
+use App\Enum\LearningReminderFrequency;
 use App\Repository\LearningReminderRepository;
 use App\Services\LearningReminderNextRunCalculator;
 use App\Services\LearningReminderViewService;
@@ -19,6 +21,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Clock\ClockInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Clock\MockClock;
 use Symfony\Component\HttpFoundation\Response;
 
 final class LearningReminderControllerTest extends WebTestCase
@@ -34,6 +37,8 @@ final class LearningReminderControllerTest extends WebTestCase
         $this->client = static::createClient();
         $this->client->disableReboot();
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
+        self::assertSame('test', static::$kernel->getEnvironment());
+        self::assertStringEndsWith('_test', $this->entityManager->getConnection()->getDatabase());
         $this->repository = static::getContainer()->get(LearningReminderRepository::class);
 
         $suffix = bin2hex(random_bytes(8));
@@ -428,7 +433,7 @@ final class LearningReminderControllerTest extends WebTestCase
     }
 
     /**
-     * @return array{upsert: string, disable: string}
+     * @return array{upsert: string, disable: string, calendar: string}
      */
     private function loadPageAndReadTokens(): array
     {
@@ -448,10 +453,13 @@ final class LearningReminderControllerTest extends WebTestCase
 
         self::assertNotNull($upsert);
         self::assertNotNull($disable);
+        $calendar = $root->attr('data-learning-reminder-calendar-token-value');
+        self::assertNotNull($calendar);
 
         return [
             'upsert' => $upsert,
             'disable' => $disable,
+            'calendar' => $calendar,
         ];
     }
 
@@ -473,6 +481,252 @@ final class LearningReminderControllerTest extends WebTestCase
             'scheduledDate' => null,
             'timezone' => 'Europe/Paris',
         ];
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function calendarFormats(): iterable
+    {
+        yield 'google' => ['google'];
+        yield 'ics' => ['ics'];
+    }
+
+    /** @return iterable<string, array{string, ?string}> */
+    public static function calendarCsrfCases(): iterable
+    {
+        foreach (['google', 'ics'] as $format) {
+            yield $format.' absent' => [$format, null];
+            yield $format.' invalid' => [$format, 'invalid-token'];
+        }
+    }
+
+    #[DataProvider('calendarFormats')]
+    public function testCalendarAnonymousAccessUsesActualSecurityResponse(string $format): void
+    {
+        $this->client->getCookieJar()->clear();
+        $this->requestJson($this->calendarUrl($format), $this->dailyPayload(), null);
+        self::assertResponseStatusCodeSame(403);
+        self::assertFalse($this->client->getResponse()->isRedirection());
+        self::assertNull($this->client->getResponse()->headers->get('Location'));
+        self::assertJson((string) $this->client->getResponse()->getContent());
+        self::assertSame([], $this->reminderSnapshot());
+    }
+
+    #[DataProvider('calendarFormats')]
+    public function testCalendarConnectedUserWithoutAccessIsDenied(string $format): void
+    {
+        $tokens = $this->loadPageAndReadTokens();
+        $this->user->setRoles([]);
+        $this->entityManager->flush();
+        $this->client->loginUser($this->user);
+        $this->requestJson($this->calendarUrl($format), $this->dailyPayload(), $tokens['calendar']);
+        self::assertResponseStatusCodeSame(403);
+        self::assertSame([], $this->reminderSnapshot());
+    }
+
+    #[DataProvider('calendarCsrfCases')]
+    public function testCalendarCsrfIsRequiredForBothFormats(string $format, ?string $token): void
+    {
+        $this->loadPageAndReadTokens();
+        $this->requestJson($this->calendarUrl($format), $this->dailyPayload(), $token);
+        $this->assertInvalidCsrfResponse();
+        self::assertSame([], $this->reminderSnapshot());
+    }
+
+    #[DataProvider('calendarFormats')]
+    public function testRecurringCalendarDownloadsCurrentFormWithoutCreatingReminder(string $format): void
+    {
+        $tokens = $this->loadPageAndReadTokens();
+        static::getContainer()->set(ClockInterface::class, new MockClock('2026-09-07T06:00:00Z'));
+        $this->requestJson($this->calendarUrl($format), $this->dailyPayload(), $tokens['calendar']);
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('Content-Type', 'text/calendar; charset=UTF-8');
+        self::assertResponseHeaderSame('Content-Disposition', 'attachment; filename="orthogram.ics"');
+        self::assertResponseHeaderSame('X-Content-Type-Options', 'nosniff');
+        self::assertTrue($this->client->getResponse()->headers->hasCacheControlDirective('no-store'));
+        self::assertTrue($this->client->getResponse()->headers->hasCacheControlDirective('private'));
+        self::assertStringContainsString('DTSTART;TZID=Europe/Paris:20260907T083000', (string) $this->client->getResponse()->getContent());
+        self::assertStringContainsString('RRULE:FREQ=DAILY;UNTIL=20310907T063000Z', (string) $this->client->getResponse()->getContent());
+        self::assertSame([], $this->reminderSnapshot());
+        self::assertFalse($this->client->getResponse()->headers->has('X-Orthogram-Separate-First-Notice'));
+    }
+
+    #[DataProvider('calendarFormats')]
+    public function testSplitCalendarDownloadDoesNotCreateReminderAndCarriesNotice(string $format): void
+    {
+        $tokens = $this->loadPageAndReadTokens();
+        static::getContainer()->set(ClockInterface::class, new MockClock('2026-03-28T23:00:00Z'));
+        $this->requestJson($this->calendarUrl($format), array_replace($this->dailyPayload(), ['reminderTime' => '02:30']), $tokens['calendar']);
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('Content-Type', 'text/calendar; charset=UTF-8');
+        $response = $this->client->getResponse();
+        self::assertSame(\App\Services\LearningReminderCalendarService::SEPARATE_FIRST_NOTICE, rawurldecode($response->headers->get('X-Orthogram-Separate-First-Notice')));
+        $events = array_values(\Sabre\VObject\Reader::read($response->getContent())->select('VEVENT'));
+        self::assertCount(2, $events);
+        self::assertNotSame((string) $events[0]->UID, (string) $events[1]->UID);
+        self::assertSame('20260329T013000Z', (string) $events[0]->DTSTART);
+        self::assertSame('20260330T023000', (string) $events[1]->DTSTART);
+        self::assertSame([], $this->reminderSnapshot());
+    }
+
+    /** @return iterable<string, array{string, bool}> */
+    public static function calendarExistingReminderCases(): iterable
+    {
+        foreach (['google', 'ics'] as $format) {
+            foreach ([true, false] as $enabled) {
+                yield $format.($enabled ? ' active' : ' disabled') => [$format, $enabled];
+            }
+        }
+    }
+
+    #[DataProvider('calendarExistingReminderCases')]
+    public function testCalendarDoesNotMutateAnyReminderColumn(string $format, bool $enabled): void
+    {
+        $created = new \DateTimeImmutable('2026-09-01T00:00:00Z');
+        $reminder = LearningReminder::create($this->user, LearningReminderFrequency::WEEKLY, new \DateTimeImmutable('18:00:00 UTC'), [1, 5], null, 'Europe/London', new \DateTimeImmutable('2026-09-02T17:00:00Z'), $created);
+        // Populate technical dates without dispatching any email.
+        $reminder->markSent(new \DateTimeImmutable('2026-09-02T17:00:00Z'), new \DateTimeImmutable('2026-09-04T17:00:00Z'), new \DateTimeImmutable('2026-09-02T17:01:00Z'));
+        // Retain a non-null scheduled_date as well as last_sent_at in the snapshot.
+        $reminder->reconfigure(LearningReminderFrequency::ONCE, new \DateTimeImmutable('18:00:00 UTC'), [], new \DateTimeImmutable('2026-09-10'), 'Europe/London', new \DateTimeImmutable('2026-09-10T17:00:00Z'), new \DateTimeImmutable('2026-09-03T00:00:00Z'));
+        if (!$enabled) {
+            $reminder->disable(new \DateTimeImmutable('2026-09-04T00:00:00Z'));
+        }
+        $this->entityManager->persist($reminder);
+        $this->entityManager->flush();
+        $tokens = $this->loadPageAndReadTokens();
+        $before = $this->reminderSnapshot();
+        static::getContainer()->set(ClockInterface::class, new MockClock('2026-09-07T06:00:00Z'));
+        // Both a recurring download and Google once preparation must leave every column intact.
+        foreach ([$this->dailyPayload(), $this->onceCalendarPayload()] as $payload) {
+            $this->requestJson($this->calendarUrl($format), $payload, $tokens['calendar']);
+            self::assertResponseIsSuccessful();
+            self::assertSame($before, $this->reminderSnapshot());
+        }
+        $clock = static::getContainer()->get(ClockInterface::class);
+        self::assertInstanceOf(MockClock::class, $clock);
+        $clock->modify('2026-03-28T23:00:00Z');
+        $this->requestJson($this->calendarUrl($format), array_replace($this->dailyPayload(), ['reminderTime' => '02:30']), $tokens['calendar']);
+        self::assertResponseIsSuccessful();
+        self::assertTrue($this->client->getResponse()->headers->has('X-Orthogram-Separate-First-Notice'));
+        self::assertSame($before, $this->reminderSnapshot());
+        $clock->modify('2026-10-25T01:00:00Z');
+        $this->requestJson($this->calendarUrl($format), array_replace($this->dailyPayload(), ['frequency' => 'weekly', 'weekdays' => [7], 'reminderTime' => '02:30']), $tokens['calendar']);
+        self::assertResponseIsSuccessful();
+        self::assertTrue($this->client->getResponse()->headers->has('X-Orthogram-Separate-First-Notice'));
+        self::assertSame($before, $this->reminderSnapshot());
+        $storedReminder = $this->repository->findOneByUser($this->user);
+        self::assertNotNull($storedReminder);
+        self::assertSame($enabled, $storedReminder->isEnabled());
+        if (!$enabled) {
+            self::assertNull($storedReminder->getNextRunAt());
+        }
+    }
+
+    #[DataProvider('calendarFormats')]
+    public function testBUsesExistingIcsDownloadForBothFormatsWithoutCreatingReminder(string $format): void
+    {
+        $tokens = $this->loadPageAndReadTokens();
+        static::getContainer()->set(ClockInterface::class, new MockClock('2026-10-25T01:00:00Z'));
+        $this->requestJson($this->calendarUrl($format), array_replace($this->dailyPayload(), ['frequency' => 'weekly', 'weekdays' => [7], 'reminderTime' => '02:30']), $tokens['calendar']);
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('Content-Type', 'text/calendar; charset=UTF-8');
+        self::assertResponseHeaderSame('Content-Disposition', 'attachment; filename="orthogram.ics"');
+        self::assertResponseHeaderSame('X-Orthogram-Expires-At', '2026-10-25T01:05:00+00:00');
+        $response = $this->client->getResponse();
+        self::assertSame(\App\Services\LearningReminderCalendarService::SEPARATE_FIRST_NOTICE, rawurldecode($response->headers->get('X-Orthogram-Separate-First-Notice')));
+        $ics = $response->getContent();
+        $events = array_values(\Sabre\VObject\Reader::read($ics)->select('VEVENT'));
+        self::assertCount(2, $events);
+        self::assertNotSame((string) $events[0]->UID, (string) $events[1]->UID);
+        self::assertSame('20261025T013000Z', (string) $events[0]->DTSTART);
+        self::assertSame('20261025T014500Z', (string) $events[0]->DTEND);
+        self::assertSame('20261101T023000', (string) $events[1]->DTSTART);
+        self::assertSame('FREQ=WEEKLY;BYDAY=SU;WKST=MO;UNTIL=20311025T013000Z', (string) $events[1]->RRULE);
+        foreach (['EXDATE', 'RDATE', 'RECURRENCE-ID'] as $property) {
+            self::assertStringNotContainsString($property, $ics);
+        }
+        self::assertSame([], $this->reminderSnapshot());
+    }
+
+    public function testGoogleOncePreparationHasExactDatesAndDoesNotPersist(): void
+    {
+        $tokens = $this->loadPageAndReadTokens();
+        static::getContainer()->set(ClockInterface::class, new MockClock('2026-09-07T06:00:00Z'));
+        $this->requestJson($this->calendarUrl('google'), $this->onceCalendarPayload(), $tokens['calendar']);
+        self::assertResponseIsSuccessful();
+        $data = $this->responseData();
+        self::assertStringStartsWith('https://calendar.google.com/calendar/render?', $data['url']);
+        parse_str(parse_url($data['url'], \PHP_URL_QUERY), $query);
+        self::assertSame('20260907T063000Z/20260907T064500Z', $query['dates']);
+        self::assertSame('Europe/Paris', $query['stz']);
+        self::assertSame('Europe/Paris', $query['etz']);
+        self::assertArrayNotHasKey('ctz', $query);
+        self::assertSame('2026-09-07T06:05:00+00:00', $data['expiresAt']);
+        self::assertSame([], $this->reminderSnapshot());
+    }
+
+    /** @return iterable<string, array{string, string}> */
+    public static function calendarCloseStarts(): iterable
+    {
+        foreach (['google', 'ics'] as $format) {
+            foreach (['once', 'daily', 'weekly'] as $frequency) {
+                yield $format.' '.$frequency => [$format, $frequency];
+            }
+        }
+    }
+
+    #[DataProvider('calendarCloseStarts')]
+    public function testCalendarPreparationExpiresAtCloseFirstOccurrence(string $format, string $frequency): void
+    {
+        $tokens = $this->loadPageAndReadTokens();
+        static::getContainer()->set(ClockInterface::class, new MockClock('2026-09-07T06:28:00Z'));
+        $payload = array_replace($this->dailyPayload(), [
+            'frequency' => $frequency,
+            'weekdays' => 'weekly' === $frequency ? [1] : [],
+            'scheduledDate' => 'once' === $frequency ? '2026-09-07' : null,
+        ]);
+        $this->requestJson($this->calendarUrl($format), $payload, $tokens['calendar']);
+        self::assertResponseIsSuccessful();
+        if ('google' === $format && 'once' === $frequency) {
+            self::assertSame('2026-09-07T06:30:00+00:00', $this->responseData()['expiresAt']);
+        } else {
+            self::assertResponseHeaderSame('X-Orthogram-Expires-At', '2026-09-07T06:30:00+00:00');
+        }
+        self::assertSame([], $this->reminderSnapshot());
+    }
+
+    #[DataProvider('calendarFormats')]
+    public function testCalendarRejectsInvalidPayloadAndOnceThatBecamePast(string $format): void
+    {
+        $tokens = $this->loadPageAndReadTokens();
+        $clock = new MockClock('2026-09-07T06:00:00Z');
+        static::getContainer()->set(ClockInterface::class, $clock);
+        $this->requestJson($this->calendarUrl($format), array_replace($this->dailyPayload(), ['timezone' => 'Invalid/Zone']), $tokens['calendar']);
+        self::assertResponseStatusCodeSame(422);
+        $this->requestJson($this->calendarUrl($format), $this->onceCalendarPayload(), $tokens['calendar']);
+        self::assertResponseIsSuccessful();
+        $clock->modify('+31 minutes');
+        $this->requestJson($this->calendarUrl($format), $this->onceCalendarPayload(), $tokens['calendar']);
+        self::assertResponseStatusCodeSame(422);
+        self::assertSame('scheduledDate', $this->responseData()['violations'][0]['propertyPath']);
+        self::assertSame([], $this->reminderSnapshot());
+    }
+
+    /** @return list<array<string, mixed>> */
+    private function reminderSnapshot(): array
+    {
+        // Raw DB read catches changes to every mapped column, including technical dates.
+        return $this->entityManager->getConnection()->fetchAllAssociative('SELECT * FROM learning_reminder WHERE user_id = ? ORDER BY id', [$this->user->getId()]);
+    }
+
+    /** @return array{frequency: string, reminderTime: string, weekdays: list<int>, scheduledDate: string, timezone: string} */
+    private function onceCalendarPayload(): array
+    {
+        return array_replace($this->dailyPayload(), ['frequency' => 'once', 'scheduledDate' => '2026-09-07']);
+    }
+
+    private function calendarUrl(string $format): string
+    {
+        return sprintf('/courses/%s/learning-reminder/calendar/%s', $this->program->getSlug(), $format);
     }
 
     private function upsertUrl(): string

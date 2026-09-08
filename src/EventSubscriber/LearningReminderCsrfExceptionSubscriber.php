@@ -16,6 +16,7 @@ final class LearningReminderCsrfExceptionSubscriber implements EventSubscriberIn
     private const ROUTES = [
         'app_course_learning_reminder_upsert',
         'app_course_learning_reminder_disable',
+        'app_course_learning_reminder_calendar',
     ];
 
     public function onKernelException(ExceptionEvent $event): void
