@@ -2152,6 +2152,28 @@ html[data-bs-theme="dark"] .course-page .thinksfull {
     margin-bottom: 0.75rem;
 }
 
+.exercise-correction-groups {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.exercise-correction-group + .exercise-correction-group {
+    border-top: 1px solid var(--course-border);
+    padding-top: 1rem;
+}
+
+.exercise-correction-group-title {
+    color: var(--course-muted);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.exercise-correction-group .exercise-corrections {
+    margin-bottom: 0;
+}
+
 .exercise-corrections {
     display: grid;
     gap: 0.4rem;

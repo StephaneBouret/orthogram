@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
@@ -21,9 +22,19 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ExerciceCrudController extends AbstractCrudController
 {
+    public function __construct(private readonly ValidatorInterface $validator)
+    {
+    }
+
+    public function configureAssets(Assets $assets): Assets
+    {
+        return $assets->addJsFile('js/admin_exercice.js');
+    }
+
     public static function getEntityFqcn(): string
     {
         return Exercice::class;
@@ -80,6 +91,19 @@ class ExerciceCrudController extends AbstractCrudController
                 ]),
             CollectionField::new('sentences', 'Phrases')
                 ->setEntryType(ExerciceSentenceType::class)
+                ->setEntryToStringMethod(static function (mixed $sentence): string {
+                    if (!is_array($sentence)) {
+                        return 'Nouvelle phrase';
+                    }
+
+                    $preview = '';
+                    foreach ($sentence['words'] ?? [] as $word) {
+                        $preview .= ('' !== $preview && !($word['joinPrevious'] ?? false) ? ' ' : '')
+                            .($word['text'] ?? '').($word['punctuationAfter'] ?? $word['after'] ?? '');
+                    }
+
+                    return '' !== $preview ? $preview : 'Nouvelle phrase';
+                })
                 ->allowAdd()
                 ->allowDelete()
                 ->setFormTypeOption('by_reference', false)
@@ -264,6 +288,10 @@ class ExerciceCrudController extends AbstractCrudController
         }
 
         $exercice->setData($data);
+        $violations = $this->validator->validate($exercice);
+        if (count($violations) > 0) {
+            throw new \InvalidArgumentException((string) $violations->get(0)->getMessage());
+        }
     }
 
     /**

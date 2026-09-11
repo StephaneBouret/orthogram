@@ -102,17 +102,32 @@ export default class extends Controller {
 
     renderResult(data) {
         const items = data.items || [];
-        const corrections = items.map((item) => {
-            const label = this.statusLabel(item.status);
+        const groups = new Map();
+        this.element.querySelectorAll('.click-words-sentence[data-sentence-id]').forEach((sentence, index) => {
+            groups.set(sentence.dataset.sentenceId, { title: `Question ${index + 1}`, items: [] });
+        });
+        items.forEach((item) => {
+            if (!groups.has(item.sentenceId)) {
+                // Unknown tokens (or older corrections) must not be assigned to a question.
+                groups.set(item.sentenceId, { title: 'Autres corrections', items: [] });
+            }
+            groups.get(item.sentenceId).items.push(item);
+        });
+        const corrections = Array.from(groups.values()).filter((group) => group.items.length).map((group) => {
+            const entries = group.items.map((item) => {
+                const label = this.statusLabel(item.status);
 
-            return `<li class="exercise-result-item exercise-result-item--${this.escapeHtml(item.status)}"><strong>${label}</strong> ${this.escapeHtml(item.explanation || '')}</li>`;
+                return `<li class="exercise-result-item exercise-result-item--${this.escapeHtml(item.status)}"><strong>${label}</strong> ${this.escapeHtml(item.explanation || '')}</li>`;
+            }).join('');
+
+            return `<div class="exercise-correction-group"><h3 class="exercise-correction-group-title">${group.title}</h3><ul class="exercise-corrections">${entries}</ul></div>`;
         }).join('');
 
         this.resultTarget.innerHTML = `
             <div class="exercise-result-panel">
                 <p class="exercise-score">Score : ${data.score}/${data.total} (${data.percentage} %)</p>
                 ${data.attempt ? `<p class="exercise-attempt-saved">Résultat enregistré. Tentative n°${data.attempt.number}.</p>` : ''}
-                ${corrections ? `<ul class="exercise-corrections">${corrections}</ul>` : ''}
+                ${corrections ? `<div class="exercise-correction-groups">${corrections}</div>` : ''}
                 <button type="button" class="btn btn-outline-grey exercise-retry-button" data-action="click->click-words#reset">Repasser l’exercice</button>
             </div>
         `;

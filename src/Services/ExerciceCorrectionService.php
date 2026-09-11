@@ -13,7 +13,7 @@ class ExerciceCorrectionService
      *     score: int,
      *     total: int,
      *     percentage: int,
-     *     items: list<array{tokenId: string, status: string, explanation: string}>
+     *     items: list<array{tokenId: string, sentenceId: string|null, status: string, explanation: string}>
      * }
      */
     public function correctClickWords(Exercice $exercice, array $selectedTokenIds): array
@@ -25,6 +25,18 @@ class ExerciceCorrectionService
 
         $selected = array_fill_keys($selectedTokenIds, true);
         $tokens = $this->indexTokens($exercice);
+        foreach ($tokens as $tokenId => $token) {
+            if (!isset($token['noAnswerWordIds'])) {
+                continue;
+            }
+
+            // A virtual answer is derived only from the real words in its sentence.
+            unset($selected[$tokenId]);
+            if (!array_intersect($token['noAnswerWordIds'], $selectedTokenIds)) {
+                $selected[$tokenId] = true;
+            }
+        }
+
         $expectedTokenIds = [];
         $items = [];
         $score = 0;
@@ -83,12 +95,30 @@ class ExerciceCorrectionService
                 continue;
             }
 
+            $noAnswer = ($sentence['noAnswer'] ?? false) === true;
+            $wordIds = [];
+
             foreach ($sentence['words'] as $word) {
                 if (!is_array($word) || !isset($word['id']) || !is_string($word['id'])) {
                     continue;
                 }
 
+                if ($noAnswer) {
+                    $word['isAnswer'] = false;
+                }
+
+                $word['sentenceId'] = $sentence['id'];
                 $tokens[$word['id']] = $word;
+                $wordIds[] = $word['id'];
+            }
+
+            if ($noAnswer) {
+                $tokens[$sentence['id'].'__none'] = [
+                    'sentenceId' => $sentence['id'],
+                    'isAnswer' => true,
+                    'noAnswerWordIds' => $wordIds,
+                    'explanation' => $sentence['noAnswerExplanation'] ?? 'Aucune réponse attendue dans cette phrase.',
+                ];
             }
         }
 
@@ -98,18 +128,19 @@ class ExerciceCorrectionService
     /**
      * @param array<string, mixed>|null $token
      *
-     * @return array{tokenId: string, status: string, explanation: string}
+     * @return array{tokenId: string, sentenceId: string|null, status: string, explanation: string}
      */
     private function buildItem(string $tokenId, string $status, ?array $token): array
     {
         $fallback = match ($status) {
-            'wrong' => 'Ce mot n’est pas un nom attendu dans cette phrase.',
+            'wrong' => 'Cette sélection n’est pas une réponse attendue dans cette phrase.',
             'missed' => 'Ce mot était une réponse attendue.',
             default => 'Bonne réponse.',
         };
 
         return [
             'tokenId' => $tokenId,
+            'sentenceId' => $token['sentenceId'] ?? null,
             'status' => $status,
             'explanation' => is_string($token['explanation'] ?? null) ? $token['explanation'] : $fallback,
         ];

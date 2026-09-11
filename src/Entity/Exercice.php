@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: ExerciceRepository::class)]
 class Exercice
@@ -122,6 +123,25 @@ class Exercice
         return is_array($sentences) ? array_values($sentences) : [];
     }
 
+    #[Assert\Callback]
+    public function validateSentenceAnswers(ExecutionContextInterface $context): void
+    {
+        foreach ($this->getSentences() as $index => $sentence) {
+            if (($sentence['noAnswer'] ?? false) !== true) {
+                continue;
+            }
+
+            foreach ($sentence['words'] ?? [] as $word) {
+                if (($word['isAnswer'] ?? false) === true) {
+                    $context->buildViolation('Une phrase marquée comme « aucune réponse » ne peut pas contenir de mot défini comme bonne réponse.')
+                        ->atPath(sprintf('sentences[%d][noAnswer]', $index))
+                        ->addViolation();
+                    break;
+                }
+            }
+        }
+    }
+
     /**
      * @param list<array<string, mixed>> $sentences
      */
@@ -229,10 +249,21 @@ class Exercice
                 }
             }
 
-            $normalizedSentences[] = [
+            $normalizedSentence = [
                 'id' => $sentenceId,
                 'words' => $normalizedWords,
             ];
+
+            if (array_key_exists('noAnswer', $sentence)) {
+                $normalizedSentence['noAnswer'] = filter_var($sentence['noAnswer'], FILTER_VALIDATE_BOOL);
+            }
+
+            $noAnswerExplanation = trim((string) ($sentence['noAnswerExplanation'] ?? ''));
+            if ('' !== $noAnswerExplanation) {
+                $normalizedSentence['noAnswerExplanation'] = $noAnswerExplanation;
+            }
+
+            $normalizedSentences[] = $normalizedSentence;
         }
 
         $data['sentences'] = $normalizedSentences;
