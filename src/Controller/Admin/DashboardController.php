@@ -50,6 +50,8 @@ class DashboardController extends AbstractDashboardController
             MenuItem::linkTo(SectionsCrudController::class, 'Sections du programme', 'fa-fw fas fa-section'),
             MenuItem::linkTo(CoursesCrudController::class, 'Cours', 'fas fa-book-open'),
             MenuItem::linkTo(ExerciceCrudController::class, 'Exercices', 'fa-solid fa-list-check'),
+            MenuItem::linkTo(QuizCrudController::class, 'Quiz', 'fa-solid fa-circle-question')->setPermission('ROLE_ADMIN'),
+            MenuItem::linkTo(QuizQuestionCrudController::class, 'Questions des quiz', 'fa-solid fa-list-check')->setPermission('ROLE_ADMIN'),
             MenuItem::linkTo(CommentCrudController::class, 'Commentaires', 'fa-regular fa-comments'),
             MenuItem::linkTo(CommentReportCrudController::class, 'Signalements', 'fa-solid fa-flag'),
 

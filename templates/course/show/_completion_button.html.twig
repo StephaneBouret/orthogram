@@ -1,3 +1,4 @@
+{% if (course.contentType.value ?? course.contentType) != 'quiz' %}
 <div id="completion-button">
     {% set isDone = lesson is defined and lesson and lesson.done %}
     <form method="post" action="{{ path('app_course_confirmation', {'id': course.id}) }}">
@@ -13,3 +14,4 @@
         </button>
     </form>
 </div>
+{% endif %}

@@ -5,6 +5,7 @@ namespace App\Controller\Course;
 use App\Entity\Courses;
 use App\Entity\Lesson;
 use App\Entity\User;
+use App\Enum\CourseContentType;
 use App\Enum\LessonStatus;
 use App\Repository\LessonRepository;
 use App\Security\Voter\CourseVoter;
@@ -28,6 +29,10 @@ final class CourseConfirmationController extends AbstractController
     public function __invoke(Courses $course, Request $request): Response
     {
         $this->denyAccessUnlessGranted(CourseVoter::VIEW, $course, "Vous n'avez pas accès à ce cours.");
+
+        if (CourseContentType::Quiz === $course->getContentType()) {
+            throw $this->createAccessDeniedException('Terminez le quiz pour valider ce cours.');
+        }
 
         if (!$this->isCsrfTokenValid('lesson_toggle_'.$course->getId(), (string) $request->request->get('_token'))) {
             throw $this->createAccessDeniedException('Le jeton CSRF est invalide.');

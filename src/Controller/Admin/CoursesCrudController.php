@@ -94,6 +94,11 @@ class CoursesCrudController extends AbstractCrudController
                 ->addCssClass('field-exercice')
                 ->hideOnIndex(),
 
+            AssociationField::new('quiz', 'Quiz')
+                ->setRequired(false)
+                ->addCssClass('field-quiz')
+                ->hideOnIndex(),
+
             FormField::addFieldset('Fichiers')->hideOnIndex(),
             TextField::new('partialFile', 'Template Twig')
                 ->setFormType(VichFileType::class)
@@ -132,7 +137,7 @@ class CoursesCrudController extends AbstractCrudController
     {
         $this->setPositionIfMissing($entityInstance);
         $this->reorderCourse($entityInstance);
-        $this->normalizeExerciceAssociation($entityInstance);
+        $this->normalizeContentAssociations($entityInstance);
         $this->estimateDuration($entityInstance);
 
         parent::persistEntity($entityManager, $entityInstance);
@@ -143,7 +148,7 @@ class CoursesCrudController extends AbstractCrudController
         $previousSection = $this->getPreviousSection($entityManager, $entityInstance);
 
         $this->reorderCourse($entityInstance, $previousSection);
-        $this->normalizeExerciceAssociation($entityInstance);
+        $this->normalizeContentAssociations($entityInstance);
         $this->estimateDuration($entityInstance, $entityInstance instanceof Courses && null !== $entityInstance->getPartialFile());
 
         parent::updateEntity($entityManager, $entityInstance);
@@ -172,7 +177,7 @@ class CoursesCrudController extends AbstractCrudController
         $entityInstance->setDurationMinutes($this->courseDurationEstimator->estimateReadingDuration($content));
     }
 
-    private function normalizeExerciceAssociation(object $entityInstance): void
+    private function normalizeContentAssociations(object $entityInstance): void
     {
         if (!$entityInstance instanceof Courses) {
             return;
@@ -180,6 +185,10 @@ class CoursesCrudController extends AbstractCrudController
 
         if (CourseContentType::Exercise !== $entityInstance->getContentType()) {
             $entityInstance->setExercice(null);
+        }
+
+        if (CourseContentType::Quiz !== $entityInstance->getContentType()) {
+            $entityInstance->setQuiz(null);
         }
     }
 

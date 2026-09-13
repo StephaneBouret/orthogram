@@ -10,6 +10,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 #[ORM\Entity(repositoryClass: CoursesRepository::class)]
@@ -81,6 +82,10 @@ class Courses
     #[ORM\ManyToOne(inversedBy: 'courses')]
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?Exercice $exercice = null;
+
+    #[ORM\ManyToOne(inversedBy: 'courses')]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
+    private ?Quiz $quiz = null;
 
     /**
      * @var Collection<int, Lesson>
@@ -309,6 +314,33 @@ class Courses
         $this->exercice = $exercice;
 
         return $this;
+    }
+
+    public function getQuiz(): ?Quiz
+    {
+        return $this->quiz;
+    }
+
+    public function setQuiz(?Quiz $quiz): static
+    {
+        if ($this->quiz === $quiz) {
+            return $this;
+        }
+        $previous = $this->quiz;
+        $this->quiz = $quiz;
+        $previous?->removeCourse($this);
+        $quiz?->addCourse($this);
+
+        return $this;
+    }
+
+    #[Assert\Callback]
+    public function validateQuizAssociation(ExecutionContextInterface $context): void
+    {
+        if (CourseContentType::Quiz === $this->contentType && null === $this->quiz) {
+            $context->buildViolation('Choisissez un quiz pour ce type de contenu.')
+                ->atPath('quiz')->addViolation();
+        }
     }
 
     /**

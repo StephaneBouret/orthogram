@@ -51,6 +51,10 @@ return [
         'path' => './assets/js/admin_courses.js',
         'entrypoint' => true,
     ],
+    'admin_quiz_answers' => [
+        'path' => './assets/js/admin_quiz_answers.js',
+        'entrypoint' => true,
+    ],
     'tom-select' => [
         'version' => '2.6.1',
     ],

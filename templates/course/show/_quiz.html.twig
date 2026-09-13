@@ -1,0 +1,15 @@
+<div class="card v9d3ks course-quiz" data-controller="quiz"
+     data-quiz-state-url-value="{{ path('app_course_quiz_state', {id: course.id}) }}"
+     data-quiz-start-url-value="{{ path('app_course_quiz_mutate', {id: course.id, action: 'start'}) }}"
+     data-quiz-answer-url-value="{{ path('app_course_quiz_mutate', {id: course.id, action: 'answer'}) }}"
+     data-quiz-finish-url-value="{{ path('app_course_quiz_mutate', {id: course.id, action: 'finish'}) }}"
+     data-quiz-restart-url-value="{{ path('app_course_quiz_mutate', {id: course.id, action: 'restart'}) }}"
+     data-quiz-token-value="{{ csrf_token('quiz_' ~ course.id) }}"
+     data-action="turbo:before-cache@document->quiz#beforeCache">
+    <div class="card-body">
+        <h2 class="h4" data-quiz-target="title">{{ course.quiz ? course.quiz.title : 'Quiz indisponible' }}</h2>
+        <p role="alert" class="text-danger" data-quiz-target="error" hidden></p>
+        <div data-quiz-target="stage"><p>Chargement du quiz…</p></div>
+        <noscript>Activez JavaScript pour répondre au quiz.</noscript>
+    </div>
+</div>

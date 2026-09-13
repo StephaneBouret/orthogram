@@ -1,3 +1,54 @@
+.course-quiz .quiz-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.course-quiz .quiz-phrase,
+.course-quiz .quiz-percentage {
+    font-weight: 700;
+}
+
+.course-quiz .quiz-progress-number {
+    color: var(--course-link-hover);
+}
+
+.course-quiz .quiz-answer-feedback.is-correct {
+    color: #198754;
+}
+
+.course-quiz .quiz-answer-feedback.is-incorrect {
+    color: #dc3545;
+}
+
+html[data-bs-theme="dark"] .course-quiz .quiz-answer-feedback.is-correct {
+    color: #75b798;
+}
+
+html[data-bs-theme="dark"] .course-quiz .quiz-answer-feedback.is-incorrect {
+    color: #ea868f;
+}
+
+.course-quiz .quiz-choice {
+    display: flex;
+    align-items: baseline;
+    gap: .75rem;
+    padding: .75rem;
+    margin-bottom: .5rem;
+    border: 1px solid var(--course-border);
+    border-radius: .5rem;
+    cursor: pointer;
+}
+
+.course-quiz .quiz-choice input { flex-shrink: 0; }
+.course-quiz fieldset { min-width: 0; margin-bottom: 1rem; }
+.course-quiz .quiz-review li { margin-bottom: .5rem; }
+.course-quiz details { margin-bottom: 1rem; }
+.course-quiz button { white-space: normal; }
+
+.course-quiz h3[tabindex="-1"]:focus {
+    outline: none;
+}
+
 /*--------------------------------------------------------------
 # Courses List
 --------------------------------------------------------------*/
@@ -1601,6 +1652,7 @@ button.btn.btn-abandonment:hover {
 }
 
 .course-page .btn-submit-dark,
+.course-page .course-quiz .btn-dark,
 .course-page #completion-button .btn-dark {
     background-color: var(--orthogram-brand) !important;
     border-color: var(--orthogram-brand) !important;

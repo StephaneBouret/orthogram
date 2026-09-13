@@ -10,6 +10,7 @@ const initCourseFields = () => {
     const videoFields = document.querySelectorAll('.field-videoFile');
     const dictationFields = document.querySelectorAll('.field-correctionText');
     const exerciseFields = document.querySelectorAll('.field-exercice');
+    const quizFields = document.querySelectorAll('.field-quiz');
 
     const toggle = (fields, visible) => {
         fields.forEach((field) => {
@@ -25,6 +26,7 @@ const initCourseFields = () => {
         toggle(videoFields, type === 'video');
         toggle(dictationFields, type === 'audio');
         toggle(exerciseFields, type === 'exercise');
+        toggle(quizFields, type === 'quiz');
     };
 
     if (contentTypeSelect.dataset.courseFieldsReady !== '1') {
