@@ -14,6 +14,7 @@ use App\Repository\LessonRepository;
 use App\Repository\SectionsRepository;
 use App\Security\Voter\CourseVoter;
 use App\Services\Courses\CourseFileService;
+use App\Services\Courses\SectionCompletionService;
 use App\Services\Courses\SectionDurationService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,6 +27,7 @@ final class CourseViewController extends AbstractController
         private readonly CoursesRepository $coursesRepository,
         private readonly SectionsRepository $sectionsRepository,
         private readonly SectionDurationService $sectionDurationService,
+        private readonly SectionCompletionService $sectionCompletionService,
         private readonly CourseFileService $courseFileService,
         private readonly LessonRepository $lessonRepository,
         private readonly CommentRepository $commentRepository,
@@ -78,6 +80,7 @@ final class CourseViewController extends AbstractController
             'nbrCourses' => $this->coursesRepository->countByProgram($program),
             'nbrLessonsDone' => $nbrLessonsDone,
             'completedCourseIds' => $completedCourseIds,
+            'sectionCompletion' => $this->sectionCompletionService->calculate($sections, $completedCourseIds),
             'sectionsTotalDuration' => $this->sectionDurationService->calculateTotalDuration($sections),
             'comments' => $this->commentRepository->findRootCommentsByCourse($course),
             'commentsCount' => $this->commentRepository->countByCourse($course),

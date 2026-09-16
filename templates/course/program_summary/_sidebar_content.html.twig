@@ -2,7 +2,7 @@
 {% set currentSection = currentSection|default(null) %}
 {% set currentCourse = currentCourse|default(null) %}
 
-<ol class="sticky-contents pl-0 list-unstyled">
+<ol class="sticky-contents pl-0 list-unstyled" data-controller="course-sidebar">
     <li class="list-group list-group-xs list-group-menu mb-6">
         <section class="d-flex align-items-start">
             <div>
@@ -43,6 +43,7 @@
     {% for section in sections %}
         {% set collapseId = collapsePrefix ~ '-collapse-' ~ section.id %}
         {% set isCurrentSection = currentSection and currentSection.id == section.id %}
+        {% set isExpanded = not sectionCompletion[section.id] %}
         <li class="list-group list-group-menu list-group-xs mb-6">
             <nav aria-label="{{ section.name }}">
                 <header class="d-flex align-items-center n2ymm7">
@@ -51,14 +52,16 @@
                             {{ section.name }}
                         </h2>
                     </a>
-                    <span class="icon closed f4lgy4" data-bs-toggle="collapse" data-bs-target="#{{ collapseId }}" aria-expanded="false" aria-controls="{{ collapseId }}">
-                        {% include 'course/program_summary/icons/_closed.html.twig' %}
-                    </span>
-                    <span class="icon opened d-none f4lgy4" data-bs-toggle="collapse" data-bs-target="#{{ collapseId }}" aria-expanded="false" aria-controls="{{ collapseId }}">
-                        {% include 'course/program_summary/icons/_opened.html.twig' %}
-                    </span>
+                    <button type="button" class="icon f4lgy4 border-0 bg-transparent p-0{{ isExpanded ? '' : ' collapsed' }}" data-bs-toggle="collapse" data-bs-target="#{{ collapseId }}" aria-expanded="{{ isExpanded ? 'true' : 'false' }}" aria-controls="{{ collapseId }}" aria-label="Afficher ou masquer les cours de {{ section.name }}">
+                        <span class="closed{{ isExpanded ? ' d-none' : '' }}" aria-hidden="true">
+                            {% include 'course/program_summary/icons/_closed.html.twig' %}
+                        </span>
+                        <span class="opened{{ isExpanded ? '' : ' d-none' }}" aria-hidden="true">
+                            {% include 'course/program_summary/icons/_opened.html.twig' %}
+                        </span>
+                    </button>
                 </header>
-                <div id="{{ collapseId }}" class="collapse show">
+                <div id="{{ collapseId }}" class="collapse{{ isExpanded ? ' show' : '' }}">
                     <ol class="pl-0 mb-0 list-unstyled">
                         {% for course in section.courses %}
                             <li data-action="click->course-menu#closeOnNavigate">

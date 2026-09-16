@@ -9,6 +9,7 @@ use App\Repository\LearningReminderRepository;
 use App\Repository\LessonRepository;
 use App\Repository\SectionsRepository;
 use App\Security\Voter\CourseVoter;
+use App\Services\Courses\SectionCompletionService;
 use App\Services\Courses\SectionDurationService;
 use App\Services\LearningReminderViewService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -23,6 +24,7 @@ final class ProgramSummaryController extends AbstractController
         private readonly CoursesRepository $coursesRepository,
         private readonly SectionsRepository $sectionsRepository,
         private readonly SectionDurationService $sectionDurationService,
+        private readonly SectionCompletionService $sectionCompletionService,
         private readonly LessonRepository $lessonRepository,
         private readonly LearningReminderRepository $learningReminderRepository,
         private readonly LearningReminderViewService $learningReminderViewService,
@@ -55,6 +57,7 @@ final class ProgramSummaryController extends AbstractController
             'nbrCourses' => $nbrCourses,
             'nbrLessonsDone' => $nbrLessonsDone,
             'completedCourseIds' => $completedCourseIds,
+            'sectionCompletion' => $this->sectionCompletionService->calculate($sections, $completedCourseIds),
             'sectionsTotalDuration' => $sectionsTotalDuration,
             'programTotalDurationMinutes' => $programTotalDurationMinutes,
             'learningReminder' => null === $learningReminder

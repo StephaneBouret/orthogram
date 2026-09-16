@@ -1,5 +1,11 @@
 {% extends 'base.html.twig' %}
 
+{% block javascripts %}
+    {{ parent() }}
+    {# History must fetch current progress, not restore an outdated sidebar. #}
+    <meta name="turbo-cache-control" content="no-cache">
+{% endblock %}
+
 {% block title %}{{ course.name }}{% endblock %}
 
 {% block body %}
