@@ -34,10 +34,6 @@
         {% endif %}
 
         <span class="course-item-title">{{ course.name }}</span>
-
-        {% if course.durationMinutes %}
-            <span class="course-item-duration text-muted">{{ course.durationMinutes }} min</span>
-        {% endif %}
     </a>
 {% else %}
     <div class="list-group-item" aria-label="{{ course.name }}{{ isCompleted ? ' — Terminé' : '' }}">
@@ -46,9 +42,5 @@
         </div>
 
         <span class="course-item-title">{{ course.name }}</span>
-
-        {% if course.durationMinutes %}
-            <span class="course-item-duration text-muted">{{ course.durationMinutes }} min</span>
-        {% endif %}
     </div>
 {% endif %}

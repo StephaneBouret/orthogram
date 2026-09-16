@@ -41,7 +41,6 @@
     </li>
 
     {% for section in sections %}
-        {% set sectionDuration = sectionsTotalDuration[section.id] ?? 0 %}
         {% set collapseId = collapsePrefix ~ '-collapse-' ~ section.id %}
         {% set isCurrentSection = currentSection and currentSection.id == section.id %}
         <li class="list-group list-group-menu list-group-xs mb-6">
@@ -50,9 +49,6 @@
                     <a href="{{ path('app_course_section', {'programSlug': program.slug, 'sectionSlug': section.slug}) }}" class="course-section-link{{ isCurrentSection ? ' is-active' : '' }}" data-action="course-menu#closeOnNavigate">
                         <h2 class="h4 text-md mb-2">
                             {{ section.name }}
-                            {% if sectionDuration > 0 %}
-                                ({{ sectionDuration }} min)
-                            {% endif %}
                         </h2>
                     </a>
                     <span class="icon closed f4lgy4" data-bs-toggle="collapse" data-bs-target="#{{ collapseId }}" aria-expanded="false" aria-controls="{{ collapseId }}">

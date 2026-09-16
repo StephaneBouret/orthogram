@@ -206,7 +206,6 @@
 
         {% for section in sections %}
             {% set courseCount = coursesBySection[section.id] ?? section.courses|length %}
-            {% set sectionDuration = sectionsTotalDuration[section.id] ?? 0 %}
             <div class="card v9d3ks" id="section-{{ section.id }}">
                 <div class="card-body">
                     <div class="list-group list-group-menu list-group-sm">
@@ -215,9 +214,6 @@
                                 <a class="lk25pol" href="{{ path('app_course_section', {'programSlug': program.slug, 'sectionSlug': section.slug}) }}">
                                     <h2>
                                         {{ section.name }}
-                                        {% if sectionDuration > 0 %}
-                                            ({{ sectionDuration }} min)
-                                        {% endif %}
                                     </h2>
                                 </a>
                                 {% if section.shortDescription %}
