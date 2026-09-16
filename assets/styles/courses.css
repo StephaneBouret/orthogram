@@ -3,6 +3,10 @@
     overflow-wrap: anywhere;
 }
 
+.course-quiz .quiz-phrase {
+    color: var(--course-link-hover) !important;
+}
+
 .course-quiz .quiz-phrase,
 .course-quiz .quiz-percentage {
     font-weight: 700;
@@ -3055,4 +3059,16 @@ html[data-bs-theme="dark"] .word-token--missed {
         padding: 1.25rem;
     }
 
+}
+
+/* Contenus terminés : coche blanche sur cercle vert. */
+.course-page .list-group .list-group-item .list-group-icon.completed {
+    background-color: transparent !important;
+}
+
+.course-page .list-group .list-group-item .list-group-icon.completed svg {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    fill: none !important;
 }

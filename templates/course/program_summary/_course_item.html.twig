@@ -7,11 +7,30 @@
 {% if isAccessible %}
     <a class="list-group-item list-group-item-action{{ isCurrentCourse ? ' active' : '' }}" aria-label="{{ course.slug }}" href="{{ path('app_course_show', {'programSlug': course.section.program.slug, 'sectionSlug': course.section.slug, 'courseSlug': course.slug}) }}">
         {% if isCompleted %}
-            <div class="list-group-icon completed">
+            {# <div class="list-group-icon completed">
                 {% include 'course/program_summary/icons/_check.html.twig' %}
+            </div> #}
+            <div class="list-group-icon completed">
+                <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    focusable="false"
+                >
+                    <circle cx="12" cy="12" r="11" fill="#00c875"/>
+                    <path
+                        d="M7 12.5 10.2 15.5 17 8.5"
+                        fill="none"
+                        stroke="#fff"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+                </svg>
             </div>
         {% else %}
-            {% include 'course/program_summary/_course_icon.html.twig' with { course: course } %}
+            {% include 'course/program_summary/_course_icon.html.twig' with {course: course} %}
         {% endif %}
 
         <span class="course-item-title">{{ course.name }}</span>
@@ -21,15 +40,15 @@
         {% endif %}
     </a>
 {% else %}
-<div class="list-group-item" aria-label="{{ course.slug }}">
-    <div class="list-group-icon">
-        {% include 'course/program_summary/icons/_lock.html.twig' %}
+    <div class="list-group-item" aria-label="{{ course.name }}{{ isCompleted ? ' — Terminé' : '' }}">
+        <div class="list-group-icon">
+            {% include 'course/program_summary/icons/_lock.html.twig' %}
+        </div>
+
+        <span class="course-item-title">{{ course.name }}</span>
+
+        {% if course.durationMinutes %}
+            <span class="course-item-duration text-muted">{{ course.durationMinutes }} min</span>
+        {% endif %}
     </div>
-
-    <span class="course-item-title">{{ course.name }}</span>
-
-    {% if course.durationMinutes %}
-        <span class="course-item-duration text-muted">{{ course.durationMinutes }} min</span>
-    {% endif %}
-</div>
 {% endif %}
