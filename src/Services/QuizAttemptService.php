@@ -225,6 +225,7 @@ final class QuizAttemptService
         }
 
         return ['attemptId' => $attempt->getId(), 'title' => $snapshot['title'], 'total' => $attempt->getTotal(),
+            'percentage' => QuizScore::percentage($attempt->getScore(), $attempt->getTotal()),
             'validated' => $validated, 'completed' => null !== $attempt->getCompletedAt(), 'score' => $attempt->getScore(),
             'startedAt' => $attempt->getStartedAt()->format(DATE_ATOM), 'completedAt' => $attempt->getCompletedAt()?->format(DATE_ATOM),
             'question' => $question, 'review' => $review];

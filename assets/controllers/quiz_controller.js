@@ -257,8 +257,8 @@ export default class extends Controller {
     summary() {
         const heading = this.node('h3', `Votre résultat : ${this.state.score} sur ${this.state.total}`, 'h5');
         heading.tabIndex = -1;
-        const percentage = this.state.total > 0 ? Math.round(this.state.score / this.state.total * 100) : 0;
-        this.stageTarget.replaceChildren(heading, this.node('p', `${percentage} % de bonnes réponses`, 'quiz-percentage'), this.node('p', `${this.state.score} bonne(s) réponse(s) · ${this.state.total - this.state.score} question(s) à revoir. Ce cours est terminé.`));
+        const percentage = this.state.percentage;
+        this.stageTarget.replaceChildren(heading, this.node('p', percentage == null ? 'Pourcentage indisponible' : `${percentage} % de bonnes réponses`, 'quiz-percentage'), this.node('p', `${this.state.score} bonne(s) réponse(s) · ${this.state.total - this.state.score} question(s) à revoir. Ce cours est terminé.`));
         this.state.review.forEach((question, index) => {
             const details = this.node('details', null, 'course-correction');
             details.append(this.node('summary', `Question ${index + 1} — ${question.correct ? 'Bonne réponse' : 'À revoir'}${question.theme ? ' · ' + question.theme : ''}`), this.reviewContent(question));

@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Correction de ma tentative — Orthogram{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <meta name="turbo-cache-control" content="no-cache">
+{% endblock %}
+
+{% block body %}
+    <main class="container py-5">
+        <div class="card course-quiz">
+            <div class="card-body">
+                <h1 class="h3 quiz-text">{{ correction.title }}</h1>
+                <p>Correction de la tentative terminée le <time datetime="{{ correction.completedAt|date('c') }}">{{ correction.completedAt|date('d/m/Y H:i') }}</time>.</p>
+                <h2 class="h5">Votre résultat : {{ correction.score }} sur {{ correction.total }}</h2>
+                <p class="quiz-percentage">{{ correction.percentage is not null ? correction.percentage ~ ' % de bonnes réponses' : 'Pourcentage indisponible' }}</p>
+                {% for question in correction.questions %}
+                    <details class="course-correction">
+                        <summary>Question {{ loop.index }} — {{ question.correct is null ? 'Réponse non enregistrée' : (question.correct ? 'Bonne réponse' : 'À revoir') }}{% if question.theme %} · {{ question.theme }}{% endif %}</summary>
+                        <p class="h5 fw-bold quiz-text">{{ question.title }}</p>
+                        {% if question.text %}<p class="h5 quiz-text quiz-phrase">{{ question.text }}</p>{% endif %}
+                        <ul class="quiz-review">
+                            {% for answer in question.answers %}
+                                <li class="quiz-text">{{ answer.content }}{% if answer.selected or answer.correct %} — <span class="quiz-answer-feedback {{ answer.correct ? 'is-correct' : 'is-incorrect' }}">{% if answer.selected %}Votre choix · {% endif %}{{ answer.correct ? 'Bonne réponse' : 'Réponse incorrecte' }}</span>{% endif %}</li>
+                            {% endfor %}
+                        </ul>
+                        {% if question.explanation %}<p class="quiz-text">{{ question.explanation }}</p>{% endif %}
+                    </details>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+{% endblock %}
