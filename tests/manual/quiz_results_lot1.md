@@ -25,6 +25,8 @@ Une liste de tableaux, sans entité Doctrine, questions ni réponses :
 | `best` | Meilleur ratio comparable à la dernière terminée ; `null` si aucun ratio valide |
 | `mixedContent` | Si vrai, préciser « pour ce contenu du test » pour le meilleur score |
 | `history` | Toutes les terminées, par `completedAt` puis `id` croissants |
+| `gain` | Ajout lot 3 : dernier pourcentage affiché moins le premier, uniquement si plusieurs terminées, toutes comparables et de ratios valides ; sinon `null` |
+| `historyUrl` | Ajout lot 3 : historique ancré sur la dernière terminée ; `null` sans résultat terminé |
 
 Un résultat contient `attemptId`, `title`, `score`, `total`, `percentage` et
 `completedAt` (`DateTimeImmutable`, à formater avec les conventions Twig de
@@ -72,8 +74,9 @@ Le snapshot existant fige le titre du test, mais pas le titre du cours ni de la
 section : ces derniers ne sont pas reconstruits historiquement. La section
 exposée est l'association actuelle lorsqu'elle existe.
 
-La navbar, les cartes « Mes résultats » et les graphiques sont réservés aux
-lots suivants. Aucun lien vers ces pages encore inexistantes n'est ajouté.
+La navbar, les cartes et les graphiques ont été ajoutés aux lots 2 et 3.
+Le contrat de `history(anchorId, selectedId)` et la recette du parcours complet
+sont documentés dans [quiz_results_lot3.md](quiz_results_lot3.md).
 
 ### Contrôles exécutés le 18 septembre 2026
 

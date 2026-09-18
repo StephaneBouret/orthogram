@@ -14,7 +14,8 @@ Les tentatives archivées sont présentées à part. Aucun exercice n'est ajout�
 Les boutons « Commencer », « Continuer » et « Repasser » ouvrent le lecteur du
 cours : l'action effective s'effectue ensuite dans ce lecteur. Ce parcours en
 deux étapes n'ajoute aucune mutation au GET ni de démarrage automatique.
-Le lien vers l'évolution reste réservé au lot 3.
+Le lien vers l'évolution a été ajouté au lot 3 ; voir la
+[recette du parcours complet](quiz_results_lot3.md).
 
 ## Fichiers concernés
 

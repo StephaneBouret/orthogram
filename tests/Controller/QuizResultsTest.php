@@ -486,7 +486,8 @@ final class QuizResultsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('main', '50 %');
         self::assertSelectorTextContains('main', 'Résultat conservé');
-        self::assertSelectorNotExists('main article a');
+        self::assertSelectorNotExists('main article .results-actions a');
+        self::assertSelectorExists('main article a[href*="/historique/"]');
     }
 
     public function testPageShowsContentChangeAndBestScopeAndArchives(): void
@@ -505,7 +506,8 @@ final class QuizResultsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('#results-archives', 'Archives');
         self::assertSelectorCount(2, 'main article');
-        self::assertSelectorNotExists('main article a');
+        self::assertSelectorNotExists('main article .results-actions a');
+        self::assertSelectorCount(2, 'main article a[href*="/historique/"]');
     }
 
     public function testPageUsesPedagogicalSectionAndCourseOrder(): void
@@ -524,7 +526,9 @@ final class QuizResultsTest extends WebTestCase
         $this->em()->flush();
         $crawler = $this->client->request('GET', '/mes-resultats');
         self::assertResponseIsSuccessful();
-        self::assertSame(['Première section', 'Quiz section'], $crawler->filter('main section > h2')->each(static fn ($node) => $node->text()));
+        self::assertSame(['Première section', 'Quiz section'], $crawler->filter('summary h2 .results-section-name')->each(static fn ($node) => $node->text()));
+        self::assertSelectorCount(2, 'details.results-section[open]');
+        self::assertSame(['1 test', '2 tests'], $crawler->filter('.results-section-count')->each(static fn ($node) => $node->text()));
         self::assertSame([
             '/courses/quiz-formation/premiere/premier',
             '/courses/quiz-formation/quiz-section/deuxieme',
@@ -541,6 +545,159 @@ final class QuizResultsTest extends WebTestCase
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.results-score', 'Indisponible');
         self::assertSelectorNotExists('main canvas');
+    }
+
+    public function testHistoryChronologyDeltasSelectionAndCorrectionReturnWithoutWrites(): void
+    {
+        for ($i = 2; $i < 10; ++$i) {
+            $this->course->getQuiz()->addQuestion(\App\Tests\Support\QuizFactory::question()->setPosition($i));
+        }
+        $this->em()->flush();
+        $attempts = [];
+        foreach ([4, 6, 5, 7, 9] as $index => $score) {
+            $attempt = $this->attempt($score);
+            // First two completions tie: their ids establish chronology.
+            (new \ReflectionProperty(QuizAttempt::class, 'completedAt'))->setValue($attempt,
+                new \DateTimeImmutable('2026-09-18 10:0'.max(0, $index - 1).':00'));
+            $attempts[] = $attempt;
+        }
+        $this->attempt(0, false);
+        $this->em()->flush();
+        $before = $this->databaseState();
+        $url = '/mes-resultats/historique/'.$attempts[0]->getId();
+        $crawler = $this->client->request('GET', $url);
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('nav a[href="/mes-resultats"][aria-current="page"]');
+        self::assertSelectorTextContains('.results-gain', '+50 points depuis la première tentative');
+        self::assertSelectorTextContains('#results-history-heading', 'Mes 5 tentatives');
+        self::assertSelectorTextContains('header', 'Continuer le test');
+        self::assertSelectorTextContains('#tentative-selectionnee', '90 %');
+        self::assertSelectorTextContains('#tentative-selectionnee', 'Dernière tentative');
+        self::assertSelectorTextContains('#tentative-selectionnee', 'Meilleur score');
+        self::assertSame(['+20 points', '+20 points', '-10 points', '+20 points', '—'],
+            $crawler->filter('tbody tr td:nth-child(3)')->each(static fn ($node) => $node->text()));
+        $chart = json_decode($crawler->filter('canvas[data-result-chart-evolution-value]')->attr('data-symfony--ux-chartjs--chart-view-value'), true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame([40, 60, 50, 70, 90], array_column($chart['data']['datasets'][0]['data'], 'y'));
+        self::assertSame(5, count(array_unique($chart['data']['labels'])));
+        self::assertSame(0, $chart['data']['datasets'][0]['tension']);
+        self::assertSame(0, $chart['options']['scales']['y']['min']);
+        self::assertSame(100, $chart['options']['scales']['y']['max']);
+        self::assertSame('category', $chart['options']['scales']['x']['type']);
+        self::assertFalse($chart['options']['animation']);
+        self::assertStringNotContainsString('SECRET première', $this->client->getResponse()->getContent());
+        self::assertTrue($this->client->getResponse()->headers->hasCacheControlDirective('no-store'));
+
+        $crawler = $this->client->request('GET', $url.'?attempt='.$attempts[1]->getId());
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('tr.is-selected', 'Tentative 2 · Sélectionnée');
+        self::assertSelectorExists('tr.is-selected a[aria-current="true"]');
+        self::assertSelectorTextContains('#tentative-selectionnee', '60 %');
+        self::assertSelectorTextNotContains('#tentative-selectionnee', 'Dernière tentative');
+        self::assertSame('/mes-resultats/tentatives/'.$attempts[1]->getId(), $crawler->selectLink('Revoir cette correction')->attr('href'));
+        $ring = json_decode($crawler->filter('.results-ring canvas')->attr('data-symfony--ux-chartjs--chart-view-value'), true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame([6, 4], $ring['data']['datasets'][0]['data']);
+        $crawler = $this->client->clickLink('Revoir cette correction');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('main', '6 sur 10');
+        self::assertSame('/mes-resultats/historique/'.$attempts[1]->getId().'?attempt='.$attempts[1]->getId().'#tentative-selectionnee',
+            $crawler->selectLink('Retour à mon évolution et mes tentatives')->attr('href'));
+        $this->client->clickLink('Retour à mon évolution et mes tentatives');
+        self::assertSelectorTextContains('#tentative-selectionnee', '60 %');
+        self::assertSame($before, $this->databaseState());
+    }
+
+    public function testHistoryRefusesForeignGroupsAccountsAndUnfinishedSelections(): void
+    {
+        $anchor = $this->attempt(1);
+        $active = $this->attempt(0, false);
+        $otherUser = QuizPlayerFactory::user('history-other@example.test');
+        $this->em()->persist($otherUser);
+        $foreign = $this->attempt(2, user: $otherUser);
+        $otherCourse = (new Courses())->setName('Autre cours')->setSlug('autre-historique')->setSection($this->course->getSection())
+            ->setContentType(CourseContentType::Quiz)->setQuiz($this->course->getQuiz());
+        $this->em()->persist($otherCourse);
+        $differentCourse = $this->attempt(2, course: $otherCourse);
+        $replacement = (new Quiz())->setTitle('Remplacement');
+        $this->em()->persist($replacement);
+        $this->course->setQuiz($replacement);
+        $differentQuiz = $this->attempt(1, snapshot: $anchor->getSnapshot());
+        $before = $this->databaseState();
+        foreach ([$active, $foreign, $differentCourse, $differentQuiz] as $selection) {
+            $this->client->request('GET', '/mes-resultats/historique/'.$anchor->getId().'?attempt='.$selection->getId());
+            self::assertResponseStatusCodeSame(404);
+            self::assertTrue($this->client->getResponse()->headers->hasCacheControlDirective('no-store'));
+        }
+        foreach ([$foreign->getId(), $active->getId(), 999999] as $id) {
+            $this->client->request('GET', '/mes-resultats/historique/'.$id);
+            self::assertResponseStatusCodeSame(404);
+        }
+        self::assertSame($before, $this->databaseState());
+        $this->client->getCookieJar()->clear();
+        $this->client->request('GET', '/mes-resultats/historique/'.$anchor->getId());
+        self::assertResponseRedirects('/login');
+    }
+
+    public function testMalformedHistoryParametersAreNeverSilentlyIgnored(): void
+    {
+        $anchor = $this->attempt(1);
+        foreach (['attempt=0', 'attempt=-1', 'attempt=01', 'attempt=1.5', 'attempt=', 'attempt=abc', 'attempt[]=1', 'attempt=99999999999999999999999'] as $query) {
+            $this->client->request('GET', '/mes-resultats/historique/'.$anchor->getId().'?'.$query);
+            self::assertResponseStatusCodeSame(404);
+        }
+        foreach (['0', '01', '99999999999999999999999'] as $anchorId) {
+            $this->client->request('GET', '/mes-resultats/historique/'.$anchorId);
+            self::assertResponseStatusCodeSame(404);
+        }
+    }
+
+    public function testHistoryBreaksChangedContentWithoutSkippingAnyPoints(): void
+    {
+        $first = $this->attempt(1);
+        $snapshot = $first->getSnapshot();
+        $snapshot['questions'][0]['answers'][0]['content'] = 'Autre proposition';
+        $this->attempt(2, snapshot: $snapshot);
+        $this->attempt(0, snapshot: $first->getSnapshot());
+        $crawler = $this->client->request('GET', '/mes-resultats/historique/'.$first->getId());
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('.results-gain');
+        self::assertSelectorTextContains('main', 'Le contenu du test a changé');
+        self::assertSame(['Contenu du test modifié', 'Contenu du test modifié', '—'],
+            $crawler->filter('tbody tr td:nth-child(3)')->each(static fn ($node) => $node->text()));
+        $chart = json_decode($crawler->filter('canvas[data-result-chart-evolution-value]')->attr('data-symfony--ux-chartjs--chart-view-value'), true, 512, JSON_THROW_ON_ERROR);
+        self::assertCount(3, $chart['data']['datasets']);
+        self::assertSame([50, 100, 0], array_map(static fn ($dataset) => $dataset['data'][0]['y'], $chart['data']['datasets']));
+        self::assertSelectorCount(3, 'tbody tr');
+    }
+
+    public function testSingleZeroScoreHistoryAndExpiredRights(): void
+    {
+        $first = $this->attempt(0);
+        $this->user->setRoles([]);
+        $this->em()->flush();
+        $this->client->loginUser($this->user);
+        $crawler = $this->client->request('GET', '/mes-resultats/historique/'.$first->getId());
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('main', 'Une première tentative enregistrée');
+        self::assertSelectorTextContains('#tentative-selectionnee', '0 %');
+        self::assertSelectorNotExists('.results-gain, main a[href*="/tentatives/"], main a[href*="/courses/"]');
+        self::assertSame('—', $crawler->filter('tbody tr td:nth-child(3)')->text());
+        $chart = json_decode($crawler->filter('canvas[data-result-chart-evolution-value]')->attr('data-symfony--ux-chartjs--chart-view-value'), true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame([0], array_column($chart['data']['datasets'][0]['data'], 'y'));
+    }
+
+    public function testArchivedHistoryNeverCombinesNullAssociations(): void
+    {
+        $a = $this->attempt(1);
+        $b = $this->attempt(2);
+        $this->em()->remove($this->course);
+        $this->em()->flush();
+        $this->em()->clear();
+        $this->client->request('GET', '/mes-resultats/historique/'.$a->getId());
+        self::assertResponseIsSuccessful();
+        self::assertSelectorCount(1, 'tbody tr');
+        self::assertSelectorTextContains('#tentative-selectionnee', '50 %');
+        $this->client->request('GET', '/mes-resultats/historique/'.$a->getId().'?attempt='.$b->getId());
+        self::assertResponseStatusCodeSame(404);
     }
 
     /** @return array<string, mixed> */

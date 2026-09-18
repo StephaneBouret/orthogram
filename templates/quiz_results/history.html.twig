@@ -1,0 +1,98 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon évolution et mes tentatives — Orthogram{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <meta name="turbo-cache-control" content="no-cache">
+{% endblock %}
+
+{% block body %}
+    <main class="quiz-results container py-5">
+        <a href="{{ path('app_quiz_results') }}" class="d-inline-block mb-4">← Retour à mes résultats</a>
+        <header class="results-card-heading mb-4">
+            <div class="results-card-description">
+                <p class="results-eyebrow">{{ group.section ? group.section.name : 'Archives' }}</p>
+                <h1 class="h3">{{ group.title }}</h1>
+                <p class="results-muted mb-0">Mon évolution et mes tentatives</p>
+            </div>
+            {% if group.courseUrl %}
+                <div class="results-actions">
+                    <a class="btn btn-outline-secondary" href="{{ group.courseUrl }}">{{ group.hasInProgress ? 'Continuer le test' : 'Repasser le test' }}</a>
+                </div>
+            {% endif %}
+        </header>
+
+        <div class="results-card results-history">
+            <div class="results-card-heading mb-3">
+                <h2 class="h4 mb-0">Mon évolution</h2>
+                {% if group.gain is not null %}
+                    <p class="results-gain results-change results-change--{{ group.gain > 0 ? 'up' : (group.gain < 0 ? 'down' : 'stable') }} mb-0">{{ group.gain == 0 ? 'Stable' : '%+d points'|format(group.gain) }} depuis la première tentative</p>
+                {% endif %}
+            </div>
+            {% if group.completedCount == 1 %}
+                <p class="results-muted">Une première tentative enregistrée</p>
+            {% elseif group.mixedContent %}
+                <p class="results-muted">Le contenu du test a changé. Les résultats de contenus différents ne sont pas reliés et ne donnent pas lieu à un gain global.</p>
+            {% endif %}
+            {% if group.hasInProgress %}<p class="results-muted">Une tentative est en cours ; elle apparaîtra ici une fois terminée.</p>{% endif %}
+            <div class="results-line">
+                {{ render_chart(evolution, {
+                    'data-controller': 'result-chart',
+                    'data-result-chart-evolution-value': true,
+                    'role': 'img',
+                    'aria-label': 'Évolution des résultats des ' ~ group.completedCount ~ ' tentatives terminées',
+                    'aria-describedby': 'results-chart-note'
+                }) }}
+            </div>
+            <p id="results-chart-note" class="results-muted small mt-2">Chaque point correspond à une tentative. L’espacement suit l’ordre des passations, pas le temps écoulé. Tous les chiffres figurent dans le tableau ci-dessous.</p>
+
+            <h2 class="h4 mt-4" id="results-history-heading">Mes {{ group.completedCount }} tentative{{ group.completedCount > 1 ? 's' : '' }}</h2>
+            <p class="d-sm-none results-muted small">Faites défiler le tableau horizontalement pour voir toutes les colonnes.</p>
+            <div class="results-table-scroll" role="region" aria-labelledby="results-history-heading" tabindex="0">
+                <table class="table results-table align-middle mb-0" aria-describedby="results-delta-note">
+                    <caption class="visually-hidden">Tentatives terminées, de la plus récente à la plus ancienne. Le lien Voir sélectionne le bilan sous le tableau.</caption>
+                    <thead><tr><th scope="col">Date</th><th scope="col">Résultat</th><th scope="col">Évolution</th><th scope="col">Détail</th></tr></thead>
+                    <tbody>
+                        {% for attempt in group.history|reverse %}
+                            {% set isSelected = attempt.attemptId == selected.attemptId %}
+                            <tr class="{{ isSelected ? 'is-selected' : '' }}">
+                                <th scope="row">
+                                    <time datetime="{{ attempt.completedAt|date('c') }}">{{ attempt.completedAt|date('d/m/Y H:i') }}</time>
+                                    <span class="d-block small results-muted">Tentative {{ loop.revindex }}{% if isSelected %} · Sélectionnée{% endif %}</span>
+                                </th>
+                                <td><strong>{{ attempt.percentage is not null ? attempt.percentage ~ ' %' : 'Indisponible' }}</strong><span class="d-block small results-muted">{{ attempt.score }}/{{ attempt.total }}</span></td>
+                                <td>{{ attempt.contentChanged ? 'Contenu du test modifié' : (attempt.deltaLabel ?? '—') }}</td>
+                                <td><a class="results-view-link" href="{{ path('app_quiz_results_history', {anchor: group.anchorId, attempt: attempt.attemptId}) }}#tentative-selectionnee"{% if isSelected %} aria-current="true"{% endif %}>Voir<span class="visually-hidden"> la tentative {{ loop.revindex }} du {{ attempt.completedAt|date('d/m/Y H:i') }}</span></a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <p class="results-muted small mt-2" id="results-delta-note">Par rapport à la tentative précédente.</p>
+
+            <section class="results-card-footer results-selected" id="tentative-selectionnee" tabindex="-1" aria-labelledby="selected-heading">
+                <div>
+                    <h2 class="h5" id="selected-heading">Tentative sélectionnée</h2>
+                    <p class="results-muted mb-2"><time datetime="{{ selected.completedAt|date('c') }}">{{ selected.completedAt|date('d/m/Y H:i') }}</time></p>
+                    <p class="h2 mb-2">{{ selected.percentage is not null ? selected.percentage ~ ' %' : 'Pourcentage indisponible' }}</p>
+                    {% if selected.title != group.title %}<p>{{ selected.title }}</p>{% endif %}
+                    <ul class="list-unstyled mb-2">
+                        {% if selected.attemptId == group.latest.attemptId %}<li>Dernière tentative</li>{% endif %}
+                        {% if group.best and selected.attemptId == group.best.attemptId %}<li>Meilleur score{% if group.mixedContent %} pour ce contenu du test{% endif %}</li>{% endif %}
+                    </ul>
+                    {% if selected.correctionUrl %}
+                        <a href="{{ selected.correctionUrl }}">Revoir cette correction →</a>
+                    {% else %}
+                        <p class="results-muted mb-0">Résultat conservé. La correction n’est plus accessible.</p>
+                    {% endif %}
+                </div>
+                {% if ring %}
+                    {% include 'quiz_results/_ring.html.twig' with {chart: ring, result: selected, legendId: 'selected-legend'} only %}
+                {% else %}
+                    <p class="results-muted mb-0">{{ selected.score }} réponse(s) correcte(s) sur {{ selected.total }} question(s).</p>
+                {% endif %}
+            </section>
+        </div>
+    </main>
+{% endblock %}

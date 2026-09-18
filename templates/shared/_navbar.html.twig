@@ -19,7 +19,7 @@
 						</a>
 					</li>
 
-					{% set resultsActive = app.request.attributes.get('_route') in ['app_quiz_results', 'app_quiz_result_correction'] %}
+					{% set resultsActive = app.request.attributes.get('_route') in ['app_quiz_results', 'app_quiz_result_correction', 'app_quiz_results_history'] %}
 					<li class="nav-item">
 						<a href="{{ path('app_quiz_results') }}" class="nav-link{{ resultsActive ? ' active' : '' }}"{% if resultsActive %} aria-current="page"{% endif %}>
 							📊 Mes résultats

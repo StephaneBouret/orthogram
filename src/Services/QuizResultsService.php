@@ -56,10 +56,8 @@ final class QuizResultsService
         }
         foreach ($attempts as $attempt) {
             $course = $attempt->getCourse();
-            $quiz = $attempt->getQuiz();
             // Missing associations cannot establish editorial identity, even if titles match.
-            $key = null !== $course && null !== $quiz
-                ? $course->getId().':'.$quiz->getId() : 'archived:'.$attempt->getId();
+            $key = $this->groupKey($attempt);
             $groups[$key] ??= ['course' => $course, 'attempts' => []];
             $groups[$key]['attempts'][] = $attempt;
         }
@@ -70,6 +68,40 @@ final class QuizResultsService
         }
 
         return $results;
+    }
+
+    /** An owned completed attempt anchors the group, including standalone archives.
+     * @return array<string, mixed>
+     */
+    public function history(int $anchorId, ?int $selectedId = null): array
+    {
+        $user = $this->currentUser();
+        /** @var QuizAttempt|null $anchor */
+        $anchor = $this->em->createQueryBuilder()->select('a', 'c', 'q', 's', 'p', 'currentQuiz')
+            ->from(QuizAttempt::class, 'a')->leftJoin('a.course', 'c')->leftJoin('a.quiz', 'q')
+            ->leftJoin('c.section', 's')->leftJoin('s.program', 'p')->leftJoin('c.quiz', 'currentQuiz')
+            ->where('a.id = :id AND a.user = :user AND a.completedAt IS NOT NULL')
+            ->setParameter('id', $anchorId)->setParameter('user', $user)->getQuery()->getOneOrNullResult();
+        if (null === $anchor) {
+            throw new NotFoundHttpException('Historique introuvable.', headers: ['Cache-Control' => 'private, no-store']);
+        }
+        $attempts = [$anchor];
+        if (null !== $anchor->getCourse() && null !== $anchor->getQuiz()) {
+            $attempts = $this->em->createQueryBuilder()->select('a')->from(QuizAttempt::class, 'a')
+                ->where('a.user = :user AND a.course = :course AND a.quiz = :quiz')
+                ->setParameter('user', $user)->setParameter('course', $anchor->getCourse())->setParameter('quiz', $anchor->getQuiz())
+                ->orderBy('a.completedAt', 'ASC')->addOrderBy('a.id', 'ASC')->getQuery()->getResult();
+        }
+        $group = $this->group($this->groupKey($anchor), $anchor->getCourse(), $attempts);
+        $selectedId ??= $group['latest']['attemptId'];
+        foreach ($group['history'] as $row) {
+            if ($selectedId === $row['attemptId']) {
+                return $group + ['anchorId' => $anchorId, 'selected' => $row];
+            }
+        }
+
+        // Never fall back to the latest result for a forged or unfinished selection.
+        throw new NotFoundHttpException('Tentative introuvable.', headers: ['Cache-Control' => 'private, no-store']);
     }
 
     /** Explicit presentation allowlist, built only after ownership and access checks.
@@ -105,7 +137,8 @@ final class QuizResultsService
                 'correct' => $response['correct'] ?? null, 'answers' => $answers];
         }
 
-        return $this->score($attempt) + ['questions' => $questions];
+        return $this->score($attempt) + ['questions' => $questions,
+            'historyUrl' => $this->urls->generate('app_quiz_results_history', ['anchor' => $id, 'attempt' => $id])];
     }
 
     private function currentUser(): User
@@ -159,6 +192,10 @@ final class QuizResultsService
         $courseUrl = $current && $canView && null !== $program
             ? $this->urls->generate('app_course_show', ['programSlug' => $program->getSlug(), 'sectionSlug' => $section->getSlug(), 'courseSlug' => $course->getSlug()]) : null;
 
+        $percentages = array_column($history, 'percentage');
+        $gain = count($history) > 1 && !$mixed && !in_array(null, $percentages, true)
+            ? $percentages[array_key_last($percentages)] - $percentages[0] : null;
+
         return [
             'key' => $key, 'courseId' => $course?->getId(), 'quizId' => $quizId,
             'catalogOrder' => [$program?->getId(), $section?->getPosition(), $section?->getId(), $course?->getPosition(), $course?->getId()],
@@ -169,7 +206,15 @@ final class QuizResultsService
             'hasInProgress' => [] !== $active, 'inProgressAttemptId' => [] !== $active ? $active[array_key_last($active)]->getId() : null,
             'completedCount' => count($completed), 'latest' => [] !== $history ? $history[array_key_last($history)] : null,
             'best' => null !== $best ? $this->score($best) : null, 'mixedContent' => $mixed, 'history' => $history,
+            'gain' => $gain,
+            'historyUrl' => null !== $latest ? $this->urls->generate('app_quiz_results_history', ['anchor' => $latest->getId()]) : null,
         ];
+    }
+
+    private function groupKey(QuizAttempt $attempt): string
+    {
+        return null !== $attempt->getCourse() && null !== $attempt->getQuiz()
+            ? $attempt->getCourse()->getId().':'.$attempt->getQuiz()->getId() : 'archived:'.$attempt->getId();
     }
 
     private function comparable(QuizAttempt $a, QuizAttempt $b): bool

@@ -1,0 +1,16 @@
+<figure class="results-breakdown mb-0">
+    <div class="results-ring">
+        {{ render_chart(chart, {
+            'data-controller': 'result-chart',
+            'role': 'img',
+            'aria-label': 'Répartition des réponses : ' ~ result.title,
+            'aria-describedby': legendId
+        }) }}
+        <span class="results-ring-center" aria-hidden="true">{{ result.score }}/{{ result.total }}</span>
+    </div>
+    <figcaption id="{{ legendId }}">
+        <span><i class="results-swatch results-swatch-correct" aria-hidden="true"></i>{{ result.score }} réponse{{ result.score > 1 ? 's' : '' }} correcte{{ result.score > 1 ? 's' : '' }}</span>
+        {% set incorrect = result.total - result.score %}
+        <span><i class="results-swatch results-swatch-incorrect" aria-hidden="true"></i>{{ incorrect }} réponse{{ incorrect > 1 ? 's' : '' }} incorrecte{{ incorrect > 1 ? 's' : '' }}</span>
+    </figcaption>
+</figure>
