@@ -11,6 +11,7 @@ use App\Services\QuizResultsService;
 use App\Tests\Support\QuizPlayerFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -389,6 +390,157 @@ final class QuizResultsTest extends WebTestCase
         $this->client->request('GET', '/mes-resultats/tentatives/'.$attempt->getId());
         self::assertResponseRedirects('/login');
         self::assertStringNotContainsString('SECRET première', $this->client->getResponse()->getContent());
+    }
+
+    public function testResultsPageRequiresAuthenticationAndInactiveAccountsAreDisconnected(): void
+    {
+        $this->client->getCookieJar()->clear();
+        $this->client->request('GET', '/mes-resultats');
+        self::assertResponseRedirects('/login');
+        $user = $this->em()->find(User::class, $this->user->getId());
+        $user->setAccountStatus(\App\Enum\UserAccountStatus::SUSPENDED);
+        $this->em()->flush();
+        $this->client->loginUser($user);
+        $this->client->request('GET', '/mes-resultats');
+        self::assertResponseRedirects('/login');
+    }
+
+    public function testResultsPageOffersStartWithoutCreatingAnAttempt(): void
+    {
+        $before = $this->databaseState();
+        $crawler = $this->client->request('GET', '/mes-resultats');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('main', 'Pas encore passé');
+        self::assertSelectorNotExists('main canvas');
+        self::assertSame('/courses/quiz-formation/quiz-section/quiz-cours', $crawler->selectLink('Commencer le test')->attr('href'));
+        self::assertSelectorExists('nav a[href="/mes-resultats"].active[aria-current="page"]');
+        self::assertSame($before, $this->databaseState());
+    }
+
+    public function testActiveOnlyPageDoesNotPresentPartialScore(): void
+    {
+        $attempt = $this->attempt(0, false);
+        $attempt->record([$attempt->getSnapshot()['questions'][0]['answers'][0]['id']], true);
+        $this->em()->flush();
+        $this->client->request('GET', '/mes-resultats');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('main', 'En cours');
+        self::assertSelectorTextContains('main', 'Continuer le test');
+        self::assertSelectorNotExists('main canvas, main .results-score');
+        self::assertSelectorNotExists('main a[href*="/tentatives/"]');
+    }
+
+    /** @return iterable<string, array{int}> */
+    public static function chartScores(): iterable
+    {
+        yield 'zero' => [0];
+        yield 'half' => [1];
+        yield 'perfect' => [2];
+    }
+
+    #[DataProvider('chartScores')]
+    public function testPageChartsUseLastCompletedAndExactCorrection(int $score): void
+    {
+        $finished = $this->attempt($score);
+        $this->attempt(0, false);
+        $before = $this->databaseState();
+        $crawler = $this->client->request('GET', '/mes-resultats');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.results-score', (50 * $score).' %');
+        self::assertSelectorTextContains('main', 'Une tentative est en cours.');
+        self::assertSelectorTextContains('main', 'Continuer le test');
+        self::assertSame('/mes-resultats/tentatives/'.$finished->getId(), $crawler->selectLink('Revoir ma correction')->attr('href'));
+        $chart = json_decode($crawler->filter('canvas')->attr('data-symfony--ux-chartjs--chart-view-value'), true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame('doughnut', $chart['type']);
+        self::assertSame([$score, 2 - $score], $chart['data']['datasets'][0]['data']);
+        self::assertFalse($chart['options']['plugins']['legend']['display']);
+        self::assertSelectorNotExists('main img');
+        self::assertStringNotContainsString('SECRET première', $this->client->getResponse()->getContent());
+        self::assertSame($before, $this->databaseState());
+        self::assertTrue($this->client->getResponse()->headers->hasCacheControlDirective('private'));
+        self::assertTrue($this->client->getResponse()->headers->hasCacheControlDirective('no-store'));
+        self::assertSelectorExists('meta[name="turbo-cache-control"][content="no-cache"]');
+    }
+
+    public function testPageOnlyShowsConnectedAccountsScoresAndCanBeEmpty(): void
+    {
+        $this->attempt(2);
+        $other = QuizPlayerFactory::user('page-other@example.test')->setRoles([]);
+        $this->em()->persist($other);
+        $this->em()->flush();
+        $this->client->loginUser($other);
+        $this->client->request('GET', '/mes-resultats?userId='.$this->user->getId());
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('main', 'Aucun résultat pour le moment');
+        self::assertSelectorNotExists('main article, main canvas');
+        self::assertSelectorExists('main a[href="/mon-abonnement"]');
+    }
+
+    public function testPagePreservesExpiredResultsButOffersNoForbiddenActions(): void
+    {
+        $this->attempt(1);
+        $this->user->setRoles([]);
+        $this->em()->flush();
+        $this->client->loginUser($this->user);
+        $this->client->request('GET', '/mes-resultats');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('main', '50 %');
+        self::assertSelectorTextContains('main', 'Résultat conservé');
+        self::assertSelectorNotExists('main article a');
+    }
+
+    public function testPageShowsContentChangeAndBestScopeAndArchives(): void
+    {
+        $a = $this->attempt(2);
+        $changed = $a->getSnapshot();
+        $changed['questions'][0]['explanation'] = 'Nouvelle explication';
+        $this->attempt(1, snapshot: $changed);
+        $this->client->request('GET', '/mes-resultats');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.results-stats', 'Contenu du test modifié');
+        self::assertSelectorTextContains('.results-stats', 'pour ce contenu du test');
+        $this->em()->remove($this->em()->find(Courses::class, $this->course->getId()));
+        $this->em()->flush();
+        $this->client->request('GET', '/mes-resultats');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('#results-archives', 'Archives');
+        self::assertSelectorCount(2, 'main article');
+        self::assertSelectorNotExists('main article a');
+    }
+
+    public function testPageUsesPedagogicalSectionAndCourseOrder(): void
+    {
+        $section = (new \App\Entity\Sections())->setName('Première section')->setSlug('premiere')
+            ->setProgram($this->course->getSection()->getProgram())->setPosition(0);
+        $this->course->getSection()->setPosition(1);
+        $this->course->setPosition(1);
+        $first = (new Courses())->setName('Premier test')->setSlug('premier')->setSection($section)
+            ->setContentType(CourseContentType::Quiz)->setQuiz($this->course->getQuiz());
+        $second = (new Courses())->setName('Deuxième test')->setSlug('deuxieme')->setSection($this->course->getSection())
+            ->setPosition(0)->setContentType(CourseContentType::Quiz)->setQuiz($this->course->getQuiz());
+        foreach ([$section, $first, $second] as $entity) {
+            $this->em()->persist($entity);
+        }
+        $this->em()->flush();
+        $crawler = $this->client->request('GET', '/mes-resultats');
+        self::assertResponseIsSuccessful();
+        self::assertSame(['Première section', 'Quiz section'], $crawler->filter('main section > h2')->each(static fn ($node) => $node->text()));
+        self::assertSame([
+            '/courses/quiz-formation/premiere/premier',
+            '/courses/quiz-formation/quiz-section/deuxieme',
+            '/courses/quiz-formation/quiz-section/quiz-cours',
+        ], $crawler->filter('main article a')->each(static fn ($node) => $node->attr('href')));
+    }
+
+    public function testPageDoesNotDrawAnInvalidZeroTotal(): void
+    {
+        $attempt = $this->attempt(0);
+        (new \ReflectionProperty(QuizAttempt::class, 'total'))->setValue($attempt, 0);
+        $this->em()->flush();
+        $this->client->request('GET', '/mes-resultats');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.results-score', 'Indisponible');
+        self::assertSelectorNotExists('main canvas');
     }
 
     /** @return array<string, mixed> */

@@ -161,6 +161,7 @@ final class QuizResultsService
 
         return [
             'key' => $key, 'courseId' => $course?->getId(), 'quizId' => $quizId,
+            'catalogOrder' => [$program?->getId(), $section?->getPosition(), $section?->getId(), $course?->getPosition(), $course?->getId()],
             'title' => null !== $reference ? $reference->getSnapshot()['title'] : $course?->getQuiz()?->getTitle(),
             'section' => null !== $section ? ['id' => $section->getId(), 'name' => $section->getName()] : null,
             'archived' => !$current, 'courseUrl' => $courseUrl,

@@ -1,0 +1,75 @@
+{% set latest = card.latest %}
+{% set cardId = 'result-' ~ card.key|replace({':': '-'}) %}
+<article class="results-card" aria-labelledby="{{ cardId }}-title">
+    <div class="results-card-heading">
+        <div class="results-card-description">
+            <p class="results-eyebrow">
+                {% if latest %}
+                    Dernier résultat · <time datetime="{{ latest.completedAt|date('c') }}">{{ latest.completedAt|date('d/m/Y') }}</time>
+                {% else %}
+                    {{ card.hasInProgress ? 'En cours' : 'Pas encore passé' }}
+                {% endif %}
+            </p>
+            <h3 class="h4 mb-2" id="{{ cardId }}-title">{{ card.title }}</h3>
+            {% if latest %}
+                <p class="results-muted mb-0">{{ latest.score }} bonne{{ latest.score > 1 ? 's' : '' }} réponse{{ latest.score > 1 ? 's' : '' }} sur {{ latest.total }} question{{ latest.total > 1 ? 's' : '' }}</p>
+            {% else %}
+                <p class="results-muted mb-0">{{ card.hasInProgress ? 'Votre résultat sera disponible une fois le test terminé.' : 'Votre premier résultat apparaîtra ici après le test.' }}</p>
+            {% endif %}
+        </div>
+        {% if latest %}
+            <div class="results-score">
+                <strong>{{ latest.percentage is not null ? latest.percentage ~ ' %' : 'Indisponible' }}</strong>
+                <span class="results-muted">Dernière tentative</span>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if latest %}
+        <ul class="results-stats list-unstyled">
+            {% if latest.contentChanged %}
+                <li>Contenu du test modifié</li>
+            {% elseif latest.delta is not null %}
+                <li>{{ latest.deltaLabel }} <span class="results-muted">depuis la précédente</span></li>
+            {% endif %}
+            {% if card.best %}
+                <li>Meilleur score : <strong>{{ card.best.percentage }} %</strong>{% if card.mixedContent %} <span class="results-muted">pour ce contenu du test</span>{% endif %}</li>
+            {% endif %}
+            <li>{{ card.completedCount }} tentative{{ card.completedCount > 1 ? 's' : '' }} terminée{{ card.completedCount > 1 ? 's' : '' }}</li>
+        </ul>
+        {% if card.hasInProgress %}<p class="results-in-progress">Une tentative est en cours.</p>{% endif %}
+    {% endif %}
+
+    <div class="results-card-footer">
+        <div class="results-actions">
+            {% if latest and latest.correctionUrl %}
+                <a class="btn btn-dark" href="{{ latest.correctionUrl }}">Revoir ma correction</a>
+            {% endif %}
+            {% if card.courseUrl %}
+                <a class="btn btn-outline-secondary" href="{{ card.courseUrl }}">{{ card.hasInProgress ? 'Continuer le test' : (latest ? 'Repasser le test' : 'Commencer le test') }}</a>
+            {% elseif latest and not latest.correctionUrl %}
+                <p class="results-muted mb-0">Résultat conservé. Le contenu de ce test n’est plus accessible.</p>
+            {% elseif not latest %}
+                <p class="results-muted mb-0">Ce test n’est plus accessible.</p>
+            {% endif %}
+        </div>
+        {% if card.chart %}
+            <figure class="results-breakdown mb-0">
+                <div class="results-ring">
+                    {{ render_chart(card.chart, {
+                        'data-controller': 'result-chart',
+                        'role': 'img',
+                        'aria-label': 'Répartition des réponses de la dernière tentative : ' ~ card.title,
+                        'aria-describedby': cardId ~ '-legend'
+                    }) }}
+                    <span class="results-ring-center" aria-hidden="true">{{ latest.score }}/{{ latest.total }}</span>
+                </div>
+                <figcaption id="{{ cardId }}-legend">
+                    <span><i class="results-swatch results-swatch-correct" aria-hidden="true"></i>{{ latest.score }} réponse{{ latest.score > 1 ? 's' : '' }} correcte{{ latest.score > 1 ? 's' : '' }}</span>
+                    {% set incorrect = latest.total - latest.score %}
+                    <span><i class="results-swatch results-swatch-incorrect" aria-hidden="true"></i>{{ incorrect }} réponse{{ incorrect > 1 ? 's' : '' }} incorrecte{{ incorrect > 1 ? 's' : '' }}</span>
+                </figcaption>
+            </figure>
+        {% endif %}
+    </div>
+</article>

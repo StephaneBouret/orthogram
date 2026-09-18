@@ -48,6 +48,7 @@
         "symfony/translation": "8.1.*",
         "symfony/twig-bundle": "8.1.*",
         "symfony/ux-autocomplete": "^3.2",
+        "symfony/ux-chartjs": "~3.2.0",
         "symfony/ux-turbo": "^3.2",
         "symfony/validator": "8.1.*",
         "symfony/web-link": "8.1.*",

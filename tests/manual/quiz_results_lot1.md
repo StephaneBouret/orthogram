@@ -15,6 +15,7 @@ Une liste de tableaux, sans entité Doctrine, questions ni réponses :
 | `courseId`, `quizId` | Identifiants éventuellement nuls ; ne suffisent pas à autoriser un lien |
 | `title` | Titre figé de la dernière terminée ; sinon de la tentative existante ; sinon titre du catalogue |
 | `section` | `{id, name}` de la section actuelle, ou `null` |
+| `catalogOrder` | Clé de tri pédagogique ajoutée au lot 2 : programme, position et id de section, position et id de cours |
 | `archived` | Le couple ne correspond plus au test actuel du cours, ou une association manque |
 | `courseUrl` | Lien du lecteur uniquement si le couple est actuel et CourseVoter::VIEW l'autorise ; sinon `null` |
 | `status` | `not_started` (« Pas encore passé »), `in_progress` (« En cours »), `completed` |
