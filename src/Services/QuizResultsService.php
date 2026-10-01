@@ -49,7 +49,7 @@ final class QuizResultsService
 
         $groups = [];
         foreach ($courses as $course) {
-            if ($this->security->isGranted(CourseVoter::VIEW, $course)) {
+            if ($this->security->isGranted(CourseVoter::INTERACT, $course)) {
                 $key = $course->getId().':'.$course->getQuiz()->getId();
                 $groups[$key] = ['course' => $course, 'attempts' => []];
             }
@@ -119,7 +119,7 @@ final class QuizResultsService
         if (null === $attempt || null === $attempt->getCompletedAt() || null === $attempt->getCourse()) {
             throw new NotFoundHttpException('Tentative introuvable.');
         }
-        if (!$this->security->isGranted(CourseVoter::VIEW, $attempt->getCourse())) {
+        if (!$this->security->isGranted(CourseVoter::INTERACT, $attempt->getCourse())) {
             throw new AccessDeniedException();
         }
 
@@ -164,6 +164,7 @@ final class QuizResultsService
         $current = null !== $course && null !== $quizId && CourseContentType::Quiz === $course->getContentType()
             && $quizId === $course->getQuiz()?->getId();
         $canView = null !== $course && $this->security->isGranted(CourseVoter::VIEW, $course);
+        $canInteract = null !== $course && $this->security->isGranted(CourseVoter::INTERACT, $course);
         $previous = null;
         $best = null;
         $mixed = false;
@@ -176,7 +177,7 @@ final class QuizResultsService
             $history[] = $this->score($attempt) + [
                 'contentChanged' => $changed, 'delta' => $delta,
                 'deltaLabel' => null === $delta ? null : (0 === $delta ? 'Stable' : sprintf('%+d points', $delta)),
-                'correctionUrl' => $canView ? $this->urls->generate('app_quiz_result_correction', ['id' => $attempt->getId()]) : null,
+                'correctionUrl' => $canInteract ? $this->urls->generate('app_quiz_result_correction', ['id' => $attempt->getId()]) : null,
             ];
             if ($this->comparable($attempt, $latest)) {
                 if (null !== $percentage && (null === $best || $attempt->getScore() * $best->getTotal() > $best->getScore() * $attempt->getTotal())) {
@@ -189,7 +190,7 @@ final class QuizResultsService
         }
         $section = $course?->getSection();
         $program = $section?->getProgram();
-        $courseUrl = $current && $canView && null !== $program
+        $courseUrl = $current && $canView && $canInteract && null !== $program
             ? $this->urls->generate('app_course_show', ['programSlug' => $program->getSlug(), 'sectionSlug' => $section->getSlug(), 'courseSlug' => $course->getSlug()]) : null;
 
         $percentages = array_column($history, 'percentage');

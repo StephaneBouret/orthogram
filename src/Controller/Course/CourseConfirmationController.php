@@ -28,7 +28,7 @@ final class CourseConfirmationController extends AbstractController
     #[Route('/course/confirmation/{id}', name: 'app_course_confirmation', methods: ['POST'])]
     public function __invoke(Courses $course, Request $request): Response
     {
-        $this->denyAccessUnlessGranted(CourseVoter::VIEW, $course, "Vous n'avez pas accès à ce cours.");
+        $this->denyAccessUnlessGranted(CourseVoter::INTERACT, $course, "Vous n'avez pas accès à ce cours.");
 
         if (CourseContentType::Quiz === $course->getContentType()) {
             throw $this->createAccessDeniedException('Terminez le quiz pour valider ce cours.');

@@ -5,6 +5,7 @@
     class="card v9d3ks exercise-card"
     data-controller="click-words"
     data-click-words-submit-url-value="{{ path('app_exercise_submit', { id: exercice.id }) }}"
+    data-click-words-token-value="{{ csrf_token('exercise_' ~ exercice.id) }}"
 >
     <div class="card-body">
         <div class="exercise-header">

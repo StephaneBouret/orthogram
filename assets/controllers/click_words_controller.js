@@ -4,6 +4,7 @@ export default class extends Controller {
     static targets = ['result', 'submit', 'token'];
     static values = {
         submitUrl: String,
+        token: String,
     };
 
     connect() {
@@ -43,6 +44,7 @@ export default class extends Controller {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': this.tokenValue,
                 },
                 body: JSON.stringify({ selected: Array.from(this.selected) }),
             });

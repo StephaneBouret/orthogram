@@ -42,6 +42,10 @@ class ExerciseController extends AbstractController
     {
         $this->denyAccessUnlessGrantedToExercice($exercice);
 
+        if (!$this->isCsrfTokenValid('exercise_'.$exercice->getId(), $request->headers->get('X-CSRF-TOKEN'))) {
+            return $this->json(['message' => 'Session ou jeton CSRF expiré. Rechargez la page.'], Response::HTTP_FORBIDDEN);
+        }
+
         if (Exercice::TYPE_CLICK_WORDS !== $exercice->getType()) {
             return $this->json(['message' => 'Ce type d’exercice n’est pas encore pris en charge.'], Response::HTTP_BAD_REQUEST);
         }
@@ -82,18 +86,6 @@ class ExerciseController extends AbstractController
 
     private function denyAccessUnlessGrantedToExercice(Exercice $exercice): void
     {
-        if ($exercice->getCourses()->isEmpty()) {
-            $this->denyAccessUnlessGranted('ROLE_USER');
-
-            return;
-        }
-
-        foreach ($exercice->getCourses() as $course) {
-            if ($this->isGranted(CourseVoter::VIEW, $course)) {
-                return;
-            }
-        }
-
-        $this->denyAccessUnlessGranted(CourseVoter::VIEW, $exercice->getCourses()->first());
+        $this->denyAccessUnlessGranted(CourseVoter::INTERACT, $exercice);
     }
 }

@@ -292,9 +292,13 @@ final class QuizResultsTest extends WebTestCase
         self::assertResponseRedirects('/login');
     }
 
-    public function testExpiredAccessKeepsNumbersButDeniesCorrectionAndPassation(): void
+    #[DataProvider('historicalCourseTypes')]
+    public function testExpiredAccessKeepsNumbersButDeniesCorrectionAndPassation(bool $changedToFreeTwig): void
     {
         $attempt = $this->attempt(1);
+        if ($changedToFreeTwig) {
+            $this->course->setContentType(CourseContentType::Twig)->setQuiz(null)->setIsFree(true);
+        }
         $this->user->setRoles([]);
         $subscription = (new \App\Entity\Subscription())->setUser($this->user)->setEmail($this->user->getEmail())
             ->setStatus(\App\Enum\SubscriptionStatus::ACTIVE)->setStartsAt(new \DateTimeImmutable('-2 days'))->setEndsAt(new \DateTimeImmutable('-1 day'));
@@ -311,6 +315,48 @@ final class QuizResultsTest extends WebTestCase
         self::assertResponseStatusCodeSame(403);
         self::assertTrue($this->client->getResponse()->headers->hasCacheControlDirective('private'));
         self::assertTrue($this->client->getResponse()->headers->hasCacheControlDirective('no-store'));
+        self::assertSame($before, $this->databaseState());
+        $this->client->request('GET', '/mes-resultats/historique/'.$attempt->getId());
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('main', '50 %');
+        self::assertStringNotContainsString('SECRET première', $this->client->getResponse()->getContent());
+        $this->client->request('GET', '/course/'.$this->course->getId().'/quiz');
+        self::assertResponseStatusCodeSame(403);
+        self::assertSame($before, $this->databaseState());
+    }
+
+    public static function historicalCourseTypes(): iterable
+    {
+        yield 'quiz' => [false];
+        yield 'former quiz now free twig' => [true];
+    }
+
+    public function testReadingRightAloneDoesNotGrantHistoricalCorrectionsOrPassationLinks(): void
+    {
+        $attempt = $this->attempt(1);
+        $userId = $this->user->getId();
+        $this->client->disableReboot();
+        self::$kernel->shutdown();
+        self::$kernel->boot();
+        $checker = new \Symfony\Component\Security\Core\Authorization\AuthorizationChecker(
+            self::getContainer()->get('security.token_storage'), self::getContainer()->get('security.access.decision_manager'));
+        $gate = $this->createMock(\Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface::class);
+        $gate->expects(self::atLeastOnce())->method('isGranted')->willReturnCallback(static fn ($attribute, $subject = null) =>
+            \App\Security\Voter\CourseVoter::INTERACT !== $attribute && $checker->isGranted($attribute, $subject));
+        self::getContainer()->set('security.authorization_checker', $gate);
+        $this->client->loginUser($this->em()->find(User::class, $userId));
+        $this->client->request('GET', '/courses/quiz-formation/quiz-section/quiz-cours');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('[data-controller="quiz"]');
+        $result = $this->service()->results()[0];
+        self::assertSame(50, $result['latest']['percentage']);
+        self::assertNull($result['courseUrl']);
+        self::assertNull($result['latest']['correctionUrl']);
+        self::assertNull($this->service()->history($attempt->getId())['selected']['correctionUrl']);
+        $before = $this->databaseState();
+        $this->client->request('GET', '/mes-resultats/tentatives/'.$attempt->getId());
+        self::assertResponseStatusCodeSame(403);
+        self::assertStringNotContainsString('SECRET première', $this->client->getResponse()->getContent());
         self::assertSame($before, $this->databaseState());
     }
 

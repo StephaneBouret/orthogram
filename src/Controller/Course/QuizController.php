@@ -22,7 +22,7 @@ final class QuizController extends AbstractController
     public function __invoke(Courses $course, Request $request, QuizAttemptService $service, string $action = 'state'): JsonResponse
     {
         try {
-            $this->denyAccessUnlessGranted(CourseVoter::VIEW, $course);
+            $this->denyAccessUnlessGranted(CourseVoter::INTERACT, $course);
             $user = $this->getUser();
             if (!$user instanceof User) {
                 throw $this->createAccessDeniedException();

@@ -62,9 +62,13 @@
     <div id="lesson-navigation">
         <nav class="btn-row justify-content-end" aria-label="Navigation du cours">
             {% include 'course/show/_navigation.html.twig' %}
-            {% include 'course/show/_completion_button.html.twig' %}
+            {% if canInteract %}
+                {% include 'course/show/_completion_button.html.twig' %}
+            {% endif %}
         </nav>
     </div>
 
-    {% include 'course/show/_comments.html.twig' %}
+    {% if canInteract %}
+        {% include 'course/show/_comments.html.twig' %}
+    {% endif %}
 </div>

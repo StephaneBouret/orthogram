@@ -33,7 +33,7 @@ final class CommentController extends AbstractController
     #[Route('/course/comment/{id}', name: 'app_course_comment_create', methods: ['POST'])]
     public function create(Courses $course, Request $request): Response
     {
-        $this->denyAccessUnlessGranted(CourseVoter::VIEW, $course, "Vous n'avez pas accès à ce cours.");
+        $this->denyAccessUnlessGranted(CourseVoter::INTERACT, $course, "Vous n'avez pas accès à ce cours.");
 
         $user = $this->getUser();
 
@@ -90,7 +90,7 @@ final class CommentController extends AbstractController
     #[Route('/comments/{id}/report', name: 'app_comments_report', methods: ['POST'])]
     public function report(Comment $comment, Request $request, CommentReportService $commentReportService): Response
     {
-        $this->denyAccessUnlessGranted(CourseVoter::VIEW, $comment->getCourse(), "Vous n'avez pas accès à ce cours.");
+        $this->denyAccessUnlessGranted(CourseVoter::INTERACT, $comment->getCourse(), "Vous n'avez pas accès à ce cours.");
 
         $user = $this->getUser();
 
@@ -135,7 +135,7 @@ final class CommentController extends AbstractController
     #[Route('/comments/{id}/like', name: 'app_comments_like', methods: ['POST'])]
     public function like(Comment $comment, Request $request, CommentLikeRepository $commentLikeRepository): JsonResponse
     {
-        $this->denyAccessUnlessGranted(CourseVoter::VIEW, $comment->getCourse(), "Vous n'avez pas accès à ce cours.");
+        $this->denyAccessUnlessGranted(CourseVoter::INTERACT, $comment->getCourse(), "Vous n'avez pas accès à ce cours.");
 
         $user = $this->getUser();
 
@@ -190,7 +190,7 @@ final class CommentController extends AbstractController
     public function edit(Comment $comment, Request $request): Response
     {
         $this->denyAccessUnlessGranted(CommentVoter::EDIT, $comment, "Vous n'êtes pas l'auteur de ce commentaire.");
-        $this->denyAccessUnlessGranted(CourseVoter::VIEW, $comment->getCourse(), "Vous n'avez plus accès à ce cours.");
+        $this->denyAccessUnlessGranted(CourseVoter::INTERACT, $comment->getCourse(), "Vous n'avez plus accès à ce cours.");
 
         if (!$this->isCsrfTokenValid('comment_edit_'.$comment->getId(), (string) $request->request->get('_token'))) {
             throw $this->createAccessDeniedException('Le jeton CSRF est invalide.');

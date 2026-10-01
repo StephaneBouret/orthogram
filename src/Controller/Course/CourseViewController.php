@@ -58,17 +58,19 @@ final class CourseViewController extends AbstractController
 
         $sections = $this->sectionsRepository->findByProgramWithCourses($program);
         $navigation = $this->buildNavigation($program, $course);
+        $canInteract = $this->isGranted(CourseVoter::INTERACT, $course);
         $user = $this->getUser();
-        $lesson = $user instanceof User ? $this->lessonRepository->findOneByUserAndCourse($user, $course) : null;
-        $nbrLessonsDone = $user instanceof User ? $this->lessonRepository->countDoneByUserAndProgram($user, $program) : 0;
-        $completedCourseIds = $user instanceof User ? $this->lessonRepository->findDoneCourseIdsByUserAndProgram($user, $program) : [];
-        $userRootComment = $user instanceof User ? $this->commentRepository->findRootByUserAndCourse($user, $course) : null;
-        $latestExerciceAttempt = $user instanceof User && null !== $course->getExercice()
+        $lesson = $canInteract && $user instanceof User ? $this->lessonRepository->findOneByUserAndCourse($user, $course) : null;
+        $nbrLessonsDone = $canInteract && $user instanceof User ? $this->lessonRepository->countDoneByUserAndProgram($user, $program) : 0;
+        $completedCourseIds = $canInteract && $user instanceof User ? $this->lessonRepository->findDoneCourseIdsByUserAndProgram($user, $program) : [];
+        $userRootComment = $canInteract && $user instanceof User ? $this->commentRepository->findRootByUserAndCourse($user, $course) : null;
+        $latestExerciceAttempt = $canInteract && $user instanceof User && null !== $course->getExercice()
             ? $this->exerciceAttemptRepository->findLatestByUserAndExercice($user, $course->getExercice())
             : null;
-        $commentForm = $this->createForm(CommentFormType::class, new Comment());
+        $commentForm = $canInteract ? $this->createForm(CommentFormType::class, new Comment()) : null;
 
         return $this->render('course/show.html.twig', [
+            'canInteract' => $canInteract,
             'program' => $program,
             'section' => $section,
             'course' => $course,
@@ -82,8 +84,8 @@ final class CourseViewController extends AbstractController
             'completedCourseIds' => $completedCourseIds,
             'sectionCompletion' => $this->sectionCompletionService->calculate($sections, $completedCourseIds),
             'sectionsTotalDuration' => $this->sectionDurationService->calculateTotalDuration($sections),
-            'comments' => $this->commentRepository->findRootCommentsByCourse($course),
-            'commentsCount' => $this->commentRepository->countByCourse($course),
+            'comments' => $canInteract ? $this->commentRepository->findRootCommentsByCourse($course) : [],
+            'commentsCount' => $canInteract ? $this->commentRepository->countByCourse($course) : 0,
             'commentForm' => $commentForm,
             'userRootComment' => $userRootComment,
             'latestExerciceAttempt' => $latestExerciceAttempt,
