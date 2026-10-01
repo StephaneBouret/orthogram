@@ -13,7 +13,10 @@ use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Event\AfterCrudActionEvent;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
@@ -61,6 +64,9 @@ class CoursesCrudController extends AbstractCrudController
             IdField::new('id')->onlyOnIndex(),
             TextField::new('name', 'Nom du cours'),
             TextField::new('slug', 'Slug')->onlyOnIndex(),
+            BooleanField::new('isFree', 'Accès gratuit')
+                ->renderAsSwitch(false)
+                ->setHelp('Consultation uniquement, sans progression, commentaires, quiz ni exercices interactifs. Les types Quiz et Exercice doivent rester réservés. Ce paramétrage prépare l’ouverture publique ; il ne donne pas encore accès au cours sans abonnement.'),
             ChoiceField::new('contentType', 'Type de contenu')
                 ->setChoices(CourseContentType::cases())
                 ->setFormTypeOption('choice_label', fn (CourseContentType $type) => $type->label())
@@ -152,6 +158,16 @@ class CoursesCrudController extends AbstractCrudController
         $this->estimateDuration($entityInstance, $entityInstance instanceof Courses && null !== $entityInstance->getPartialFile());
 
         parent::updateEntity($entityManager, $entityInstance);
+    }
+
+    protected function ajaxEdit(EntityDto $entityDto, ?string $propertyName, bool $newValue): AfterCrudActionEvent
+    {
+        // EasyAdmin's AJAX edit bypasses form validation, even without a visible switch.
+        if ('isFree' === $propertyName) {
+            throw $this->createAccessDeniedException('Modifiez l’accès gratuit depuis le formulaire du cours.');
+        }
+
+        return parent::ajaxEdit($entityDto, $propertyName, $newValue);
     }
 
     private function estimateDuration(object $entityInstance, bool $force = false): void

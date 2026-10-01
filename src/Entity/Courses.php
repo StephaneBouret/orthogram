@@ -33,6 +33,9 @@ class Courses
     #[ORM\Column(length: 20, enumType: CourseContentType::class)]
     private ?CourseContentType $contentType = CourseContentType::Twig;
 
+    #[ORM\Column(options: ['default' => false])]
+    private bool $isFree = false;
+
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $shortDescription = null;
 
@@ -148,6 +151,18 @@ class Courses
     public function setContentType(CourseContentType $contentType): static
     {
         $this->contentType = $contentType;
+
+        return $this;
+    }
+
+    public function isFree(): bool
+    {
+        return $this->isFree;
+    }
+
+    public function setIsFree(bool $isFree): static
+    {
+        $this->isFree = $isFree;
 
         return $this;
     }
@@ -332,6 +347,15 @@ class Courses
         $quiz?->addCourse($this);
 
         return $this;
+    }
+
+    #[Assert\Callback]
+    public function validateFreeAccess(ExecutionContextInterface $context): void
+    {
+        if ($this->isFree && in_array($this->contentType, [CourseContentType::Quiz, CourseContentType::Exercise], true)) {
+            $context->buildViolation('Les quiz et les exercices interactifs ne peuvent pas être gratuits. Décochez « Accès gratuit » pour enregistrer ce type de cours.')
+                ->atPath('isFree')->addViolation();
+        }
     }
 
     #[Assert\Callback]
