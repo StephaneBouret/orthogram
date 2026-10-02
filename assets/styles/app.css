@@ -525,7 +525,8 @@ html[data-bs-theme="dark"] .color-btn-logout:active {
     gap: 1rem;
 }
 
-.btn-orthogram-primary {
+.btn-orthogram-primary,
+.course-page .course-discovery-actions .btn-orthogram-primary {
     background-color: #f59e0b;
     color: #111827;
     border: 1px solid #f59e0b;
@@ -535,10 +536,17 @@ html[data-bs-theme="dark"] .color-btn-logout:active {
 }
 
 .btn-orthogram-primary:hover,
-.btn-orthogram-primary:focus {
+.btn-orthogram-primary:focus,
+.course-page .course-discovery-actions .btn-orthogram-primary:hover,
+.course-page .course-discovery-actions .btn-orthogram-primary:focus {
     background-color: #f97316;
     border-color: #f97316;
     color: #111827;
+}
+
+.course-page .course-discovery-actions .btn-orthogram-primary:focus-visible {
+    outline: 3px solid var(--orthogram-text);
+    outline-offset: 3px;
 }
 
 .btn-orthogram-light {

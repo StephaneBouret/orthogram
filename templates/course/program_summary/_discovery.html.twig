@@ -1,7 +1,7 @@
 <div class="spacer-section">
     <p>Les cours gratuits sont accessibles librement. Un abonnement donne accès à tous les cours, aux exercices et au suivi de votre progression.</p>
-    <div class="btn-row">
-        <a class="btn btn-primary" href="{{ path('app_subscription_show') }}">Découvrir l’offre</a>
+    <div class="btn-row course-discovery-actions">
+        <a class="btn btn-orthogram-primary" href="{{ path('app_subscription_show') }}">Découvrir l’offre</a>
         {% if not app.user %}
             <a class="btn btn-outline-grey" href="{{ path('app_login') }}">Se connecter</a>
         {% endif %}
