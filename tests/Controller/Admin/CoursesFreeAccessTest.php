@@ -231,7 +231,7 @@ final class CoursesFreeAccessTest extends WebTestCase
         }
     }
 
-    public function testFreeFlagDoesNotOpenTheReader(): void
+    public function testFreeFlagOpensReadingWithoutOpeningInteractions(): void
     {
         $this->course->setContentType(CourseContentType::Twig)->setQuiz(null)->setIsFree(true);
         $user = QuizPlayerFactory::user('without-subscription@example.test')->setRoles([]);
@@ -240,10 +240,14 @@ final class CoursesFreeAccessTest extends WebTestCase
         $this->client->catchExceptions(true);
         $this->client->loginUser($user);
         $this->client->request('GET', '/courses/quiz-formation/quiz-section/quiz-cours');
-        self::assertResponseStatusCodeSame(403);
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('#completion-button');
+        self::assertSelectorNotExists('#comments');
         $this->client->getCookieJar()->clear();
         $this->client->request('GET', '/courses/quiz-formation/quiz-section/quiz-cours');
-        self::assertResponseRedirects('/login');
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('#completion-button');
+        self::assertSelectorNotExists('#comments');
     }
 
     private function editUrl(): string

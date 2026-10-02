@@ -14,9 +14,9 @@ use App\Services\Courses\SectionDurationService;
 use App\Services\LearningReminderViewService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class ProgramSummaryController extends AbstractController
 {
@@ -33,24 +33,29 @@ final class ProgramSummaryController extends AbstractController
 
     #[Route('/ma-formation', name: 'app_user_training', defaults: ['slug' => 'formation-en-orthographe'], methods: ['GET'])]
     #[Route('/courses/{slug}', name: 'app_course_program_summary', methods: ['GET'])]
-    #[IsGranted(CourseVoter::PROGRAM_VIEW, subject: 'program', message: "Vous n'avez pas accès à ce programme.")]
     public function __invoke(
         #[MapEntity(mapping: ['slug' => 'slug'])]
         Program $program,
+        Request $request,
     ): Response {
+        if ('app_user_training' === $request->attributes->get('_route')) {
+            $this->denyAccessUnlessGranted(CourseVoter::PROGRAM_VIEW, $program);
+        }
+        $canInteract = $this->isGranted(CourseVoter::PROGRAM_VIEW, $program);
         $sections = $this->sectionsRepository->findByProgramWithCourses($program);
         $coursesBySection = $this->coursesRepository->countCoursesBySections($program);
         $nbrCourses = $this->coursesRepository->countByProgram($program);
         $sectionsTotalDuration = $this->sectionDurationService->calculateTotalDuration($sections);
         $programTotalDurationMinutes = array_sum($sectionsTotalDuration);
         $user = $this->getUser();
-        $nbrLessonsDone = $user instanceof User ? $this->lessonRepository->countDoneByUserAndProgram($user, $program) : 0;
-        $completedCourseIds = $user instanceof User ? $this->lessonRepository->findDoneCourseIdsByUserAndProgram($user, $program) : [];
-        $learningReminder = $user instanceof User
+        $nbrLessonsDone = $canInteract && $user instanceof User ? $this->lessonRepository->countDoneByUserAndProgram($user, $program) : 0;
+        $completedCourseIds = $canInteract && $user instanceof User ? $this->lessonRepository->findDoneCourseIdsByUserAndProgram($user, $program) : [];
+        $learningReminder = $canInteract && $user instanceof User
             ? $this->learningReminderRepository->findOneByUser($user)
             : null;
 
-        return $this->render('course/program_summary.html.twig', [
+        $response = $this->render('course/program_summary.html.twig', [
+            'canInteract' => $canInteract,
             'program' => $program,
             'sections' => $sections,
             'coursesBySection' => $coursesBySection,
@@ -64,5 +69,8 @@ final class ProgramSummaryController extends AbstractController
                 ? null
                 : $this->learningReminderViewService->present($learningReminder),
         ]);
+        $response->headers->set('Cache-Control', 'private, no-store');
+
+        return $response;
     }
 }

@@ -1,11 +1,12 @@
 {% set isAccessible = is_granted('VIEW_COURSE', course) %}
+{% set showFreeBadge = course.freeLesson and not is_granted('PROGRAM_VIEW', course.section.program) %}
 {% set currentCourse = currentCourse|default(null) %}
 {% set completedCourseIds = completedCourseIds|default([]) %}
 {% set isCurrentCourse = currentCourse and currentCourse.id == course.id %}
 {% set isCompleted = course.id in completedCourseIds %}
 
 {% if isAccessible %}
-    <a class="list-group-item list-group-item-action{{ isCurrentCourse ? ' active' : '' }}" aria-label="{{ course.slug }}" href="{{ path('app_course_show', {'programSlug': course.section.program.slug, 'sectionSlug': course.section.slug, 'courseSlug': course.slug}) }}">
+    <a class="list-group-item list-group-item-action{{ isCurrentCourse ? ' active' : '' }}" href="{{ path('app_course_show', {'programSlug': course.section.program.slug, 'sectionSlug': course.section.slug, 'courseSlug': course.slug}) }}">
         {% if isCompleted %}
             {# <div class="list-group-icon completed">
                 {% include 'course/program_summary/icons/_check.html.twig' %}
@@ -34,13 +35,16 @@
         {% endif %}
 
         <span class="course-item-title">{{ course.name }}</span>
+        {% if showFreeBadge %}<span class="badge text-bg-success">Gratuit</span>{% endif %}
     </a>
 {% else %}
-    <div class="list-group-item" aria-label="{{ course.name }}{{ isCompleted ? ' — Terminé' : '' }}">
-        <div class="list-group-icon">
+    <div class="list-group-item" aria-disabled="true">
+        <div class="list-group-icon" aria-hidden="true">
             {% include 'course/program_summary/icons/_lock.html.twig' %}
         </div>
 
         <span class="course-item-title">{{ course.name }}</span>
+        {% if showFreeBadge %}<span class="badge text-bg-success">Gratuit</span>{% endif %}
+        <span class="small text-muted">{{ course.freeLesson ? 'Accès indisponible' : 'Réservé aux abonnés' }}</span>
     </div>
 {% endif %}

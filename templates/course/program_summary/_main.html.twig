@@ -3,6 +3,7 @@
 
 <div
     class="main-content"
+    {% if canInteract %}
     data-controller="learning-reminder"
     data-action="turbo:before-cache@document->learning-reminder#prepareForCache"
     data-learning-reminder-upsert-url-value="{{ path('app_course_learning_reminder_upsert', {slug: program.slug}) }}"
@@ -15,6 +16,7 @@
     {% if learningReminder %}
         data-learning-reminder-reminder-value="{{ learningReminder|json_encode|e('html_attr') }}"
     {% endif %}
+    {% endif %}
 >
     <div class="d-flex">
         <div class="w-100">
@@ -25,7 +27,7 @@
                             <li class="breadcrumb-item">
                                 <a href="{{ path('app_home') }}" class="text-muted">Accueil</a>
                             </li>
-                            <li class="breadcrumb-item active" aria-current="page">Ma formation</li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ canInteract ? 'Ma formation' : 'Sommaire de la formation' }}</li>
                         </ol>
                     </nav>
 
@@ -63,7 +65,8 @@
             </div>
         {% endif %}
 
-        <div class="program-summary-stats" aria-label="Votre progression dans la formation">
+        <div class="program-summary-stats" aria-label="{{ canInteract ? 'Votre progression dans la formation' : 'Durée de la formation' }}">
+            {% if canInteract %}
             <div class="program-summary-stat">
                 <span class="program-summary-stat-icon" aria-hidden="true">
                     <i class="bi bi-check2-circle"></i>
@@ -74,6 +77,7 @@
                 </span>
             </div>
 
+            {% endif %}
             <div class="program-summary-stat">
                 <span class="program-summary-stat-icon" aria-hidden="true">
                     <i class="bi bi-clock"></i>
@@ -92,6 +96,7 @@
         </div>
     </section>
 
+    {% if canInteract %}
     <div
         class="program-schedule-section spacer-section"
         data-learning-reminder-target="section"
@@ -185,6 +190,9 @@
     </div>
 
     {% include 'course/program_summary/_learning_reminder_modal.html.twig' %}
+    {% else %}
+        {% include 'course/program_summary/_discovery.html.twig' %}
+    {% endif %}
 
     <section class="program-course-content" aria-labelledby="program-course-content-title">
         <header class="program-course-content-heading">
@@ -193,7 +201,7 @@
                     id="program-course-content-title"
                     class="learning-reminder-focus-target"
                     tabindex="-1"
-                    data-learning-reminder-target="courseContentTitle"
+                    {% if canInteract %}data-learning-reminder-target="courseContentTitle"{% endif %}
                 >
                     Contenu de la formation
                 </h2>
@@ -211,12 +219,12 @@
                     <div class="list-group list-group-menu list-group-sm">
                         <nav aria-label="{{ section.name }}">
                             <header class="pb7jep">
-                                <a class="lk25pol" href="{{ path('app_course_section', {'programSlug': program.slug, 'sectionSlug': section.slug}) }}">
+                                <a class="lk25pol" href="{{ is_granted('SECTION_VIEW', section) ? path('app_course_section', {'programSlug': program.slug, 'sectionSlug': section.slug}) : '#section-' ~ section.id }}">
                                     <h2>
                                         {{ section.name }}
                                     </h2>
                                 </a>
-                                {% if section.shortDescription %}
+                                {% if canInteract and section.shortDescription %}
                                     <div class="text-longform text-lg text-muted mb-2">
                                         <div>{{ section.shortDescription|raw|nl2br }}</div>
                                     </div>

@@ -160,6 +160,14 @@ class Courses
         return $this->isFree;
     }
 
+    public function isFreeLesson(): bool
+    {
+        return $this->isFree && in_array($this->contentType, [
+            CourseContentType::Twig, CourseContentType::Link,
+            CourseContentType::Audio, CourseContentType::Video,
+        ], true);
+    }
+
     public function setIsFree(bool $isFree): static
     {
         $this->isFree = $isFree;

@@ -45,6 +45,13 @@ final class CourseVoter extends Voter
     {
         $user = $token->getUser();
 
+        $freeReading = self::VIEW === $attribute && $subject instanceof Courses
+            && $subject->isFreeLesson() && $subject->getSection()?->getProgram() instanceof Program;
+
+        if (null === $user) {
+            return $freeReading;
+        }
+
         // The application's trust resolver excludes incomplete 2FA sessions.
         if (!$user instanceof User || !$user->isAccountActive()
             || (!$this->trustResolver->isFullFledged($token) && !$this->trustResolver->isRememberMe($token))) {
@@ -55,18 +62,22 @@ final class CourseVoter extends Voter
             return true;
         }
 
+        if ($freeReading) {
+            return true;
+        }
+
         if (self::INTERACT === $attribute && $subject instanceof Exercice) {
             if ($subject->getCourses()->isEmpty()) {
                 return $this->hasActiveSubscription($user);
             }
 
             return $subject->getCourses()->exists(
-                fn (int|string $key, Courses $course): bool => $this->canViewCourse($course, $user)
+                fn (int|string $key, Courses $course): bool => $this->canAccessPrivateCourse($course, $user)
             );
         }
 
         if (self::VIEW === $attribute || self::INTERACT === $attribute) {
-            return $subject instanceof Courses && $this->canViewCourse($subject, $user);
+            return $subject instanceof Courses && $this->canAccessPrivateCourse($subject, $user);
         }
 
         if (self::SECTION_VIEW === $attribute) {
@@ -76,7 +87,7 @@ final class CourseVoter extends Voter
         return $subject instanceof Program && $this->canViewProgram($subject, $user);
     }
 
-    private function canViewCourse(Courses $course, User $user): bool
+    private function canAccessPrivateCourse(Courses $course, User $user): bool
     {
         $program = $course->getSection()?->getProgram();
 

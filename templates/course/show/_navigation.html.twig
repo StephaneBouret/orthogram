@@ -1,15 +1,15 @@
-{% if previousCourse %}
-    <span>
-        <a href="{{ path('app_course_show', {'programSlug': program.slug, 'sectionSlug': previousCourse.section.slug, 'courseSlug': previousCourse.slug}) }}" title="Précédent" rel="prev" class="btn btn-md btn-outline-grey btn-icon">
-            {% include 'course/show/icons/_left_arrow.html.twig' %}
-        </a>
-    </span>
-{% endif %}
-
-{% if nextCourse %}
-    <span>
-        <a href="{{ path('app_course_show', {'programSlug': program.slug, 'sectionSlug': nextCourse.section.slug, 'courseSlug': nextCourse.slug}) }}" aria-label="Continuer" title="Continuer" rel="next" class="btn btn-md btn-outline-grey btn-icon">
-            {% include 'course/show/icons/_right_arrow.html.twig' %}
-        </a>
-    </span>
-{% endif %}
+{% for direction, neighbor in {prev: previousCourse, next: nextCourse} %}
+    {% if neighbor %}
+        {% set label = (direction == 'prev' ? 'Précédent : ' : 'Suivant : ') ~ neighbor.name %}
+        {% if is_granted('VIEW_COURSE', neighbor) %}
+            <a href="{{ path('app_course_show', {programSlug: program.slug, sectionSlug: neighbor.section.slug, courseSlug: neighbor.slug}) }}" aria-label="{{ label }}" title="{{ label }}" rel="{{ direction }}" class="btn btn-md btn-outline-grey btn-icon">
+                {% include direction == 'prev' ? 'course/show/icons/_left_arrow.html.twig' : 'course/show/icons/_right_arrow.html.twig' %}
+            </a>
+        {% else %}
+            <span class="course-navigation-locked btn btn-md btn-outline-grey" aria-disabled="true">
+                <span class="course-navigation-lock" aria-hidden="true">{% include 'course/program_summary/icons/_lock.html.twig' %}</span>
+                <span class="course-navigation-label">{{ label }} — Réservé aux abonnés</span>
+            </span>
+        {% endif %}
+    {% endif %}
+{% endfor %}

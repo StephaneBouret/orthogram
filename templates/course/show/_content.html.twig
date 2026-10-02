@@ -22,6 +22,7 @@
                 <p class="mb-0 text-muted">Le fichier audio de cette dictée sera bientôt disponible.</p>
             {% endif %}
 
+            {% if canInteract %}
             <div class="course-dictation-panel">
                 <label class="form-label" for="course-dictation-answer">Votre dictée</label>
                 <textarea id="course-dictation-answer" class="form-control" rows="8" placeholder="La zone de saisie sera activée avec la logique de dictée."></textarea>
@@ -32,6 +33,7 @@
                     <summary>Afficher la correction</summary>
                     <div>{{ course.correctionText|raw|nl2br }}</div>
                 </details>
+            {% endif %}
             {% endif %}
         </div>
     </div>

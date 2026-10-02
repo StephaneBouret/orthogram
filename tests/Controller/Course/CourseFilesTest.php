@@ -113,21 +113,25 @@ final class CourseFilesTest extends WebTestCase
         }
     }
 
-    /** @return iterable<string, array{string, string, bool}> */
+    /** @return iterable<string, array{string, string, bool, bool}> */
     public static function accessCases(): iterable
     {
         foreach (['anonymous', 'unsubscribed', 'subscriber', 'admin', 'inactive', 'inactive-admin', '2fa', '2fa-admin'] as $profile) {
             foreach (['GET', 'HEAD', 'Range', 'conditional'] as $method) {
                 foreach ([false, true] as $admin) {
-                    yield $profile.'-'.$method.($admin ? '-download' : '-media') => [$profile, $method, $admin];
+                    foreach ([false, true] as $free) {
+                        yield $profile.'-'.$method.($admin ? '-download' : '-media').($free ? '-free' : '-paid') => [$profile, $method, $admin, $free];
+                    }
                 }
             }
         }
     }
 
     #[DataProvider('accessCases')]
-    public function testAuthorizationPrecedesAllFileResponses(string $profile, string $method, bool $admin): void
+    public function testAuthorizationPrecedesAllFileResponses(string $profile, string $method, bool $admin, bool $free): void
     {
+        $this->course->setIsFree($free);
+        $this->em->flush();
         $this->profile($profile);
         $headers = match ($method) {
             'Range' => ['HTTP_RANGE' => 'bytes=2-7'],
@@ -136,7 +140,7 @@ final class CourseFilesTest extends WebTestCase
         };
         $this->client->request('HEAD' === $method ? 'HEAD' : 'GET', $this->url($admin ? 'source' : 'audio', $admin), server: $headers);
         $response = $this->client->getResponse();
-        $allowed = 'admin' === $profile || (!$admin && 'subscriber' === $profile);
+        $allowed = 'admin' === $profile || (!$admin && ('subscriber' === $profile || ($free && in_array($profile, ['anonymous', 'unsubscribed'], true))));
         if (!$allowed) {
             self::assertContains($response->getStatusCode(), [302, 403]);
             self::assertNotInstanceOf(BinaryFileResponse::class, $response);
@@ -171,6 +175,8 @@ final class CourseFilesTest extends WebTestCase
 
     public function testRevokedSubscriptionCannotReuseRangeOrValidator(): void
     {
+        $this->course->setIsFree(false);
+        $this->em->flush();
         $this->profile('subscriber');
         $this->client->request('GET', $this->url());
         self::assertResponseIsSuccessful();
@@ -185,6 +191,39 @@ final class CourseFilesTest extends WebTestCase
             $this->client->request('GET', $this->url(), server: $headers);
             self::assertResponseStatusCodeSame(403);
             self::assertNotInstanceOf(BinaryFileResponse::class, $this->client->getResponse());
+        }
+    }
+
+    /** @return iterable<string, array{string, CourseContentType}> */
+    public static function freeMediaProfiles(): iterable
+    {
+        foreach (['anonymous', 'unsubscribed'] as $profile) {
+            foreach ([CourseContentType::Audio, CourseContentType::Video] as $type) {
+                yield $profile.'-'.$type->value => [$profile, $type];
+            }
+        }
+    }
+
+    #[DataProvider('freeMediaProfiles')]
+    public function testFreeMediaWithdrawalPrecedesHeadRangeAndValidators(string $profile, CourseContentType $type): void
+    {
+        $this->course->setContentType($type);
+        $this->em->flush();
+        $this->profile($profile);
+        $this->client->request('GET', $this->url($type->value));
+        self::assertResponseIsSuccessful();
+        self::assertSame(self::BYTES, $this->client->getInternalResponse()->getContent());
+        $lastModified = $this->client->getResponse()->headers->get('Last-Modified');
+        $this->em->find(Courses::class, $this->course->getId())->setIsFree(false);
+        $this->em->flush();
+        foreach (['GET' => [], 'HEAD' => [], 'Range' => ['HTTP_RANGE' => 'bytes=0-3'],
+            'modified' => ['HTTP_IF_MODIFIED_SINCE' => $lastModified], 'etag' => ['HTTP_IF_NONE_MATCH' => '*']] as $method => $headers) {
+            $this->client->request('HEAD' === $method ? 'HEAD' : 'GET', $this->url($type->value), server: $headers);
+            self::assertContains($this->client->getResponse()->getStatusCode(), [302, 403]);
+            self::assertNotInstanceOf(BinaryFileResponse::class, $this->client->getResponse());
+            self::assertFalse($this->client->getResponse()->headers->has('Content-Range'));
+            self::assertFalse($this->client->getResponse()->headers->has('Last-Modified'));
+            self::assertStringNotContainsString(self::BYTES, $this->client->getInternalResponse()->getContent());
         }
     }
 

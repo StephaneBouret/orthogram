@@ -68,7 +68,7 @@ final class CourseSearchController extends AbstractController
     #[Route('/course/details/{id}', name: 'app_course_details', methods: ['GET'])]
     public function details(Courses $course): JsonResponse
     {
-        $this->denyAccessUnlessGranted(CourseVoter::VIEW, $course, "Vous n'avez pas accès à ce cours.");
+        $this->denyAccessUnlessGranted(CourseVoter::INTERACT, $course, "Vous n'avez pas accès à ce cours.");
 
         return $this->json([
             'url' => $this->generateUrl('app_course_show', $this->getCourseRouteParameters($course)),

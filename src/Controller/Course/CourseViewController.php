@@ -6,6 +6,7 @@ use App\Entity\Comment;
 use App\Entity\Courses;
 use App\Entity\Program;
 use App\Entity\User;
+use App\Enum\CourseContentType;
 use App\Form\CommentFormType;
 use App\Repository\CommentRepository;
 use App\Repository\CoursesRepository;
@@ -69,13 +70,14 @@ final class CourseViewController extends AbstractController
             : null;
         $commentForm = $canInteract ? $this->createForm(CommentFormType::class, new Comment()) : null;
 
-        return $this->render('course/show.html.twig', [
+        $response = $this->render('course/show.html.twig', [
             'canInteract' => $canInteract,
             'program' => $program,
             'section' => $section,
             'course' => $course,
             'sections' => $sections,
-            'fileContent' => $this->courseFileService->getFileContent($course),
+            'fileContent' => in_array($course->getContentType(), [CourseContentType::Twig, CourseContentType::Link], true)
+                ? $this->courseFileService->getFileContent($course) : null,
             'previousCourse' => $navigation['previous'],
             'nextCourse' => $navigation['next'],
             'lesson' => $lesson,
@@ -90,6 +92,9 @@ final class CourseViewController extends AbstractController
             'userRootComment' => $userRootComment,
             'latestExerciceAttempt' => $latestExerciceAttempt,
         ]);
+        $response->headers->set('Cache-Control', 'private, no-store');
+
+        return $response;
     }
 
     /**

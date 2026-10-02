@@ -47,7 +47,7 @@
         <li class="list-group list-group-menu list-group-xs mb-6">
             <nav aria-label="{{ section.name }}">
                 <header class="d-flex align-items-center n2ymm7">
-                    <a href="{{ path('app_course_section', {'programSlug': program.slug, 'sectionSlug': section.slug}) }}" class="course-section-link{{ isCurrentSection ? ' is-active' : '' }}" data-action="course-menu#closeOnNavigate">
+                    <a href="{{ is_granted('SECTION_VIEW', section) ? path('app_course_section', {'programSlug': program.slug, 'sectionSlug': section.slug}) : path('app_course_program_summary', {slug: program.slug}) ~ '#section-' ~ section.id }}" class="course-section-link{{ isCurrentSection ? ' is-active' : '' }}" data-action="course-menu#closeOnNavigate">
                         <h2 class="h4 text-md mb-2">
                             {{ section.name }}
                         </h2>

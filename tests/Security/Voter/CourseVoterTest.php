@@ -8,6 +8,7 @@ use App\Entity\Program;
 use App\Entity\Sections;
 use App\Entity\Subscription;
 use App\Entity\User;
+use App\Enum\CourseContentType;
 use App\Enum\SubscriptionStatus;
 use App\Enum\UserAccountStatus;
 use App\Security\Voter\CourseVoter;
@@ -45,11 +46,13 @@ final class CourseVoterTest extends TestCase
             foreach ([[CourseVoter::VIEW, $course], [CourseVoter::INTERACT, $course],
                 [CourseVoter::INTERACT, $linked], [CourseVoter::INTERACT, new Exercice()],
                 [CourseVoter::SECTION_VIEW, $section], [CourseVoter::PROGRAM_VIEW, $program]] as [$attribute, $subject]) {
-                self::assertSame($allowed ? VoterInterface::ACCESS_GRANTED : VoterInterface::ACCESS_DENIED, $voter->vote($token, $subject, [$attribute]), $attribute);
+                $granted = $allowed || ($free && CourseVoter::VIEW === $attribute);
+                self::assertSame($granted ? VoterInterface::ACCESS_GRANTED : VoterInterface::ACCESS_DENIED, $voter->vote($token, $subject, [$attribute]), $attribute);
             }
         }
     }
 
+    /** @return iterable<string, array{string, bool}> */
     public static function profiles(): iterable
     {
         foreach (['anonymous', 'none', 'expired', 'future', 'active', 'lifetime', 'admin'] as $profile) {
@@ -99,6 +102,22 @@ final class CourseVoterTest extends TestCase
                 self::assertSame($supported ? VoterInterface::ACCESS_GRANTED : VoterInterface::ACCESS_ABSTAIN, $this->voter()->vote($token, $subject, [$attribute]));
             }
         }
+    }
+
+    public function testFreeContentTypesAndRememberMeWithoutSubscription(): void
+    {
+        $user = (new User())->setEmail('reader@example.test');
+        $section = (new Sections())->setProgram(new Program());
+        foreach (CourseContentType::cases() as $type) {
+            $course = (new Courses())->setContentType($type)->setSection($section)->setIsFree(true);
+            foreach ([new NullToken(), new RememberMeToken($user, 'main')] as $token) {
+                $expected = in_array($type, [CourseContentType::Quiz, CourseContentType::Exercise], true)
+                    ? VoterInterface::ACCESS_DENIED : VoterInterface::ACCESS_GRANTED;
+                self::assertSame($expected, $this->voter()->vote($token, $course, [CourseVoter::VIEW]));
+                self::assertSame(VoterInterface::ACCESS_DENIED, $this->voter()->vote($token, $course, [CourseVoter::INTERACT]));
+            }
+        }
+        self::assertSame(VoterInterface::ACCESS_DENIED, $this->voter()->vote(new NullToken(), (new Courses())->setIsFree(true), [CourseVoter::VIEW]));
     }
 
     private function voter(): CourseVoter

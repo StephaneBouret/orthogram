@@ -1,5 +1,7 @@
 <div class="main-content">
-    {{ render(controller('App\\Controller\\Course\\CourseSearchController::searchBar', { programSlug: program.slug })) }}
+    {% if canInteract %}
+        {{ render(controller('App\\Controller\\Course\\CourseSearchController::searchBar', { programSlug: program.slug })) }}
+    {% endif %}
 
     <div id="lesson-header">
         <div class="d-flex">
@@ -15,7 +17,7 @@
                                     <a href="{{ path('app_course_program_summary', {'slug': program.slug}) }}" class="text-muted">Sommaire</a>
                                 </li>
                                 <li class="breadcrumb-item">
-                                    <a href="{{ path('app_course_section', {'programSlug': program.slug, 'sectionSlug': section.slug}) }}" class="text-muted">Section</a>
+                                    <a href="{{ is_granted('SECTION_VIEW', section) ? path('app_course_section', {'programSlug': program.slug, 'sectionSlug': section.slug}) : path('app_course_program_summary', {slug: program.slug}) ~ '#section-' ~ section.id }}" class="text-muted">Section</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">Cours</li>
                             </ol>
@@ -47,8 +49,13 @@
     </div>
 
     <div id="lesson-content">
+        {% if course.freeLesson and not is_granted('PROGRAM_VIEW', program) %}<p class="badge text-bg-success">Cours gratuit</p>{% endif %}
         {% include 'course/show/_content.html.twig' %}
     </div>
+
+    {% if not canInteract %}
+        {% include 'course/program_summary/_discovery.html.twig' %}
+    {% endif %}
 
     {% if course.shortDescription %}
         <div class="spacer-section"></div>
@@ -60,7 +67,7 @@
     <div class="spacer-section"></div>
 
     <div id="lesson-navigation">
-        <nav class="btn-row justify-content-end" aria-label="Navigation du cours">
+        <nav class="course-navigation btn-row justify-content-end" aria-label="Navigation du cours">
             {% include 'course/show/_navigation.html.twig' %}
             {% if canInteract %}
                 {% include 'course/show/_completion_button.html.twig' %}
