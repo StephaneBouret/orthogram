@@ -1,3 +1,11 @@
+# Shared maintenance switch, outside the directory replaced by Hostinger publication.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond /home/u849885333/domains/orthogram.fr/.orthogram-maintenance -f
+    RewriteRule ^ - [R=503,L]
+</IfModule>
+ErrorDocument 503 "Maintenance en cours. Merci de reessayer dans quelques instants."
+
 # Use the front controller as index file. It serves as a fallback solution when
 # every other rewrite/redirect fails (e.g. in an aliased environment without
 # mod_rewrite). Additionally, this reduces the matching process for the

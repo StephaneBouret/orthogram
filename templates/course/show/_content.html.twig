@@ -13,7 +13,7 @@
 {% elseif contentType == 'audio' %}
     <div class="card v9d3ks course-media-card">
         <div class="card-body">
-            {% set audioPath = vich_uploader_asset(course, 'audioFile') %}
+            {% set audioPath = course.audioFileName ? path('app_course_media', {id: course.id, kind: 'audio'}) : null %}
             {% if audioPath %}
                 <audio class="course-audio-player" controls src="{{ audioPath }}">
                     Votre navigateur ne prend pas en charge la lecture audio.
@@ -38,7 +38,7 @@
 {% elseif contentType == 'video' %}
     <div class="card v9d3ks course-media-card">
         <div class="card-body">
-            {% set videoPath = vich_uploader_asset(course, 'videoFile') %}
+            {% set videoPath = course.videoName ? path('app_course_media', {id: course.id, kind: 'video'}) : null %}
             {% if videoPath %}
                 <video class="course-video-player" controls src="{{ videoPath }}">
                     Votre navigateur ne prend pas en charge la lecture vidéo.

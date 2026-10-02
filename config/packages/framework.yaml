@@ -1,5 +1,7 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
+    # Private course responses must be delivered by Symfony, including Range requests.
+    trust_x_sendfile_type_header: false
     secret: '%env(APP_SECRET)%'
     csrf_protection: ~
     exceptions:

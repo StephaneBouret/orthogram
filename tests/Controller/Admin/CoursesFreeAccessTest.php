@@ -195,7 +195,7 @@ final class CoursesFreeAccessTest extends WebTestCase
     public function testFreeCreationKeepsUploadDurationAndCourseOrdering(): void
     {
         $source = tempnam(sys_get_temp_dir(), 'orthogram_free_');
-        $directory = dirname(__DIR__, 3).'/public/courses/files/';
+        $directory = $_SERVER['COURSE_STORAGE_DIR'].'/files/';
         $beforeFiles = glob($directory.'lot1-gratuite-test-*.html.twig');
         $content = '<p>'.str_repeat('orthographe ', 181).'</p>';
         file_put_contents($source, $content);

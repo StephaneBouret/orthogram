@@ -1,0 +1,2 @@
+# Legacy static files only. Do not deny the application route prefix /courses.
+Require all denied

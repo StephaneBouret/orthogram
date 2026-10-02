@@ -7,6 +7,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    app.course_storage_default: '%kernel.project_dir%/private/courses'
+    app.course_storage_dir: '%env(resolve:default:app.course_storage_default:COURSE_STORAGE_DIR)%'
     app.hostname: '%env(APP_HOSTNAME)%'
     app.support_email: '%env(APP_SUPPORT_EMAIL)%'
 

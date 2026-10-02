@@ -1,5 +1,6 @@
 
 ###> symfony/framework-bundle ###
+/.htaccess
 /.env.local
 /.env.local.php
 /.env.*.local
@@ -29,17 +30,21 @@
 ###< uploaded images ###
 
 ###> uploaded courses ###
+/private/courses/
 /public/courses/*
 !/public/courses/.htaccess
 !/public/courses/files/
 /public/courses/files/*
 !/public/courses/files/.gitkeep
+!/public/courses/files/.htaccess
 !/public/courses/audios/
 /public/courses/audios/*
 !/public/courses/audios/.gitkeep
+!/public/courses/audios/.htaccess
 !/public/courses/videos/
 /public/courses/videos/*
 !/public/courses/videos/.gitkeep
+!/public/courses/videos/.htaccess
 ###< uploaded courses ###
 
 /prep_cours

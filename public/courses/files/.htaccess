@@ -1,0 +1,2 @@
+# Legacy static files only. This is not a substitute for checking all web roots/aliases.
+Require all denied
