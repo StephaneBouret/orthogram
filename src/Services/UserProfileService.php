@@ -47,6 +47,7 @@ final class UserProfileService
 
     private function anonymizeAccount(User $user): void
     {
+        $user->clearCourseBookmark();
         if ($user->isAnonymized()) {
             return;
         }

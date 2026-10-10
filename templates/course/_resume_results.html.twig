@@ -1,0 +1,3 @@
+<div data-course-resume data-bookmark-account="{{ app.user ? app.user.id : '' }}" data-bookmark-version="{{ app.user ? app.user.courseBookmarkVersion : 0 }}">
+    {% if resumeCourse %}<div class="mb-4">{% include 'course/_resume_link.html.twig' %}</div>{% endif %}
+</div>

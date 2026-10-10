@@ -14,6 +14,8 @@
             <p class="results-muted mb-0">Retrouvez vos derniers scores et suivez votre évolution.</p>
         </header>
 
+        {% include 'course/_resume_results.html.twig' %}
+
         {% for section in sections %}
             <section class="mb-5" aria-labelledby="results-section-{{ section.id }}">
                 <details class="results-section" open>

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Services\Courses\CourseBookmarkService;
 use App\Services\QuizResultsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,6 +18,10 @@ use Symfony\UX\Chartjs\Model\Chart;
 #[IsGranted('ROLE_USER')]
 final class QuizResultsController extends AbstractController
 {
+    public function __construct(private readonly CourseBookmarkService $bookmarks)
+    {
+    }
+
     #[Route('/mes-resultats', name: 'app_quiz_results', methods: ['GET'])]
     public function index(QuizResultsService $results, ChartBuilderInterface $chartBuilder): Response
     {
@@ -36,7 +41,7 @@ final class QuizResultsController extends AbstractController
             }
         }
 
-        return $this->render('quiz_results/index.html.twig', ['sections' => $sections, 'archives' => $archives],
+        return $this->render('quiz_results/index.html.twig', ['sections' => $sections, 'archives' => $archives, 'resumeCourse' => $this->bookmarks->current()],
             new Response(headers: ['Cache-Control' => 'private, no-store']));
     }
 
@@ -48,6 +53,7 @@ final class QuizResultsController extends AbstractController
         $group = $results->history($this->positiveId($anchor), $selectedId);
 
         return $this->render('quiz_results/history.html.twig', [
+            'resumeCourse' => $this->bookmarks->current(),
             'group' => $group, 'selected' => $group['selected'],
             'evolution' => $this->evolution($chartBuilder, $group['history'], $group['selected']['attemptId']),
             'ring' => $this->doughnut($chartBuilder, $group['selected']),
@@ -128,6 +134,6 @@ final class QuizResultsController extends AbstractController
             throw new HttpException($error instanceof NotFoundHttpException ? 404 : 403, 'Correction indisponible.', headers: $headers);
         }
 
-        return $this->render('quiz_results/correction.html.twig', ['correction' => $correction], new Response(headers: $headers));
+        return $this->render('quiz_results/correction.html.twig', ['correction' => $correction, 'resumeCourse' => $this->bookmarks->current()], new Response(headers: $headers));
     }
 }

@@ -19,8 +19,10 @@ import ClickWordsController from './controllers/click_words_controller.js';
 import LearningReminderController from './controllers/learning_reminder_controller.js';
 import QuizController from './controllers/quiz_controller.js';
 import ResultChartController from './controllers/result_chart_controller.js';
+import CourseBookmarkController from './controllers/course_bookmark_controller.js';
 
 const app = startStimulusApp();
+app.register('course-bookmark', CourseBookmarkController);
 app.register('result-chart', ResultChartController);
 // register any custom, 3rd party controllers here
 // app.register('some_controller_name', SomeImportedController);

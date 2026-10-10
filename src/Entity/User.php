@@ -29,6 +29,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\ManyToOne(targetEntity: Courses::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Courses $lastVisitedCourse = null;
+
+    #[ORM\Column(options: ['default' => 0])]
+    private int $courseBookmarkVersion = 0;
+
     #[ORM\Column(length: 180)]
     #[Assert\NotBlank(
         message: 'Merci d\'indiquer votre adresse email.',
@@ -187,6 +194,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getLastVisitedCourse(): ?Courses
+    {
+        return $this->lastVisitedCourse;
+    }
+
+    public function getCourseBookmarkVersion(): int
+    {
+        return $this->courseBookmarkVersion;
+    }
+
+    public function clearCourseBookmark(): void
+    {
+        $this->lastVisitedCourse = null;
+        ++$this->courseBookmarkVersion;
+    }
+
+    public function setLastVisitedCourse(?Courses $course): static
+    {
+        $this->lastVisitedCourse = $course;
+
+        return $this;
     }
 
     public function getEmail(): ?string
@@ -379,6 +409,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     public function __serialize(): array
     {
         $data = (array) $this;
+        // Navigation is reloaded from Doctrine, never from a session snapshot.
+        unset($data["\0".self::class."\0lastVisitedCourse"]);
+        unset($data["\0".self::class."\0courseBookmarkVersion"]);
         if (null !== $this->password) {
             $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
         }

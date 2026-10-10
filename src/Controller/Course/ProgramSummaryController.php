@@ -9,6 +9,7 @@ use App\Repository\LearningReminderRepository;
 use App\Repository\LessonRepository;
 use App\Repository\SectionsRepository;
 use App\Security\Voter\CourseVoter;
+use App\Services\Courses\CourseBookmarkService;
 use App\Services\Courses\SectionCompletionService;
 use App\Services\Courses\SectionDurationService;
 use App\Services\LearningReminderViewService;
@@ -28,6 +29,7 @@ final class ProgramSummaryController extends AbstractController
         private readonly LessonRepository $lessonRepository,
         private readonly LearningReminderRepository $learningReminderRepository,
         private readonly LearningReminderViewService $learningReminderViewService,
+        private readonly CourseBookmarkService $bookmarks,
     ) {
     }
 
@@ -55,6 +57,7 @@ final class ProgramSummaryController extends AbstractController
             : null;
 
         $response = $this->render('course/program_summary.html.twig', [
+            'resumeCourse' => $this->bookmarks->current(),
             'canInteract' => $canInteract,
             'program' => $program,
             'sections' => $sections,

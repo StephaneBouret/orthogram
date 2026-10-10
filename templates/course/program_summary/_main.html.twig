@@ -58,6 +58,19 @@
         </div>
     </div>
 
+    <div data-course-resume data-bookmark-account="{{ app.user ? app.user.id : '' }}" data-bookmark-version="{{ app.user ? app.user.courseBookmarkVersion : 0 }}">
+    {% if resumeCourse %}
+        <section class="card spacer-section" aria-labelledby="resume-course-title">
+            <div class="card-body">
+                <h2 id="resume-course-title" class="h4">Reprendre ma formation</h2>
+                <p class="text-break mb-1">{{ resumeCourse.section.name }}</p>
+                <p class="text-break fw-semibold">{{ resumeCourse.name }}</p>
+                {% include 'course/_resume_link.html.twig' with {resumeLabel: 'Reprendre ce cours'} %}
+            </div>
+        </section>
+    {% endif %}
+    </div>
+
     <section class="program-summary-overview spacer-section" aria-label="Présentation de la formation">
         {% if program.description %}
             <div class="program-summary-lead">

@@ -1,0 +1,6 @@
+{% if resumeCourse %}
+    <a class="btn btn-course-resume btn-lg text-wrap" data-turbo-prefetch="false"
+       href="{{ path('app_course_show', {programSlug: resumeCourse.section.program.slug, sectionSlug: resumeCourse.section.slug, courseSlug: resumeCourse.slug}) }}">
+        {{ resumeLabel|default('Reprendre mon cours') }}
+    </a>
+{% endif %}

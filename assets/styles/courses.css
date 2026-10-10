@@ -3055,6 +3055,24 @@ html[data-bs-theme="dark"] .word-token--missed {
     }
 }
 
+.btn-course-resume {
+    --bs-btn-color: #111827;
+    --bs-btn-bg: var(--orthogram-brand);
+    --bs-btn-border-color: var(--orthogram-brand);
+    --bs-btn-hover-color: #111827;
+    --bs-btn-hover-bg: var(--orthogram-brand-hover);
+    --bs-btn-hover-border-color: var(--orthogram-brand-hover);
+    --bs-btn-active-color: #111827;
+    --bs-btn-active-bg: var(--orthogram-brand-hover);
+    --bs-btn-active-border-color: var(--orthogram-brand-hover);
+}
+
+.btn-course-resume:focus-visible {
+    outline: 3px solid var(--orthogram-text);
+    outline-offset: 3px;
+    box-shadow: none;
+}
+
 .program-course-content-heading {
     align-items: end;
     display: flex;
