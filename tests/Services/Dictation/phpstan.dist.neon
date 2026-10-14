@@ -1,0 +1,6 @@
+includes:
+    - ../../../phpstan.dist.neon
+
+parameters:
+    # Repository ignores concern controllers/entities outside this targeted run.
+    reportUnmatchedIgnoredErrors: false
