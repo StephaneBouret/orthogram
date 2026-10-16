@@ -2,6 +2,7 @@
 
 namespace App\Services\Courses;
 
+use App\Entity\Courses;
 use App\Entity\Sections;
 
 final class SectionCompletionService
@@ -14,7 +15,6 @@ final class SectionCompletionService
      */
     public function calculate(iterable $sections, array $completedCourseIds): array
     {
-        $completedIds = array_fill_keys($completedCourseIds, true);
         $completion = [];
 
         foreach ($sections as $section) {
@@ -22,17 +22,26 @@ final class SectionCompletionService
                 continue;
             }
 
-            $isComplete = !$section->getCourses()->isEmpty();
-            foreach ($section->getCourses() as $course) {
-                if (!isset($completedIds[$course->getId()])) {
-                    $isComplete = false;
-                    break;
-                }
-            }
-
-            $completion[$section->getId()] = $isComplete;
+            $completion[$section->getId()] = $this->areCoursesComplete($section->getCourses(), $completedCourseIds);
         }
 
         return $completion;
+    }
+
+    /** @param iterable<Courses> $courses
+     * @param list<int> $completedCourseIds
+     */
+    public function areCoursesComplete(iterable $courses, array $completedCourseIds): bool
+    {
+        $completedIds = array_fill_keys($completedCourseIds, true);
+        $hasCourses = false;
+        foreach ($courses as $course) {
+            $hasCourses = true;
+            if (!isset($completedIds[$course->getId()])) {
+                return false;
+            }
+        }
+
+        return $hasCourses;
     }
 }

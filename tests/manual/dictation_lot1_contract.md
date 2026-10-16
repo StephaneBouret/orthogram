@@ -1,5 +1,9 @@
 # Moteur de correction des dictées
 
+La persistance et les transitions serveur ajoutées au lot 2A sont décrites dans
+[dictation_lot2a_contract.md](dictation_lot2a_contract.md). Le contexte des lots
+suivants en fin de ce document décrit les décisions et l'état à la livraison du lot 1.
+
 Le contrat **`orthogram-dictation-v1`** applique les règles pédagogiques validées
 par Caroline et Stéphane : une erreur par unité, accents et majuscules évalués,
 ajout/omission à un point, fusion/scission à un point sans double pénalisation,
