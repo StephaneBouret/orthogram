@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ writing.title }} — Orthogram{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/dictation.css') }}">
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <meta name="turbo-cache-control" content="no-cache">
+{% endblock %}
+{% block body %}
+<main class="container py-4 dictation-page" data-controller="dictation-writing"
+      data-dictation-writing-url-value="{{ path('app_dictation_save', {id: writing.attemptId}) }}"
+      data-dictation-writing-token-value="{{ csrf_token('dictation_save_' ~ writing.attemptId) }}"
+      data-dictation-writing-revision-value="{{ writing.revision }}"
+      data-dictation-writing-segments-value="{{ writing.segments|json_encode|e('html_attr') }}">
+    <h1>{{ writing.title }}</h1>
+    <noscript><p class="alert alert-warning">Activez JavaScript pour écrire, écouter et enregistrer votre copie.</p></noscript>
+    <div class="row g-4">
+        <section class="col-lg-8" aria-label="Écriture">
+            <label class="form-label" for="dictation-copy">Votre copie</label>
+            <textarea id="dictation-copy" class="form-control" rows="14" disabled
+                      spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off"
+                      aria-describedby="dictation-count dictation-save dictation-shortcuts"
+                      data-dictation-writing-target="copy" data-action="input->dictation-writing#input">{{ "\n" ~ writing.draft }}</textarea>
+            <p id="dictation-count" class="mt-2" data-dictation-writing-target="count">Avancement : {{ writing.wordCount }} / {{ writing.referenceWordCount }} mots</p>
+            <div class="dictation-characters d-flex flex-wrap gap-1" role="group" aria-label="Insérer un caractère spécial">
+                {% for character in ['À', 'Â', 'Ä', 'æ', 'Æ', 'Ç', 'É', 'È', 'Ê', 'Ë', 'Î', 'Ï', 'Ô', 'Ö', 'œ', 'Œ', 'Ù', 'Û', 'Ü', '«', '»', '…'] %}
+                    <button type="button" class="btn btn-outline-secondary" data-character="{{ character }}" data-action="click->dictation-writing#insert" aria-label="Insérer {{ character }}">{{ character }}</button>
+                {% endfor %}
+            </div>
+            <p id="dictation-save" class="mt-3" role="status" aria-live="polite" data-dictation-writing-target="status">Enregistré</p>
+            <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-primary" hidden data-dictation-writing-target="retry" data-action="dictation-writing#retry">Réessayer l’enregistrement</button>
+                <button type="button" class="btn btn-outline-secondary" hidden data-dictation-writing-target="recovery" data-action="dictation-writing#recover">Télécharger ma copie</button>
+            </div>
+        </section>
+        <section class="col-lg-4" aria-label="Écoute de la dictée">
+            <div class="card"><div class="card-body">
+                <h2 class="h4">Écoute</h2>
+                <audio preload="none" data-dictation-writing-target="complete" src="{{ path('app_dictation_audio', {id: writing.attemptId, role: 'complete'}) }}"></audio>
+                <audio preload="none" data-dictation-writing-target="writing" src="{{ path('app_dictation_audio', {id: writing.attemptId, role: 'writing'}) }}"></audio>
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <h3 class="h6 mb-0">Écoute complète</h3>
+                    <button type="button" class="btn btn-outline-primary dictation-audio-toggle" data-action="dictation-writing#full" data-dictation-writing-target="fullButton" aria-label="Lire l’écoute complète" title="Lire l’écoute complète">
+                        <i class="bi bi-play-fill" aria-hidden="true" data-audio-icon></i>
+                    </button>
+                </div>
+                <label class="form-label" for="dictation-segment">Piste d’écriture — segment</label>
+                <select id="dictation-segment" class="form-select mb-3" data-dictation-writing-target="select" data-action="change->dictation-writing#select">
+                    {% for segment in writing.segments %}<option value="{{ loop.index0 }}">Segment {{ loop.index }} / {{ writing.segments|length }}</option>{% endfor %}
+                </select>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-outline-secondary" data-dictation-writing-target="previous" data-action="dictation-writing#previous" aria-keyshortcuts="Shift+F8">Précédent</button>
+                    <button type="button" class="btn btn-primary dictation-audio-toggle" data-dictation-writing-target="playButton" data-action="dictation-writing#toggle" aria-label="Lire le segment 1" title="Lire le segment 1" aria-keyshortcuts="F8">
+                        <i class="bi bi-play-fill" aria-hidden="true" data-audio-icon></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" data-dictation-writing-target="next" data-action="dictation-writing#next" aria-keyshortcuts="Control+F8">Suivant</button>
+                    <button type="button" class="btn btn-outline-secondary" data-action="dictation-writing#replay">Réécouter le segment</button>
+                </div>
+                <p class="mt-3" role="status" data-dictation-writing-target="audioStatus">Choisissez quand lancer la lecture.</p>
+            </div></div>
+            <p class="small mt-3" id="dictation-shortcuts">Cliquez dans la zone “Votre copie” pour utiliser les raccourcis : F8 pour lire ou suspendre le segment, Maj + F8 pour le précédent, Ctrl + F8 pour le suivant. Selon votre clavier, maintenez aussi Fn. Vous pouvez également utiliser les boutons du lecteur. La lecture s’arrête à la fin de chaque segment.</p>
+        </section>
+    </div>
+</main>
+{% endblock %}

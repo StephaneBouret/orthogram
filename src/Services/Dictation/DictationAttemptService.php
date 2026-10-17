@@ -17,7 +17,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-/** Internal application boundary; no learner route is installed in lot 2A. */
+/** Shared transactional workflow; the writing-only boundary never projects feedback. */
 final class DictationAttemptService
 {
     public function __construct(
@@ -31,9 +31,9 @@ final class DictationAttemptService
     /** The caller supplies the authenticated actor, never a user/version from a request body.
      * @return array<string, mixed>
      */
-    public function start(User $actor, int $dictationId): array
+    public function start(User $actor, int $dictationId, bool $writingOnly = false): array
     {
-        return $this->em->wrapInTransaction(function () use ($actor, $dictationId): array {
+        return $this->em->wrapInTransaction(function () use ($actor, $dictationId, $writingOnly): array {
             $this->lockActor($actor);
             $dictation = $this->em->find(Dictation::class, $dictationId, LockMode::PESSIMISTIC_READ);
             if (null === $dictation) {
@@ -52,37 +52,46 @@ final class DictationAttemptService
                     throw new ConflictHttpException('Aucune version éditoriale figée.');
                 }
                 $attempt = new DictationAttempt($actor, $version, $progress['started']);
+                if ($writingOnly) {
+                    $this->writingProjection($attempt);
+                }
                 $this->em->persist($attempt);
                 $this->em->flush();
             }
 
-            return $this->present($attempt, $progress['complete']);
+            return $writingOnly ? $this->writingProjection($attempt) : $this->present($attempt, $progress['complete']);
         });
     }
 
     /** @return array<string, mixed> */
-    public function state(User $actor, int $attemptId): array
+    public function state(User $actor, int $attemptId, bool $writingOnly = false): array
     {
-        return $this->em->wrapInTransaction(function () use ($actor, $attemptId): array {
+        return $this->em->wrapInTransaction(function () use ($actor, $attemptId, $writingOnly): array {
             $this->lockActor($actor);
             $attempt = $this->owned($actor, $attemptId);
             $progress = $this->progress->read($actor, $attempt->getDictation()->getSection());
 
-            return $this->present($attempt, $progress['complete']);
+            return $writingOnly ? $this->writingProjection($attempt) : $this->present($attempt, $progress['complete']);
         });
     }
 
     /** @return array<string, mixed> */
-    public function transition(User $actor, int $attemptId, DictationAction $action, int $expectedRevision, ?string $copy = null): array
+    public function transition(User $actor, int $attemptId, DictationAction $action, int $expectedRevision, ?string $copy = null, bool $writingOnly = false): array
     {
-        return $this->em->wrapInTransaction(function () use ($actor, $attemptId, $action, $expectedRevision, $copy): array {
+        return $this->em->wrapInTransaction(function () use ($actor, $attemptId, $action, $expectedRevision, $copy, $writingOnly): array {
             $this->lockActor($actor);
             $attempt = $this->owned($actor, $attemptId);
+            if ($writingOnly) {
+                $this->writingProjection($attempt);
+                if (DictationAction::Save !== $action) {
+                    throw new ConflictHttpException('Seul l’enregistrement est disponible.');
+                }
+            }
             $progress = $this->progress->read($actor, $attempt->getDictation()->getSection());
             $attempt->transition($action, $expectedRevision, $copy, $progress['complete'], $progress['started'], $this->engine, $this->tokenizer);
             $this->em->flush();
 
-            return $this->present($attempt, $progress['complete']);
+            return $writingOnly ? $this->writingProjection($attempt) : $this->present($attempt, $progress['complete']);
         });
     }
 
@@ -95,6 +104,26 @@ final class DictationAttemptService
         if (!$actor->isAccountActive()) {
             throw new AccessDeniedHttpException('Compte inactif.');
         }
+    }
+
+    /** Explicit learner allowlist, checked under the same lock as SAVE (before receipt replay).
+     * @return array<string, mixed>
+     */
+    private function writingProjection(DictationAttempt $attempt): array
+    {
+        $version = $attempt->getVersion();
+        if (DictationState::Writing !== $attempt->getState()) {
+            throw new ConflictHttpException('Cette tentative n’est plus dans la phase d’écriture initiale.');
+        }
+        if (null === $version->getCompleteAudio() || null === $version->getWritingAudio() || [] === $version->getSegments()) {
+            throw new ConflictHttpException('Cette version ne dispose pas encore des pistes et segments nécessaires.');
+        }
+
+        return ['attemptId' => $attempt->getId(), 'revision' => $attempt->getRevision(),
+            'title' => $version->getTitle(), 'draft' => $attempt->getDraft(),
+            'wordCount' => $this->tokenizer->countWords($attempt->getDraft()),
+            'referenceWordCount' => $this->tokenizer->countWords($version->getCanonicalText()),
+            'segments' => $version->getSegments()];
     }
 
     private function owned(User $actor, int $attemptId): DictationAttempt

@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+{% block title %}Commencer la dictée — Orthogram{% endblock %}
+{% block body %}
+<main class="container py-5">
+    <h1>Votre dictée</h1>
+    <p>Écoutez les pistes et écrivez votre copie. Votre saisie sera enregistrée automatiquement.</p>
+    <form method="post" action="{{ path('app_dictation_start', {id: dictationId}) }}" data-turbo="false">
+        <input type="hidden" name="_token" value="{{ csrf_token('dictation_start_' ~ dictationId) }}">
+        <button class="btn btn-primary" type="submit">Commencer ou retrouver ma copie</button>
+    </form>
+</main>
+{% endblock %}

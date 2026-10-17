@@ -1,0 +1,15 @@
+.dictation-page textarea { min-height: 24rem; resize: vertical; line-height: 1.8; }
+.dictation-page .card, .dictation-page .form-control, .dictation-page .form-select {
+    color: var(--bs-body-color); background-color: var(--bs-body-bg);
+    border-color: var(--bs-border-color);
+}
+.dictation-characters .btn { min-width: 2.75rem; min-height: 2.75rem; }
+.dictation-page .btn { min-height: 44px; }
+.dictation-page .form-select { min-height: 44px; }
+.dictation-audio-toggle { min-width: 44px; display: inline-flex; align-items: center; justify-content: center; }
+.dictation-audio-toggle .bi { font-size: 1.4rem; line-height: 1; }
+.dictation-page .btn:focus-visible { outline: 3px solid var(--bs-emphasis-color); outline-offset: 3px; }
+.dictation-page .btn-outline-secondary { --bs-btn-color: var(--bs-body-color); --bs-btn-border-color: var(--bs-secondary-color); }
+.dictation-page .btn-outline-primary { --bs-btn-color: var(--bs-link-color); --bs-btn-border-color: var(--bs-link-color); }
+.dictation-page [hidden] { display: none !important; }
+@media (max-width: 991px) { .dictation-page textarea { min-height: 12rem; height: 14rem; } }
