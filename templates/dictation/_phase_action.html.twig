@@ -1,0 +1,10 @@
+<div class="mt-3" data-controller="dictation-phase"
+     data-dictation-phase-url-value="{{ path('app_dictation_' ~ action, {id: writing.attemptId}) }}"
+     data-dictation-phase-token-value="{{ csrf_token('dictation_' ~ action ~ '_' ~ writing.attemptId) }}"
+     data-dictation-phase-revision-value="{{ writing.revision }}"
+     data-dictation-phase-action-value="{{ action }}">
+    {% if action == 'finalize' %}<p>Cette action rendra votre copie définitive et ouvrira le corrigé.</p>{% endif %}
+    <button type="button" disabled class="btn btn-primary" data-dictation-phase-target="button" data-action="dictation-phase#submit">{{ label }}</button>
+    <p role="status" aria-live="polite" data-dictation-phase-target="status"></p>
+    <noscript><p>Activez JavaScript pour continuer.</p></noscript>
+</div>

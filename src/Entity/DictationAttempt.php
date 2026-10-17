@@ -108,6 +108,10 @@ class DictationAttempt
     /** Only called with server-derived completion under the persistence service's transaction. */
     public function transition(DictationAction $action, int $expectedRevision, ?string $copy, bool $coursesComplete, bool $sectionStarted, DictationCorrector $engine, DictationTokenizer $tokenizer): void
     {
+        // An old receipt never grants access after a course validation was revoked.
+        if (in_array($action, [DictationAction::Resume, DictationAction::Finalize], true)) {
+            $this->requireCourses($coursesComplete);
+        }
         $receipt = hash('sha256', json_encode([$action->value, $expectedRevision, $copy], JSON_THROW_ON_ERROR));
         if (($this->receipts[$action->value] ?? null) === $receipt) {
             return;

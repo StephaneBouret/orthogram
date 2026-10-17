@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller\Course;
 
+use App\Entity\Courses;
 use App\Entity\DictationAttempt;
 use App\Entity\DictationVersion;
+use App\Entity\Lesson;
 use App\Entity\Subscription;
 use App\Entity\User;
-use App\Enum\DictationAction;
+use App\Enum\LessonStatus;
 use App\Enum\SubscriptionStatus;
 use App\Enum\UserAccountStatus;
 use App\Services\Dictation\DictationCorrector;
@@ -244,7 +246,7 @@ final class DictationControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame($status);
         $this->save($url, $token, 0, 'Refusé');
         self::assertResponseStatusCodeSame($status);
-        foreach (['evaluer', 'terminer'] as $action) {
+        foreach (['evaluer', 'terminer', 'reprendre', 'finaliser'] as $action) {
             $this->submitTransition($url, $action, $token, 0, 'Refusé');
             self::assertResponseStatusCodeSame($status);
         }
@@ -276,32 +278,6 @@ final class DictationControllerTest extends WebTestCase
         self::assertSelectorTextSame('#dictation-copy', 'Valide');
     }
 
-    #[DataProvider('futurePhases')]
-    public function testFuturePhasesAreUnavailableIncludingSaveReplayAndAudio(string $phase): void
-    {
-        [$url, $token] = $this->start();
-        $other = self::$database->manager();
-        $attempt = $other->getRepository(DictationAttempt::class)->findOneBy(['user' => $this->user->getId()]);
-        DictationFactory::service($other)->transition($attempt->getUser(), $attempt->getId(), DictationAction::Evaluate, 0, 'Copie différente.');
-        // Simulate a future phase only in the isolated database: no learner route may expose it.
-        $other->getConnection()->executeStatement('UPDATE dictation_attempt SET state = ? WHERE id = ?', [$phase, $attempt->getId()]);
-        $this->client->request('GET', $url);
-        self::assertResponseStatusCodeSame(409);
-        $this->save($url, $token, 1, 'Modifiée');
-        self::assertResponseStatusCodeSame(409);
-        $this->client->request('GET', $url.'/audio/writing');
-        self::assertResponseStatusCodeSame(409);
-        $other->close();
-    }
-
-    /** @return iterable<array{string}> */
-    public static function futurePhases(): iterable
-    {
-        yield ['resuming'];
-        yield ['reviewing'];
-        yield ['completed'];
-    }
-
     public function testLegacyPublishedVersionWithoutMediaDoesNotCreateAttempt(): void
     {
         // Reproduce a pre-2B row only inside the disposable database.
@@ -315,7 +291,7 @@ final class DictationControllerTest extends WebTestCase
         $other->close();
     }
 
-    private function submitTransition(string $url, string $action, string $token, int $revision, string $copy): void
+    private function submitTransition(string $url, string $action, string $token, int $revision, ?string $copy): void
     {
         $this->client->request('POST', $url.'/'.$action, server: ['CONTENT_TYPE' => 'application/json', 'HTTP_X_CSRF_TOKEN' => $token], content: json_encode(['revision' => $revision, 'copy' => $copy], JSON_THROW_ON_ERROR));
     }
@@ -323,6 +299,229 @@ final class DictationControllerTest extends WebTestCase
     private function transitionToken(): string
     {
         return $this->client->getCrawler()->filter('[data-dictation-writing-transition-token-value]')->attr('data-dictation-writing-transition-token-value');
+    }
+
+    private function lessons(bool $done): void
+    {
+        $em = self::$database->manager();
+        $user = $em->find(User::class, $this->user->getId());
+        $courses = $em->createQueryBuilder()->select('c')->from(Courses::class, 'c')
+            ->where('c.section = :section')->setParameter('section', $this->version->getDictation()->getSection()->getId())->getQuery()->getResult();
+        foreach ($courses as $course) {
+            $lesson = $em->createQueryBuilder()->select('l')->from(Lesson::class, 'l')
+                ->where('l.user = :user AND l.course = :course')->setParameter('user', $user)->setParameter('course', $course)->getQuery()->getOneOrNullResult()
+                ?? (new Lesson())->setName('Validation isolée')->setUser($user)->setCourse($course);
+            $lesson->setStatus($done ? LessonStatus::DONE : LessonStatus::STUDY);
+            $em->persist($lesson);
+        }
+        $em->flush();
+        $em->close();
+    }
+
+    private function phaseToken(): string
+    {
+        return $this->client->getCrawler()->filter('[data-dictation-phase-token-value]')->attr('data-dictation-phase-token-value');
+    }
+
+    #[DataProvider('postCourseCases')]
+    public function testPostCourseJourney(bool $initialPerfect, string $closed, bool $reviewing, bool $explanations): void
+    {
+        if (!$explanations) {
+            $editor = new DictationEditorialService($this->em, new DictationCorrector(), DictationAudioFixture::storage());
+            $next = $editor->cloneVersion($this->version, $this->version->getRevision());
+            $next->edit('Sans explications', 'L’école ouvre.', null);
+            $editor->saveDraft($next, $next->getRevision());
+            $editor->publish($next, $next->getRevision());
+        }
+        [$url, $saveToken] = $this->start();
+        $evaluateToken = $this->transitionToken();
+        $initial = $initialPerfect ? 'L’école ouvre.' : 'L’ ouvre.';
+        $this->submitTransition($url, 'evaluer', $evaluateToken, 0, $initial);
+        self::assertResponseIsSuccessful();
+        $revision = 1;
+        if (!$initialPerfect) {
+            $this->client->request('GET', $url);
+            $this->submitTransition($url, 'terminer', $this->transitionToken(), $revision++, $closed);
+            self::assertResponseIsSuccessful();
+        }
+        $this->client->request('GET', $url);
+        self::assertSelectorNotExists('[data-controller="dictation-phase"]');
+        self::assertSelectorTextContains('main', 'après validation');
+        $this->lessons(false); // STUDY/visits do not unlock Resume.
+        $this->client->request('GET', $url);
+        self::assertSelectorNotExists('[data-controller="dictation-phase"]');
+        $this->lessons(true);
+        $this->client->request('GET', $url);
+        $resumeToken = $this->phaseToken();
+        self::assertSelectorExists('#dictation-closed-copy'); // GET never resumes.
+        $this->lessons(false);
+        $this->submitTransition($url, 'reprendre', $resumeToken, $revision, null);
+        self::assertResponseStatusCodeSame(409);
+        $this->lessons(true);
+        foreach (['reprendre', 'finaliser'] as $action) {
+            $this->client->request('GET', $url.'/'.$action);
+            self::assertResponseStatusCodeSame(405);
+            $this->submitTransition($url, $action, 'invalid', $revision, null);
+            self::assertResponseStatusCodeSame(403);
+        }
+        $this->submitTransition($url, 'reprendre', $resumeToken, $revision, null);
+        self::assertResponseIsSuccessful();
+        $resumeRevision = $revision++;
+        $this->submitTransition($url, 'reprendre', $resumeToken, $resumeRevision, null);
+        self::assertResponseIsSuccessful();
+        $this->client->request('GET', $url);
+        $finalToken = $reviewing ? $this->phaseToken() : $this->transitionToken();
+        self::assertSelectorNotExists('[data-dictation-writing-issues-value]');
+        self::assertSelectorNotExists('#dictation-corrected-text');
+        self::assertStringNotContainsString('SECRET_CORRECTION_TEST', $this->client->getResponse()->getContent());
+        if ($reviewing) {
+            self::assertSelectorNotExists('#dictation-copy');
+            self::assertSelectorTextContains('main', 'sans nouvelle saisie');
+            $finalCopy = null;
+            $this->submitTransition($url, 'finaliser', $finalToken, $revision, 'Copie interdite');
+            self::assertResponseStatusCodeSame(422);
+        } else {
+            self::assertSelectorTextSame('#dictation-copy', $closed);
+            self::assertSelectorTextContains('label[for="dictation-copy"]', 'Votre dictée après les cours');
+            $this->client->request('HEAD', $url.'/audio/writing');
+            self::assertResponseIsSuccessful();
+            $this->save($url, $saveToken, $revision, 'Brouillon après cours');
+            self::assertResponseIsSuccessful();
+            $this->save($url, $saveToken, $revision++, 'Brouillon après cours');
+            self::assertResponseIsSuccessful();
+            $this->client->request('GET', $url);
+            self::assertSelectorTextSame('#dictation-copy', 'Brouillon après cours');
+            $finalCopy = "Erreur restante.\n<script>copie</script>";
+            $this->submitTransition($url, 'finaliser', $finalToken, $revision - 1, $finalCopy);
+            self::assertResponseStatusCodeSame(409);
+        }
+        // A new publication cannot replace the version attached to this attempt.
+        $other = self::$database->manager();
+        $attempt = $other->getRepository(DictationAttempt::class)->findOneBy(['user' => $this->user->getId()]);
+        $source = $attempt->getVersion();
+        $editor = new DictationEditorialService($other, new DictationCorrector(), DictationAudioFixture::storage());
+        $next = $editor->cloneVersion($source, $source->getRevision());
+        $next->edit('Nouvelle publication', 'NOUVELLE_REFERENCE.', 'NOUVELLES_EXPLICATIONS');
+        $editor->saveDraft($next, $next->getRevision());
+        $editor->publish($next, $next->getRevision());
+        $other->close();
+        $this->lessons(false);
+        $this->submitTransition($url, 'finaliser', $finalToken, $revision, $finalCopy);
+        self::assertResponseStatusCodeSame(409);
+        $this->lessons(true);
+        $this->submitTransition($url, 'finaliser', $finalToken, $revision, $finalCopy);
+        self::assertResponseIsSuccessful();
+        $this->submitTransition($url, 'finaliser', $finalToken, $revision, $finalCopy);
+        self::assertResponseIsSuccessful();
+        self::assertJsonStringEqualsJsonString(json_encode(['revision' => $revision + 1, 'state' => 'completed'], JSON_THROW_ON_ERROR), $this->client->getResponse()->getContent());
+        $this->submitTransition($url, 'evaluer', $evaluateToken, 0, $initial);
+        self::assertResponseIsSuccessful();
+        self::assertSame(['revision', 'state'], array_keys(json_decode($this->client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR)));
+        $this->client->request('GET', $url);
+        self::assertSelectorTextSame('#dictation-corrected-text', 'L’école ouvre.');
+        self::assertSame($finalCopy ?? $closed, $this->client->getCrawler()->filter('#dictation-final-copy')->text(null, false));
+        self::assertSelectorNotExists('#dictation-final-copy script');
+        self::assertSelectorNotExists('[data-dictation-writing-issues-value]');
+        self::assertSame($explanations ? 1 : 0, $this->client->getCrawler()->filter('#dictation-explanations')->count());
+        self::assertStringNotContainsString('NOUVELLE_REFERENCE', $this->client->getResponse()->getContent());
+        $summary = $this->client->getCrawler()->filter('.dictation-summary')->text();
+        $this->client->request('GET', $url);
+        self::assertSelectorTextSame('.dictation-summary', $summary);
+        $this->save($url, $saveToken, $revision + 1, 'Interdit');
+        self::assertResponseStatusCodeSame(409);
+        $this->submitTransition($url, 'evaluer', $evaluateToken, $revision + 1, 'Interdit');
+        self::assertResponseStatusCodeSame(409);
+        $this->client->request('GET', $url.'/audio/writing');
+        self::assertResponseStatusCodeSame(409);
+        $this->lessons(false);
+        foreach ([['reprendre', $resumeToken, $resumeRevision, null], ['finaliser', $finalToken, $revision, $finalCopy]] as [$action, $token, $r, $copy]) {
+            $this->submitTransition($url, $action, $token, $r, $copy);
+            self::assertResponseStatusCodeSame(409); // Even exact receipts recheck current completion.
+        }
+        $this->client->request('GET', $url);
+        self::assertResponseIsSuccessful();
+        self::assertSelectorNotExists('#dictation-corrected-text');
+        self::assertSelectorNotExists('#dictation-explanations');
+        self::assertSelectorTextSame('.dictation-summary', $summary);
+        $other = self::$database->manager();
+        $attempt = $other->getRepository(DictationAttempt::class)->findOneBy(['user' => $this->user->getId()]);
+        self::assertSame($reviewing, null === $attempt->getFinalResult());
+        self::assertSame($source->getId(), $attempt->getVersion()->getId());
+        self::assertSame($revision + 1, $attempt->getRevision());
+        [$foreign] = DictationFactory::create($other);
+        $this->client->loginUser($foreign);
+        $this->client->request('GET', $url);
+        self::assertResponseStatusCodeSame(404);
+        foreach (['reprendre', 'finaliser'] as $action) {
+            $this->submitTransition($url, $action, $finalToken, $revision, null);
+            self::assertResponseStatusCodeSame(404);
+        }
+        $other->close();
+    }
+
+    /** @return iterable<string, array{bool, string, bool, bool}> */
+    public static function postCourseCases(): iterable
+    {
+        yield 'initial perfect' => [true, 'L’école ouvre.', true, true];
+        yield 'self corrected perfect without explanations' => [false, 'L’école ouvre.', true, false];
+        yield '100 percent with punctuation error' => [false, 'L’école ouvre', false, true];
+        yield 'remaining spelling errors without explanations' => [false, 'L’ecole ouvre.', false, false];
+    }
+
+    public function testCorrectionEscapingProvenanceAndNewRequiredCourse(): void
+    {
+        $reference = "L’école ouvre.\n<b>Texte corrigé</b>";
+        $explanation = "Une explication.\n<script>inert</script>";
+        $editor = new DictationEditorialService($this->em, new DictationCorrector(), DictationAudioFixture::storage());
+        $next = $editor->cloneVersion($this->version, $this->version->getRevision());
+        $next->edit('Plusieurs lignes', $reference, $explanation);
+        $editor->saveDraft($next, $next->getRevision());
+        $editor->publish($next, $next->getRevision());
+        [$url] = $this->start();
+        $this->submitTransition($url, 'evaluer', $this->transitionToken(), 0, $reference);
+        self::assertResponseIsSuccessful();
+        $this->lessons(true);
+        $this->client->request('GET', $url);
+        $this->submitTransition($url, 'reprendre', $this->phaseToken(), 1, null);
+        self::assertResponseIsSuccessful();
+        $this->client->request('GET', $url);
+        $this->submitTransition($url, 'finaliser', $this->phaseToken(), 2, null);
+        self::assertResponseIsSuccessful();
+        $this->client->request('GET', $url);
+        self::assertSame($reference, $this->client->getCrawler()->filter('#dictation-corrected-text')->text(null, false));
+        self::assertSame($explanation, $this->client->getCrawler()->filter('#dictation-explanations')->text(null, false));
+        self::assertSelectorNotExists('#dictation-corrected-text b');
+        self::assertSelectorNotExists('#dictation-explanations script');
+        $other = self::$database->manager();
+        $attempt = $other->getRepository(DictationAttempt::class)->findOneBy(['user' => $this->user->getId()]);
+        $workflow = DictationFactory::service($other);
+        $completed = $workflow->state($attempt->getUser(), $attempt->getId(), true);
+        self::assertSame('initial_closure', $completed['finalResultSource']);
+        $closed = $attempt->getClosedResult();
+        unset($closed['issues']);
+        self::assertSame($closed, $completed['finalResult']);
+        self::assertSame($reference, $completed['canonicalText']);
+        foreach (['initialFeedback', 'initialCopy', 'issues', 'variants', 'completeAudio', 'writingAudio', 'draft'] as $key) {
+            self::assertArrayNotHasKey($key, $completed);
+        }
+        $course = (new Courses())->setName('Nouveau cours requis')->setSlug('required-'.bin2hex(random_bytes(6)))
+            ->setContentType(\App\Enum\CourseContentType::Twig)->setSection($attempt->getDictation()->getSection());
+        $other->persist($course);
+        $other->flush();
+        $hidden = $workflow->state($attempt->getUser(), $attempt->getId(), true);
+        self::assertFalse($hidden['canConsultCorrection']);
+        self::assertArrayNotHasKey('canonicalText', $hidden);
+        self::assertArrayNotHasKey('correctionContent', $hidden);
+        self::assertSame($completed['finalCopy'], $hidden['finalCopy']);
+        self::assertSame($completed['finalResult'], $hidden['finalResult']);
+        $this->client->request('GET', $url);
+        self::assertSelectorNotExists('#dictation-corrected-text');
+        self::assertStringNotContainsString('Une explication.', $this->client->getResponse()->getContent());
+        $other->close();
+        $this->lessons(true);
+        $this->client->request('GET', $url);
+        self::assertSelectorExists('#dictation-corrected-text');
+        self::assertSelectorExists('#dictation-explanations');
     }
 
     public function testInitialJourneyFrozenFeedbackAndLateReceipts(): void

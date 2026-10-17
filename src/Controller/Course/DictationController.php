@@ -75,7 +75,14 @@ final class DictationController extends AbstractController
             $data = $this->attempts->state($actor, $id, true);
             $section = $attempt->getDictation()->getSection();
 
-            return $this->render('awaiting_courses' === $data['state'] ? 'dictation/closed.html.twig' : 'dictation/write.html.twig', [
+            $template = match ($data['state']) {
+                'awaiting_courses', 'reviewing' => 'dictation/closed.html.twig',
+                'completed' => 'dictation/completed.html.twig',
+                'writing', 'self_correction', 'resuming' => 'dictation/write.html.twig',
+                default => throw new HttpException(409, 'Phase indisponible.'),
+            };
+
+            return $this->render($template, [
                 'writing' => $data,
                 'sectionUrl' => $this->generateUrl('app_course_section', ['programSlug' => $section->getProgram()->getSlug(), 'sectionSlug' => $section->getSlug()]),
             ]);
@@ -100,6 +107,18 @@ final class DictationController extends AbstractController
         return $this->submit($id, $request, DictationAction::Close);
     }
 
+    #[Route('/tentatives/{id}/reprendre', name: 'resume', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function resume(int $id, Request $request): Response
+    {
+        return $this->submit($id, $request, DictationAction::Resume);
+    }
+
+    #[Route('/tentatives/{id}/finaliser', name: 'finalize', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function finalize(int $id, Request $request): Response
+    {
+        return $this->submit($id, $request, DictationAction::Finalize);
+    }
+
     private function submit(int $id, Request $request, DictationAction $action): Response
     {
         return $this->respond(function () use ($id, $request, $action): Response {
@@ -112,8 +131,9 @@ final class DictationController extends AbstractController
                 throw new HttpException(413, 'Copie trop longue. Récupérez votre texte avant de le raccourcir.');
             }
             $data = json_decode($body, true, 8, JSON_THROW_ON_ERROR);
-            if (!is_array($data) || 2 !== count($data) || !isset($data['revision'], $data['copy'])
-                || !is_int($data['revision']) || $data['revision'] < 0 || !is_string($data['copy'])) {
+            if (!is_array($data) || 2 !== count($data) || !isset($data['revision']) || !array_key_exists('copy', $data)
+                || !is_int($data['revision']) || $data['revision'] < 0
+                || !(is_string($data['copy']) || (null === $data['copy'] && in_array($action, [DictationAction::Resume, DictationAction::Finalize], true)))) {
                 throw new \InvalidArgumentException('La demande doit contenir uniquement la révision et la copie.');
             }
             $saved = $this->attempts->transition($actor, $id, $action, $data['revision'], $data['copy'], true);
@@ -132,7 +152,7 @@ final class DictationController extends AbstractController
     {
         return $this->respond(function () use ($id, $role): Response {
             $attempt = $this->owned($id, $this->actor());
-            if (!in_array($attempt->getState(), [DictationState::Writing, DictationState::SelfCorrection], true)) {
+            if (!in_array($attempt->getState(), [DictationState::Writing, DictationState::SelfCorrection, DictationState::Resuming], true)) {
                 throw new HttpException(409, 'La phase d’écoute et d’écriture est clôturée.');
             }
             $audio = 'complete' === $role ? $attempt->getVersion()->getCompleteAudio() : $attempt->getVersion()->getWritingAudio();
@@ -182,9 +202,6 @@ final class DictationController extends AbstractController
             throw new HttpException(404, 'Tentative introuvable.');
         }
         $this->dictation($attempt->getDictation()->getId());
-        if (!in_array($attempt->getState(), [DictationState::Writing, DictationState::SelfCorrection, DictationState::AwaitingCourses], true)) {
-            throw new HttpException(409, 'Cette phase ne fait pas partie du parcours initial.');
-        }
 
         return $attempt;
     }

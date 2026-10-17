@@ -11,10 +11,16 @@
 {% block body %}
 <main class="container py-4 dictation-page">
     <h1>{{ writing.title }}</h1>
-    <p class="alert alert-info">{% if writing.closedResult.noErrors %}Bravo, votre copie ne comporte aucune erreur détectée. {% endif %}Votre copie est clôturée. Les modifications sont fermées jusqu’à la reprise après les cours.</p>
+    <p class="alert alert-info">{% if writing.closedResult.noErrors %}Bravo, aucune erreur ne restait à corriger dans votre copie clôturée. {% endif %}Votre copie est clôturée.
+        {% if not writing.coursesComplete %}La reprise et la finalisation seront disponibles après validation de tous les cours de la section.
+        {% elseif writing.state == 'awaiting_courses' %}Les cours sont validés. Vous pouvez maintenant reprendre votre dictée.
+        {% else %}Vous pouvez terminer pour consulter le corrigé, sans nouvelle saisie ni nouvelle évaluation.{% endif %}</p>
     {% include 'dictation/_summary.html.twig' with {result: writing.closedResult} only %}
     <h2 class="h4">Votre copie clôturée</h2>
     <div class="dictation-frozen" id="dictation-closed-copy">{{ writing.closedCopy }}</div>
+    {% if writing.canResume or writing.canFinalize %}
+        {% include 'dictation/_phase_action.html.twig' with {writing: writing, action: writing.canResume ? 'resume' : 'finalize', label: writing.canResume ? 'Reprendre ma dictée' : 'Terminer et voir le corrigé'} only %}
+    {% endif %}
     <a class="btn btn-primary mt-3" href="{{ sectionUrl }}">Retour à la section</a>
 </main>
 {% endblock %}

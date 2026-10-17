@@ -232,7 +232,9 @@ export default class extends Controller {
                 } else this.fail('retry', data.message || 'Confirmation non reçue. Réessayez la même opération.');
                 return;
             }
-            const states = this.phaseValue === 'writing' ? ['self_correction', 'awaiting_courses'] : ['awaiting_courses'];
+            // Late exact receipts acknowledge the current phase, never resurrect old feedback.
+            const states = this.phaseValue === 'writing' ? ['self_correction', 'awaiting_courses', 'resuming', 'reviewing', 'completed']
+                : this.phaseValue === 'resuming' ? ['completed'] : ['awaiting_courses', 'resuming', 'reviewing', 'completed'];
             if (!Number.isInteger(data.revision) || data.revision < operation.revision + 1 || !states.includes(data.state)) throw new Error('Invalid transition acknowledgement');
             this.transitionIntent = null;
             this.transitionOperation = null;

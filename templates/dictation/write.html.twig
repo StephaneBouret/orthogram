@@ -9,13 +9,15 @@
     <meta name="turbo-cache-control" content="no-cache">
 {% endblock %}
 {% block body %}
+{% set transition = writing.state == 'writing' ? 'evaluate' : (writing.state == 'resuming' ? 'finalize' : 'close') %}
+{% set copyLabel = writing.state == 'writing' ? 'Votre copie' : (writing.state == 'resuming' ? 'Votre dictée après les cours' : 'Votre autocorrection') %}
 <main class="container py-4 dictation-page" data-controller="dictation-writing"
       data-dictation-writing-url-value="{{ path('app_dictation_save', {id: writing.attemptId}) }}"
       data-dictation-writing-token-value="{{ csrf_token('dictation_save_' ~ writing.attemptId) }}"
       data-dictation-writing-revision-value="{{ writing.revision }}"
       data-dictation-writing-phase-value="{{ writing.state }}"
-      data-dictation-writing-transition-url-value="{{ path(writing.state == 'writing' ? 'app_dictation_evaluate' : 'app_dictation_close', {id: writing.attemptId}) }}"
-      data-dictation-writing-transition-token-value="{{ csrf_token('dictation_' ~ (writing.state == 'writing' ? 'evaluate' : 'close') ~ '_' ~ writing.attemptId) }}"
+      data-dictation-writing-transition-url-value="{{ path('app_dictation_' ~ transition, {id: writing.attemptId}) }}"
+      data-dictation-writing-transition-token-value="{{ csrf_token('dictation_' ~ transition ~ '_' ~ writing.attemptId) }}"
       {% if writing.state == 'self_correction' %}
           data-dictation-writing-issues-value="{{ writing.initialFeedback.issues|json_encode|e('html_attr') }}"
           data-dictation-writing-initial-value="{{ {copy: writing.initialCopy}|json_encode|e('html_attr') }}"
@@ -33,7 +35,7 @@
                     <div class="dictation-frozen" data-dictation-writing-target="feedback">{{ writing.initialCopy }}</div>
                 </details>
             {% endif %}
-            <label class="form-label" for="dictation-copy">{{ writing.state == 'writing' ? 'Votre copie' : 'Votre autocorrection' }}</label>
+            <label class="form-label" for="dictation-copy">{{ copyLabel }}</label>
             {% if writing.state == 'self_correction' %}<p class="small" role="status" aria-live="polite" aria-atomic="true" data-dictation-writing-target="navigationStatus"></p>{% endif %}
             <textarea id="dictation-copy" class="form-control" rows="14" disabled
                       spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off"
@@ -50,7 +52,8 @@
                 <button type="button" class="btn btn-outline-primary" hidden data-dictation-writing-target="retry" data-action="dictation-writing#retry">Réessayer l’opération</button>
                 <button type="button" class="btn btn-outline-secondary" hidden data-dictation-writing-target="recovery" data-action="dictation-writing#recover">Télécharger ma copie</button>
             </div>
-            <p class="mt-3" id="dictation-transition-help">{{ writing.state == 'writing' ? 'Relisez votre copie. Ce premier signalement des erreurs est disponible une seule fois.' : 'Terminer enregistre votre résultat et ferme les modifications jusqu’à la reprise après les cours. Vous pouvez terminer sans modifier chaque signalement.' }}</p>
+            <p class="mt-3" id="dictation-transition-help">{{ writing.state == 'writing' ? 'Relisez votre copie. Ce premier signalement des erreurs est disponible une seule fois.' : (writing.state == 'resuming' ? 'Terminer rendra la copie affichée définitive et ouvrira le corrigé. Vous pouvez terminer même s’il reste des erreurs ; aucune modification ne sera ensuite possible.' : 'Terminer enregistre votre résultat et ferme les modifications jusqu’à la reprise après les cours. Vous pouvez terminer sans modifier chaque signalement.') }}</p>
+            {% if writing.state == 'resuming' and not writing.coursesComplete %}<p class="alert alert-warning">Tous les cours de la section doivent être validés pour terminer. Votre brouillon reste enregistré.</p>{% endif %}
             <button type="button" class="btn btn-primary" disabled data-dictation-writing-target="submit" data-action="dictation-writing#submit" aria-describedby="dictation-transition-help">{{ writing.state == 'writing' ? 'Voir mes erreurs' : 'Terminer' }}</button>
         </section>
         <section class="col-lg-4" aria-label="Écoute de la dictée">
@@ -78,7 +81,7 @@
                 </div>
                 <p class="mt-3" role="status" data-dictation-writing-target="audioStatus">Choisissez quand lancer la lecture.</p>
             </div></div>
-            <p class="small mt-3" id="dictation-shortcuts">Cliquez dans la zone “{{ writing.state == 'writing' ? 'Votre copie' : 'Votre autocorrection' }}” pour utiliser les raccourcis : F8 pour lire ou suspendre le segment, Maj + F8 pour le précédent, Ctrl + F8 pour le suivant. Selon votre clavier, maintenez aussi Fn. Vous pouvez également utiliser les boutons du lecteur. La lecture s’arrête à la fin de chaque segment.</p>
+            <p class="small mt-3" id="dictation-shortcuts">Cliquez dans la zone “{{ copyLabel }}” pour utiliser les raccourcis : F8 pour lire ou suspendre le segment, Maj + F8 pour le précédent, Ctrl + F8 pour le suivant. Selon votre clavier, maintenez aussi Fn. Vous pouvez également utiliser les boutons du lecteur. La lecture s’arrête à la fin de chaque segment.</p>
         </section>
     </div>
 </main>

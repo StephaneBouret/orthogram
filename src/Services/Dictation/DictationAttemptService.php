@@ -17,7 +17,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-/** Shared transactional workflow with a bounded initial learner journey. */
+/** Shared transactional workflow with an explicit learner projection. */
 final class DictationAttemptService
 {
     public function __construct(
@@ -31,9 +31,9 @@ final class DictationAttemptService
     /** The caller supplies the authenticated actor, never a user/version from a request body.
      * @return array<string, mixed>
      */
-    public function start(User $actor, int $dictationId, bool $initialOnly = false): array
+    public function start(User $actor, int $dictationId, bool $learnerView = false): array
     {
-        return $this->em->wrapInTransaction(function () use ($actor, $dictationId, $initialOnly): array {
+        return $this->em->wrapInTransaction(function () use ($actor, $dictationId, $learnerView): array {
             $this->lockActor($actor);
             $dictation = $this->em->find(Dictation::class, $dictationId, LockMode::PESSIMISTIC_READ);
             if (null === $dictation) {
@@ -52,46 +52,43 @@ final class DictationAttemptService
                     throw new ConflictHttpException('Aucune version éditoriale figée.');
                 }
                 $attempt = new DictationAttempt($actor, $version, $progress['started']);
-                if ($initialOnly) {
-                    $this->initialProjection($attempt);
+                if ($learnerView) {
+                    $this->learnerProjection($attempt, $progress['complete']);
                 }
                 $this->em->persist($attempt);
                 $this->em->flush();
             }
 
-            return $initialOnly ? $this->initialProjection($attempt) : $this->present($attempt, $progress['complete']);
+            return $learnerView ? $this->learnerProjection($attempt, $progress['complete']) : $this->present($attempt, $progress['complete']);
         });
     }
 
     /** @return array<string, mixed> */
-    public function state(User $actor, int $attemptId, bool $initialOnly = false): array
+    public function state(User $actor, int $attemptId, bool $learnerView = false): array
     {
-        return $this->em->wrapInTransaction(function () use ($actor, $attemptId, $initialOnly): array {
+        return $this->em->wrapInTransaction(function () use ($actor, $attemptId, $learnerView): array {
             $this->lockActor($actor);
             $attempt = $this->owned($actor, $attemptId);
             $progress = $this->progress->read($actor, $attempt->getDictation()->getSection());
 
-            return $initialOnly ? $this->initialProjection($attempt) : $this->present($attempt, $progress['complete']);
+            return $learnerView ? $this->learnerProjection($attempt, $progress['complete']) : $this->present($attempt, $progress['complete']);
         });
     }
 
     /** @return array<string, mixed> */
-    public function transition(User $actor, int $attemptId, DictationAction $action, int $expectedRevision, ?string $copy = null, bool $initialOnly = false): array
+    public function transition(User $actor, int $attemptId, DictationAction $action, int $expectedRevision, ?string $copy = null, bool $learnerView = false): array
     {
-        return $this->em->wrapInTransaction(function () use ($actor, $attemptId, $action, $expectedRevision, $copy, $initialOnly): array {
+        return $this->em->wrapInTransaction(function () use ($actor, $attemptId, $action, $expectedRevision, $copy, $learnerView): array {
             $this->lockActor($actor);
             $attempt = $this->owned($actor, $attemptId);
-            if ($initialOnly) {
-                $this->initialProjection($attempt);
-                if (!in_array($action, [DictationAction::Save, DictationAction::Evaluate, DictationAction::Close], true)) {
-                    throw new ConflictHttpException('Action indisponible dans le parcours initial.');
-                }
+            $progress = $this->progress->read($actor, $attempt->getDictation()->getSection());
+            if ($learnerView) {
+                $this->learnerProjection($attempt, $progress['complete']);
             }
-            $progress = $this->progress->read($actor, $attempt->getDictation()->getSection());
             $attempt->transition($action, $expectedRevision, $copy, $progress['complete'], $progress['started'], $this->engine, $this->tokenizer);
             $this->em->flush();
 
-            return $initialOnly ? $this->initialProjection($attempt) : $this->present($attempt, $progress['complete']);
+            return $learnerView ? $this->learnerProjection($attempt, $progress['complete']) : $this->present($attempt, $progress['complete']);
         });
     }
 
@@ -109,20 +106,36 @@ final class DictationAttemptService
     /** Explicit learner allowlist, checked under the same lock as SAVE (before receipt replay).
      * @return array<string, mixed>
      */
-    private function initialProjection(DictationAttempt $attempt): array
+    private function learnerProjection(DictationAttempt $attempt, bool $coursesComplete): array
     {
         $version = $attempt->getVersion();
         $state = $attempt->getState();
-        if (!in_array($state, [DictationState::Writing, DictationState::SelfCorrection, DictationState::AwaitingCourses], true)) {
-            throw new ConflictHttpException('Cette phase ne fait pas partie du parcours initial.');
-        }
         $data = ['attemptId' => $attempt->getId(), 'state' => $state->value, 'revision' => $attempt->getRevision(), 'title' => $version->getTitle()];
-        if (DictationState::AwaitingCourses === $state) {
+        if (in_array($state, [DictationState::AwaitingCourses, DictationState::Reviewing, DictationState::Completed], true)) {
             $summary = $attempt->getClosedResult();
             unset($summary['issues']);
+            $data += ['coursesComplete' => $coursesComplete,
+                'canResume' => DictationState::AwaitingCourses === $state && $coursesComplete,
+                'canFinalize' => DictationState::Reviewing === $state && $coursesComplete,
+                'canConsultCorrection' => DictationState::Completed === $state && $coursesComplete];
+            if (DictationState::Completed === $state) {
+                $data += ['finalCopy' => $attempt->getFinalCopy() ?? $attempt->getClosedCopy(),
+                    'finalResult' => $attempt->getFinalResult() ?? $summary,
+                    'finalResultSource' => null !== $attempt->getFinalResult() ? 'post_courses' : 'initial_closure'];
+                if ($data['canConsultCorrection']) {
+                    $data += ['canonicalText' => $version->getCanonicalText(), 'correctionContent' => $version->getCorrectionContent()];
+                }
+
+                return $data;
+            }
 
             return $data + ['closedCopy' => $attempt->getClosedCopy(), 'closedResult' => $summary, 'prerequisiteSatisfied' => $attempt->isPrerequisiteSatisfied()];
         }
+        // Only these editable states receive the draft, counts and public segment bounds.
+        if (!in_array($state, [DictationState::Writing, DictationState::SelfCorrection, DictationState::Resuming], true)) {
+            throw new ConflictHttpException('Phase indisponible.');
+        }
+        $data += ['coursesComplete' => $coursesComplete];
         if (null === $version->getCompleteAudio() || null === $version->getWritingAudio() || [] === $version->getSegments()) {
             throw new ConflictHttpException('Cette version ne dispose pas encore des pistes et segments nécessaires.');
         }

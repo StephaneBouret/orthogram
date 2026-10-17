@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ writing.title }} — Orthogram{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/dictation.css') }}">
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <meta name="turbo-cache-control" content="no-cache">
+{% endblock %}
+{% block body %}
+<main class="container py-4 dictation-page">
+    <h1>{{ writing.title }}</h1>
+    <p class="alert alert-info">Votre dictée est terminée. Votre copie et votre résultat sont définitifs.</p>
+    {% include 'dictation/_summary.html.twig' with {result: writing.finalResult} only %}
+    {% if writing.finalResultSource == 'initial_closure' %}<p>Aucune erreur ne restait à corriger. Ce bilan reprend le résultat de votre copie clôturée, sans nouvelle évaluation.</p>{% endif %}
+    <h2 class="h4">Votre copie définitive</h2>
+    <div class="dictation-frozen mb-4" id="dictation-final-copy">{{ writing.finalCopy }}</div>
+    {% if writing.canConsultCorrection %}
+        <h2 class="h4">Texte corrigé</h2>
+        <div class="dictation-frozen mb-4" id="dictation-corrected-text">{{ writing.canonicalText }}</div>
+        {% if writing.correctionContent is not empty %}
+            <h2 class="h4">Les explications de Caroline</h2>
+            <div class="dictation-frozen mb-4" id="dictation-explanations">{{ writing.correctionContent }}</div>
+        {% endif %}
+    {% else %}
+        <p class="alert alert-warning">Validez tous les cours de la section pour consulter à nouveau le corrigé. Votre copie et votre résultat sont conservés.</p>
+    {% endif %}
+    <a class="btn btn-primary mt-3" href="{{ sectionUrl }}">Retour à la section</a>
+</main>
+{% endblock %}
