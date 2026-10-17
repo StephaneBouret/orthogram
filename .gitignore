@@ -31,6 +31,7 @@
 
 ###> uploaded courses ###
 /private/courses/
+/private/dictations/
 /public/courses/*
 !/public/courses/.htaccess
 !/public/courses/files/

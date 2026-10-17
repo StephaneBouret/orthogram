@@ -69,6 +69,14 @@ final class DictationTestDatabase
         return new EntityManager($connection, $this->baseManager->getConfiguration(), $this->baseManager->getEventManager());
     }
 
+    public function kernelUrl(): string
+    {
+        // The test Doctrine configuration appends _test. Never expose this URL in logs.
+        return 'mysql://'.rawurlencode($this->params['user'] ?? '').':'.rawurlencode($this->params['password'] ?? '')
+            .'@'.$this->params['host'].':'.($this->params['port'] ?? 3306).'/'.substr($this->name, 0, -5)
+            .'?serverVersion='.rawurlencode($this->params['serverVersion'] ?? '8.4.7').'&charset=utf8mb4';
+    }
+
     public function install(): void
     {
         if (!$this->created) {
@@ -94,11 +102,14 @@ final class DictationTestDatabase
         if ($connection->getDatabase() !== $this->name) {
             throw new \LogicException('Migration autorisée uniquement sur la base isolée.');
         }
-        require_once dirname(__DIR__, 2).'/migrations/Version20261016120000.php';
-        $migration = (new DbalMigrationFactory($connection, new NullLogger()))->createVersion('DoctrineMigrations\\Version20261016120000');
-        $up ? $migration->up(new Schema()) : $migration->down(new Schema());
-        foreach ($migration->getSql() as $sql) {
-            $connection->executeStatement($sql->getStatement(), $sql->getParameters(), $sql->getTypes());
+        $versions = ['Version20261016120000', 'Version20261016180000'];
+        foreach ($up ? $versions : array_reverse($versions) as $name) {
+            require_once dirname(__DIR__, 2).'/migrations/'.$name.'.php';
+            $migration = (new DbalMigrationFactory($connection, new NullLogger()))->createVersion('DoctrineMigrations\\'.$name);
+            $up ? $migration->up(new Schema()) : $migration->down(new Schema());
+            foreach ($migration->getSql() as $sql) {
+                $connection->executeStatement($sql->getStatement(), $sql->getParameters(), $sql->getTypes());
+            }
         }
     }
 

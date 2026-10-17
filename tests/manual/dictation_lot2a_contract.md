@@ -5,6 +5,10 @@
 L'archive `orthogram_dictees_lot1_revue.zip` reste non suivie et inchangée.
 Le [contrat du moteur](dictation_lot1_contract.md) continue de s'appliquer.
 
+Complément du lot 2B : [administration, audios privés et segments](dictation_lot2b_contract.md).
+La publication exige désormais aussi deux pistes vérifiées et des segments valides.
+Les fixtures de ce contrat ont été adaptées à cette exigence, sans changer les transitions.
+
 Ce lot installe des services internes, sans route, formulaire, administration,
 audio, écran ni nouveau contrôle d'accès aux cours. Il n'active aucune dictée
 pour les apprenants. Aucun contenu réel de Caroline ni fixture de production

@@ -1,0 +1,8 @@
+<button type="button" class="btn btn-secondary" data-action="dictation-editor#play">Écouter ce segment</button>
+{% if not version.published %}
+<button type="button" class="btn btn-secondary" data-bound="start" data-action="dictation-editor#capture">Position actuelle → début</button>
+<button type="button" class="btn btn-secondary" data-bound="end" data-action="dictation-editor#capture">Position actuelle → fin</button>
+<button type="button" class="btn btn-secondary" data-direction="-1" data-action="dictation-editor#move">Monter</button>
+<button type="button" class="btn btn-secondary" data-direction="1" data-action="dictation-editor#move">Descendre</button>
+<button type="button" class="btn btn-secondary" data-action="dictation-editor#remove">Supprimer le segment</button>
+{% endif %}

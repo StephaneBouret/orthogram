@@ -1,0 +1,14 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+{% block content_title %}Dictée — {{ dictation.section.name }}{% endblock %}
+{% block main %}
+    <a href="{{ path('admin_dictations_index') }}">Toutes les dictées</a>
+    <table class="table"><thead><tr><th>Version</th><th>Titre</th><th>État</th><th>Révision</th></tr></thead><tbody>
+    {% for version in versions %}<tr>
+        <td><a href="{{ path('admin_dictations_version', {id: version.id}) }}">Version {{ version.number }}</a></td>
+        <td>{{ version.title }}</td><td>{{ version.published ? 'Publiée (figée)' : 'Brouillon' }}</td><td>{{ version.revision }}</td>
+    </tr>{% else %}<tr><td colspan="4">Aucune version.</td></tr>{% endfor %}
+    </tbody></table>
+    <h2>Nouveau brouillon</h2>
+    {{ form(form) }}
+{% endblock %}

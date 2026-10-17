@@ -10,10 +10,10 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
-/** Internal editorial operations. Authorization/UI/media readiness belong to the future integration. */
+/** Editorial transactions. All version changes share the same revision and lock order. */
 final class DictationEditorialService
 {
-    public function __construct(private readonly EntityManagerInterface $em, private readonly DictationCorrector $corrector)
+    public function __construct(private readonly EntityManagerInterface $em, private readonly DictationCorrector $corrector, private readonly DictationAudioStorage $storage)
     {
     }
 
@@ -46,6 +46,15 @@ final class DictationEditorialService
     public function publish(DictationVersion $version, int $expectedRevision): void
     {
         $this->requireManagedVersion($version);
+        $this->requireSavedVersion($version);
+        $this->em->wrapInTransaction(function () use ($version, $expectedRevision): void {
+            $this->lockRevision($version, $expectedRevision);
+            $version->publish($this->corrector, $this->storage);
+        });
+    }
+
+    private function requireSavedVersion(DictationVersion $version): void
+    {
         // Check current fields, not a possibly uncomputed/stale UnitOfWork change set.
         // Do this before any refresh/transaction: an unsaved form keeps its submitted content.
         $unitOfWork = $this->em->getUnitOfWork();
@@ -64,10 +73,59 @@ final class DictationEditorialService
                 throw new ConflictHttpException('Modifications non enregistrées. Enregistrez le brouillon avant de le publier.');
             }
         }
-        $this->em->wrapInTransaction(function () use ($version, $expectedRevision): void {
-            $this->lockRevision($version, $expectedRevision);
-            $version->publish($this->corrector);
+    }
+
+    public function cloneVersion(DictationVersion $source, int $expectedRevision): DictationVersion
+    {
+        $this->requireManagedVersion($source);
+        $this->requireSavedVersion($source);
+
+        return $this->em->wrapInTransaction(function () use ($source, $expectedRevision): DictationVersion {
+            $this->lockRevision($source, $expectedRevision);
+            $copy = $this->createVersion($source->getDictation(), $source->getTitle(), $source->getCanonicalText(), $source->getCorrectionContent(), $source->getVariants());
+            if (!$source->areVariantsReviewed()) {
+                // Cloning must not silently validate obsolete occurrence indexes.
+                $copy->invalidateVariants();
+            }
+            foreach (['complete' => $source->getCompleteAudio(), 'writing' => $source->getWritingAudio()] as $role => $audio) {
+                if (null !== $audio) {
+                    $this->storage->verify($audio);
+                    $copy->replaceAudio($role, $audio);
+                }
+            }
+            $copy->editSegments($source->getSegments());
+
+            return $copy;
         });
+    }
+
+    public function importAudio(DictationVersion $version, int $expectedRevision, string $role, \Symfony\Component\HttpFoundation\File\UploadedFile $file): void
+    {
+        $this->requireManagedVersion($version);
+        $this->requireSavedVersion($version);
+        $audio = $this->storage->import($file);
+        try {
+            $this->em->wrapInTransaction(function () use ($version, $expectedRevision, $role, $audio): void {
+                $this->lockRevision($version, $expectedRevision);
+                $version->replaceAudio($role, $audio);
+            });
+        } catch (\Throwable $error) {
+            // A commit acknowledgement can fail after the database committed. Delete only
+            // when a subsequent read proves this unique new key has no persisted owner.
+            // If the database is unreachable, retain the possible orphan for manual review.
+            try {
+                $references = $this->em->getConnection()->fetchOne(
+                    "SELECT COUNT(*) FROM dictation_version WHERE JSON_UNQUOTE(JSON_EXTRACT(complete_audio, '$.key')) = ? OR JSON_UNQUOTE(JSON_EXTRACT(writing_audio, '$.key')) = ?",
+                    [$audio['key'], $audio['key']]
+                );
+                if (0 === (int) $references) {
+                    $this->storage->discardNewImport($audio);
+                }
+            } catch (\Doctrine\DBAL\Exception) {
+                // No global purge, and no deletion when SQL outcome is uncertain.
+            }
+            throw $error;
+        }
     }
 
     private function requireManagedVersion(DictationVersion $version): void

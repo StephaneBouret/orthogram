@@ -1,0 +1,12 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+{% block content_title %}Dictées{% endblock %}
+{% block main %}
+    <p>Préparation éditoriale uniquement. Les versions publiées ne sont pas accessibles aux apprenants.</p>
+    {{ form(form) }}
+    <table class="table"><thead><tr><th>Section</th><th>Versions</th></tr></thead><tbody>
+    {% for dictation in dictations %}
+        <tr><td>{{ dictation.section.name }}</td><td><a href="{{ path('admin_dictations_detail', {id: dictation.id}) }}">Consulter les versions</a></td></tr>
+    {% else %}<tr><td colspan="2">Aucune dictée.</td></tr>{% endfor %}
+    </tbody></table>
+{% endblock %}

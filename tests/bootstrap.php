@@ -4,6 +4,8 @@ use Symfony\Component\Dotenv\Dotenv;
 
 require dirname(__DIR__).'/vendor/autoload.php';
 
+App\Tests\Support\DictationAudioFixture::storage();
+
 // Every test process gets private disposable uploads, including pre-existing admin tests.
 // Never inherit the development/production file storage for replacement/deletion tests.
 $courseTestStorage = sys_get_temp_dir().'/orthogram-course-tests-'.bin2hex(random_bytes(10));

@@ -32,7 +32,8 @@ final class DictationFactory
         $course = (new Courses())->setName('Cours requis')->setSlug('cours-'.$suffix)->setContentType(CourseContentType::Twig)->setSection($section);
         $dictation = new Dictation($section);
         $version = new DictationVersion($dictation, 1, 'Dictée synthétique', 'L’école ouvre.', 'SECRET_CORRECTION_TEST');
-        $version->publish(new DictationCorrector());
+        DictationAudioFixture::prepare($version);
+        $version->publish(new DictationCorrector(), DictationAudioFixture::storage());
         foreach ([$user, $program, $section, $course, $dictation, $version] as $entity) {
             $em->persist($entity);
         }

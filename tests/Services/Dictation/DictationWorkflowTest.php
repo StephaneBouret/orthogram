@@ -13,6 +13,7 @@ use App\Enum\DictationAction as Action;
 use App\Enum\DictationState as State;
 use App\Services\Dictation\DictationCorrector;
 use App\Services\Dictation\DictationTokenizer;
+use App\Tests\Support\DictationAudioFixture;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
@@ -22,7 +23,8 @@ final class DictationWorkflowTest extends TestCase
     private function attempt(): DictationAttempt
     {
         $version = new DictationVersion(new Dictation(new Sections()), 1, 'Test', 'L’école ouvre.', 'Correction synthétique de test.');
-        $version->publish(new DictationCorrector());
+        DictationAudioFixture::prepare($version);
+        $version->publish(new DictationCorrector(), DictationAudioFixture::storage());
 
         return new DictationAttempt(new User(), $version, false);
     }

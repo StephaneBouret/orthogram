@@ -1,0 +1,61 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+{% block content_title %}{{ version.title }} — version {{ version.number }}{% endblock %}
+{% block importmap %}{{ importmap('admin_dictation') }}{% endblock %}
+{% block main %}
+<div class="dictation-editor" data-controller="dictation-editor" data-dictation-editor-unsaved-value="{{ form.vars.submitted ? 'true' : 'false' }}">
+    <a href="{{ path('admin_dictations_detail', {id: version.dictation.id}) }}">Toutes les versions de cette dictée</a>
+    <p>{{ version.published ? 'Publiée : contenu figé. Créez une nouvelle version pour le modifier.' : 'Brouillon : enregistrez les modifications avant de publier.' }} Révision {{ version.revision }}.</p>
+    {% for role, label in {complete: 'Écoute complète', writing: 'Écriture de la dictée'} %}
+        {% set audio = role == 'complete' ? version.completeAudio : version.writingAudio %}
+        <section class="mb-4" aria-labelledby="audio-{{ role }}"><h2 id="audio-{{ role }}">{{ label }}</h2>
+        {% if audio %}
+            <audio controls preload="metadata" aria-label="{{ label }}" {% if role == 'writing' %}data-dictation-editor-target="audio" data-action="timeupdate->dictation-editor#stopAtEnd seeking->dictation-editor#seeked"{% endif %} src="{{ path('admin_dictations_audio', {id: version.id, role: role}) }}"></audio>
+            <p>Durée vérifiée : {{ audio.durationMs }} ms.</p>
+        {% else %}<p>Aucune piste importée.</p>{% endif %}
+        {% if not version.published %}
+            <form method="post" enctype="multipart/form-data" action="{{ path('admin_dictations_upload', {id: version.id, role: role}) }}" data-action="submit->dictation-editor#guardOtherAction">
+                <input type="hidden" name="_token" value="{{ csrf_token('dictation_upload_' ~ role ~ '_' ~ version.id) }}">
+                <input type="hidden" name="revision" value="{{ form.revision.vars.value }}">
+                <label for="file-{{ role }}">Importer un MP3 (25 Mio, 30 minutes maximum)</label>
+                <input id="file-{{ role }}" type="file" name="audio" accept=".mp3,audio/mpeg" required class="form-control">
+                <button class="btn btn-secondary mt-2">{{ audio ? 'Remplacer cette piste' : 'Importer cette piste' }}</button>
+                {% if role == 'writing' %}<p>Le remplacement retire tous les segments du brouillon. Les anciennes versions conservent leur audio.</p>{% endif %}
+            </form>
+        {% endif %}
+        </section>
+    {% endfor %}
+    <hr>
+    {{ form_start(form, {attr: {'data-dictation-editor-target': 'form', 'data-action': 'input->dictation-editor#changed change->dictation-editor#changed submit->dictation-editor#submitting'}}) }}
+    {{ form_errors(form) }}
+    {{ form_row(form.title) }}{{ form_row(form.text) }}{{ form_row(form.correction) }}
+    <h2>Variantes ciblées</h2>
+    <p>Choisissez le mot concerné dans le texte enregistré. Après un changement du texte, enregistrez puis vérifiez de nouveau les mots ciblés.</p>
+    {% if not version.areVariantsReviewed %}<p class="alert alert-warning">Les variantes doivent être revues avant publication.</p>{% endif %}
+    <div data-collection="variants" data-prototype="{{ form_widget(form.variants.vars.prototype)|e('html_attr') }}">
+    <div data-rows>{% for row in form.variants %}<div data-row data-index="{{ row.vars.name }}" class="border rounded p-3 mb-2">{{ form_row(row) }}{% if not version.published %}<button type="button" class="btn btn-secondary" data-action="dictation-editor#remove">Supprimer la variante</button>{% endif %}</div>{% endfor %}</div>
+    {% if not version.published %}<button type="button" class="btn btn-secondary" data-action="dictation-editor#add">Ajouter une variante</button>{% endif %}
+    </div>
+    {% do form.variants.setRendered %}
+    {{ form_row(form.reviewed) }}
+    <h2>Segments de la piste d’écriture</h2>
+    <p>Bornes en millisecondes, dans l’ordre de lecture, sans chevauchement. Les silences entre segments sont autorisés.</p>
+    {{ form_errors(form.segments) }}
+    <div data-collection="segments" data-name="{{ form.segments.vars.full_name }}" data-id="{{ form.segments.vars.id }}" data-prototype="{{ form_widget(form.segments.vars.prototype)|e('html_attr') }}">
+    <div data-rows>{% for row in form.segments %}<fieldset data-row data-index="{{ row.vars.name }}" class="border rounded p-3 mb-2"><legend class="h5">Segment <span data-segment-number>{{ loop.index }}</span></legend>{{ form_row(row) }}
+        {% include 'admin/dictation/segment_buttons.html.twig' %}
+    </fieldset>{% endfor %}</div>
+    {% if not version.published %}<button type="button" class="btn btn-secondary" data-action="dictation-editor#add">Ajouter un segment</button>{% endif %}
+    </div>
+    {% do form.segments.setRendered %}
+    <template data-dictation-editor-target="buttons">{% include 'admin/dictation/segment_buttons.html.twig' %}</template>
+    <div class="mt-3">{% if not version.published %}{{ form_widget(form.save) }} {{ form_widget(form.publish) }}{% else %}{% do form.save.setRendered %}{% do form.publish.setRendered %}{% endif %}</div>
+    {{ form_end(form) }}
+    <p role="status" aria-live="polite" data-dictation-editor-target="status"></p>
+    <form method="post" action="{{ path('admin_dictations_clone', {id: version.id}) }}" data-action="submit->dictation-editor#guardOtherAction">
+        <input type="hidden" name="_token" value="{{ csrf_token('dictation_clone_' ~ version.id) }}">
+        <input type="hidden" name="revision" value="{{ form.revision.vars.value }}">
+        <button class="btn btn-secondary">Créer un nouveau brouillon à partir de cette version</button>
+    </form>
+</div>
+{% endblock %}

@@ -13,6 +13,7 @@ use App\Enum\DictationAction as Action;
 use App\Enum\LessonStatus;
 use App\Services\Dictation\DictationCorrector;
 use App\Services\Dictation\DictationEditorialService;
+use App\Tests\Support\DictationAudioFixture;
 use App\Tests\Support\DictationFactory;
 use App\Tests\Support\DictationTestDatabase;
 use App\Tests\Support\QuizPlayerFactory;
@@ -128,8 +129,10 @@ final class DictationPersistenceTest extends TestCase
         [$user, $dictation, $version] = DictationFactory::create($this->em);
         $service = DictationFactory::service($this->em);
         $first = $service->start($user, $dictation->getId());
-        $editorial = new DictationEditorialService($this->em, new DictationCorrector());
+        $editorial = new DictationEditorialService($this->em, new DictationCorrector(), DictationAudioFixture::storage());
         $next = $editorial->createVersion($dictation, 'Version suivante', 'Autre texte.');
+        DictationAudioFixture::prepare($next);
+        $editorial->saveDraft($next, $next->getRevision());
         $editorial->publish($next, $next->getRevision());
         self::assertSame(2, $next->getNumber());
         self::assertSame($first, $service->start($user, $dictation->getId()));
@@ -166,8 +169,10 @@ final class DictationPersistenceTest extends TestCase
     public function testPublishedVersionRejectsStaleDraftUpdateFromAnotherConnection(): void
     {
         [, $dictation] = DictationFactory::create($this->em);
-        $editorial = new DictationEditorialService($this->em, new DictationCorrector());
+        $editorial = new DictationEditorialService($this->em, new DictationCorrector(), DictationAudioFixture::storage());
         $draft = $editorial->createVersion($dictation, 'Brouillon', 'Texte.');
+        DictationAudioFixture::prepare($draft);
+        $editorial->saveDraft($draft, $draft->getRevision());
         $other = self::$database->manager();
         $stale = $other->find(DictationVersion::class, $draft->getId());
         $editorial->publish($draft, $draft->getRevision());
@@ -179,12 +184,14 @@ final class DictationPersistenceTest extends TestCase
     public function testPublicationAfterUnsavedEditPreservesSubmittedContent(): void
     {
         [, $dictation] = DictationFactory::create($this->em);
-        $editorial = new DictationEditorialService($this->em, new DictationCorrector());
+        $editorial = new DictationEditorialService($this->em, new DictationCorrector(), DictationAudioFixture::storage());
         $draft = $editorial->createVersion($dictation, 'Titre A', 'Texte A.', 'Correction A');
+        DictationAudioFixture::prepare($draft);
+        $editorial->saveDraft($draft, $draft->getRevision());
         $id = $draft->getId();
         $revision = $draft->getRevision();
         $variants = [['referenceIndex' => 1, 'alternatives' => ['bé']]];
-        $draft->edit('Titre B', 'Texte B.', 'Correction B', $variants);
+        $draft->edit('Titre B', 'Texte B.', 'Correction B', $variants, true);
         try {
             $editorial->publish($draft, $revision);
             self::fail('La publication doit refuser les modifications non enregistrées.');
@@ -214,8 +221,10 @@ final class DictationPersistenceTest extends TestCase
     public function testNormalPublicationOfSavedDraftAndPublishedImmutability(): void
     {
         [, $dictation] = DictationFactory::create($this->em);
-        $editorial = new DictationEditorialService($this->em, new DictationCorrector());
+        $editorial = new DictationEditorialService($this->em, new DictationCorrector(), DictationAudioFixture::storage());
         $draft = $editorial->createVersion($dictation, 'Titre A', 'Texte A.');
+        DictationAudioFixture::prepare($draft);
+        $editorial->saveDraft($draft, $draft->getRevision());
         $draft->edit('Titre B', 'Texte B.', null);
         $editorial->saveDraft($draft, $draft->getRevision());
         $id = $draft->getId();
@@ -240,8 +249,10 @@ final class DictationPersistenceTest extends TestCase
     public function testPublicationAlsoRefusesAnAlreadyComputedUnsavedChangeSet(): void
     {
         [, $dictation] = DictationFactory::create($this->em);
-        $editorial = new DictationEditorialService($this->em, new DictationCorrector());
+        $editorial = new DictationEditorialService($this->em, new DictationCorrector(), DictationAudioFixture::storage());
         $draft = $editorial->createVersion($dictation, 'Titre A', 'Texte A.');
+        DictationAudioFixture::prepare($draft);
+        $editorial->saveDraft($draft, $draft->getRevision());
         $draft->edit('Titre B', 'Texte B.', null);
         $this->em->getUnitOfWork()->computeChangeSet($this->em->getClassMetadata(DictationVersion::class), $draft);
         try {
@@ -268,12 +279,14 @@ final class DictationPersistenceTest extends TestCase
     public function testStalePublicationNeverOverwritesOrDiscardsContent(bool $publishConcurrently, bool $localEdit): void
     {
         [, $dictation] = DictationFactory::create($this->em);
-        $editorial = new DictationEditorialService($this->em, new DictationCorrector());
+        $editorial = new DictationEditorialService($this->em, new DictationCorrector(), DictationAudioFixture::storage());
         $stale = $editorial->createVersion($dictation, 'Titre A', 'Texte A.');
+        DictationAudioFixture::prepare($stale);
+        $editorial->saveDraft($stale, $stale->getRevision());
         $revision = $stale->getRevision();
         $other = self::$database->manager();
         $current = $other->find(DictationVersion::class, $stale->getId());
-        $otherService = new DictationEditorialService($other, new DictationCorrector());
+        $otherService = new DictationEditorialService($other, new DictationCorrector(), DictationAudioFixture::storage());
         if ($publishConcurrently) {
             $otherService->publish($current, $revision);
         } else {
@@ -309,8 +322,10 @@ final class DictationPersistenceTest extends TestCase
     public function testPublicationChecksSubmittedRevisionEvenOnAFreshlyLoadedObject(): void
     {
         [, $dictation] = DictationFactory::create($this->em);
-        $editorial = new DictationEditorialService($this->em, new DictationCorrector());
+        $editorial = new DictationEditorialService($this->em, new DictationCorrector(), DictationAudioFixture::storage());
         $draft = $editorial->createVersion($dictation, 'Titre A', 'Texte A.');
+        DictationAudioFixture::prepare($draft);
+        $editorial->saveDraft($draft, $draft->getRevision());
         $formRevision = $draft->getRevision();
         $draft->edit('Titre C', 'Texte C.', null);
         $editorial->saveDraft($draft, $formRevision);

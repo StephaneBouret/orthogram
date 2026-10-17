@@ -7,6 +7,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    app.dictation_storage_default: '%kernel.project_dir%/private/dictations'
+    app.dictation_storage_dir: '%env(resolve:default:app.dictation_storage_default:DICTATION_STORAGE_DIR)%'
     app.course_storage_default: '%kernel.project_dir%/private/courses'
     app.course_storage_dir: '%env(resolve:default:app.course_storage_default:COURSE_STORAGE_DIR)%'
     app.hostname: '%env(APP_HOSTNAME)%'

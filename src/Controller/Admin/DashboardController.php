@@ -46,6 +46,7 @@ class DashboardController extends AbstractDashboardController
             MenuItem::linkTo(SubscriptionCrudController::class, 'Abonnements', 'fa fa-gem'),
 
             MenuItem::section('Formation'),
+            MenuItem::linkToRoute('Dictées', 'fa-solid fa-headphones', 'admin_dictations_index')->setPermission('ROLE_ADMIN'),
             MenuItem::linkTo(ProgramCrudController::class, 'Programme de formation', 'fas fa-list-check'),
             MenuItem::linkTo(SectionsCrudController::class, 'Sections du programme', 'fa-fw fas fa-section'),
             MenuItem::linkTo(CoursesCrudController::class, 'Cours', 'fas fa-book-open'),
