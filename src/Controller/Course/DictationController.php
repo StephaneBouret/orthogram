@@ -71,19 +71,41 @@ final class DictationController extends AbstractController
     {
         return $this->respond(function () use ($id): Response {
             $actor = $this->actor();
-            $this->owned($id, $actor);
+            $attempt = $this->owned($id, $actor);
+            $data = $this->attempts->state($actor, $id, true);
+            $section = $attempt->getDictation()->getSection();
 
-            return $this->render('dictation/write.html.twig', ['writing' => $this->attempts->state($actor, $id, true)]);
+            return $this->render('awaiting_courses' === $data['state'] ? 'dictation/closed.html.twig' : 'dictation/write.html.twig', [
+                'writing' => $data,
+                'sectionUrl' => $this->generateUrl('app_course_section', ['programSlug' => $section->getProgram()->getSlug(), 'sectionSlug' => $section->getSlug()]),
+            ]);
         });
     }
 
     #[Route('/tentatives/{id}/enregistrer', name: 'save', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function save(int $id, Request $request): Response
     {
-        return $this->respond(function () use ($id, $request): Response {
+        return $this->submit($id, $request, DictationAction::Save);
+    }
+
+    #[Route('/tentatives/{id}/evaluer', name: 'evaluate', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function evaluate(int $id, Request $request): Response
+    {
+        return $this->submit($id, $request, DictationAction::Evaluate);
+    }
+
+    #[Route('/tentatives/{id}/terminer', name: 'close', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function close(int $id, Request $request): Response
+    {
+        return $this->submit($id, $request, DictationAction::Close);
+    }
+
+    private function submit(int $id, Request $request, DictationAction $action): Response
+    {
+        return $this->respond(function () use ($id, $request, $action): Response {
             $actor = $this->actor();
             $this->owned($id, $actor);
-            $this->csrf('dictation_save_'.$id, $request->headers->get('X-CSRF-TOKEN'));
+            $this->csrf('dictation_'.$action->value.'_'.$id, $request->headers->get('X-CSRF-TOKEN'));
             // Bound decoding too; escaped Unicode can occupy six JSON bytes per UTF-16 unit.
             $body = $request->getContent();
             if (strlen($body) > 125000) {
@@ -94,7 +116,11 @@ final class DictationController extends AbstractController
                 || !is_int($data['revision']) || $data['revision'] < 0 || !is_string($data['copy'])) {
                 throw new \InvalidArgumentException('La demande doit contenir uniquement la révision et la copie.');
             }
-            $saved = $this->attempts->transition($actor, $id, DictationAction::Save, $data['revision'], $data['copy'], true);
+            $saved = $this->attempts->transition($actor, $id, $action, $data['revision'], $data['copy'], true);
+            if (DictationAction::Save !== $action) {
+                // A late receipt returns the current phase, never historical issue details.
+                return new JsonResponse(['revision' => $saved['revision'], 'state' => $saved['state']]);
+            }
 
             // No echo of a possibly superseded draft, no generic workflow projection.
             return new JsonResponse(['revision' => $saved['revision'], 'wordCount' => $saved['wordCount'], 'referenceWordCount' => $saved['referenceWordCount']]);
@@ -106,6 +132,9 @@ final class DictationController extends AbstractController
     {
         return $this->respond(function () use ($id, $role): Response {
             $attempt = $this->owned($id, $this->actor());
+            if (!in_array($attempt->getState(), [DictationState::Writing, DictationState::SelfCorrection], true)) {
+                throw new HttpException(409, 'La phase d’écoute et d’écriture est clôturée.');
+            }
             $audio = 'complete' === $role ? $attempt->getVersion()->getCompleteAudio() : $attempt->getVersion()->getWritingAudio();
             if (null === $audio) {
                 throw new HttpException(404, 'Piste indisponible.');
@@ -153,8 +182,8 @@ final class DictationController extends AbstractController
             throw new HttpException(404, 'Tentative introuvable.');
         }
         $this->dictation($attempt->getDictation()->getId());
-        if (DictationState::Writing !== $attempt->getState()) {
-            throw new HttpException(409, 'Cette tentative n’est plus dans la phase d’écriture initiale.');
+        if (!in_array($attempt->getState(), [DictationState::Writing, DictationState::SelfCorrection, DictationState::AwaitingCourses], true)) {
+            throw new HttpException(409, 'Cette phase ne fait pas partie du parcours initial.');
         }
 
         return $attempt;

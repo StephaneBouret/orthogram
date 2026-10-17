@@ -17,7 +17,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-/** Shared transactional workflow; the writing-only boundary never projects feedback. */
+/** Shared transactional workflow with a bounded initial learner journey. */
 final class DictationAttemptService
 {
     public function __construct(
@@ -31,9 +31,9 @@ final class DictationAttemptService
     /** The caller supplies the authenticated actor, never a user/version from a request body.
      * @return array<string, mixed>
      */
-    public function start(User $actor, int $dictationId, bool $writingOnly = false): array
+    public function start(User $actor, int $dictationId, bool $initialOnly = false): array
     {
-        return $this->em->wrapInTransaction(function () use ($actor, $dictationId, $writingOnly): array {
+        return $this->em->wrapInTransaction(function () use ($actor, $dictationId, $initialOnly): array {
             $this->lockActor($actor);
             $dictation = $this->em->find(Dictation::class, $dictationId, LockMode::PESSIMISTIC_READ);
             if (null === $dictation) {
@@ -52,46 +52,46 @@ final class DictationAttemptService
                     throw new ConflictHttpException('Aucune version éditoriale figée.');
                 }
                 $attempt = new DictationAttempt($actor, $version, $progress['started']);
-                if ($writingOnly) {
-                    $this->writingProjection($attempt);
+                if ($initialOnly) {
+                    $this->initialProjection($attempt);
                 }
                 $this->em->persist($attempt);
                 $this->em->flush();
             }
 
-            return $writingOnly ? $this->writingProjection($attempt) : $this->present($attempt, $progress['complete']);
+            return $initialOnly ? $this->initialProjection($attempt) : $this->present($attempt, $progress['complete']);
         });
     }
 
     /** @return array<string, mixed> */
-    public function state(User $actor, int $attemptId, bool $writingOnly = false): array
+    public function state(User $actor, int $attemptId, bool $initialOnly = false): array
     {
-        return $this->em->wrapInTransaction(function () use ($actor, $attemptId, $writingOnly): array {
+        return $this->em->wrapInTransaction(function () use ($actor, $attemptId, $initialOnly): array {
             $this->lockActor($actor);
             $attempt = $this->owned($actor, $attemptId);
             $progress = $this->progress->read($actor, $attempt->getDictation()->getSection());
 
-            return $writingOnly ? $this->writingProjection($attempt) : $this->present($attempt, $progress['complete']);
+            return $initialOnly ? $this->initialProjection($attempt) : $this->present($attempt, $progress['complete']);
         });
     }
 
     /** @return array<string, mixed> */
-    public function transition(User $actor, int $attemptId, DictationAction $action, int $expectedRevision, ?string $copy = null, bool $writingOnly = false): array
+    public function transition(User $actor, int $attemptId, DictationAction $action, int $expectedRevision, ?string $copy = null, bool $initialOnly = false): array
     {
-        return $this->em->wrapInTransaction(function () use ($actor, $attemptId, $action, $expectedRevision, $copy, $writingOnly): array {
+        return $this->em->wrapInTransaction(function () use ($actor, $attemptId, $action, $expectedRevision, $copy, $initialOnly): array {
             $this->lockActor($actor);
             $attempt = $this->owned($actor, $attemptId);
-            if ($writingOnly) {
-                $this->writingProjection($attempt);
-                if (DictationAction::Save !== $action) {
-                    throw new ConflictHttpException('Seul l’enregistrement est disponible.');
+            if ($initialOnly) {
+                $this->initialProjection($attempt);
+                if (!in_array($action, [DictationAction::Save, DictationAction::Evaluate, DictationAction::Close], true)) {
+                    throw new ConflictHttpException('Action indisponible dans le parcours initial.');
                 }
             }
             $progress = $this->progress->read($actor, $attempt->getDictation()->getSection());
             $attempt->transition($action, $expectedRevision, $copy, $progress['complete'], $progress['started'], $this->engine, $this->tokenizer);
             $this->em->flush();
 
-            return $writingOnly ? $this->writingProjection($attempt) : $this->present($attempt, $progress['complete']);
+            return $initialOnly ? $this->initialProjection($attempt) : $this->present($attempt, $progress['complete']);
         });
     }
 
@@ -109,18 +109,29 @@ final class DictationAttemptService
     /** Explicit learner allowlist, checked under the same lock as SAVE (before receipt replay).
      * @return array<string, mixed>
      */
-    private function writingProjection(DictationAttempt $attempt): array
+    private function initialProjection(DictationAttempt $attempt): array
     {
         $version = $attempt->getVersion();
-        if (DictationState::Writing !== $attempt->getState()) {
-            throw new ConflictHttpException('Cette tentative n’est plus dans la phase d’écriture initiale.');
+        $state = $attempt->getState();
+        if (!in_array($state, [DictationState::Writing, DictationState::SelfCorrection, DictationState::AwaitingCourses], true)) {
+            throw new ConflictHttpException('Cette phase ne fait pas partie du parcours initial.');
+        }
+        $data = ['attemptId' => $attempt->getId(), 'state' => $state->value, 'revision' => $attempt->getRevision(), 'title' => $version->getTitle()];
+        if (DictationState::AwaitingCourses === $state) {
+            $summary = $attempt->getClosedResult();
+            unset($summary['issues']);
+
+            return $data + ['closedCopy' => $attempt->getClosedCopy(), 'closedResult' => $summary, 'prerequisiteSatisfied' => $attempt->isPrerequisiteSatisfied()];
         }
         if (null === $version->getCompleteAudio() || null === $version->getWritingAudio() || [] === $version->getSegments()) {
             throw new ConflictHttpException('Cette version ne dispose pas encore des pistes et segments nécessaires.');
         }
 
-        return ['attemptId' => $attempt->getId(), 'revision' => $attempt->getRevision(),
-            'title' => $version->getTitle(), 'draft' => $attempt->getDraft(),
+        if (DictationState::SelfCorrection === $state) {
+            $data += ['initialCopy' => $attempt->getInitialCopy(), 'initialFeedback' => $attempt->getInitialResult()];
+        }
+
+        return $data + ['draft' => $attempt->getDraft(),
             'wordCount' => $this->tokenizer->countWords($attempt->getDraft()),
             'referenceWordCount' => $this->tokenizer->countWords($version->getCanonicalText()),
             'segments' => $version->getSegments()];

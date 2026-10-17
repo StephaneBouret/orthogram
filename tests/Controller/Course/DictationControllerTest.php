@@ -244,6 +244,10 @@ final class DictationControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame($status);
         $this->save($url, $token, 0, 'Refusé');
         self::assertResponseStatusCodeSame($status);
+        foreach (['evaluer', 'terminer'] as $action) {
+            $this->submitTransition($url, $action, $token, 0, 'Refusé');
+            self::assertResponseStatusCodeSame($status);
+        }
         $this->client->request('POST', $this->entry().'/commencer');
         self::assertResponseStatusCodeSame($status);
         $other->close();
@@ -272,12 +276,15 @@ final class DictationControllerTest extends WebTestCase
         self::assertSelectorTextSame('#dictation-copy', 'Valide');
     }
 
-    public function testOtherPhasesAreUnavailableIncludingSaveReplayAndAudio(): void
+    #[DataProvider('futurePhases')]
+    public function testFuturePhasesAreUnavailableIncludingSaveReplayAndAudio(string $phase): void
     {
         [$url, $token] = $this->start();
         $other = self::$database->manager();
         $attempt = $other->getRepository(DictationAttempt::class)->findOneBy(['user' => $this->user->getId()]);
         DictationFactory::service($other)->transition($attempt->getUser(), $attempt->getId(), DictationAction::Evaluate, 0, 'Copie différente.');
+        // Simulate a future phase only in the isolated database: no learner route may expose it.
+        $other->getConnection()->executeStatement('UPDATE dictation_attempt SET state = ? WHERE id = ?', [$phase, $attempt->getId()]);
         $this->client->request('GET', $url);
         self::assertResponseStatusCodeSame(409);
         $this->save($url, $token, 1, 'Modifiée');
@@ -285,6 +292,14 @@ final class DictationControllerTest extends WebTestCase
         $this->client->request('GET', $url.'/audio/writing');
         self::assertResponseStatusCodeSame(409);
         $other->close();
+    }
+
+    /** @return iterable<array{string}> */
+    public static function futurePhases(): iterable
+    {
+        yield ['resuming'];
+        yield ['reviewing'];
+        yield ['completed'];
     }
 
     public function testLegacyPublishedVersionWithoutMediaDoesNotCreateAttempt(): void
@@ -297,6 +312,150 @@ final class DictationControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(409);
         $other = self::$database->manager();
         self::assertSame(0, $other->getRepository(DictationAttempt::class)->count(['user' => $this->user->getId()]));
+        $other->close();
+    }
+
+    private function submitTransition(string $url, string $action, string $token, int $revision, string $copy): void
+    {
+        $this->client->request('POST', $url.'/'.$action, server: ['CONTENT_TYPE' => 'application/json', 'HTTP_X_CSRF_TOKEN' => $token], content: json_encode(['revision' => $revision, 'copy' => $copy], JSON_THROW_ON_ERROR));
+    }
+
+    private function transitionToken(): string
+    {
+        return $this->client->getCrawler()->filter('[data-dictation-writing-transition-token-value]')->attr('data-dictation-writing-transition-token-value');
+    }
+
+    public function testInitialJourneyFrozenFeedbackAndLateReceipts(): void
+    {
+        [$url, $saveToken] = $this->start();
+        $evaluateToken = $this->transitionToken();
+        $this->save($url, $saveToken, 0, 'Ancienne copie');
+        $before = self::$database->manager();
+        $savedAttempt = $before->getRepository(DictationAttempt::class)->findOneBy(['user' => $this->user->getId()]);
+        self::assertNull($savedAttempt->getInitialResult());
+        self::assertNull($savedAttempt->getClosedResult());
+        $before->close();
+        $copy = "😀 L’ ouvre.\n<script>alert(1)</script>";
+        $this->submitTransition($url, 'evaluer', $evaluateToken, 1, $copy);
+        self::assertResponseIsSuccessful();
+        self::assertJsonStringEqualsJsonString('{"revision":2,"state":"self_correction"}', $this->client->getResponse()->getContent());
+        // Exact receipt replay, and refusal of a different evaluation / stale SAVE.
+        $this->submitTransition($url, 'evaluer', $evaluateToken, 1, $copy);
+        self::assertResponseIsSuccessful();
+        $this->submitTransition($url, 'evaluer', $evaluateToken, 2, 'Autre copie');
+        self::assertResponseStatusCodeSame(409);
+        $this->save($url, $saveToken, 1, 'Copie tardive');
+        self::assertResponseStatusCodeSame(409);
+        $this->client->request('GET', $url);
+        $closeToken = $this->transitionToken();
+        self::assertSelectorTextContains('label[for="dictation-copy"]', 'Votre autocorrection');
+        self::assertSame($copy, $this->client->getCrawler()->filter('[data-dictation-writing-target="feedback"]')->text(null, false));
+        $issues = $this->client->getCrawler()->filter('[data-dictation-writing-issues-value]')->attr('data-dictation-writing-issues-value');
+        self::assertStringContainsString('&lt;script&gt;', $this->client->getResponse()->getContent());
+        self::assertSelectorNotExists('[data-dictation-writing-target="feedback"] script');
+        $this->save($url, $saveToken, 2, 'Autocorrection provisoire');
+        self::assertResponseIsSuccessful();
+        $this->client->request('GET', $url);
+        self::assertSame($issues, $this->client->getCrawler()->filter('[data-dictation-writing-issues-value]')->attr('data-dictation-writing-issues-value'));
+        self::assertSame($copy, $this->client->getCrawler()->filter('[data-dictation-writing-target="feedback"]')->text(null, false));
+        $this->client->request('GET', $url.'/audio/writing');
+        self::assertResponseIsSuccessful();
+        $closed = 'Copie réellement soumise à la clôture.';
+        $this->submitTransition($url, 'terminer', $closeToken, 3, $closed);
+        self::assertResponseIsSuccessful();
+        $this->submitTransition($url, 'terminer', $closeToken, 3, $closed);
+        self::assertResponseIsSuccessful();
+        $this->submitTransition($url, 'evaluer', $evaluateToken, 1, $copy);
+        self::assertResponseIsSuccessful();
+        self::assertJsonStringEqualsJsonString('{"revision":4,"state":"awaiting_courses"}', $this->client->getResponse()->getContent());
+        $this->save($url, $saveToken, 3, 'Autocorrection provisoire');
+        self::assertResponseStatusCodeSame(409);
+        $this->save($url, $saveToken, 4, 'Même révision mais phase clôturée');
+        self::assertResponseStatusCodeSame(409);
+        $this->client->request('GET', $url.'/audio/writing');
+        self::assertResponseStatusCodeSame(409);
+        $this->client->request('GET', $url);
+        self::assertSelectorTextSame('#dictation-closed-copy', $closed);
+        foreach (['initialFeedback', 'issues-value', 'SECRET_CORRECTION_TEST', 'L’école ouvre.'] as $secret) {
+            self::assertStringNotContainsString($secret, $this->client->getResponse()->getContent());
+        }
+        self::assertSelectorNotExists('#dictation-copy');
+        self::assertSelectorExists('a[href^="/courses/"]');
+        self::assertStringContainsString('no-store', $this->client->getResponse()->headers->get('Cache-Control'));
+        $other = self::$database->manager();
+        $attempt = $other->getRepository(DictationAttempt::class)->findOneBy(['user' => $this->user->getId()]);
+        self::assertTrue($attempt->isPrerequisiteSatisfied());
+        self::assertSame($closed, $attempt->getClosedCopy());
+        self::assertSame($copy, $attempt->getInitialCopy());
+        $other->close();
+    }
+
+    #[DataProvider('feedbackCases')]
+    public function testFeedbackUsesRealEngineAndPerfectCopyCloses(string $copy, bool $perfect): void
+    {
+        [$url] = $this->start();
+        $token = $this->transitionToken();
+        $expected = (new DictationCorrector())->correct('L’école ouvre.', $copy)->publicFeedback();
+        $this->submitTransition($url, 'evaluer', $token, 0, $copy);
+        self::assertResponseIsSuccessful();
+        $this->client->request('GET', $url);
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.dictation-summary', number_format($expected['score'], 1, ',', ' ').' %');
+        if ($perfect) {
+            self::assertSelectorExists('#dictation-closed-copy');
+            self::assertSelectorNotExists('[data-dictation-writing-issues-value]');
+            self::assertSelectorTextContains('main', 'Bravo');
+        } else {
+            self::assertSame($expected['issues'], json_decode($this->client->getCrawler()->filter('[data-dictation-writing-issues-value]')->attr('data-dictation-writing-issues-value'), true, flags: JSON_THROW_ON_ERROR));
+            self::assertSelectorExists('#dictation-copy');
+        }
+        $other = self::$database->manager();
+        $attempt = $other->getRepository(DictationAttempt::class)->findOneBy(['user' => $this->user->getId()]);
+        self::assertSame($expected, $attempt->getInitialResult());
+        self::assertSame(1, $attempt->getRevision());
+        self::assertSame($perfect, $attempt->isPrerequisiteSatisfied());
+        $other->close();
+    }
+
+    /** @return iterable<string, array{string, bool}> */
+    public static function feedbackCases(): iterable
+    {
+        yield 'perfect' => ['L’école ouvre.', true];
+        yield 'punctuation only 100 percent' => ['L’école ouvre', false];
+        yield 'omission after elision' => ['L’ ouvre.', false];
+        yield 'addition' => ['L’école ouvre demain.', false];
+        yield 'linking' => ['Lecole ouvre.', false];
+        yield 'separation' => ['L’ école ouvre.', false];
+        yield 'unicode and punctuation' => ["😀 L’e\u{0301}cole ouvre!", false];
+    }
+
+    public function testTransitionValidationCsrfOwnershipAndWrongPhase(): void
+    {
+        [$url] = $this->start();
+        $token = $this->transitionToken();
+        foreach (['evaluer', 'terminer'] as $action) {
+            $this->submitTransition($url, $action, 'invalid', 0, 'Copie');
+            self::assertResponseStatusCodeSame(403);
+        }
+        foreach (['', str_repeat('a ', 751)] as $invalid) {
+            $this->submitTransition($url, 'evaluer', $token, 0, $invalid);
+            self::assertResponseStatusCodeSame(422);
+        }
+        $this->submitTransition($url, 'evaluer', $token, 0, 'L’ ouvre.');
+        self::assertResponseIsSuccessful();
+        $this->client->request('GET', $url);
+        $closeToken = $this->transitionToken();
+        $this->submitTransition($url, 'terminer', $closeToken, 1, '');
+        self::assertResponseStatusCodeSame(422);
+        $this->submitTransition($url, 'terminer', $closeToken, 0, 'Conflit');
+        self::assertResponseStatusCodeSame(409);
+        $other = self::$database->manager();
+        [$foreign] = DictationFactory::create($other);
+        $this->client->loginUser($foreign);
+        foreach (['evaluer', 'terminer'] as $action) {
+            $this->submitTransition($url, $action, $token, 1, 'Interdit');
+            self::assertResponseStatusCodeSame(404);
+        }
         $other->close();
     }
 }

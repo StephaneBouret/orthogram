@@ -1,20 +1,48 @@
 import { Controller } from '@hotwired/stimulus';
+import { renderFeedback } from '../js/dictation_feedback.js';
+import { createCopyLocator, revealSelection } from '../js/dictation_navigation.js';
 
 export default class extends Controller {
-    static targets = ['copy', 'count', 'status', 'retry', 'recovery', 'complete', 'writing', 'select', 'previous', 'next', 'playButton', 'fullButton', 'audioStatus'];
-    static values = { url: String, token: String, revision: Number, segments: Array };
+    static targets = ['copy', 'count', 'status', 'retry', 'recovery', 'complete', 'writing', 'select', 'previous', 'next', 'playButton', 'fullButton', 'audioStatus', 'submit', 'feedback', 'navigationStatus'];
+    static values = { url: String, token: String, revision: Number, segments: Array, transitionUrl: String, transitionToken: String, phase: String, issues: Array, initial: Object };
 
     connect() {
         this.alive = true;
         this.confirmed = this.copyTarget.value;
         this.confirmedCount = this.countTarget.textContent;
         this.operation = null;
+        this.transitionIntent = null;
+        this.transitionOperation = null;
         this.inFlight = false;
         this.blocked = null;
         this.recoveryTarget.hidden = true;
         this.index = 0;
         this.audioEpoch = 0;
         this.copyTarget.disabled = false;
+        this.submitTarget.disabled = false;
+        if (this.hasFeedbackTarget) {
+            // JSON preserves CR/CRLF from older/API copies; the HTML parser normalizes them.
+            const initialCopy = this.initialValue.copy;
+            renderFeedback(this.feedbackTarget, initialCopy, this.issuesValue, (start, end) => {
+                const field = this.copyTarget;
+                if (this.locatedCopy !== field.value) {
+                    this.locatedCopy = field.value;
+                    this.locate = createCopyLocator(initialCopy, field.value);
+                }
+                const range = this.locate(start, end);
+                const previous = [field.selectionStart, field.selectionEnd, field.selectionDirection];
+                field.focus({ preventScroll: true });
+                if (range) {
+                    field.setSelectionRange(...range);
+                    revealSelection(field, ...range);
+                    this.navigationStatusTarget.textContent = 'Passage retrouvé dans votre autocorrection. Les signalements restent ceux de la première copie.';
+                } else {
+                    field.setSelectionRange(...previous);
+                    this.navigationStatusTarget.textContent = 'Ce passage a été modifié ou ne peut plus être localisé avec certitude. Retrouvez-le dans votre autocorrection.';
+                    field.scrollIntoView({ block: 'center', behavior: 'instant' });
+                }
+            });
+        }
         this.listeners = new AbortController();
         const options = { signal: this.listeners.signal };
         window.addEventListener('beforeunload', event => {
@@ -68,10 +96,10 @@ export default class extends Controller {
         this.stop();
     }
 
-    dirty() { return this.operation !== null || this.inFlight || this.copyTarget.value !== this.confirmed; }
+    dirty() { return this.transitionIntent !== null || this.operation !== null || this.inFlight || this.copyTarget.value !== this.confirmed; }
 
     input() {
-        if (this.blocked === 'validation') { this.blocked = null; this.retryTarget.hidden = true; }
+        if (this.blocked === 'validation') { this.blocked = null; this.retryTarget.hidden = true; this.submitTarget.disabled = false; }
         clearTimeout(this.debounce);
         if (!this.blocked && !this.dirty()) { this.showConfirmed(); return; }
         this.countTarget.textContent = 'Avancement : décompte en attente d’enregistrement…';
@@ -84,9 +112,11 @@ export default class extends Controller {
         this.countTarget.textContent = this.confirmedCount;
         this.retryTarget.hidden = true;
         this.recoveryTarget.hidden = true;
+        this.submitTarget.disabled = this.transitionIntent !== null;
     }
 
     insert(event) {
+        if (this.transitionIntent !== null) return;
         const field = this.copyTarget;
         field.setRangeText(event.currentTarget.dataset.character, field.selectionStart, field.selectionEnd, 'end');
         field.focus();
@@ -96,6 +126,7 @@ export default class extends Controller {
     async save() {
         if (!this.alive || this.inFlight || this.blocked) return;
         clearTimeout(this.debounce);
+        if (this.transitionIntent !== null && this.operation === null) { this.sendTransition(); return; }
         // Equality never skips an uncertain operation: its exact receipt must be checked first.
         if (!this.dirty()) { this.showConfirmed(); return; }
         // Keep the exact operation until acknowledged, including across network retries.
@@ -151,9 +182,70 @@ export default class extends Controller {
         this.recoveryTarget.hidden = false;
         this.statusTarget.textContent = message;
         this.retryTarget.hidden = kind !== 'retry';
+        this.submitTarget.disabled = true;
+        if (['validation', 'conflict'].includes(kind) && this.transitionOperation === null) {
+            this.transitionIntent = null;
+            this.lockEditor(false);
+        }
     }
 
     retry() { if (this.blocked === 'retry') { this.blocked = null; this.save(); } }
+
+    submit() {
+        if (this.transitionIntent !== null || (this.blocked && this.blocked !== 'validation')) return;
+        this.blocked = null;
+        this.transitionIntent = this.copyTarget.value;
+        clearTimeout(this.debounce);
+        this.lockEditor(true);
+        this.save(); // A pending/uncertain SAVE must be acknowledged before assigning the revision.
+    }
+
+    lockEditor(locked) {
+        this.copyTarget.readOnly = locked;
+        this.copyTarget.setAttribute('aria-busy', String(locked));
+        this.submitTarget.disabled = locked || this.blocked !== null;
+        for (const button of this.element.querySelectorAll('[data-character]')) button.disabled = locked;
+    }
+
+    async sendTransition() {
+        this.transitionOperation ??= { revision: this.revisionValue, copy: this.transitionIntent };
+        const operation = this.transitionOperation;
+        this.inFlight = true;
+        this.statusTarget.textContent = 'Validation de votre copie…';
+        this.retryTarget.hidden = true;
+        this.request = new AbortController();
+        this.timeout = setTimeout(() => this.request.abort(), 15000);
+        try {
+            const response = await fetch(this.transitionUrlValue, {
+                method: 'POST', credentials: 'same-origin', cache: 'no-store', redirect: 'error',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': this.transitionTokenValue, Accept: 'application/json' },
+                body: JSON.stringify(operation), signal: this.request.signal,
+            });
+            if (!this.alive) return;
+            const data = await response.json();
+            if (!response.ok) {
+                if ([413, 422, 409].includes(response.status)) {
+                    this.transitionIntent = null;
+                    this.transitionOperation = null;
+                    this.fail(response.status === 409 ? 'conflict' : 'validation', `${data.message} Votre saisie est conservée. ${response.status === 409 ? 'Téléchargez-la avant de recharger.' : 'Corrigez-la puis réessayez.'}`);
+                    this.lockEditor(false);
+                } else this.fail('retry', data.message || 'Confirmation non reçue. Réessayez la même opération.');
+                return;
+            }
+            const states = this.phaseValue === 'writing' ? ['self_correction', 'awaiting_courses'] : ['awaiting_courses'];
+            if (!Number.isInteger(data.revision) || data.revision < operation.revision + 1 || !states.includes(data.state)) throw new Error('Invalid transition acknowledgement');
+            this.transitionIntent = null;
+            this.transitionOperation = null;
+            this.confirmed = this.copyTarget.value;
+            this.inFlight = false;
+            window.location.reload();
+        } catch {
+            if (this.alive) this.fail('retry', 'Confirmation non reçue. Votre copie reste protégée. Réessayez : la même opération sera vérifiée, sans nouvelle évaluation.');
+        } finally {
+            clearTimeout(this.timeout);
+            this.inFlight = false;
+        }
+    }
 
     recover() {
         const url = URL.createObjectURL(new Blob([this.copyTarget.value], { type: 'text/plain;charset=utf-8' }));
