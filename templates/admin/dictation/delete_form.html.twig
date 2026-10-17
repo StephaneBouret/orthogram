@@ -1,0 +1,8 @@
+<form method="post" action="{{ path('admin_dictations_delete', {dictationId: version.dictation.id, id: version.id}) }}"
+      data-action="submit->dictation-editor#deleteDraft" data-version-number="{{ version.number }}"
+      data-return-url="{{ path('admin_dictations_detail', {id: version.dictation.id}) }}">
+    <input type="hidden" name="_token" value="{{ csrf_token('dictation_delete_' ~ version.dictation.id ~ '_' ~ version.id) }}">
+    <input type="hidden" name="revision" value="{{ revision }}">
+    <button type="submit" class="btn btn-danger" data-delete-draft disabled aria-label="Supprimer le brouillon version {{ version.number }}">Supprimer le brouillon</button>
+    <noscript>Activez JavaScript pour confirmer la suppression du brouillon.</noscript>
+</form>

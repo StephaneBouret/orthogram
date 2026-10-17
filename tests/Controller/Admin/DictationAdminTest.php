@@ -238,13 +238,81 @@ final class DictationAdminTest extends WebTestCase
             $session->set('_security_main', serialize(new TwoFactorToken(new UsernamePasswordToken($this->user, 'main', $this->user->getRoles()), null, 'main', ['email'])));
             $session->save();
         }
-        foreach (['/admin/dictees', $this->url(), $this->url().'/audio/writing/listen'] as $url) {
+        foreach (['/admin/dictees', $this->url(), $this->url().'/audio/writing/listen', '/admin/dictees/'.$this->source->getDictation()->getId().'/versions/'.$this->source->getId().'/delete'] as $url) {
             foreach (['GET', 'HEAD', 'POST'] as $method) {
                 $this->client->request($method, $url, server: ['HTTP_RANGE' => 'bytes=0-99']);
                 self::assertContains($this->client->getResponse()->getStatusCode(), [302, 403, 405]);
                 self::assertNotInstanceOf(BinaryFileResponse::class, $this->client->getResponse());
             }
         }
+    }
+
+    public function testDeleteDraftUiCsrfRevisionSuccessAndRepeatedRequest(): void
+    {
+        $draft = $this->draft();
+        $id = $draft->getId();
+        $list = '/admin/dictees/'.$draft->getDictation()->getId();
+        $crawler = $this->client->request('GET', $list);
+        self::assertSelectorCount(1, '[data-delete-draft]');
+        self::assertSelectorExists('form[data-version-number="2"]');
+        $crawler = $this->client->request('GET', $this->url($draft));
+        $form = $crawler->filter('form[action$="/delete"]')->form();
+        $deleteUrl = $form->getUri();
+        $values = $form->getPhpValues();
+        $this->client->request('GET', $deleteUrl);
+        self::assertResponseStatusCodeSame(405);
+        $this->client->request('POST', $deleteUrl, array_replace($values, ['_token' => 'wrong']));
+        self::assertResponseStatusCodeSame(403);
+        $this->client->request('POST', $deleteUrl, array_replace($values, ['revision' => '0']));
+        self::assertResponseStatusCodeSame(409);
+        $this->client->request('POST', $deleteUrl, $values);
+        self::assertResponseIsSuccessful();
+        self::assertJsonStringEqualsJsonString(json_encode(['redirect' => $list], JSON_THROW_ON_ERROR), $this->client->getResponse()->getContent());
+        self::assertFalse(self::$database->manager()->getConnection()->fetchOne('SELECT id FROM dictation_version WHERE id = ?', [$id]));
+        $this->client->request('GET', $list);
+        self::assertSelectorNotExists('[data-delete-draft]');
+        self::assertSelectorTextContains('body', 'Le brouillon a été supprimé');
+        $this->client->request('POST', $deleteUrl, $values);
+        self::assertResponseStatusCodeSame(404);
+        foreach (['complete', 'writing'] as $role) {
+            $this->client->request('GET', $this->url().'/audio/'.$role.'/listen', server: ['HTTP_RANGE' => 'bytes=0-99']);
+            self::assertResponseStatusCodeSame(206);
+        }
+        $this->client->request('GET', $this->url());
+        self::assertSelectorNotExists('[data-delete-draft]');
+    }
+
+    public function testDeleteConflictPreservesSubmittedRevisionAndExistingVersion(): void
+    {
+        $draft = $this->draft();
+        $crawler = $this->client->request('GET', $this->url($draft));
+        $delete = $crawler->filter('form[action$="/delete"]')->form();
+        $other = self::$database->manager();
+        $current = $other->find(DictationVersion::class, $draft->getId());
+        $current->edit('Titre concurrent', $current->getCanonicalText(), null);
+        (new DictationEditorialService($other, new \App\Services\Dictation\DictationCorrector(), DictationAudioFixture::storage()))->saveDraft($current, $current->getRevision());
+        $this->client->request('POST', $delete->getUri(), $delete->getPhpValues());
+        self::assertResponseStatusCodeSame(409);
+        self::assertStringContainsString('La version a changé', json_decode($this->client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR)['message']);
+        self::assertSame('Titre concurrent', $other->getConnection()->fetchOne('SELECT title FROM dictation_version WHERE id = ?', [$draft->getId()]));
+    }
+
+    public function testDraftLinkedToAttemptHasNoDeleteActionAndCannotBeDeleted(): void
+    {
+        $draft = $this->draft();
+        $crawler = $this->client->request('GET', $this->url($draft));
+        $delete = $crawler->filter('form[action$="/delete"]')->form();
+        $attempt = new \App\Entity\DictationAttempt($this->user, $this->source, false);
+        $this->em->persist($attempt);
+        $this->em->flush();
+        $this->em->getConnection()->executeStatement('UPDATE dictation_attempt SET version_id = ? WHERE id = ?', [$draft->getId(), $attempt->getId()]);
+        $this->client->request('GET', $this->url($draft));
+        self::assertSelectorNotExists('[data-delete-draft]');
+        $this->client->request('GET', '/admin/dictees/'.$draft->getDictation()->getId());
+        self::assertSelectorNotExists('[data-delete-draft]');
+        $this->client->request('POST', $delete->getUri(), $delete->getPhpValues());
+        self::assertResponseStatusCodeSame(409);
+        self::assertStringContainsString('tentative', $this->client->getResponse()->getContent());
     }
 
     public function testAdminAudioFullHeadRangeAndNoPublicRoute(): void

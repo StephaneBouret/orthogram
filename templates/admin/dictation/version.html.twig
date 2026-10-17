@@ -57,5 +57,8 @@
         <input type="hidden" name="revision" value="{{ form.revision.vars.value }}">
         <button class="btn btn-secondary">Créer un nouveau brouillon à partir de cette version</button>
     </form>
+    {% if version.id in deletableVersionIds %}
+        <div class="mt-3">{% include 'admin/dictation/delete_form.html.twig' with {version: version, revision: form.revision.vars.value} only %}</div>
+    {% endif %}
 </div>
 {% endblock %}

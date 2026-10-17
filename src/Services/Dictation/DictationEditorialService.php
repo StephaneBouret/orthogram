@@ -9,6 +9,7 @@ use App\Entity\DictationVersion;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /** Editorial transactions. All version changes share the same revision and lock order. */
 final class DictationEditorialService
@@ -50,6 +51,24 @@ final class DictationEditorialService
         $this->em->wrapInTransaction(function () use ($version, $expectedRevision): void {
             $this->lockRevision($version, $expectedRevision);
             $version->publish($this->corrector, $this->storage);
+        });
+    }
+
+    public function deleteDraft(int $dictationId, int $versionId, int $expectedRevision): void
+    {
+        $this->em->wrapInTransaction(function () use ($dictationId, $versionId, $expectedRevision): void {
+            $stored = $this->lockStoredVersion($dictationId, $versionId, $expectedRevision);
+            if (null !== $stored['published_at']) {
+                throw new ConflictHttpException('Une version publiée ne peut jamais être supprimée.');
+            }
+            // Current locking read, even if this transaction already has a REPEATABLE READ snapshot.
+            // The version lock also blocks concurrent FK references until the deletion commits.
+            if (false !== $this->em->getConnection()->fetchOne('SELECT id FROM dictation_attempt WHERE version_id = ? LIMIT 1 FOR UPDATE', [$versionId])) {
+                throw new ConflictHttpException('Cette version est liée à une tentative et ne peut pas être supprimée.');
+            }
+            $version = $this->em->find(DictationVersion::class, $versionId) ?? throw new NotFoundHttpException('Cette version a déjà été supprimée ou est introuvable.');
+            $this->em->remove($version);
+            // Only the version row is removed. Shared physical audio files are deliberately retained.
         });
     }
 
@@ -137,13 +156,28 @@ final class DictationEditorialService
 
     private function lockRevision(DictationVersion $version, int $expectedRevision): void
     {
-        // Same lock order as start/version creation, without rehydrating the submitted entity.
-        $this->em->lock($version->getDictation(), LockMode::PESSIMISTIC_WRITE);
-        $revision = $this->em->getConnection()->fetchOne(
-            'SELECT revision FROM dictation_version WHERE id = ? FOR UPDATE', [$version->getId()]
-        );
-        if (false === $revision || $expectedRevision !== $version->getRevision() || $expectedRevision !== (int) $revision) {
+        $this->lockStoredVersion($version->getDictation()->getId(), $version->getId(), $expectedRevision);
+        if ($expectedRevision !== $version->getRevision()) {
             throw new ConflictHttpException('La version a changé. Comparez les modifications avec la version enregistrée avant de réessayer.');
         }
+    }
+
+    /** @return array<string, mixed> */
+    private function lockStoredVersion(?int $dictationId, ?int $versionId, int $expectedRevision): array
+    {
+        // Same lock order as start/version creation, without rehydrating submitted fields.
+        $connection = $this->em->getConnection();
+        if (false === $connection->fetchOne('SELECT id FROM dictation WHERE id = ? FOR UPDATE', [$dictationId])) {
+            throw new NotFoundHttpException('Dictée introuvable.');
+        }
+        $stored = $connection->fetchAssociative('SELECT dictation_id, revision, published_at FROM dictation_version WHERE id = ? FOR UPDATE', [$versionId]);
+        if (false === $stored || (int) $stored['dictation_id'] !== $dictationId) {
+            throw new NotFoundHttpException('Cette version a déjà été supprimée ou est introuvable dans cette dictée.');
+        }
+        if ($expectedRevision < 1 || $expectedRevision !== (int) $stored['revision']) {
+            throw new ConflictHttpException('La version a changé. Comparez les modifications avec la version enregistrée avant de réessayer.');
+        }
+
+        return $stored;
     }
 }

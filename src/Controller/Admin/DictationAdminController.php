@@ -24,9 +24,12 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -82,13 +85,14 @@ final class DictationAdminController extends AbstractController
             }
         }
 
-        return $this->render('admin/dictation/detail.html.twig', ['dictation' => $dictation, 'form' => $form, 'versions' => $this->em->getRepository(DictationVersion::class)->findBy(['dictation' => $dictation], ['number' => 'DESC'])], new Response(status: $form->isSubmitted() ? 422 : 200));
+        return $this->render('admin/dictation/detail.html.twig', ['dictation' => $dictation, 'form' => $form, 'versions' => $this->em->getRepository(DictationVersion::class)->findBy(['dictation' => $dictation], ['number' => 'DESC']), 'deletableVersionIds' => $this->deletableVersionIds($dictation)], new Response(status: $form->isSubmitted() ? 422 : 200));
     }
 
     #[AdminRoute('/versions/{id}', name: 'version', options: ['methods' => ['GET', 'POST'], 'requirements' => ['id' => '\d+']])]
     public function version(DictationVersion $version, Request $request): Response
     {
         $this->authorize();
+        $deletableVersionIds = $this->deletableVersionIds($version->getDictation());
         $form = $this->versionForm($version, $request->isMethod('POST'));
         $form->handleRequest($request);
         $status = 200;
@@ -126,7 +130,35 @@ final class DictationAdminController extends AbstractController
             }
         }
 
-        return $this->render('admin/dictation/version.html.twig', ['version' => $version, 'form' => $form], new Response(status: $status));
+        return $this->render('admin/dictation/version.html.twig', ['version' => $version, 'form' => $form, 'deletableVersionIds' => $deletableVersionIds], new Response(status: $status));
+    }
+
+    #[AdminRoute('/{dictationId}/versions/{id}/delete', name: 'delete', options: ['methods' => ['POST'], 'requirements' => ['dictationId' => '\d+', 'id' => '\d+']])]
+    public function deleteDraft(int $dictationId, int $id, Request $request): JsonResponse
+    {
+        try {
+            $this->authorize();
+            if (!$this->isCsrfTokenValid('dictation_delete_'.$dictationId.'_'.$id, $request->request->get('_token'))) {
+                throw $this->createAccessDeniedException('Jeton de sécurité invalide. Rechargez après avoir préservé votre saisie.');
+            }
+            $this->editorial->deleteDraft($dictationId, $id, $this->revision($request->request->get('revision')));
+            $this->addFlash('success', 'Le brouillon a été supprimé. Les autres versions et les fichiers audio sont conservés.');
+
+            return $this->json(['redirect' => $this->generateUrl('admin_dictations_detail', ['id' => $dictationId])]);
+        } catch (HttpException|AccessDeniedException $error) {
+            return $this->json(['message' => $error->getMessage()], $error instanceof HttpException ? $error->getStatusCode() : 403);
+        }
+    }
+
+    /** Visibility only; deletion rechecks all conditions under transaction locks.
+     * @return list<int>
+     */
+    private function deletableVersionIds(Dictation $dictation): array
+    {
+        $rows = $this->em->createQuery('SELECT v.id FROM App\Entity\DictationVersion v WHERE v.dictation = :dictation AND v.publishedAt IS NULL AND NOT EXISTS (SELECT a.id FROM App\Entity\DictationAttempt a WHERE a.version = v)')
+            ->setParameter('dictation', $dictation)->getScalarResult();
+
+        return array_map(static fn (array $row): int => (int) $row['id'], $rows);
     }
 
     #[AdminRoute('/versions/{id}/clone', name: 'clone', options: ['methods' => ['POST'], 'requirements' => ['id' => '\d+']])]

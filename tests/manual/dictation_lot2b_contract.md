@@ -241,3 +241,228 @@ Fichiers de cette intervention : `src/Controller/Admin/DictationAdminController.
 ### Compte rendu de la recette manuelle locale validée
 
 L’utilisateur a confirmé la publication de la version 1, puis sa duplication en version 2 avec conservation des médias et des segments. Le titre du nouveau brouillon a ensuite été modifié sans modifier celui de la version 1 publiée. Cette recette complète les contrôles précédemment confirmés sur les vrais MP3 : imports, lecture et arrêt aux bornes des segments. Le lot 2B et ses correctifs sont validés pour un commit local sur `preprod`. La préparation du commit ne modifie ni la base ni les contenus locaux.
+
+## Complément : supprimer un brouillon — 17 octobre 2026
+
+Point de départ : `preprod`, `701146fe2c926310008b076082339a5033579253` (lot 4).
+Cette intervention concerne uniquement l’administration éditoriale. Pendant
+l’implémentation et les tests, l’agent n’a ni supprimé ni modifié la version 2
+de développement ; aucun média réel, export, réglage local ou ZIP n’a été modifié.
+Cette phase n’a comporté aucun commit, push, déploiement, migration applicative
+ou changement du parcours apprenant. La recette manuelle ultérieure est consignée
+en fin de section. Le moteur reste inchangé.
+
+### Règles et transaction
+
+`DictationEditorialService::deleteDraft(dictationId, versionId, expectedRevision)`
+supprime uniquement une version encore brouillon et sans tentative associée.
+La dictée, sa section et les autres versions restent présentes. Une version
+publiée est indélébile, même sans tentative. Une version brouillon référencée
+par une tentative incohérente ou ancienne est également refusée.
+
+La commande prend une transaction et verrouille l’identité de la dictée, puis
+la ligne de version, dans le même ordre que création, sauvegarde, publication,
+import et duplication. Le contrôle commun `lockStoredVersion()` relit
+`dictation_id`, `revision` et `published_at` avec `FOR UPDATE`. Le rattachement et
+la révision soumise sont revérifiés avant toute suppression. La recherche de
+tentative est elle aussi une lecture verrouillante courante, indépendante
+d’un éventuel snapshot REPEATABLE READ antérieur. Les clés étrangères `RESTRICT`
+restent en place : aucune cascade sur les copies, résultats ou tentatives.
+
+Si une publication ou une édition gagne la course, la suppression avec l’ancienne
+révision reçoit 409. Si la suppression gagne, la publication, la sauvegarde,
+l’import et la duplication depuis l’ancienne version rencontrent son absence
+et reçoivent 404 ; ils ne recréent pas la ligne. La garde vérifie aussi la
+révision de l’objet géré pour les opérations éditoriales existantes, sans
+rafraîchir ni abandonner les champs soumis. Une version introuvable, déjà
+supprimée ou rattachée à une autre dictée produit une réponse maîtrisée 404.
+
+Les versions restantes ne sont jamais renumérotées. L’allocation existante
+`MAX(number) + 1`, sous verrou d’identité, continue de fonctionner : après
+suppression de 2 parmi 1/2/3, la création donne 4 puis la duplication 5. Si le
+plus grand numéro est supprimé, ce numéro peut être réutilisé pour une nouvelle
+ligne avec un nouvel identifiant ; il n’existe pas de compteur historique des
+numéros supprimés. Aucun historique ni nouvelle migration n’est introduit.
+
+### Médias conservés
+
+La suppression ne retire **aucun fichier physique**, partagé ou non. Les pistes
+immuables peuvent être référencées par plusieurs versions. Les versions conservées
+gardent leurs références audio et leurs segments ; leur écoute reste autorisée
+par les contrôles habituels. Les orphelins éventuels sont volontairement conservés.
+Leur nettoyage sera une opération séparée, hors de ce complément.
+
+### Interface et refus sans perte de saisie
+
+« Supprimer le brouillon » apparaît dans la liste des versions et dans la fiche,
+uniquement pour les brouillons sans tentative selon la lecture de la page.
+Cette visibilité n’accorde aucun droit : le POST
+`/admin/dictees/{dictationId}/versions/{id}/delete` contrôle l’administrateur
+actif et pleinement authentifié, le jeton CSRF lié aux deux identifiants et la
+révision attendue, puis appelle le service transactionnel.
+
+Le bouton utilise la confirmation native `window.confirm`, déjà utilisée dans
+l’application. Elle annonce le numéro réel, par exemple :
+« Supprimer définitivement le brouillon version 2 ? », puis
+« Cette action est irréversible. ». Si la page est sale, la **même** confirmation
+précise que ses modifications non enregistrées seront également perdues. Cela
+vaut aussi pour le formulaire de création présent dans la liste. Il n’y a pas
+de sauvegarde automatique ni de seconde confirmation avant la redirection.
+
+L’annulation ne produit aucune requête, conserve les champs et rend le focus au
+bouton. Après confirmation, les contrôles sont temporairement désactivés pendant
+le POST pour empêcher une nouvelle saisie ou une autre action en parallèle.
+Le succès confirmé redirige vers les versions de la dictée, avec un message
+annonçant la suppression et la conservation des autres versions et des fichiers.
+
+Un refus 403/409/404 reste sur la page : les champs et la révision affichée ne
+changent pas, les contrôles redeviennent utilisables, un message accessible
+explique le refus. L’état non enregistré et l’avertissement de navigation sont
+conservés, y compris après une réponse antérieure 409/422. Aucune adoption de
+révision courante ni nouvelle soumission automatique. Si la réponse est perdue
+ou dépasse 15 secondes, l’issue est annoncée comme non confirmée ; la saisie
+reste disponible et l’utilisateur doit la préserver avant de vérifier la liste.
+Une répétition après suppression renvoie 404, sans deuxième suppression.
+
+Les classes EasyAdmin et les couleurs clair/sombre restent utilisées. Le focus
+visible existant s’applique aussi à la liste. L’apparence du dialogue natif suit
+le navigateur/système, pas le CSS de la page. Sans JavaScript, le bouton reste
+désactivé avec une explication afin de ne jamais soumettre sans confirmation.
+
+### Vérifications et résultats
+
+Les bases MySQL aléatoires et stockages des fixtures sont exclusivement isolés.
+Les tests d’intégration ajoutés contrôlent les refus publiés/avec tentative,
+révision périmée, mauvais rattachement, répétition, intégrité des autres versions,
+des lignes complètes de tentative et de leurs résultats, conservation des fichiers
+et des références audio, création/duplication après un trou, ainsi que les
+opérations chargées avant suppression (save/import/clone).
+
+Trois courses réelles utilisent un second processus PHP et une connexion MySQL
+distincte. Le parent attend que `performance_schema.data_lock_waits` confirme
+que le worker attend le verrou d’identité avant de laisser gagner l’opération :
+
+| Opération gagnante | Opération en attente | Résultat |
+| --- | --- | --- |
+| Publication | Suppression à l’ancienne révision | 409, version publiée conservée |
+| Suppression | Publication de l’objet déjà chargé | 404, version absente |
+| Sauvegarde | Suppression à l’ancienne révision | 409, nouveau titre conservé |
+
+Le test HTTP couvre aussi POST uniquement, CSRF, comptes ordinaires/anonymes/
+inactifs/2FA incomplète, visibilité, conflit, répétition 404, message de succès,
+et écoute Range 206 des deux pistes de la version publiée après suppression du
+brouillon partageant ses médias.
+
+Commandes réellement exécutées :
+
+```powershell
+vendor\bin\phpunit --do-not-cache-result tests/Integration/DictationDraftDeletionTest.php
+vendor\bin\phpunit --do-not-cache-result tests/Services/Dictation tests/Services/Courses/SectionCompletionServiceTest.php tests/Integration/DictationPersistenceTest.php tests/Integration/DictationEditorialMediaPersistenceTest.php tests/Integration/DictationDraftDeletionTest.php tests/Controller/Admin/DictationAdminTest.php tests/Controller/Course/DictationControllerTest.php
+vendor\bin\phpunit --do-not-cache-result tests/Controller/Admin/DictationAdminTest.php
+vendor\bin\phpstan analyse --configuration=tests/Services/Dictation/phpstan.dist.neon --no-progress --error-format=table src/Services/Dictation/DictationEditorialService.php src/Controller/Admin/DictationAdminController.php tests/Integration/DictationDraftDeletionTest.php tests/Controller/Admin/DictationAdminTest.php tests/Support/dictation_editorial_worker.php
+vendor\bin\php-cs-fixer fix --config=.php-cs-fixer.dist.php --using-cache=no src/Services/Dictation/DictationEditorialService.php src/Controller/Admin/DictationAdminController.php tests/Integration/DictationDraftDeletionTest.php tests/Controller/Admin/DictationAdminTest.php tests/Support/dictation_editorial_worker.php
+vendor\bin\php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff --using-cache=no src/Services/Dictation/DictationEditorialService.php src/Controller/Admin/DictationAdminController.php tests/Integration/DictationDraftDeletionTest.php tests/Controller/Admin/DictationAdminTest.php tests/Support/dictation_editorial_worker.php
+php bin/console lint:twig templates/admin/dictation --env=test
+& $node --check assets/controllers/dictation_editor_controller.js
+& $node --check tests/manual/dictation_lot2b_delete_browser_check.cjs
+git diff --check
+```
+
+Résultats : intégration ajoutée **12 tests / 40 assertions** ; suite complète
+**365 tests / 2 235 assertions**, 53,628 s, 80 Mio. Après précision de la réponse
+JSON en cas de CSRF invalide, le contrôleur a été rejoué : **28 tests / 421
+assertions**, 22,402 s. PHPStan sans erreur ; style PHP sans correction restante
+sur cinq fichiers ; cinq templates Twig valides ; syntaxe JavaScript valide.
+
+La recette navigateur utilise Chrome headless sous Windows via CDP. Le port
+8815 appartenait à une session manuelle préexistante : elle a été préservée.
+Une copie privée du serveur/routeur de recette 2B sous
+`var/dictation-delete-recipe/` utilise 8855, un témoin `stop` propre et un profil
+Chrome séparé sur 8856. Chaque rejeu destructif part d’une base et d’un stockage
+neufs. Le nouveau pilote accepte ces deux ports en arguments (défauts 8815/8816).
+
+```powershell
+$node = 'C:\Users\STEF-LEGION\AppData\Local\Logi\LogiPluginService\PluginHosts\node22\node\node.exe'
+php -d xdebug.mode=off var/dictation-delete-recipe/serve.php
+& $node tests/manual/dictation_lot2b_delete_browser_check.cjs 8855 8856
+# Sur deux nouvelles bases successives ; copies des pilotes existants dont
+# seuls les ports 8815/8816 sont remplacés par 8855/8856 :
+& $node var/dictation-delete-recipe/dictation_lot2b_form_browser_check.cjs
+& $node var/dictation-delete-recipe/dictation_lot2b_browser_check.cjs
+New-Item -ItemType File -Path var/dictation-delete-recipe/stop
+```
+
+Le parcours ciblé vérifie confirmation du bon numéro et irréversibilité,
+annulation clavier avec retour du focus visible en clair/sombre, aucune requête
+sur annulation, saisie non enregistrée, refus CSRF réel, conflit après sauvegarde
+et publication concurrentes, révision conservée, protection de sortie, annulation
+après 422, succès sans double confirmation, redirection/message, répétition 404,
+audio partagé lisible et duplication après trou. Les captures de liste en clair
+et sombre sont examinées ; elles prouvent le rendu, pas à elles seules le clavier.
+Le comportement clavier et les dialogues sont contrôlés séparément par CDP.
+Aucun essai avec lecteur d’écran ou sur mobile physique n’est revendiqué.
+
+Pendant la mise au point, une assertion PHP cherchait du texte accentué dans le
+JSON encore échappé : elle décode maintenant la réponse. Le navigateur a permis
+de préciser le message CSRF (l’exception de sécurité n’était pas une HttpException).
+Deux chaînes de sélecteurs mal échappées et une attente trop précoce pendant la
+redirection ont été corrigées dans le pilote, puis rejouées sur base neuve.
+
+Les trois recettes finales passent sans exception JavaScript : suppression,
+protections après 409/422 et collections, puis parcours éditorial général
+(audio, arrêt aux bornes, publication, immuabilité, duplication et ordre des
+segments). Les contrôles `git diff --check` et `--no-index --check` des quatre
+nouveaux fichiers ne signalent aucun défaut d’espacement. Aucun fichier n’était
+indexé à la fin de cette phase de vérification.
+Les serveurs de test confirment le nettoyage de leurs bases et stockages.
+Le premier serveur lancé dans le bac à sable a nécessité l’arrêt ciblé de son
+processus PHP identifié sur 8855 ; les suivants, lancés avec les permissions
+nécessaires, se sont arrêtés normalement via leur propre témoin. La session
+préexistante sur 8815 n’a reçu aucun signal d’arrêt.
+
+### Fichiers du complément
+
+- `src/Services/Dictation/DictationEditorialService.php`
+- `src/Controller/Admin/DictationAdminController.php`
+- `assets/controllers/dictation_editor_controller.js`
+- `templates/admin/dictation/detail.html.twig`
+- `templates/admin/dictation/version.html.twig`
+- `templates/admin/dictation/delete_form.html.twig` (nouveau)
+- `tests/Integration/DictationDraftDeletionTest.php` (nouveau)
+- `tests/Support/dictation_editorial_worker.php` (nouveau)
+- `tests/Controller/Admin/DictationAdminTest.php`
+- `tests/manual/dictation_lot2b_delete_browser_check.cjs` (nouveau)
+- Le présent contrat.
+
+### Recette locale à effectuer par l’utilisateur
+
+1. Ouvrir la dictée dans EasyAdmin. La version publiée ne doit proposer aucune
+   suppression. Sur le brouillon choisi, vérifier le numéro dans la confirmation,
+   puis **annuler** : même page et retour du focus au bouton.
+2. Dans sa fiche, modifier un champ sans enregistrer, demander la suppression
+   puis annuler. Vérifier l’avertissement de saisie dans la confirmation unique
+   et la conservation intégrale des valeurs. Refaire au clavier et dans les
+   deux thèmes.
+3. Pour vérifier un conflit, ouvrir un brouillon jetable dans deux onglets.
+   Enregistrer un changement dans A, puis demander sa suppression depuis B :
+   refus explicite, champs de B conservés. Préserver la saisie avant tout
+   rechargement volontaire ; ne pas remplacer automatiquement la révision.
+4. Quand vous décidez réellement de supprimer un brouillon, relire son numéro
+   et confirmer. Vérifier le retour à la liste, le message de succès, les autres
+   versions et leur lecture audio. Créer ou dupliquer un nouveau brouillon pour
+   vérifier la suite de numérotation. Cette étape est irréversible et n’a pas
+   été exécutée sur votre version 2 de développement par l’agent.
+
+### Recette manuelle du complément confirmée par l’utilisateur
+
+L’utilisateur confirme avoir supprimé le brouillon **version 2 depuis la liste**,
+après confirmation explicite, puis avoir vu le message de succès. La **version 1
+publiée est conservée, à la révision 10**. Après suppression, la lecture des deux
+pistes et des segments reste fonctionnelle.
+
+Ces observations sont celles de cette recette manuelle. **L’annulation, la
+conservation de la saisie et les conflits n’ont pas été vérifiés manuellement
+lors de cette recette** ; leurs résultats décrits plus haut proviennent des
+vérifications automatisées sur environnements isolés. Cette confirmation
+n’étend pas non plus la validation au mobile physique ou au lecteur d’écran.
+La préparation du commit local ne modifie aucune donnée ni aucun média.

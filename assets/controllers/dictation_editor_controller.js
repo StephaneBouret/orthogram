@@ -5,15 +5,19 @@ export default class extends Controller {
     static values = { unsaved: Boolean };
 
     connect() {
+        this.alive = true;
         this.dirty = this.unsavedValue;
+        this.deletePending = false;
+        this.element.querySelectorAll('[data-delete-draft]').forEach(button => { button.disabled = false; });
         this.numberSegments();
         this.beforeUnload = event => {
-            if (this.dirty) { event.preventDefault(); event.returnValue = ''; }
+            if (this.dirty || this.deletePending) { event.preventDefault(); event.returnValue = ''; }
         };
         window.addEventListener('beforeunload', this.beforeUnload);
     }
 
     disconnect() {
+        this.alive = false;
         window.removeEventListener('beforeunload', this.beforeUnload);
         this.cancelStop();
     }
@@ -52,6 +56,43 @@ export default class extends Controller {
         if (this.dirty) {
             event.preventDefault();
             this.statusTarget.textContent = 'Enregistrez les modifications du brouillon avant cette action.';
+        }
+    }
+
+    async deleteDraft(event) {
+        event.preventDefault();
+        if (this.deletePending) return;
+        const form = event.currentTarget;
+        const button = form.querySelector('[data-delete-draft]');
+        const question = `Supprimer définitivement le brouillon version ${form.dataset.versionNumber} ?\nCette action est irréversible.`
+            + (this.dirty ? '\nLes modifications non enregistrées de cette page seront également perdues.' : '');
+        if (!window.confirm(question)) { button.focus(); return; }
+        const data = new FormData(form);
+        const controls = [...this.element.querySelectorAll('input,textarea,select,button')].map(control => [control, control.disabled]);
+        controls.forEach(([control]) => { control.disabled = true; });
+        this.deletePending = true;
+        this.statusTarget.textContent = 'Suppression du brouillon…';
+        const abort = new AbortController();
+        const timeout = setTimeout(() => abort.abort(), 15000);
+        try {
+            const response = await fetch(form.action, { method: 'POST', body: data, credentials: 'same-origin', cache: 'no-store', redirect: 'error', headers: { Accept: 'application/json' }, signal: abort.signal });
+            const result = await response.json();
+            if (!this.alive) return;
+            if (!response.ok) {
+                this.statusTarget.textContent = `${result.message || 'La suppression a été refusée.'} Votre saisie reste conservée sur cette page.`;
+                return;
+            }
+            if (result.redirect !== form.dataset.returnUrl) throw new Error('Invalid deletion acknowledgement');
+            this.dirty = false;
+            this.deletePending = false;
+            window.location.assign(result.redirect);
+        } catch {
+            if (this.alive) this.statusTarget.textContent = 'Suppression non confirmée. Votre saisie reste conservée. Préservez-la avant de vérifier la liste des versions ; aucun nouvel essai automatique.';
+        } finally {
+            clearTimeout(timeout);
+            this.deletePending = false;
+            controls.forEach(([control, disabled]) => { control.disabled = disabled; });
+            if (this.alive) button.focus();
         }
     }
 

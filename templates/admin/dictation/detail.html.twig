@@ -1,14 +1,19 @@
 {% extends '@EasyAdmin/page/content.html.twig' %}
 {% form_theme form 'bootstrap_5_layout.html.twig' %}
 {% block content_title %}Dictée — {{ dictation.section.name }}{% endblock %}
+{% block importmap %}{{ importmap('admin_dictation') }}{% endblock %}
 {% block main %}
+<div class="dictation-editor" data-controller="dictation-editor" data-dictation-editor-unsaved-value="{{ form.vars.submitted ? 'true' : 'false' }}">
     <a href="{{ path('admin_dictations_index') }}">Toutes les dictées</a>
-    <table class="table"><thead><tr><th>Version</th><th>Titre</th><th>État</th><th>Révision</th></tr></thead><tbody>
+    <table class="table"><thead><tr><th>Version</th><th>Titre</th><th>État</th><th>Révision</th><th>Actions</th></tr></thead><tbody>
     {% for version in versions %}<tr>
         <td><a href="{{ path('admin_dictations_version', {id: version.id}) }}">Version {{ version.number }}</a></td>
         <td>{{ version.title }}</td><td>{{ version.published ? 'Publiée (figée)' : 'Brouillon' }}</td><td>{{ version.revision }}</td>
-    </tr>{% else %}<tr><td colspan="4">Aucune version.</td></tr>{% endfor %}
+        <td>{% if version.id in deletableVersionIds %}{% include 'admin/dictation/delete_form.html.twig' with {version: version, revision: version.revision} only %}{% endif %}</td>
+    </tr>{% else %}<tr><td colspan="5">Aucune version.</td></tr>{% endfor %}
     </tbody></table>
+    <p role="status" aria-live="polite" data-dictation-editor-target="status"></p>
     <h2>Nouveau brouillon</h2>
-    {{ form(form) }}
+    {{ form(form, {attr: {'data-action': 'input->dictation-editor#changed change->dictation-editor#changed submit->dictation-editor#submitting'}}) }}
+</div>
 {% endblock %}
