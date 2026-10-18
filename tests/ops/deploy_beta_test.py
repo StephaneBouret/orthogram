@@ -17,14 +17,14 @@ REPO = Path(__file__).resolve().parents[2]
 BASH = os.environ.get("BASH_EXE") or shutil.which("bash") or r"C:\Program Files\Git\bin\bash.exe"
 PHP = shutil.which("php")
 ROOT = Path(tempfile.mkdtemp(prefix="deploy-beta-test-", dir=REPO / "var"))
-ENV = {k: v for k, v in os.environ.items() if not k.startswith(("DICTATION_", "COURSE_STORAGE_", "APP_", "SYMFONY_"))}
+ENV = {k: v for k, v in os.environ.items() if not k.startswith(("DICTATION_", "COURSE_STORAGE_", "APP_", "SYMFONY_", "ORTHOGRAM_"))}
 ENV["XDEBUG_MODE"] = "off"
 # MSYS emulated symlinks exercise Bash -L/realpath even without Windows symlink privilege.
 ENV["MSYS"] = "winsymlinks:sys"
 
 
 def run(args, cwd=ROOT, env=ENV):
-    return subprocess.run(args, cwd=cwd, env=env, text=True, capture_output=True)
+    return subprocess.run(args, cwd=cwd, env=env, text=True, encoding="utf-8", capture_output=True)
 
 
 def posix(path):
@@ -45,7 +45,7 @@ def expect(result, success):
 original = (REPO / "ops/deploy_beta.sh").read_text(encoding="utf-8")
 assert original.count("php bin/console doctrine:migrations:migrate ") == 1
 expect(run([BASH, "-n", str(REPO / "ops/deploy_beta.sh")]), True)
-for scenario in ["success", "initial", "missing-maintenance", "missing-confirmation", "bad-source", "bad-compiled", "bad-container", "platform-failure", "migration-failure", "storage-file", "storage-link", "dangling-link", "ancestor-link", "nested-link", "create-storage"]:
+for scenario in ["success", "deferred", "bad-deferral", "initial", "missing-maintenance", "missing-confirmation", "bad-source", "bad-compiled", "bad-container", "platform-failure", "migration-failure", "storage-file", "storage-link", "dangling-link", "ancestor-link", "nested-link", "create-storage"]:
     root = ROOT / scenario
     project = root / "public_html/beta"
     courses = root / "private/orthogram/courses"
@@ -108,8 +108,10 @@ exit 0
     }
     if scenario == "missing-confirmation":
         env.pop("ORTHOGRAM_PRIVATE_STORAGE_VERIFIED")
+    if scenario in ("deferred", "bad-deferral"):
+        env["ORTHOGRAM_DICTATION_WEB_DEFERRED"] = "1" if scenario == "deferred" else "maybe"
     result = run([BASH, str(root / "deploy.sh"), "--initial-switch" if scenario == "initial" else "--deploy"], env=env)
-    success = scenario in ("success", "initial", "create-storage")
+    success = scenario in ("success", "deferred", "initial", "create-storage")
     expect(result, success)
     log = (root / "commands.log").read_text() if (root / "commands.log").exists() else ""
     if scenario != "missing-maintenance":
@@ -126,6 +128,8 @@ exit 0
         assert (courses / ".orthogram-private-ready").read_text() == "orthogram-private-courses-v1\n"
     if success:
         assert (root / "public_html/shared/avatars/user.jpg").read_text() == "avatar preserved"
+    if scenario == "deferred":
+        assert "PHP web NON VALIDÉ" in result.stdout
     print("PASS shell", scenario)
 
 # Real PHP/Dotenv, no kernel or real application .env.local involved.
@@ -133,13 +137,15 @@ fixture = ROOT / "php-config"
 write(fixture / "vendor/autoload.php", "<?php require " + json.dumps((REPO / "vendor/autoload.php").as_posix()) + ";\n")
 checker = str(REPO / "ops/check_beta_environment.php")
 values = {"APP_ENV": "prod", "APP_DEBUG": "0", "COURSE_STORAGE_DIR": "/private/courses", "DICTATION_STORAGE_DIR": "/private/dictations", "DICTATION_LEARNER_ENABLED": "0"}
-for scenario in ("valid-zero", "valid-one", "bad-path", "missing-flag", "bad-flag", "process-override", "copy-mismatch", "dump-mismatch", "malformed-secret"):
+for scenario in ("valid-zero", "valid-one", "deferred-zero", "deferred-one", "bad-deferral", "bad-path", "missing-flag", "bad-flag", "process-override", "copy-mismatch", "dump-mismatch", "malformed-secret"):
     source = values.copy()
     copied = values.copy()
     compiled = values.copy()
     env = ENV.copy()
-    if scenario == "valid-one":
+    if scenario in ("valid-one", "deferred-one"):
         source["DICTATION_LEARNER_ENABLED"] = copied["DICTATION_LEARNER_ENABLED"] = compiled["DICTATION_LEARNER_ENABLED"] = "1"
+    if scenario.startswith("deferred-") or scenario == "bad-deferral":
+        env["ORTHOGRAM_DICTATION_WEB_DEFERRED"] = "maybe" if scenario == "bad-deferral" else "1"
     if scenario == "bad-path":
         source["DICTATION_STORAGE_DIR"] = "/public/dictations"
     if scenario == "missing-flag":
@@ -159,7 +165,7 @@ for scenario in ("valid-zero", "valid-one", "bad-path", "missing-flag", "bad-fla
     write(fixture / ".env.local", "\n".join(f"{k}={v}" for k, v in copied.items()) + "\n")
     write(fixture / ".env.local.php", "<?php return json_decode('" + json.dumps(compiled) + "', true);\n")
     result = run([PHP, checker, "compiled", str(fixture / ".env.beta"), "/private/courses", "/private/dictations"], cwd=fixture, env=env)
-    expect(result, scenario.startswith("valid-"))
+    expect(result, scenario.startswith("valid-") or scenario == "deferred-zero")
     assert "DO_NOT_PRINT_THIS_SECRET" not in result.stdout + result.stderr
     print("PASS PHP", scenario)
 

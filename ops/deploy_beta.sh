@@ -20,8 +20,13 @@ MODE="${1:---deploy}"
 [[ "$MODE" == "--initial-switch" || "$MODE" == "--deploy" ]] || fail "Use --initial-switch or --deploy"
 [[ -f "$MAINTENANCE_FILE" ]] || fail "Create $MAINTENANCE_FILE and verify HTTP 503 before deployment"
 [[ "${ORTHOGRAM_MAINTENANCE_CONFIRMED:-}" == 1 ]] || fail "Stop HTTP traffic/uploads and workers first; then set ORTHOGRAM_MAINTENANCE_CONFIRMED=1"
-[[ "${ORTHOGRAM_PRIVATE_STORAGE_VERIFIED:-}" == 1 ]] || fail "Verify PHP access, ownership and all web roots/aliases; then set ORTHOGRAM_PRIVATE_STORAGE_VERIFIED=1"
+# Existing course storage only; this is NOT an attestation for new dictation storage.
+[[ "${ORTHOGRAM_PRIVATE_STORAGE_VERIFIED:-}" == 1 ]] || fail "Verify existing COURSE storage PHP access, ownership and all web roots/aliases; then set ORTHOGRAM_PRIVATE_STORAGE_VERIFIED=1"
 [[ "${ORTHOGRAM_LEGACY_HTTP_BLOCKED:-}" == 1 ]] || fail "Block retained public sources on ALL hosts/aliases first; then set ORTHOGRAM_LEGACY_HTTP_BLOCKED=1"
+[[ "${ORTHOGRAM_DICTATION_WEB_DEFERRED:-0}" == 0 || "${ORTHOGRAM_DICTATION_WEB_DEFERRED:-0}" == 1 ]] || fail "ORTHOGRAM_DICTATION_WEB_DEFERRED must be 0 or 1"
+if [[ "${ORTHOGRAM_DICTATION_WEB_DEFERRED:-0}" == 1 ]]; then
+    echo "Validation PHP web des dictées DIFFÉRÉE à la recette EasyAdmin ; flag apprenant 0 obligatoire."
+fi
 
 cd "$PROJECT_DIR"
 
@@ -193,5 +198,8 @@ if [[ "$MODE" == "--initial-switch" ]]; then
     # Marker outside mappings, only after transfer, DB-reference checks and preparation succeed.
     (umask 007; printf '%s\n' 'orthogram-private-courses-v1' > "$READY_FILE")
 fi
-echo "Code bêta préparé. Conserver la maintenance jusqu'à la recette HTTP et PHP décrite dans la procédure."
+echo "Code bêta préparé. Conserver la maintenance jusqu'aux contrôles techniques de sortie décrits dans la procédure."
+if [[ "${ORTHOGRAM_DICTATION_WEB_DEFERRED:-0}" == 1 ]]; then
+    echo "Stockage dictées : CLI seulement, PHP web NON VALIDÉ. Import et lecture EasyAdmin requis avant toute activation apprenant."
+fi
 echo "Témoin conservé : $MAINTENANCE_FILE. Retrait manuel uniquement lors de la réouverture contrôlée."

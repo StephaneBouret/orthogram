@@ -19,6 +19,12 @@ try {
     if (!in_array($expected['DICTATION_LEARNER_ENABLED'], ['0', '1'], true)) {
         throw new RuntimeException('Flag must be explicit');
     }
+    // Operational choice, not a statement that web access has already succeeded.
+    $deferred = getenv('ORTHOGRAM_DICTATION_WEB_DEFERRED');
+    if (!in_array($deferred, [false, '0', '1'], true)
+        || ('1' === $deferred && '0' !== $expected['DICTATION_LEARNER_ENABLED'])) {
+        throw new RuntimeException('Deferred web validation requires the learner feature disabled');
+    }
     $check = static function (array $values) use ($expected): void {
         foreach ($expected as $key => $value) {
             if (($values[$key] ?? null) !== $value) {
@@ -59,11 +65,15 @@ try {
             || $container->getParameter('app.course_storage_dir') !== $expected['COURSE_STORAGE_DIR']) {
             throw new RuntimeException('Container storage mismatch');
         }
+        $enabled = (new ReflectionMethod($container, 'getEnv'))->invoke($container, 'bool:DICTATION_LEARNER_ENABLED');
+        if ($enabled !== ('1' === $expected['DICTATION_LEARNER_ENABLED'])) {
+            throw new RuntimeException('Container flag mismatch');
+        }
         $kernel->shutdown();
     }
     echo 'Configuration '.$argv[1].' OK (CLI), DICTATION_LEARNER_ENABLED='.$expected['DICTATION_LEARNER_ENABLED'].PHP_EOL;
 } catch (Throwable) {
     // Dotenv errors can contain the offending line, including credentials.
-    fwrite(STDERR, "STOP: configuration beta invalide, surcharge divergente ou dependances absentes. Verifier les deux stockages, le flag explicite 0/1 et les fichiers d'environnement sans les afficher.\n");
+    fwrite(STDERR, "STOP: configuration beta invalide, surcharge divergente ou dependances absentes. Verifier les deux stockages, le flag explicite 0/1 (obligatoirement 0 si ORTHOGRAM_DICTATION_WEB_DEFERRED=1) et les fichiers d'environnement sans les afficher.\n");
     exit(1);
 }

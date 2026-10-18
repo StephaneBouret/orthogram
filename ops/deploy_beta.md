@@ -14,6 +14,15 @@ développement. La procédure des [cours privés](../tests/manual/courses_lot2b_
 reste applicable, notamment l'inventaire de toutes les racines web/alias et le
 blocage permanent des anciennes sources.
 
+État rapporté par l'opérateur le 18 octobre : maintenance active, restauration
+des `.htaccess` confirmée, aucune migration distante appliquée, sauvegarde
+restaurée localement et dry-run distant validés. Source confirmée :
+`u849885333_orthogram_beta`, 27 tables InnoDB, 6 comptes, export de 159 786 octets.
+Ces résultats sont acquis pour l'instantané contrôlé, pas recontrôlés ici.
+Conserver leurs preuves et vérifier qu'aucune écriture ni modification du code
+des migrations n'est intervenue depuis ; sinon renouveler les contrôles concernés
+des sections 3–4. La restauration locale ne prouve pas la compatibilité Hostinger.
+
 ## 1. Avant le push : maintenance et configuration distante
 
 En SSH avec le compte de déploiement, dans Bash :
@@ -82,13 +91,28 @@ récursif des médias. Examiner aussi les ACL héritées.
 
 Les contrôles Bash/PHP CLI ne prouvent **ni** les droits PHP-FPM/LiteSpeed **ni**
 sa configuration (`open_basedir`, variables serveur, version/extensions).
-Avant d'attester `ORTHOGRAM_PRIVATE_STORAGE_VERIFIED`, faire contrôler sous ce
-SAPI le chemin réel, la lecture et la création/lecture/suppression d'un fichier
-sonde exclusif (`fopen(..., 'x')`, nom aléatoire ; supprimer uniquement cette sonde).
-Utiliser un diagnostic opérateur temporaire restreint par le serveur à l'opérateur,
-sans ouvrir la maintenance générale, ni exposer de secrets ou `phpinfo()` public.
-Le retirer après vérification. Si aucun accès opérateur privé n'est disponible,
-faire préparer ce contrôle par l'hébergeur avant d'attester sa réussite.
+`ORTHOGRAM_PRIVATE_STORAGE_VERIFIED=1` atteste le stockage **des cours existants**
+déjà validé (accès PHP web et isolation HTTP), pas celui des dictées. Ne pas poser
+cette confirmation si les cours ne sont pas validés. L'isolation hors Web des
+deux stockages reste obligatoire avant déploiement.
+
+Pour cette livraison, la validation PHP web **des dictées reste non acquise** et
+est reportée à l'import et à la lecture audio dans EasyAdmin, après réouverture
+surveillée, avec le parcours apprenant désactivé. Aucune sonde HTTP temporaire.
+Le choix explicite `ORTHOGRAM_DICTATION_WEB_DEFERRED=1` impose le flag effectif
+`0` aux contrôles source, compilé et conteneur ; ce n'est pas une attestation de
+réussite. Sans ce choix (ou avec `0`), le flag reste configurable pour les
+déploiements futurs, après recette réussie.
+
+Compatibilité vérifiée dans le code : `DictationController::actor()` refuse les
+actions apprenant avant les accès métier ; `DictationJourney::forSection()`
+retourne immédiatement sans consulter les dictées quand le flag vaut `0`.
+Les contrôles de cours et leurs widgets ne créent alors aucun verrou de dictée.
+`CourseFileStorage` utilise exclusivement le stockage des cours ; les
+constructeurs des services de dictées ne lisent pas leurs médias. L'administration
+des dictées reste accessible aux administrateurs indépendamment de ce flag.
+Les migrations restent nécessaires, notamment pour la colonne mappée de `user`,
+avant réouverture ; désactiver le parcours ne permet pas de les omettre.
 
 ## 2. Publication du code puis installation du script manuel
 
@@ -152,6 +176,7 @@ Toujours sous maintenance, préparer la configuration sans appliquer de migratio
 cd "$PROJECT"
 CHECK=(php ops/check_beta_environment.php)
 CHECK_ARGS=("$DOMAIN/.env.beta" "$DOMAIN/private/orthogram/courses" "$DOMAIN/private/orthogram/dictations")
+export ORTHOGRAM_DICTATION_WEB_DEFERRED=1
 "${CHECK[@]}" source "${CHECK_ARGS[@]}"
 # Pour cette livraison, le message doit indiquer DICTATION_LEARNER_ENABLED=0.
 (umask 077; cp "$DOMAIN/.env.beta" .env.local; rm -f .env.local.php; composer dump-env prod)
@@ -164,7 +189,7 @@ php bin/console cache:warmup --env=prod --no-debug
 Protéger `.env.beta`, `.env.local` et `.env.local.php` : 0600 si PHP web utilise
 le même compte, sinon 0640 et groupe privé vérifié. Ne jamais les afficher.
 Le contrôleur compare uniquement les deux chemins et le flag entre source,
-copie, dump et environnement effectif, puis les chemins résolus par Symfony.
+copie, dump et environnement effectif, puis les chemins et le booléen résolus par Symfony.
 Il refuse une surcharge de processus contradictoire et n'affiche aucune valeur
 secrète. Après toute modification d'environnement, refaire ces commandes.
 
@@ -282,13 +307,15 @@ et ne garantit pas que le DDL réussira ; Doctrine peut vérifier/préparer son
 registre de versions. La sauvegarde précède donc aussi cette étape.
 
 Après sauvegarde restaurée et dry-run approuvé par l'opérateur, les trois
-confirmations existantes restent nécessaires :
+confirmations existantes restent nécessaires. La confirmation de stockage porte
+sur les cours ; ajouter le choix explicite du report pour les dictées :
 
 ```bash
 test -f "$DOMAIN/.orthogram-maintenance"
 ORTHOGRAM_MAINTENANCE_CONFIRMED=1 \
 ORTHOGRAM_PRIVATE_STORAGE_VERIFIED=1 \
 ORTHOGRAM_LEGACY_HTTP_BLOCKED=1 \
+ORTHOGRAM_DICTATION_WEB_DEFERRED=1 \
   "$DOMAIN/deploy_beta.sh" --deploy
 test -f "$DOMAIN/.orthogram-maintenance"
 ```
@@ -325,9 +352,11 @@ Pour cette première migration, toutes les lignes `user` préexistantes doivent
 être exemptées ; rapprocher le comptage de celui sauvegardé. Ne pas corriger une
 différence par un UPDATE global.
 
-Sous l'accès opérateur restreint, confirmer que PHP web charge lui aussi le
-stockage privé attendu et le flag **0**, sans surcharge, et refaire sa sonde de
-lecture/écriture. Vérifier les restrictions permanentes de tous les anciens
+Le contrôle CLI doit encore annoncer le flag **0** avec le report actif ; il ne
+prouve pas la configuration du processus web. Vérifier l'absence de surcharge
+PHP web connue du flag, sans afficher de secrets. Conserver explicitement le
+statut « stockage dictées : CLI validé, PHP web à recetter ». Vérifier les
+restrictions permanentes de tous les anciens
 chemins/alias, l'absence de lien public vers les dictées, et purger les anciens
 caches publics éventuels. Les 503 ne suffisent pas à prouver ces restrictions.
 
@@ -343,6 +372,13 @@ rm -- "$DOMAIN/.orthogram-maintenance"
 Tester alors accueil, connexion, cours, avatars, administration et refus des
 anciennes URL/médias sans droit (GET/HEAD/Range, domaines/alias inventoriés).
 Rétablir immédiatement la maintenance en cas d'échec.
+Vérifier l'absence de parcours/widgets dictées sur un compte apprenant autorisé.
+Après création d'une dictée dans EasyAdmin, demander `/dictees/ID` avec cet ID
+réel et un compte actif abonné autorisé à sa section : attendre 404. Un ID
+inexistant ou une redirection de connexion anonyme ne prouve pas le flag web.
+Si le parcours apparaît, rétablir immédiatement la maintenance et corriger la
+surcharge avant de poursuivre. Ces contrôles utilisent les routes applicatives
+existantes, sans exception de maintenance.
 
 La suite comporte quatre étapes distinctes :
 
@@ -351,14 +387,26 @@ La suite comporte quatre étapes distinctes :
    variantes, correction et segments. Aucune donnée éditoriale n'est créée par
    le déploiement ou par une nouvelle migration.
 3. **MP3** : importer les audios complet et d'écriture via les formulaires
-   administratifs, écouter les deux via PHP web, vérifier les segments puis
-   publier les versions utilisables. L'import calcule clé, empreinte, durée et
+   administratifs, écouter les deux via PHP web et vérifier les segments.
+   Rapprocher les deux nouveaux fichiers/références du répertoire privé attendu,
+   sans afficher leur contenu ni toucher aux médias préexistants. L'import
+   réussi exerce l'écriture exclusive, la lecture, getID3 et les métadonnées
+   sous PHP web ; la lecture audio exerce le service web des médias. Consigner
+   leur réussite avant de publier les versions utilisables. Cela ne démontre
+   pas tous les droits PHP (notamment la suppression) ni toutes les extensions
+   du SAPI. En cas d'échec, garder le flag à `0`, ne pas publier/activer et
+   diagnostiquer l'import/lecture ; les cours peuvent rester ouverts si leur
+   recette est réussie et leur isolation préservée. L'import calcule clé, empreinte, durée et
    références ; un simple dépôt SCP de MP3 ne crée pas ces associations. Les
    fichiers existants ne sont ni remplacés ni nettoyés par le déploiement.
-4. **Activation ultérieure** : après validation du contenu et des médias, ouvrir
+4. **Activation ultérieure** : uniquement après import et écoute réussis des
+   deux pistes dans EasyAdmin, validation du contenu et des prérequis PHP web
+   (extensions/limites d'upload via les moyens d'administration de l'hébergeur), ouvrir
    une nouvelle fenêtre de maintenance, changer uniquement le flag distant à
-   `1`, refaire copie/dump/cache/contrôles CLI **et web** de la section 3, puis
-   recette et réouverture manuelle. Aucun push ni nouvelle migration nécessaires
+   `1`, exécuter `unset ORTHOGRAM_DICTATION_WEB_DEFERRED`, refaire les commandes
+   copie/dump/cache/contrôles de la section 3 **sans réexporter le report**, puis
+   réouverture manuelle surveillée et recette apprenant. Remettre la maintenance
+   si celle-ci échoue. Aucun push ni nouvelle migration nécessaires
    pour ce changement seul. Les anciens comptes, y compris ceux créés pendant
    que le flag était à `0`, restent exemptés (`NULL`). Les nouveaux comptes à
    partir de l'activation reçoivent leur instantané des dictées utilisables ;
@@ -371,19 +419,26 @@ La suite comporte quatre étapes distinctes :
 php -l ops/check_beta_environment.php
 python tests/ops/deploy_beta_test.py
 php tests/ops/beta_cache_without_database.php
+php vendor/phpunit/phpunit/phpunit --no-configuration --bootstrap vendor/autoload.php tests/ops/DeferredDictationAccessTest.php tests/Security/Voter/CourseVoterTest.php
 composer validate --no-check-publish
 composer check-platform-reqs --no-dev
 git diff --check
 ```
 
-Exécuté : 15 scénarios Bash simulés + 9 scénarios PHP/Dotenv réels, puis les deux
+Exécuté : 17 scénarios Bash simulés + 12 scénarios PHP/Dotenv réels, puis les deux
 commandes de cache prod et le contrôle du conteneur avec toute connexion DB
-interdite. Couverture : valeurs 0/1, mauvais chemin/flag, absence de flag,
+interdite et le stockage dictées absent de la fixture. Couverture : report accepté
+avec flag 0 et refusé avec flag 1, valeurs 0/1, mauvais chemin/flag, absence de flag,
 surcharge de processus, copie/dump divergents, erreur de syntaxe contenant un
 secret jamais réaffiché, absence de maintenance/confirmation, dépendances en
 échec, stockage fichier/liens (parent, feuille, pendant, interne), création du
 répertoire, échec migration, conservation des médias/maintenance, modes initial
 et courant, avatars et absence de transfert des cours en `--deploy`.
+Les tests unitaires isolés vérifient aussi les dix appels du contrôleur apprenant
+refusés en 404 avec stockage absent et accès ORM interdits, les droits des cours
+avec parcours désactivé et l'exemption des nouvelles inscriptions. Ils chargent
+uniquement l'autoloader, aucun environnement applicatif ni base réelle :
+12 tests, 218 assertions avec la suite existante du voter des cours.
 
 Les fixtures restent dans des dossiers uniques `var/deploy-beta-test-*` et
 `var/beta-cache-test-*`, ignorés par Git. Sous Windows, les liens sont émulés par

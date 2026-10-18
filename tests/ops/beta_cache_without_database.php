@@ -25,7 +25,8 @@ foreach (['config', 'src', 'templates', 'translations', 'assets', 'public/bundle
 foreach (['composer.json', 'composer.lock', 'importmap.php'] as $file) {
     $fs->copy($repo.'/'.$file, $fixture.'/'.$file);
 }
-$fs->mkdir([$fixture.'/private/courses', $fixture.'/private/dictations', $fixture.'/vendor']);
+// Dictation storage deliberately does not exist: cache/container must not access it.
+$fs->mkdir([$fixture.'/private/courses', $fixture.'/vendor']);
 // Use installed dependencies, but load application classes from the isolated copy.
 $autoload = '<?php require '.var_export($repo.'/vendor/autoload.php', true).';'.PHP_EOL;
 $autoload .= 'spl_autoload_register(static function (string $class): void {
@@ -42,6 +43,7 @@ $values = [
     'DATABASE_URL' => 'mysql://unused:unused@127.0.0.1:1/no_database?serverVersion=8.4.7&charset=utf8mb4',
     'COURSE_STORAGE_DIR' => $fixture.'/private/courses',
     'DICTATION_STORAGE_DIR' => $fixture.'/private/dictations', 'DICTATION_LEARNER_ENABLED' => '0',
+    'ORTHOGRAM_DICTATION_WEB_DEFERRED' => '1',
     'APP_SHARE_DIR' => $fixture.'/var/share', 'DEFAULT_URI' => 'https://example.invalid',
     'APP_HOSTNAME' => 'example.invalid', 'APP_SUPPORT_EMAIL' => 'test@example.invalid',
     'MAILER_DEFAULT_FROM' => 'test@example.invalid', 'MAILER_DSN' => 'null://null',
@@ -80,4 +82,7 @@ foreach (['cache:clear', 'cache:warmup'] as $command) {
 $argv = ['check', 'container', $fixture.'/.env.beta', $values['COURSE_STORAGE_DIR'], $values['DICTATION_STORAGE_DIR']];
 $argc = count($argv);
 require $repo.'/ops/check_beta_environment.php';
-echo 'PASS prod caches + effective container; DB connections forbidden. Fixture: '.$fixture.PHP_EOL;
+if (file_exists($values['DICTATION_STORAGE_DIR'])) {
+    throw new RuntimeException('Cache/container unexpectedly created dictation storage');
+}
+echo 'PASS prod caches + effective container; DB connections forbidden, dictation storage absent. Fixture: '.$fixture.PHP_EOL;
