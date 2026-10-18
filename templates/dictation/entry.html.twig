@@ -3,8 +3,9 @@
 {% block body %}
 <main class="container py-5">
     <h1>Votre dictée</h1>
+    <p>Cette première dictée vous aide à repérer vos points à travailler. Aucun score minimum n’est demandé : vos erreurs sont le point de départ de votre progression.</p>
     {% if isPrerequisite %}
-        <p class="alert alert-info">Avant les cours de « {{ sectionName }} », terminez cette dictée et son autocorrection. Aucun score minimal n’est demandé.</p>
+        <p class="alert alert-info">Terminez cette dictée initiale et son autocorrection pour accéder aux cours privés de « {{ sectionName }} ».</p>
     {% endif %}
     <p>Écoutez les pistes et écrivez votre copie. Votre saisie sera enregistrée automatiquement.</p>
     <form method="post" action="{{ path('app_dictation_start', {id: dictationId}) }}" data-turbo="false">

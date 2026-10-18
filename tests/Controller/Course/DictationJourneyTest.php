@@ -519,4 +519,112 @@ final class DictationJourneyTest extends WebTestCase
         $crawler = $this->client->request('GET', $this->sectionUrl());
         self::assertStringContainsString('Consulter le résultat définitif', $crawler->text());
     }
+
+    /** @return iterable<string, array{bool, bool, bool}> */
+    public static function presentationCases(): iterable
+    {
+        foreach ([false, true] as $exempt) {
+            foreach ([false, true] as $empty) {
+                foreach ([false, true] as $perfect) {
+                    yield ($exempt ? 'exempt' : 'required').'-'.($empty ? 'empty' : 'courses').'-'.($perfect ? 'perfect' : 'errors') => [$exempt, $empty, $perfect];
+                }
+            }
+        }
+    }
+
+    #[DataProvider('presentationCases')]
+    public function testJourneyPresentationFollowsActualStagesAndCourseAvailability(bool $exempt, bool $empty, bool $perfect): void
+    {
+        $em = self::$database->manager();
+        $user = $em->find(User::class, $this->user->getId());
+        $section = $em->find(Sections::class, $this->course->getSection()->getId());
+        if ($exempt) {
+            $em->getConnection()->executeStatement('UPDATE user SET dictation_prerequisites = NULL WHERE id = ?', [$user->getId()]);
+            $em->refresh($user);
+        }
+        if ($empty) {
+            foreach ([$this->course, $this->free] as $course) {
+                $em->remove($em->find(Courses::class, $course->getId()));
+            }
+            $em->flush();
+        }
+        self::ensureKernelShutdown();
+        $this->client = self::createClient();
+        $this->client->loginUser($user);
+        $crawler = $this->client->request('GET', '/dictees/'.$this->dictationId);
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('main', 'Cette première dictée vous aide à repérer vos points à travailler. Aucun score minimum n’est demandé : vos erreurs sont le point de départ de votre progression.');
+        self::assertSame(1, substr_count($crawler->text(), 'Aucun score minimum'));
+        self::assertSame(!$exempt, str_contains($crawler->filter('main')->text(), 'pour accéder aux cours privés'));
+        $waitingText = 'Vous pourrez reprendre votre dictée après la mise à disposition et la validation des cours de cette section.';
+        foreach (['/courses/'.$section->getProgram()->getSlug(), $this->sectionUrl()] as $url) {
+            $crawler = $this->client->request('GET', $url);
+            self::assertResponseIsSuccessful();
+            $initial = $crawler->filter('[data-dictation-position="before"]');
+            self::assertGreaterThanOrEqual(3, $initial->count()); // Main content, desktop sidebar, mobile sidebar.
+            self::assertSame($initial->count(), $initial->filter('.list-group-icon[aria-hidden="true"] .bi-pencil-square')->count());
+            self::assertSame(0, $crawler->filter('.dictation-journey-entry .completed')->count());
+            self::assertSame($exempt, str_contains($initial->text(), 'Conseillée pour repérer vos points à travailler.'));
+            self::assertSame(!$exempt, str_contains($initial->text(), 'Avant les cours de cette section'));
+            self::assertSame($empty, str_contains($crawler->text(), $waitingText));
+            self::assertSelectorTextContains('[data-dictation-position="after"]', 'Clôturez également la dictée initiale.');
+            self::assertSelectorExists('[data-dictation-position="after"] [aria-disabled="true"] .bi-arrow-repeat');
+            self::assertSelectorNotExists('[data-dictation-position="after"] a');
+        }
+        self::assertSame(0, (int) $em->getConnection()->fetchOne('SELECT COUNT(*) FROM dictation_attempt WHERE user_id = ?', [$user->getId()]));
+        $this->phase(DictationAction::Evaluate, 0, $perfect ? 'L’école ouvre.' : 'Erreur.');
+        if (!$perfect) {
+            $this->client->request('GET', $this->sectionUrl());
+            self::assertSelectorNotExists('.dictation-journey-entry .completed');
+            $this->phase(DictationAction::Close, 1, 'Erreur.');
+        }
+        $crawler = $this->client->request('GET', $this->sectionUrl());
+        self::assertSelectorExists('[data-dictation-position="before"] .completed svg[aria-hidden="true"][focusable="false"]');
+        self::assertSelectorNotExists('[data-dictation-position="after"] .completed');
+        self::assertSelectorNotExists('[data-dictation-position="after"] a');
+        self::assertSelectorTextContains('[data-dictation-position="before"]', $empty ? 'Votre dictée initiale est terminée.' : 'Les cours sont accessibles');
+        self::assertStringNotContainsString('Clôturez également', $crawler->text());
+        if ($empty) {
+            self::assertStringNotContainsString('Les cours sont accessibles', $crawler->text());
+            self::assertStringContainsString($waitingText, $crawler->text());
+            $courses = [];
+            for ($i = 1; $i <= 2; ++$i) {
+                $course = (new Courses())->setSection($section)->setName('Cours ajouté '.$i)->setSlug('added-'.$i)->setPosition($i);
+                $em->persist($course);
+                $em->flush();
+                $courses[] = $course;
+                $crawler = $this->client->request('GET', $this->sectionUrl());
+                self::assertStringNotContainsString($waitingText, $crawler->text());
+                self::assertSelectorTextContains('[data-dictation-position="before"]', 'Les cours sont accessibles');
+                self::assertSelectorTextContains('[data-dictation-position="after"]', 'Validez tous les cours');
+                self::assertSelectorExists('.main-content .card ol > li:first-child[data-dictation-position="before"]');
+                self::assertSelectorExists('.main-content .card ol > li:last-child[data-dictation-position="after"]');
+                self::assertSelectorNotExists('[data-dictation-position="after"] a');
+            }
+        } else {
+            $courses = [$em->find(Courses::class, $this->course->getId()), $em->find(Courses::class, $this->free->getId())];
+        }
+        foreach ($courses as $index => $course) {
+            $em->persist((new Lesson())->setUser($user)->setCourse($course)->setName('Validé')->setStatus(LessonStatus::DONE));
+            $em->flush();
+            $this->client->request('GET', $this->sectionUrl());
+            if (0 === $index) {
+                self::assertSelectorNotExists('[data-dictation-position="after"] a');
+            }
+        }
+        self::assertSelectorExists('[data-dictation-position="after"] a .bi-arrow-repeat');
+        self::assertSelectorNotExists('[data-dictation-position="after"] .completed');
+        $revision = $perfect ? 1 : 2;
+        $state = $this->phase(DictationAction::Resume, $revision);
+        self::assertSame($perfect ? 'reviewing' : 'resuming', $state['state']);
+        $this->client->request('GET', $this->sectionUrl());
+        self::assertSelectorNotExists('[data-dictation-position="after"] .completed');
+        $this->phase(DictationAction::Finalize, $revision + 1, $perfect ? null : 'L’école ouvre.');
+        foreach (['/courses/'.$section->getProgram()->getSlug(), $this->sectionUrl()] as $url) {
+            $crawler = $this->client->request('GET', $url);
+            $after = $crawler->filter('[data-dictation-position="after"]');
+            self::assertSame($after->count(), $after->filter('.completed svg[aria-hidden="true"][focusable="false"]')->count());
+            self::assertStringContainsString('Consulter le résultat définitif', $after->text());
+        }
+    }
 }

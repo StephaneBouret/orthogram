@@ -69,7 +69,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
         await check(`document.documentElement.scrollWidth<=innerWidth`,'navigation mobile : titre long du cours verrouillé sans débordement');
         await click('.course-navigation a[href^="/dictees/"]');
         await wait(`document.querySelector('form[action$="/commencer"]')`);
-        await check(`document.body.textContent.includes('Aucun score minimal')`,'navigation précédent : explication du prérequis');
+        await check(`document.body.textContent.includes('Aucun score minimum')&&document.body.textContent.includes('cours privés')`,'navigation précédent : pédagogie et prérequis');
         await navigate('/courses/lot6/section/cours');
         await wait(`document.querySelector('form[action$="/commencer"]')`);
         await check(`location.pathname.startsWith('/dictees/')&&!document.body.textContent.includes('Contenu de cours synthétique')`,'URL directe orientée vers le prérequis');

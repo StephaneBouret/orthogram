@@ -1470,6 +1470,7 @@ button.btn.btn-abandonment:hover {
 }
 
 .course-page .card-sub-title,
+.course-page .main-content .card-header .card-title,
 .course-page .text-grey-dark,
 .course-page .h4-title,
 .course-page .text-md,
@@ -3129,15 +3130,27 @@ html[data-bs-theme="dark"] .word-token--missed {
     flex-shrink: 0;
     fill: none !important;
 }
-.dictation-journey-entry .list-group-item,
 .course-prerequisite-link {
     flex-wrap: wrap;
     gap: .35rem;
 }
 
-.dictation-journey-entry .small,
 .course-prerequisite-link .small {
     flex-basis: 100%;
+}
+
+.dictation-journey-entry .list-group-item {
+    flex-wrap: nowrap;
+}
+
+.dictation-entry-text {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.dictation-entry-text > span {
+    display: block;
 }
 
 .dictation-journey-entry a:focus-visible,

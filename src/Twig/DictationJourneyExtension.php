@@ -20,7 +20,7 @@ final class DictationJourneyExtension
     {
     }
 
-    /** @return array{url: string, label: string, afterLabel: string, closed: bool, locked: bool}|null */
+    /** @return array{url: string, label: string, afterLabel: string, closed: bool, completed: bool, locked: bool}|null */
     #[AsTwigFunction('dictation_journey')]
     public function section(Sections $section): ?array
     {
@@ -51,6 +51,7 @@ final class DictationJourneyExtension
                 default => ($attempt?->closedWithoutErrors() ?? false) ? 'Retrouver ma copie sans erreur' : 'Reprendre ma dictée après les cours',
             },
             'closed' => $attempt?->isPrerequisiteSatisfied() ?? false,
+            'completed' => DictationState::Completed === $state,
             'locked' => $journey['locked'],
         ];
     }

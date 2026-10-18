@@ -9,27 +9,8 @@
 {% if isAccessible %}
     <a class="list-group-item list-group-item-action{{ isCurrentCourse ? ' active' : '' }}" href="{{ path('app_course_show', {'programSlug': course.section.program.slug, 'sectionSlug': course.section.slug, 'courseSlug': course.slug}) }}">
         {% if isCompleted %}
-            {# <div class="list-group-icon completed">
-                {% include 'course/program_summary/icons/_check.html.twig' %}
-            </div> #}
             <div class="list-group-icon completed">
-                <svg
-                    width="22"
-                    height="22"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                    focusable="false"
-                >
-                    <circle cx="12" cy="12" r="11" fill="#00c875"/>
-                    <path
-                        d="M7 12.5 10.2 15.5 17 8.5"
-                        fill="none"
-                        stroke="#fff"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    />
-                </svg>
+                {% include 'course/program_summary/icons/_completed.html.twig' only %}
             </div>
         {% else %}
             {% include 'course/program_summary/_course_icon.html.twig' with {course: course} %}

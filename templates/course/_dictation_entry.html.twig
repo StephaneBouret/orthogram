@@ -1,19 +1,27 @@
 {% set journey = dictation_journey(section) %}
 {% if journey %}
+    {% set hasCourses = section.courses|length > 0 %}
     <li class="dictation-journey-entry" data-dictation-position="{{ position }}">
         {% if position == 'before' %}
             <a class="list-group-item list-group-item-action" href="{{ journey.url }}">
-                <span class="course-item-title">{{ journey.label }}</span>
-                <span class="small text-muted">{{ journey.locked ? 'Avant les cours de cette section' : (journey.closed ? 'Les cours sont accessibles' : 'Dictée facultative pour votre parcours') }}</span>
+                {% include 'course/_dictation_icon.html.twig' with {completed: journey.closed, position: position} only %}
+                <span class="dictation-entry-text">
+                    <span class="course-item-title">{{ journey.label }}</span>
+                    <span class="small text-muted">{{ journey.locked ? 'Avant les cours de cette section' : (journey.closed ? (hasCourses ? 'Les cours sont accessibles' : 'Votre dictée initiale est terminée.') : 'Conseillée pour repérer vos points à travailler.') }}</span>
+                </span>
             </a>
         {% elseif sectionCompletion[section.id] and journey.closed %}
             <a class="list-group-item list-group-item-action" href="{{ journey.url }}">
-                <span class="course-item-title">{{ journey.afterLabel }}</span>
+                {% include 'course/_dictation_icon.html.twig' with {completed: journey.completed, position: position} only %}
+                <span class="dictation-entry-text"><span class="course-item-title">{{ journey.afterLabel }}</span></span>
             </a>
         {% else %}
             <div class="list-group-item" aria-disabled="true">
-                <span class="course-item-title">Ma dictée après les cours</span>
-                <span class="small text-muted">{% if not sectionCompletion[section.id] %}Validez tous les cours de cette section.{% endif %}{% if not journey.closed %} Clôturez également la dictée initiale.{% endif %}</span>
+                {% include 'course/_dictation_icon.html.twig' with {completed: journey.completed, position: position} only %}
+                <span class="dictation-entry-text">
+                    <span class="course-item-title">Ma dictée après les cours</span>
+                    <span class="small text-muted">{% if not hasCourses %}Vous pourrez reprendre votre dictée après la mise à disposition et la validation des cours de cette section.{% elseif not sectionCompletion[section.id] %}Validez tous les cours de cette section.{% endif %}{% if not journey.closed %} Clôturez également la dictée initiale.{% endif %}</span>
+                </span>
             </div>
         {% endif %}
     </li>

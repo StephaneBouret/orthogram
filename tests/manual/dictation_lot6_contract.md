@@ -380,3 +380,114 @@ temporaires et captures de vérification restent dans `var/`, ignoré par Git.
 Les données de développement, médias réels, réglages locaux et archives de
 revue sont préservés. Aucun commit, push, déploiement ou migration en
 développement/production.
+
+## Finition visuelle et rédactionnelle après le commit du lot 6
+
+Travail du 18 octobre 2026 sur `preprod`, après
+`5d77658244950ef79a2b9f081dc619d73e4b8dfc`. Cette passe porte sur la
+présentation et une projection d'état destinée à Twig. Elle ne modifie ni
+autorisations, exemptions, inscriptions, transitions, scores, médias, ni
+complétion des sections. Aucun commit, push, déploiement ou migration pendant
+cette finition. Le réglage local `DICTATION_LEARNER_ENABLED=1` est conservé.
+
+### Textes et icônes
+
+L'écran d'entrée affiche pour tous les comptes :
+
+> Cette première dictée vous aide à repérer vos points à travailler. Aucun score minimum n’est demandé : vos erreurs sont le point de départ de votre progression.
+
+L'indication de score n'est plus répétée dans l'encart de préalable. Cet
+encart précise uniquement aux comptes concernés que terminer la dictée
+initiale et son autocorrection ouvre les cours privés de la section.
+Les indications d'écoute, de saisie et d'enregistrement automatique restent.
+
+Pour les comptes exemptés, l'entrée non clôturée porte le conseil
+« Conseillée pour repérer vos points à travailler. ». Le conseil ne remplace
+jamais « Avant les cours de cette section » pour les comptes soumis au
+préalable ; il ne change aucun droit.
+
+Le composant commun aux sommaires, pages de section et sidebars ordinateur
+et mobile emploie les icônes Bootstrap déjà chargées par l'application :
+`bi-pencil-square` (feuille avec crayon) pour l'entrée initiale,
+`bi-arrow-repeat` pour l'entrée après les cours. Elles utilisent le même
+`list-group-icon` que les cours : carrés arrondis de 28 px en sidebar et
+36 px dans la liste principale. Les libellés et explications restent écrits.
+Les icônes sont décoratives (`aria-hidden`), les SVG de coche également
+non focalisables. Les entrées indisponibles restent sans lien et avec
+`aria-disabled="true"`.
+
+La coche verte des cours est extraite dans un partial partagé, sans changer
+son dessin. Pour la dictée initiale, elle apparaît après clôture initiale ;
+pour l'entrée finale, seulement dans l'état `Completed`. Le booléen Twig
+`completed` est lu à partir de cet état et n'effectue aucune transition.
+Une reprise disponible, une reprise en cours ou la consultation en lecture
+seule d'une copie parfaite ne suffit donc pas à afficher la coche finale.
+
+Les textes se placent dans une colonne flexible à côté de l'icône, avec
+retour à la ligne sans débordement. Les variables de thème et le focus
+existant sont conservés. Le compteur de cours des cartes de section utilise
+désormais lui aussi `--course-text` : l'inspection a révélé qu'il restait
+trop sombre en thème sombre.
+
+### Sections sans cours
+
+Après clôture initiale, une section vide indique
+« Votre dictée initiale est terminée. » plutôt que d'annoncer des cours
+accessibles. La reprise indisponible explique :
+
+> Vous pourrez reprendre votre dictée après la mise à disposition et la validation des cours de cette section.
+
+Si la clôture initiale manque, « Clôturez également la dictée initiale. »
+reste affiché. Dès l'ajout d'un cours, les messages ordinaires reviennent.
+Une section vide reste incomplète ; après ajout de cours, la reprise attend
+toujours leur validation à tous et la clôture initiale.
+
+### Vérifications de cette finition
+
+- `DictationJourneyTest`, `DictationControllerTest` et
+  `SectionCompletionServiceTest` : **54 tests, 1 303 assertions, succès**.
+  Les huit nouveaux parcours croisent exemption/préalable, section
+  vide/avec cours et copie parfaite/avec erreurs. Ils contrôlent les textes
+  et icônes des trois surfaces, l'absence d'écriture sur GET, la clôture,
+  l'ajout successif des cours, leur validation partielle puis totale,
+  la reprise éditable ou en lecture seule, et la coche après finalisation.
+- `FreeCoursesTest` et `SidebarCompletionTest` : **36 tests, 1 224 assertions,
+  succès**. Total sans recouvrement : **90 tests, 2 527 assertions**.
+- PHPStan niveau 6 sur l'extension Twig et le test modifiés : aucune erreur.
+  PHP CS Fixer ciblé : aucun changement nécessaire. Syntaxe des deux PHP,
+  lint des cinq templates Twig, syntaxe du script CDP adapté et
+  `git diff --check` : succès.
+- Nouvelle base MySQL et stockages jetables, connexion vérifiée avant les
+  fixtures, ports 8835/8836 initialement libres. Les états visuels sont
+  préparés avec des comptes et contenus synthétiques et le workflow réel
+  sur cette seule base. Aucun test ne cible la base de développement.
+- Chrome headless via CDP, **1 440 et 390 px, clair et sombre** : 28 rendus
+  de sections (six états du nouveau compte et un du compte exempté), huit
+  écrans d'entrée et quatre sommaires contrôlés. Les menus mobiles sont
+  également ouverts. Contrôles d'icônes chargées/décoratives, des deux coches,
+  des textes conditionnels, des liens désactivés, de navigation par Tab,
+  de focus visible et d'absence de débordement. La vérification visuelle est
+  répétée après le correctif de couleur du compteur de cours.
+  Captures dans `var/dictation-lot6-finish-*.png`, plusieurs captures inspectées
+  directement pour chaque thème, les deux largeurs, l'exemption, les sections
+  vides, la reprise et la finalisation.
+
+Il s'agit d'une émulation de largeur mobile sur ordinateur, sans validation
+sur téléphone physique ni lecteur d'écran, et sans vrais médias. Les
+validations manuelles précédemment rapportées restent distinctes de cette
+vérification automatisée.
+
+Le serveur et Chrome de cette passe sont arrêtés, les ports 8835/8836 libérés,
+la base et les deux stockages de fixtures supprimés. Les captures, scripts
+temporaires et le profil Chrome de vérification restent dans `var/`, ignoré
+par Git. Aucun ancien profil résiduel n'a été supprimé. Les empreintes des
+réglages locaux (dont `.env.local`) et des quatre archives ZIP sont inchangées.
+
+Fichiers de cette finition : `assets/styles/courses.css`,
+`src/Twig/DictationJourneyExtension.php`, `templates/dictation/entry.html.twig`,
+`templates/course/_dictation_entry.html.twig`,
+`templates/course/_dictation_icon.html.twig`,
+`templates/course/program_summary/_course_item.html.twig`,
+`templates/course/program_summary/icons/_completed.html.twig`,
+`tests/Controller/Course/DictationJourneyTest.php`,
+`tests/manual/dictation_lot6_browser_check.cjs` et ce contrat.

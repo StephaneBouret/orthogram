@@ -1,0 +1,7 @@
+<span class="list-group-icon{{ completed ? ' completed' : '' }}" aria-hidden="true">
+    {% if completed %}
+        {% include 'course/program_summary/icons/_completed.html.twig' only %}
+    {% else %}
+        <i class="bi {{ position == 'before' ? 'bi-pencil-square' : 'bi-arrow-repeat' }}" aria-hidden="true"></i>
+    {% endif %}
+</span>
