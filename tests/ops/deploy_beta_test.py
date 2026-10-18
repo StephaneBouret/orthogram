@@ -6,12 +6,18 @@ also exercised separately with the real Dotenv library and synthetic env files.
 No production/local application env file is loaded; no database is contacted.
 """
 import hashlib
+import argparse
 import json
 import os
 from pathlib import Path
 import shutil
 import subprocess
 import tempfile
+import stat
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--assets-only", action="store_true", help="Only isolated public asset permission scenarios")
+OPTIONS = parser.parse_args()
 
 REPO = Path(__file__).resolve().parents[2]
 BASH = os.environ.get("BASH_EXE") or shutil.which("bash") or r"C:\Program Files\Git\bin\bash.exe"
@@ -45,7 +51,9 @@ def expect(result, success):
 original = (REPO / "ops/deploy_beta.sh").read_text(encoding="utf-8")
 assert original.count("php bin/console doctrine:migrations:migrate ") == 1
 expect(run([BASH, "-n", str(REPO / "ops/deploy_beta.sh")]), True)
-for scenario in ["success", "deferred", "bad-deferral", "initial", "missing-maintenance", "missing-confirmation", "bad-source", "bad-compiled", "bad-container", "platform-failure", "migration-failure", "storage-file", "storage-link", "dangling-link", "ancestor-link", "nested-link", "create-storage"]:
+ASSET_SCENARIOS = ["assets-umask", "assets-root-link", "assets-parent-link", "assets-chmod-failure"]
+SCENARIOS = ["success", "deferred", "bad-deferral", "initial", "missing-maintenance", "missing-confirmation", "bad-source", "bad-compiled", "bad-container", "platform-failure", "migration-failure", "storage-file", "storage-link", "dangling-link", "ancestor-link", "nested-link", "create-storage"]
+for scenario in ASSET_SCENARIOS if OPTIONS.assets_only else SCENARIOS + ASSET_SCENARIOS:
     root = ROOT / scenario
     project = root / "public_html/beta"
     courses = root / "private/orthogram/courses"
@@ -69,6 +77,22 @@ case "$SCENARIO:$*" in
     platform-failure:check-platform-reqs*) exit 14;;
     migration-failure:*doctrine:migrations:migrate*) exit 15;;
 esac
+if [[ "$*" == 'bin/console asset-map:compile --env=prod --no-debug' ]]; then
+    case "$SCENARIO" in
+        assets-root-link) ln -s "$ASSET_PRIVATE" public/assets; exit 0;;
+        assets-parent-link) mv public "$ASSET_MOVED_PUBLIC"; ln -s "$ASSET_MOVED_PUBLIC" public;;
+    esac
+    mkdir -p public/assets/vendor/bootstrap public/assets/styles
+    printf 'bootstrap' > public/assets/vendor/bootstrap/bootstrap.css
+    printf 'courses' > public/assets/styles/courses.css
+    printf 'dictations' > public/assets/styles/dictations.css
+    if [[ "$SCENARIO" == assets-* ]]; then
+        stat -c '%a' public/assets public/assets/styles/courses.css > "$ASSET_BEFORE"
+        ln -s "$ASSET_PRIVATE" public/assets/private-link
+        ln -s "$ASSET_ENV" public/assets/env-link
+        ln -s "$ASSET_PRIVATE/missing" public/assets/dangling-link
+    fi
+fi
 exit 0
 """)
         (root / "mock-bin" / name).chmod(0o755)
@@ -106,19 +130,41 @@ exit 0
         "ORTHOGRAM_MAINTENANCE_CONFIRMED": "1",
         "ORTHOGRAM_PRIVATE_STORAGE_VERIFIED": "1", "ORTHOGRAM_LEGACY_HTTP_BLOCKED": "1",
     }
+    if scenario in ASSET_SCENARIOS:
+        write(root / "private/orthogram/courses/files/course.pdf", "private course")
+        protected = [storage / "existing.mp3", root / ".env.beta", root / ".orthogram-maintenance",
+                     courses / "files/course.pdf"]
+        for path in protected:
+            path.chmod(0o600)
+        protected_before = {path: (path.read_bytes(), stat.S_IMODE(path.stat().st_mode)) for path in protected}
+        env.update({"ASSET_PRIVATE": posix(storage), "ASSET_ENV": posix(root / ".env.beta"),
+                    "ASSET_MOVED_PUBLIC": posix(root / "moved-public"),
+                    "ASSET_BEFORE": posix(root / "asset-before.log"),
+                    "ASSET_CHMOD_LOG": posix(root / "asset-chmod.log"),
+                    "ASSET_MOCK_BIN": posix(root / "mock-bin"),
+                    "REAL_CHMOD": run([BASH, "-c", "command -v chmod"]).stdout.strip()})
+        write(root / "mock-bin/chmod", """#!/bin/bash
+printf '%s\\t' "$@" >> "$ASSET_CHMOD_LOG"
+printf '\\n' >> "$ASSET_CHMOD_LOG"
+if [[ "$SCENARIO" == assets-chmod-failure && "$*" == *public/assets* ]]; then exit 16; fi
+exec "$REAL_CHMOD" "$@"
+""")
+        (root / "mock-bin/chmod").chmod(0o755)
     if scenario == "missing-confirmation":
         env.pop("ORTHOGRAM_PRIVATE_STORAGE_VERIFIED")
     if scenario in ("deferred", "bad-deferral"):
         env["ORTHOGRAM_DICTATION_WEB_DEFERRED"] = "1" if scenario == "deferred" else "maybe"
-    result = run([BASH, str(root / "deploy.sh"), "--initial-switch" if scenario == "initial" else "--deploy"], env=env)
-    success = scenario in ("success", "deferred", "initial", "create-storage")
+    args = [str(root / "deploy.sh"), "--initial-switch" if scenario == "initial" else "--deploy"]
+    # Git Bash prepends its tools to PATH on startup; put the mocks first afterwards.
+    result = run([BASH, "-c", 'export PATH="$ASSET_MOCK_BIN:$PATH"; umask 077; source "$1" "${@:2}"', "test", *args] if scenario in ASSET_SCENARIOS else [BASH, *args], env=env)
+    success = scenario in ("success", "deferred", "initial", "create-storage", "assets-umask")
     expect(result, success)
     log = (root / "commands.log").read_text() if (root / "commands.log").exists() else ""
     if scenario != "missing-maintenance":
         assert (root / ".orthogram-maintenance").read_text() == "keep maintenance"
     if scenario not in ("storage-file", "storage-link", "dangling-link", "create-storage", "ancestor-link"):
         assert hashlib.sha256((storage / "existing.mp3").read_bytes()).hexdigest() == before
-    assert log.count("doctrine:migrations:migrate") == (1 if success or scenario == "migration-failure" else 0)
+    assert log.count("doctrine:migrations:migrate") == (1 if success or scenario == "migration-failure" or scenario in ASSET_SCENARIOS else 0)
     if scenario == "migration-failure":
         assert "app:avatars:repair" not in log and "asset-map:compile" not in log
     if scenario != "initial":
@@ -130,7 +176,40 @@ exit 0
         assert (root / "public_html/shared/avatars/user.jpg").read_text() == "avatar preserved"
     if scenario == "deferred":
         assert "PHP web NON VALIDÉ" in result.stdout
+    if scenario in ASSET_SCENARIOS:
+        assert {path: (path.read_bytes(), stat.S_IMODE(path.stat().st_mode)) for path in protected} == protected_before
+        calls = [line.split("\t")[:-1] for line in (root / "asset-chmod.log").read_text().splitlines()]
+        asset_calls = [call for call in calls if any(path.startswith("public/assets") for path in call)]
+        if scenario in ("assets-root-link", "assets-parent-link"):
+            assert not asset_calls, asset_calls
+        if scenario == "assets-chmod-failure":
+            assert asset_calls and 'Code bêta préparé' not in result.stdout
+        if scenario == "assets-umask":
+            assert (root / "asset-before.log").read_text().splitlines() == ["700", "600"]
+            expected = {"public/assets": "755", "public/assets/vendor": "755",
+                        "public/assets/vendor/bootstrap": "755", "public/assets/styles": "755",
+                        "public/assets/vendor/bootstrap/bootstrap.css": "644",
+                        "public/assets/styles/courses.css": "644", "public/assets/styles/dictations.css": "644"}
+            actual = {}
+            for mode, separator, *paths in asset_calls:
+                assert separator == "--"
+                for path in paths:
+                    assert path not in actual
+                    actual[path] = mode
+            assert actual == expected, actual  # Includes no link or private/env target.
+            if os.name == "nt":
+                print("SKIP actual POSIX chmod modes on Windows/MSYS; exact chmod targets/modes verified")
+            else:
+                for path, mode in expected.items():
+                    assert stat.S_IMODE((project / path).stat().st_mode) == int(mode, 8), path
+            assert (project / "public/assets/vendor/bootstrap/bootstrap.css").read_text() == "bootstrap"
+            assert (project / "public/assets/styles/courses.css").read_text() == "courses"
+            assert (project / "public/assets/styles/dictations.css").read_text() == "dictations"
     print("PASS shell", scenario)
+
+if OPTIONS.assets_only:
+    print("Fixtures retained for inspection:", ROOT)
+    raise SystemExit(0)
 
 # Real PHP/Dotenv, no kernel or real application .env.local involved.
 fixture = ROOT / "php-config"

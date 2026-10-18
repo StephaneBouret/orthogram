@@ -187,6 +187,11 @@ php bin/console liip:imagine:cache:remove --env=prod --no-debug || true
 
 echo "8. Compilation des assets"
 php bin/console asset-map:compile --env=prod --no-debug
+# Compilation inherits the caller's umask (possibly 077). Only published assets
+# become world-readable; never traverse a linked root/ancestor or nested links.
+[[ -d public/assets && ! -L public/assets && "$(realpath public/assets)" == "$PROJECT_DIR/public/assets" ]] || fail "Expected a real public/assets directory inside the project"
+find -P public/assets -type d -exec chmod 755 -- {} +
+find -P public/assets -type f -exec chmod 644 -- {} +
 
 echo "9. Permissions"
 chmod -R 775 var

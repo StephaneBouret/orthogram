@@ -335,6 +335,17 @@ que sur `prePersist`. La vérification locale avec un pilote interdisant toute
 connexion DB confirme `cache:clear` et `cache:warmup` sur cette version. Les
 commandes métier susceptibles de lire `user` restent après les migrations.
 
+Après `asset-map:compile`, le script impose **0755 aux répertoires et 0644 aux
+fichiers ordinaires de `public/assets` uniquement**, même avec un `umask 077`.
+Il refuse une racine ou un parent symbolique et utilise `find -P` pour ignorer
+les liens internes, sans modifier leurs cibles. Aucun changement d'umask global,
+de permissions des stockages privés ou des fichiers d'environnement. Un échec
+de cette correction arrête le script et laisse la maintenance active.
+Test ciblé : `python tests/ops/deploy_beta_test.py --assets-only` (compilation et
+commandes applicatives simulées). Il couvre le lancement sous `077`, les liens
+et un échec de chmod. Sous Windows/MSYS, seuls les arguments/cibles de chmod
+sont vérifiés ; les modes effectifs 0755/0644 sont également exigés sous POSIX.
+
 ## 5. Recette, réouverture et activation séparée
 
 Après succès, **avant retrait manuel** du témoin : refaire le contrôle `container`,
@@ -425,7 +436,8 @@ composer check-platform-reqs --no-dev
 git diff --check
 ```
 
-Exécuté : 17 scénarios Bash simulés + 12 scénarios PHP/Dotenv réels, puis les deux
+Exécuté : 21 scénarios Bash simulés (dont 4 ciblés assets) + 12 scénarios PHP/Dotenv
+réels. Les vérifications antérieures ont aussi exécuté les deux
 commandes de cache prod et le contrôle du conteneur avec toute connexion DB
 interdite et le stockage dictées absent de la fixture. Couverture : report accepté
 avec flag 0 et refusé avec flag 1, valeurs 0/1, mauvais chemin/flag, absence de flag,
