@@ -9,6 +9,7 @@ SHARED_ROOT="/home/u849885333/domains/orthogram.fr/public_html/shared"
 LEGACY_COURSES="$SHARED_ROOT/courses"
 SHARED_AVATARS="$SHARED_ROOT/avatars"
 PRIVATE_COURSES="/home/u849885333/domains/orthogram.fr/private/orthogram/courses"
+PRIVATE_DICTATIONS="/home/u849885333/domains/orthogram.fr/private/orthogram/dictations"
 READY_FILE="$PRIVATE_COURSES/.orthogram-private-ready"
 
 fail() { echo "STOP: $*" >&2; exit 1; }
@@ -31,7 +32,26 @@ echo "0. Stockage privé des cours (avatars inchangés)"
 [[ -r "$ENV_FILE" ]] || fail "Missing .env.beta"
 
 # Validate the configuration BEFORE copying or compiling it; never print its secrets.
-php -r 'require "vendor/autoload.php"; $env = (new Symfony\Component\Dotenv\Dotenv())->parse(file_get_contents($argv[1])); if (($env["COURSE_STORAGE_DIR"] ?? null) !== $argv[2]) { fwrite(STDERR, "COURSE_STORAGE_DIR in .env.beta must match the private directory\n"); exit(1); }' "$ENV_FILE" "$PRIVATE_COURSES"
+check_environment() {
+    php ops/check_beta_environment.php "$1" "$ENV_FILE" "$PRIVATE_COURSES" "$PRIVATE_DICTATIONS"
+}
+check_environment source
+composer check-platform-reqs --no-dev
+
+echo "0a. Stockage persistant privé des dictées (contrôles CLI seulement)"
+DICTATIONS_PARENT="$(dirname "$PRIVATE_DICTATIONS")"
+[[ -d "$DICTATIONS_PARENT" && "$(realpath "$DICTATIONS_PARENT")" == "$DICTATIONS_PARENT" ]] || fail "Dictation storage ancestors must exist and must not be symlinks"
+[[ ! -L "$PRIVATE_DICTATIONS" ]] || fail "Dictation storage must not be a symlink (including a dangling link)"
+if [[ ! -e "$PRIVATE_DICTATIONS" ]]; then
+    # Only the new leaf; never change permissions or contents of an existing store.
+    (umask 007; mkdir -- "$PRIVATE_DICTATIONS")
+fi
+[[ -d "$PRIVATE_DICTATIONS" && "$(realpath "$PRIVATE_DICTATIONS")" == "$PRIVATE_DICTATIONS" ]] || fail "Invalid dictation storage"
+[[ -r "$PRIVATE_DICTATIONS" && -w "$PRIVATE_DICTATIONS" && -x "$PRIVATE_DICTATIONS" ]] || fail "Deployment user cannot access dictation storage"
+# Reject nested links too, without following or modifying any media.
+DICTATION_LINKS="$(find "$PRIVATE_DICTATIONS" -type l -print -quit)" || fail "Cannot inspect dictation storage"
+[[ -z "$DICTATION_LINKS" ]] || fail "Inspect and resolve linked entries in dictation storage manually"
+unset DICTATION_LINKS
 
 # A real public/courses directory containing data needs a separately inventoried transfer.
 # It is never removed automatically. The ordinary tracked placeholders are harmless.
@@ -137,13 +157,17 @@ rm -f .env.local.php
 
 echo "4. Compilation de l'environnement Symfony"
 composer dump-env prod
+check_environment compiled
 
 echo "5. Nettoyage du cache Symfony"
 rm -rf var/cache/*
 php bin/console cache:clear --env=prod --no-debug
 php bin/console cache:warmup --env=prod --no-debug
+check_environment container
 
 echo "6. Exécution des migrations Doctrine"
+# Backup, remote status and dry-run must already have been reviewed: ops/deploy_beta.md.
+# The cache warmers compile metadata/templates; they do not load dictation/user rows.
 php bin/console doctrine:migrations:migrate --env=prod --no-debug --no-interaction
 
 echo "6bis. Vérification des références pédagogiques (lecture seule)"
