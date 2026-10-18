@@ -17,9 +17,15 @@ use Symfony\Component\Routing\Attribute\Route;
 final class CourseFileController extends AbstractController
 {
     #[Route('/courses/{id}/media/{kind}', name: 'app_course_media', requirements: ['id' => '\d+', 'kind' => 'audio|video'], methods: ['GET', 'HEAD'])]
-    public function media(Courses $course, string $kind, Request $request, CourseFileStorage $storage): BinaryFileResponse
+    public function media(Courses $course, string $kind, Request $request, CourseFileStorage $storage): \Symfony\Component\HttpFoundation\Response
     {
-        $this->denyAccessUnlessGranted(CourseVoter::VIEW, $course);
+        if (!$this->isGranted(CourseVoter::VIEW, $course)) {
+            if (null === $this->getUser()) {
+                $this->denyAccessUnlessGranted(CourseVoter::VIEW, $course);
+            }
+
+            return new \Symfony\Component\HttpFoundation\JsonResponse(['message' => 'Accès au média indisponible.'], 403, ['Cache-Control' => 'private, no-store']);
+        }
         $category = CourseFileKind::from($kind);
         if (!$category->matches($course)) {
             throw $this->createNotFoundException();

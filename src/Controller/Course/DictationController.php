@@ -39,9 +39,9 @@ final class DictationController extends AbstractController
     }
 
     #[Route('/{id}', name: 'entry', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function entry(int $id): Response
+    public function entry(int $id, \App\Services\Dictation\DictationJourney $journey): Response
     {
-        return $this->respond(function () use ($id): Response {
+        return $this->respond(function () use ($id, $journey): Response {
             $actor = $this->actor();
             $dictation = $this->dictation($id);
             $attempt = $this->em->getRepository(DictationAttempt::class)->findOneBy(['user' => $actor, 'dictation' => $dictation]);
@@ -49,7 +49,11 @@ final class DictationController extends AbstractController
                 return $this->redirectToRoute('app_dictation_write', ['id' => $attempt->getId()]);
             }
 
-            return $this->render('dictation/entry.html.twig', ['dictationId' => $id]);
+            return $this->render('dictation/entry.html.twig', [
+                'dictationId' => $id,
+                'isPrerequisite' => $journey->isLocked($actor, $dictation->getSection()),
+                'sectionName' => $dictation->getSection()->getName(),
+            ]);
         });
     }
 

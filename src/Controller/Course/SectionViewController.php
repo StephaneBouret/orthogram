@@ -48,7 +48,7 @@ final class SectionViewController extends AbstractController
         $nbrLessonsDone = $user instanceof User ? $this->lessonRepository->countDoneByUserAndProgram($user, $program) : 0;
         $completedCourseIds = $user instanceof User ? $this->lessonRepository->findDoneCourseIdsByUserAndProgram($user, $program) : [];
 
-        return $this->render('course/section.html.twig', [
+        $response = $this->render('course/section.html.twig', [
             'program' => $program,
             'section' => $section,
             'sections' => $sections,
@@ -59,5 +59,8 @@ final class SectionViewController extends AbstractController
             'sectionCompletion' => $this->sectionCompletionService->calculate($sections, $completedCourseIds),
             'sectionsTotalDuration' => $sectionsTotalDuration,
         ]);
+        $response->headers->set('Cache-Control', 'private, no-store');
+
+        return $response;
     }
 }

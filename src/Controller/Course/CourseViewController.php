@@ -42,6 +42,7 @@ final class CourseViewController extends AbstractController
         Program $program,
         string $sectionSlug,
         string $courseSlug,
+        \App\Twig\DictationJourneyExtension $dictationJourney,
     ): Response {
         $section = $this->sectionsRepository->findOneByProgramAndSlug($program, $sectionSlug);
 
@@ -55,6 +56,12 @@ final class CourseViewController extends AbstractController
             throw $this->createNotFoundException("Le cours demandé n'existe pas.");
         }
 
+        if (null !== $prerequisite = $dictationJourney->prerequisite($course)) {
+            $response = $this->redirect($prerequisite);
+            $response->headers->set('Cache-Control', 'private, no-store');
+
+            return $response;
+        }
         $this->denyAccessUnlessGranted(CourseVoter::VIEW, $course, "Vous n'avez pas accès à ce cours.");
 
         $sections = $this->sectionsRepository->findByProgramWithCourses($program);

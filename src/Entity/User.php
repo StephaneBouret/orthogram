@@ -29,6 +29,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\Column]
     private ?int $id = null;
 
+    /** Null preserves the former journey; an empty snapshot also exempts future publications.
+     * @var list<int>|null
+     */
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $dictationPrerequisites = null;
+
+    /** @return list<int>|null */
+    public function getDictationPrerequisites(): ?array
+    {
+        return $this->dictationPrerequisites;
+    }
+
+    /** Only the creation listener may establish this immutable enrollment snapshot.
+     * @param list<int> $dictationIds
+     */
+    public function enrollDictationJourney(array $dictationIds): void
+    {
+        if (null !== $this->id || null !== $this->dictationPrerequisites) {
+            throw new \LogicException('Le parcours ne peut être inscrit que lors de la création du compte.');
+        }
+        $this->dictationPrerequisites = array_values(array_unique($dictationIds));
+    }
+
     #[ORM\ManyToOne(targetEntity: Courses::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Courses $lastVisitedCourse = null;

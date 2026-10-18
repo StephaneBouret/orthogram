@@ -66,9 +66,20 @@ final class CourseSearchController extends AbstractController
     }
 
     #[Route('/course/details/{id}', name: 'app_course_details', methods: ['GET'])]
-    public function details(Courses $course): JsonResponse
+    public function details(Courses $course, \App\Twig\DictationJourneyExtension $dictationJourney): JsonResponse
     {
-        $this->denyAccessUnlessGranted(CourseVoter::INTERACT, $course, "Vous n'avez pas accès à ce cours.");
+        if (null === $this->getUser()) {
+            $this->denyAccessUnlessGranted(CourseVoter::INTERACT, $course);
+        }
+        if (null !== $url = $dictationJourney->prerequisite($course)) {
+            return new JsonResponse(['url' => $url, 'prerequisite' => 'Terminez la dictée initiale de cette section.'], 200, ['Cache-Control' => 'private, no-store']);
+        }
+        $freeReading = $course->isFreeLesson() && null !== $course->getSection()
+            && $this->isGranted(CourseVoter::SECTION_VIEW, $course->getSection())
+            && $this->isGranted(CourseVoter::VIEW, $course);
+        if (!$freeReading && !$this->isGranted(CourseVoter::INTERACT, $course)) {
+            return new JsonResponse(['message' => 'Vous n’avez pas accès à ce cours.'], 403, ['Cache-Control' => 'private, no-store']);
+        }
 
         return $this->json([
             'url' => $this->generateUrl('app_course_show', $this->getCourseRouteParameters($course)),

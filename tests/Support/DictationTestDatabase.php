@@ -46,6 +46,9 @@ final class DictationTestDatabase
         }
         unset($params['dbname'], $params['url']);
         $this->server = DriverManager::getConnection($params);
+        if (null !== $this->server->fetchOne('SELECT DATABASE()')) {
+            throw new \LogicException('La connexion de création doit être sans base sélectionnée.');
+        }
         $this->params = $params + ['dbname' => $this->name];
         $base = $registry->getManager();
         if (!$base instanceof EntityManagerInterface) {
@@ -61,7 +64,7 @@ final class DictationTestDatabase
     public function manager(): EntityManagerInterface
     {
         $connection = DriverManager::getConnection($this->params);
-        if ($connection->getDatabase() !== $this->name) {
+        if ($connection->fetchOne('SELECT DATABASE()') !== $this->name) {
             throw new \LogicException('Connexion non isolée.');
         }
         $this->connections[] = $connection;
@@ -90,6 +93,8 @@ final class DictationTestDatabase
         $metadata = $em->getMetadataFactory()->getAllMetadata();
         $new = [Dictation::class, DictationVersion::class, DictationAttempt::class];
         (new SchemaTool($em))->createSchema(array_values(array_filter($metadata, static fn ($m) => !in_array($m->name, $new, true))));
+        // Reconstruct the pre-lot-6 schema, then test the real migration on this isolated DB.
+        $em->getConnection()->executeStatement('ALTER TABLE user DROP dictation_prerequisites');
         $this->migration($em->getConnection(), true);
         $changes = (new SchemaTool($em))->getUpdateSchemaSql($metadata);
         if ([] !== $changes) {
@@ -102,7 +107,7 @@ final class DictationTestDatabase
         if ($connection->getDatabase() !== $this->name) {
             throw new \LogicException('Migration autorisée uniquement sur la base isolée.');
         }
-        $versions = ['Version20261016120000', 'Version20261016180000'];
+        $versions = ['Version20261016120000', 'Version20261016180000', 'Version20261017180000'];
         foreach ($up ? $versions : array_reverse($versions) as $name) {
             require_once dirname(__DIR__, 2).'/migrations/'.$name.'.php';
             $migration = (new DbalMigrationFactory($connection, new NullLogger()))->createVersion('DoctrineMigrations\\'.$name);

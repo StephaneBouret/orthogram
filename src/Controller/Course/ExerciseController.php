@@ -40,7 +40,13 @@ class ExerciseController extends AbstractController
     #[Route('/{id}/submit', name: 'app_exercise_submit', methods: ['POST'])]
     public function submit(Exercice $exercice, Request $request): JsonResponse
     {
-        $this->denyAccessUnlessGrantedToExercice($exercice);
+        if (!$this->getUser() instanceof User) {
+            // Preserve the firewall entry point for expired/invalidated sessions.
+            $this->denyAccessUnlessGrantedToExercice($exercice);
+        }
+        if (!$this->isGranted(CourseVoter::INTERACT, $exercice)) {
+            return new JsonResponse(['message' => 'Vous n’avez pas accès à cet exercice.'], 403, ['Cache-Control' => 'private, no-store']);
+        }
 
         if (!$this->isCsrfTokenValid('exercise_'.$exercice->getId(), $request->headers->get('X-CSRF-TOKEN'))) {
             return $this->json(['message' => 'Session ou jeton CSRF expiré. Rechargez la page.'], Response::HTTP_FORBIDDEN);

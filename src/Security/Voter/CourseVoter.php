@@ -27,6 +27,7 @@ final class CourseVoter extends Voter
     public function __construct(
         #[Autowire(service: 'security.authentication.trust_resolver')]
         private readonly AuthenticationTrustResolverInterface $trustResolver,
+        private readonly ?\App\Services\Dictation\DictationJourney $dictationJourney = null,
     ) {
     }
 
@@ -91,7 +92,8 @@ final class CourseVoter extends Voter
     {
         $program = $course->getSection()?->getProgram();
 
-        return $program instanceof Program && $this->canViewProgram($program, $user);
+        return $program instanceof Program && $this->canViewProgram($program, $user)
+            && !($this->dictationJourney?->isLocked($user, $course->getSection()) ?? false);
     }
 
     private function canViewSection(Sections $section, User $user): bool

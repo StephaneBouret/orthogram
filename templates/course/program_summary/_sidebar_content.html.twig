@@ -63,6 +63,7 @@
                 </header>
                 <div id="{{ collapseId }}" class="collapse{{ isExpanded ? ' show' : '' }}">
                     <ol class="pl-0 mb-0 list-unstyled">
+                        {% include 'course/_dictation_entry.html.twig' with {position: 'before'} %}
                         {% for course in section.courses %}
                             <li data-action="click->course-menu#closeOnNavigate">
                                 {% include 'course/program_summary/_course_item.html.twig' with { course: course, currentCourse: currentCourse } %}
@@ -70,6 +71,7 @@
                         {% else %}
                             <li class="text-muted">Aucun cours pour le moment</li>
                         {% endfor %}
+                        {% include 'course/_dictation_entry.html.twig' with {position: 'after'} %}
                     </ol>
                 </div>
             </nav>

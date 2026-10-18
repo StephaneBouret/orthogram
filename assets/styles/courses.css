@@ -3129,3 +3129,19 @@ html[data-bs-theme="dark"] .word-token--missed {
     flex-shrink: 0;
     fill: none !important;
 }
+.dictation-journey-entry .list-group-item,
+.course-prerequisite-link {
+    flex-wrap: wrap;
+    gap: .35rem;
+}
+
+.dictation-journey-entry .small,
+.course-prerequisite-link .small {
+    flex-basis: 100%;
+}
+
+.dictation-journey-entry a:focus-visible,
+.course-prerequisite-link:focus-visible {
+    outline: 3px solid var(--orthogram-focus-ring, currentColor);
+    outline-offset: -3px;
+}

@@ -21,6 +21,6 @@
     {% if writing.canResume or writing.canFinalize %}
         {% include 'dictation/_phase_action.html.twig' with {writing: writing, action: writing.canResume ? 'resume' : 'finalize', label: writing.canResume ? 'Reprendre ma dictée' : 'Terminer et voir le corrigé'} only %}
     {% endif %}
-    <a class="btn btn-primary mt-3" href="{{ sectionUrl }}">Retour à la section</a>
+    <a class="btn btn-primary mt-3" href="{{ sectionUrl }}">Accéder aux cours de la section</a>
 </main>
 {% endblock %}

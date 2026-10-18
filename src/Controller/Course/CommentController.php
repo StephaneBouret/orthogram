@@ -135,7 +135,9 @@ final class CommentController extends AbstractController
     #[Route('/comments/{id}/like', name: 'app_comments_like', methods: ['POST'])]
     public function like(Comment $comment, Request $request, CommentLikeRepository $commentLikeRepository): JsonResponse
     {
-        $this->denyAccessUnlessGranted(CourseVoter::INTERACT, $comment->getCourse(), "Vous n'avez pas accès à ce cours.");
+        if (!$this->isGranted(CourseVoter::INTERACT, $comment->getCourse())) {
+            return new JsonResponse(['message' => 'Vous n’avez pas accès à ce cours.'], 403, ['Cache-Control' => 'private, no-store']);
+        }
 
         $user = $this->getUser();
 

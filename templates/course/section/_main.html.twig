@@ -61,6 +61,7 @@
             <div class="list-group list-group-menu list-group-sm">
                 <nav aria-label="{{ section.name }}">
                     <ol class="pl-0 mb-0 list-unstyled">
+                        {% include 'course/_dictation_entry.html.twig' with {position: 'before'} %}
                         {% for course in section.courses %}
                             <li>
                                 {% include 'course/program_summary/_course_item.html.twig' with { course: course } %}
@@ -68,6 +69,7 @@
                         {% else %}
                             <li class="text-muted">Aucun cours pour le moment</li>
                         {% endfor %}
+                        {% include 'course/_dictation_entry.html.twig' with {position: 'after'} %}
                     </ol>
                 </nav>
             </div>

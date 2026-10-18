@@ -1,4 +1,5 @@
 {% set isAccessible = is_granted('VIEW_COURSE', course) %}
+{% set prerequisite = isAccessible ? null : dictation_course_prerequisite(course) %}
 {% set showFreeBadge = course.freeLesson and not is_granted('PROGRAM_VIEW', course.section.program) %}
 {% set currentCourse = currentCourse|default(null) %}
 {% set completedCourseIds = completedCourseIds|default([]) %}
@@ -36,6 +37,11 @@
 
         <span class="course-item-title">{{ course.name }}</span>
         {% if showFreeBadge %}<span class="badge text-bg-success">Gratuit</span>{% endif %}
+    </a>
+{% elseif prerequisite %}
+    <a class="list-group-item list-group-item-action course-prerequisite-link" href="{{ prerequisite }}">
+        <span class="course-item-title">{{ course.name }}</span>
+        <span class="small text-muted">Terminez la dictée initiale pour accéder à ce cours</span>
     </a>
 {% else %}
     <div class="list-group-item" aria-disabled="true">

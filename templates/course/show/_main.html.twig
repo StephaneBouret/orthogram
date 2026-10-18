@@ -54,7 +54,17 @@
     </div>
 
     {% if not canInteract %}
-        {% include 'course/program_summary/_discovery.html.twig' %}
+        {% set interactionJourney = course.freeLesson ? dictation_journey(section) : null %}
+        {% if interactionJourney and interactionJourney.locked %}
+            <div class="spacer-section course-prerequisite-notice">
+                <p>Vous pouvez consulter ce cours librement. Pour le valider et participer aux échanges, terminez d’abord la dictée initiale de cette section.</p>
+                <div class="btn-row course-discovery-actions">
+                    <a class="btn btn-orthogram-primary course-prerequisite-link" href="{{ interactionJourney.url }}">Accéder à ma dictée</a>
+                </div>
+            </div>
+        {% else %}
+            {% include 'course/program_summary/_discovery.html.twig' %}
+        {% endif %}
     {% endif %}
 
     {% if course.shortDescription %}

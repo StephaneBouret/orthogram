@@ -14,6 +14,10 @@ use Symfony\UX\Autocomplete\Form\BaseEntityAutocompleteType;
 #[AsEntityAutocompleteField]
 final class CoursesAutocompleteField extends AbstractType
 {
+    public function __construct(private readonly \Symfony\Bundle\SecurityBundle\Security $security)
+    {
+    }
+
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
@@ -23,7 +27,15 @@ final class CoursesAutocompleteField extends AbstractType
             'choice_lazy' => true,
             'min_characters' => 2,
             'preload' => 'false',
-            'security' => 'ROLE_USER',
+            'security' => function (): bool {
+                $user = $this->security->getUser();
+
+                return $user instanceof \App\Entity\User && $user->isAccountActive()
+                    && $this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')
+                    && (in_array('ROLE_ADMIN', $user->getRoles(), true) || $user->getSubscriptions()->exists(
+                        static fn ($key, \App\Entity\Subscription $subscription): bool => $subscription->isActive()
+                    ));
+            },
             'max_results' => 10,
             'extra_options' => [
                 'program_slug' => null,

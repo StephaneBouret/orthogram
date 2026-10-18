@@ -1,0 +1,20 @@
+{% set journey = dictation_journey(section) %}
+{% if journey %}
+    <li class="dictation-journey-entry" data-dictation-position="{{ position }}">
+        {% if position == 'before' %}
+            <a class="list-group-item list-group-item-action" href="{{ journey.url }}">
+                <span class="course-item-title">{{ journey.label }}</span>
+                <span class="small text-muted">{{ journey.locked ? 'Avant les cours de cette section' : (journey.closed ? 'Les cours sont accessibles' : 'Dictée facultative pour votre parcours') }}</span>
+            </a>
+        {% elseif sectionCompletion[section.id] and journey.closed %}
+            <a class="list-group-item list-group-item-action" href="{{ journey.url }}">
+                <span class="course-item-title">{{ journey.afterLabel }}</span>
+            </a>
+        {% else %}
+            <div class="list-group-item" aria-disabled="true">
+                <span class="course-item-title">Ma dictée après les cours</span>
+                <span class="small text-muted">{% if not sectionCompletion[section.id] %}Validez tous les cours de cette section.{% endif %}{% if not journey.closed %} Clôturez également la dictée initiale.{% endif %}</span>
+            </div>
+        {% endif %}
+    </li>
+{% endif %}
