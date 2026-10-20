@@ -1,7 +1,11 @@
 {% extends 'base.html.twig' %}
 {% block title %}Commencer la dictée — Orthogram{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/dictation.css') }}">
+{% endblock %}
 {% block body %}
-<main class="container py-5">
+<main class="container py-5 dictation-page">
     <h1>Votre dictée</h1>
     <p>Cette première dictée vous aide à repérer vos points à travailler. Aucun score minimum n’est demandé : vos erreurs sont le point de départ de votre progression.</p>
     {% if isPrerequisite %}

@@ -1,3 +1,8 @@
+.dictation-page {
+    /* Dominant orange of the O in assets/img/logo.png (also used in quiz_results.css). */
+    --dictation-orange: #f3971b;
+    --dictation-ink: #212529;
+}
 .dictation-page textarea { min-height: 24rem; resize: vertical; line-height: 1.8; }
 .dictation-page .card, .dictation-page .form-control, .dictation-page .form-select {
     color: var(--bs-body-color); background-color: var(--bs-body-bg);
@@ -10,7 +15,34 @@
 .dictation-audio-toggle .bi { font-size: 1.4rem; line-height: 1; }
 .dictation-page .btn:focus-visible { outline: 3px solid var(--bs-emphasis-color); outline-offset: 3px; }
 .dictation-page .btn-outline-secondary { --bs-btn-color: var(--bs-body-color); --bs-btn-border-color: var(--bs-secondary-color); }
-.dictation-page .btn-outline-primary { --bs-btn-color: var(--bs-link-color); --bs-btn-border-color: var(--bs-link-color); }
+.dictation-page .btn-primary, .dictation-page .btn-outline-primary {
+    --bs-btn-color: var(--dictation-ink);
+    --bs-btn-bg: var(--dictation-orange);
+    --bs-btn-border-color: var(--dictation-orange);
+    --bs-btn-hover-color: var(--dictation-ink);
+    --bs-btn-hover-bg: color-mix(in srgb, var(--dictation-orange) 90%, black);
+    --bs-btn-hover-border-color: var(--bs-btn-hover-bg);
+    --bs-btn-active-color: var(--dictation-ink);
+    --bs-btn-active-bg: color-mix(in srgb, var(--dictation-orange) 85%, black);
+    --bs-btn-active-border-color: var(--bs-btn-active-bg);
+    --bs-btn-focus-shadow-rgb: 243, 151, 27;
+    --bs-btn-disabled-color: var(--dictation-ink);
+    --bs-btn-disabled-bg: var(--dictation-orange);
+    --bs-btn-disabled-border-color: var(--dictation-orange);
+}
+.dictation-page .btn-primary {
+    /* Keep disabled labels legible on both themes without fading their ink. */
+    --bs-btn-disabled-bg: color-mix(in srgb, var(--dictation-orange) 55%, #adb5bd);
+    --bs-btn-disabled-border-color: var(--bs-btn-disabled-bg);
+    --bs-btn-disabled-opacity: 1;
+}
+.dictation-page .btn-outline-primary {
+    --bs-btn-color: var(--bs-emphasis-color);
+    --bs-btn-bg: transparent;
+    --bs-btn-hover-bg: var(--dictation-orange);
+    --bs-btn-disabled-color: var(--bs-emphasis-color);
+    --bs-btn-disabled-bg: transparent;
+}
 .dictation-page [hidden] { display: none !important; }
 @media (max-width: 991px) { .dictation-page textarea { min-height: 12rem; height: 14rem; } }
 .dictation-frozen { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 2; padding: 1rem; border: 1px solid var(--bs-border-color); border-radius: .375rem; }
