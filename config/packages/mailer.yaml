@@ -1,3 +1,9 @@
 framework:
     mailer:
         dsn: '%env(MAILER_DSN)%'
+
+when@test:
+    framework:
+        mailer:
+            # Never send real mail, even when MAILER_DSN is inherited from the shell.
+            dsn: 'null://null'
