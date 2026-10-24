@@ -6,6 +6,12 @@
     data-controller="click-words"
     data-click-words-submit-url-value="{{ path('app_exercise_submit', { id: exercice.id }) }}"
     data-click-words-token-value="{{ csrf_token('exercise_' ~ exercice.id) }}"
+    {% if latestAttempt %}
+    data-click-words-saved-result-value="{{ {score: latestAttempt.score, total: latestAttempt.total, percentage: latestAttempt.percentage, items: latestAttempt.correctionItems, selected: latestAttempt.selectedTokenIds}|json_encode|e('html_attr') }}"
+    {% endif %}
+    {% if exerciseCourse is defined %}
+    data-click-words-course-id-value="{{ exerciseCourse.id }}"
+    {% endif %}
 >
     <div class="card-body">
         <div class="exercise-header">
@@ -89,5 +95,8 @@
             data-click-words-target="result"
             aria-live="polite"
         ></div>
+        {% if exerciseCourse is defined %}
+            <p class="exercise-course-completion" data-click-words-target="completion" role="status" {{ lesson is defined and lesson and lesson.done ? '' : 'hidden' }}>Cours terminé. Votre progression est enregistrée.</p>
+        {% endif %}
     </div>
 </section>

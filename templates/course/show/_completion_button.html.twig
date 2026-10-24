@@ -1,4 +1,12 @@
-{% if (course.contentType.value ?? course.contentType) != 'quiz' %}
+{% set contentType = course.contentType.value ?? course.contentType %}
+{% if contentType == 'exercise' %}
+<div id="completion-button" role="status" {{ lesson is defined and lesson and lesson.done ? '' : 'hidden' }}>
+    <span class="btn btn-md btn-secondary btn-icon">
+        {% include 'course/show/icons/_check_square.html.twig' %}
+        <span>Terminé</span>
+    </span>
+</div>
+{% elseif contentType != 'quiz' %}
 <div id="completion-button">
     {% set isDone = lesson is defined and lesson and lesson.done %}
     <form method="post" action="{{ path('app_course_confirmation', {'id': course.id}) }}">

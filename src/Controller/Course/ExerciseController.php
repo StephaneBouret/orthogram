@@ -2,12 +2,16 @@
 
 namespace App\Controller\Course;
 
+use App\Entity\Courses;
 use App\Entity\Exercice;
-use App\Entity\ExerciceAttempt;
 use App\Entity\User;
+use App\Repository\CoursesRepository;
 use App\Repository\ExerciceAttemptRepository;
+use App\Repository\LessonRepository;
+use App\Repository\SectionsRepository;
 use App\Security\Voter\CourseVoter;
-use App\Services\ExerciceCorrectionService;
+use App\Services\Courses\SectionCompletionService;
+use App\Services\ExerciceAttemptService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,7 +23,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class ExerciseController extends AbstractController
 {
     public function __construct(
-        private readonly ExerciceCorrectionService $exerciceCorrectionService,
+        private readonly ExerciceAttemptService $attemptService,
         private readonly ExerciceAttemptRepository $exerciceAttemptRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {
@@ -38,7 +42,7 @@ class ExerciseController extends AbstractController
     }
 
     #[Route('/{id}/submit', name: 'app_exercise_submit', methods: ['POST'])]
-    public function submit(Exercice $exercice, Request $request): JsonResponse
+    public function submit(Exercice $exercice, Request $request, CoursesRepository $courses, LessonRepository $lessons, SectionsRepository $sections, SectionCompletionService $completion): JsonResponse
     {
         if (!$this->getUser() instanceof User) {
             // Preserve the firewall entry point for expired/invalidated sessions.
@@ -57,6 +61,16 @@ class ExerciseController extends AbstractController
         }
 
         $payload = json_decode($request->getContent(), true);
+        $course = null;
+        if (is_array($payload) && array_key_exists('courseId', $payload)) {
+            if (!is_int($payload['courseId']) || $payload['courseId'] < 1) {
+                return $this->json(['message' => 'Contexte de cours invalide.'], Response::HTTP_BAD_REQUEST);
+            }
+            $course = $this->entityManager->find(Courses::class, $payload['courseId']);
+            if (null === $course) {
+                return $this->json(['message' => 'Cours introuvable.'], Response::HTTP_BAD_REQUEST);
+            }
+        }
         $selected = is_array($payload) && isset($payload['selected']) && is_array($payload['selected'])
             ? $payload['selected']
             : [];
@@ -64,30 +78,29 @@ class ExerciseController extends AbstractController
             $selected,
             static fn (mixed $tokenId): bool => is_string($tokenId) && '' !== $tokenId
         )));
-        $result = $this->exerciceCorrectionService->correctClickWords($exercice, $selected);
         $user = $this->getUser();
-
-        if ($user instanceof User) {
-            $attempt = (new ExerciceAttempt())
-                ->setUser($user)
-                ->setExercice($exercice)
-                ->setScore($result['score'])
-                ->setTotal($result['total'])
-                ->setPercentage($result['percentage'])
-                ->setSelectedTokenIds($selected)
-                ->setCorrectionItems($result['items']);
-
-            $this->entityManager->persist($attempt);
-            $this->entityManager->flush();
-
-            $result['attempt'] = [
-                'id' => $attempt->getId(),
-                'number' => $this->exerciceAttemptRepository->countByUserAndExercice($user, $exercice),
-                'submittedAt' => $attempt->getSubmittedAt()->format(\DateTimeInterface::ATOM),
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+        $result = $this->attemptService->submit($user, $exercice, $selected, $course);
+        if (null !== $course && null !== $program = $course->getSection()?->getProgram()) {
+            $programSections = $sections->findByProgramWithCourses($program);
+            $completedIds = $lessons->findDoneCourseIdsByUserAndProgram($user, $program);
+            $context = [
+                'program' => $program, 'sections' => $programSections,
+                'currentSection' => $course->getSection(), 'currentCourse' => $course,
+                'canInteract' => true, 'nbrCourses' => $courses->countByProgram($program),
+                'nbrLessonsDone' => count($completedIds), 'completedCourseIds' => $completedIds,
+                'sectionCompletion' => $completion->calculate($programSections, $completedIds),
+            ];
+            // Render only progress fragments after commit; the correction stays in place.
+            $result['progress'] = [
+                'desktop' => $this->renderView('course/program_summary/_sidebar_content.html.twig', $context + ['collapsePrefix' => 'desktop']),
+                'mobile' => $this->renderView('course/program_summary/_sidebar_content.html.twig', $context + ['collapsePrefix' => 'mobile']),
             ];
         }
 
-        return $this->json($result);
+        return $this->json($result, headers: ['Cache-Control' => 'private, no-store']);
     }
 
     private function denyAccessUnlessGrantedToExercice(Exercice $exercice): void

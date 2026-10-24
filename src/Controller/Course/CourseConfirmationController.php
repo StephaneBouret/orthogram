@@ -33,6 +33,9 @@ final class CourseConfirmationController extends AbstractController
         if (CourseContentType::Quiz === $course->getContentType()) {
             throw $this->createAccessDeniedException('Terminez le quiz pour valider ce cours.');
         }
+        if (CourseContentType::Exercise === $course->getContentType()) {
+            throw $this->createAccessDeniedException('Réussissez l’exercice pour valider ce cours.');
+        }
 
         if (!$this->isCsrfTokenValid('lesson_toggle_'.$course->getId(), (string) $request->request->get('_token'))) {
             throw $this->createAccessDeniedException('Le jeton CSRF est invalide.');

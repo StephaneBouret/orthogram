@@ -1,17 +1,39 @@
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
-    static targets = ['result', 'submit', 'token'];
+    static targets = ['result', 'submit', 'token', 'completion'];
     static values = {
         submitUrl: String,
         token: String,
+        courseId: Number,
+        savedResult: Object,
     };
 
     connect() {
-        this.selected = new Set();
+        this.selected = new Set(this.tokenTargets.filter((token) => token.getAttribute('aria-pressed') === 'true').map((token) => token.dataset.tokenId));
+        this.submitting = false;
+        this.request = null;
+        this.tokenTargets.forEach((token) => { token.disabled = false; });
+        if (this.hasSubmitTarget) this.submitTarget.disabled = false;
+        if (!this.resultTarget.innerHTML.trim() && this.hasSavedResultValue) {
+            const saved = this.savedResultValue;
+            this.selected = new Set(saved.selected || []);
+            this.tokenTargets.forEach((token) => {
+                const selected = this.selected.has(token.dataset.tokenId);
+                token.classList.toggle('word-token--selected', selected);
+                token.setAttribute('aria-pressed', String(selected));
+            });
+            this.applyCorrection(saved);
+        }
+    }
+
+    disconnect() {
+        this.request?.abort();
+        this.request = null;
     }
 
     toggle(event) {
+        if (this.submitting) return;
         const token = event.currentTarget;
         const tokenId = token.dataset.tokenId;
 
@@ -35,18 +57,24 @@ export default class extends Controller {
     }
 
     async submit() {
+        if (this.submitting) return;
+        this.submitting = true;
+        const request = new AbortController();
+        this.request = request;
         this.submitTarget.disabled = true;
+        this.tokenTargets.forEach((token) => { token.disabled = true; });
 
         try {
             const response = await fetch(this.submitUrlValue, {
                 method: 'POST',
+                signal: request.signal,
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
                     'X-CSRF-TOKEN': this.tokenValue,
                 },
-                body: JSON.stringify({ selected: Array.from(this.selected) }),
+                body: JSON.stringify({ selected: Array.from(this.selected), ...(this.hasCourseIdValue ? { courseId: this.courseIdValue } : {}) }),
             });
             const data = await response.json();
 
@@ -54,11 +82,17 @@ export default class extends Controller {
                 throw new Error(data.message || 'Impossible de corriger cet exercice.');
             }
 
+            if (!this.element.isConnected || this.request !== request) return;
             this.applyCorrection(data);
+            this.updateProgress(data);
         } catch (error) {
-            this.showError(error.message);
+            if (this.element.isConnected && this.request === request) this.showError(error.message);
         } finally {
-            this.submitTarget.disabled = false;
+            if (this.request === request) {
+                this.submitting = false;
+                this.submitTarget.disabled = false;
+                this.tokenTargets.forEach((token) => { token.disabled = false; });
+            }
         }
     }
 
@@ -66,6 +100,8 @@ export default class extends Controller {
         if (event) {
             event.preventDefault();
         }
+        if (this.submitting) return;
+        this.element.removeAttribute('data-click-words-saved-result-value');
 
         this.selected.clear();
         this.tokenTargets.forEach((token) => {
@@ -74,6 +110,21 @@ export default class extends Controller {
         });
         this.resultTarget.innerHTML = '';
         this.element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    updateProgress(data) {
+        if (!this.hasCourseIdValue) return;
+        if (data.courseCompleted === true) {
+            if (this.hasCompletionTarget) this.completionTarget.hidden = false;
+            const status = document.getElementById('completion-button');
+            if (status) status.hidden = false;
+        }
+        if (data.progress) {
+            const desktop = document.getElementById('customer-sidebar');
+            const mobile = document.querySelector('.course-mobile-menu-panel');
+            if (desktop) desktop.innerHTML = data.progress.desktop;
+            if (mobile) mobile.innerHTML = data.progress.mobile;
+        }
     }
 
     applyCorrection(data) {
