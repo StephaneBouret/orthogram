@@ -59,6 +59,7 @@ class ExerciceCorrectionService
                 continue;
             }
 
+            --$score;
             $items[] = $this->buildItem($tokenId, 'wrong', $tokens[$tokenId] ?? null);
         }
 
@@ -68,6 +69,7 @@ class ExerciceCorrectionService
             }
         }
 
+        $score = max(0, $score);
         $total = count($expectedTokenIds);
 
         return [
