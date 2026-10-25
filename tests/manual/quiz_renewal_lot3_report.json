@@ -1,0 +1,1249 @@
+{
+  "date": "2026-10-25",
+  "scope": "Lot 3 : préparation, audit source en lecture seule et import/activation/désactivation sur copies jetables uniquement",
+  "baseline_commit": "34a19ce314687be4789201267a63299dd181c87d",
+  "baseline_worktree": "clean before lot 3",
+  "authorization": {
+    "editorial_approved": true,
+    "work_database_import_or_activation_authorized_this_stage": false,
+    "work_database_migration_executed": false,
+    "commit_push_deployment": false
+  },
+  "manifest": {
+    "path": "resources/quiz/module1_reserve.json",
+    "sha256": "a7ea9d939aa93971fdf29e3661f400f5043a77ca51fd87c462ab841e4cef72ba",
+    "documentary_sources_sha256": {
+      "reserve_47_relecture.json": "67fef086830960605ec52fc2b26bed7d7335d82844fe25f89cf48a31a3ddd0e1",
+      "reference_58_initiales.json": "c54228bd7770f66396e0da2f45b58a8d68b65a1dce94ae40308f6b2684b06eb6",
+      "repartition_proposee.json": "6f5a569a3c4adabd4eea8427a7c44be3316df3493ea3a221e904e4fba94da153"
+    },
+    "source_documents_unchanged": true,
+    "approved_corrections": [
+      42,
+      54,
+      64,
+      92,
+      98,
+      101,
+      28,
+      51,
+      77
+    ],
+    "distinct_sources": 47,
+    "copies_per_source": 2,
+    "reserve_distribution": [
+      16,
+      13,
+      18,
+      47
+    ],
+    "corrected_text_documentary_only": true,
+    "initial_metadata_changes": []
+  },
+  "source_audit": {
+    "database": "orthogram",
+    "quizzes": {
+      "fundamentals_1": {
+        "id": 1,
+        "title": "Test 1 : reconnaître les natures de mots",
+        "fixed": true,
+        "initial_count": 10,
+        "reserve_count": 0,
+        "quota": null,
+        "course_ids": [
+          15
+        ],
+        "initial_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "initial_hash": "6555592e07f6c128b6adedfff6286a719e15ebd0706908ce21e31faceedb25b0"
+      },
+      "fundamentals_2": {
+        "id": 2,
+        "title": "Test 2 : reconnaître les natures de mots",
+        "fixed": true,
+        "initial_count": 12,
+        "reserve_count": 0,
+        "quota": null,
+        "course_ids": [
+          24
+        ],
+        "initial_ids": [
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22
+        ],
+        "initial_hash": "dee77ba788cf196b35c9e4158b925995ad9b372471a4018284bf92b3b9aff612"
+      },
+      "fundamentals_3": {
+        "id": 3,
+        "title": "Test : reconnaître les fonctions dans la phrase",
+        "fixed": true,
+        "initial_count": 12,
+        "reserve_count": 0,
+        "quota": null,
+        "course_ids": [
+          25
+        ],
+        "initial_ids": [
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34
+        ],
+        "initial_hash": "d6586aeaeb507452d32aafb5b5986f82f01451e88b32b55d6cad0af518f036e3"
+      },
+      "fundamentals_4": {
+        "id": 4,
+        "title": "Test général : réviser les fondamentaux",
+        "fixed": true,
+        "initial_count": 22,
+        "reserve_count": 0,
+        "quota": null,
+        "course_ids": [
+          26
+        ],
+        "initial_ids": [
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56
+        ],
+        "initial_hash": "433e98df5186861655430c94082ec2643db9bdf29240320cc5b8faf864592dd3"
+      },
+      "module1_test1": {
+        "id": 5,
+        "title": "Test 1 : consolider les premières règles du module 1",
+        "fixed": true,
+        "initial_count": 14,
+        "reserve_count": 0,
+        "quota": null,
+        "course_ids": [
+          63
+        ],
+        "initial_ids": [
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70
+        ],
+        "initial_hash": "c164766223d6be9cd4bd1b5b750602ea54cbfd2b2cd9d2e81c65b334ada110ba"
+      },
+      "module1_test2": {
+        "id": 6,
+        "title": "Test 2 : distinguer les formes proches du module 1",
+        "fixed": true,
+        "initial_count": 12,
+        "reserve_count": 0,
+        "quota": null,
+        "course_ids": [
+          64
+        ],
+        "initial_ids": [
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82
+        ],
+        "initial_hash": "c3fe70dd03169f170ab88e12ffad3b43cb709e81b1f33f34296c55f0900d4a4e"
+      },
+      "module1_test3": {
+        "id": 7,
+        "title": "Test 3 : maîtriser les accords et terminaisons du module 1",
+        "fixed": true,
+        "initial_count": 12,
+        "reserve_count": 0,
+        "quota": null,
+        "course_ids": [
+          65
+        ],
+        "initial_ids": [
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94
+        ],
+        "initial_hash": "0468f036e361baeb06797d9a5af1f8815b8ecb1a0f2dc757bb3f98f56c2de516"
+      },
+      "module1_test4": {
+        "id": 8,
+        "title": "Test général : réviser le module 1",
+        "fixed": true,
+        "initial_count": 20,
+        "reserve_count": 0,
+        "quota": null,
+        "course_ids": [
+          66
+        ],
+        "initial_ids": [
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114
+        ],
+        "initial_hash": "b24fbbe5ed81298ca8a099f7f07278c3baa304b8ec3eb143db825c131f21c8b4"
+      }
+    },
+    "totals": {
+      "quizzes": 8,
+      "questions": 114,
+      "answers": 340,
+      "initial": 114
+    },
+    "initial_differences": [],
+    "errors": [],
+    "schema_ready": false,
+    "manifest_sha256": "a7ea9d939aa93971fdf29e3661f400f5043a77ca51fd87c462ab841e4cef72ba"
+  },
+  "source_connection": {
+    "database": "orthogram",
+    "host": "127.0.0.1",
+    "port": 3306,
+    "server": "STEF-LEGION",
+    "mysql": "8.4.7",
+    "source_transactions_read_only": true
+  },
+  "source_preservation": {
+    "database": "orthogram",
+    "all_tables_schema_and_rows_unchanged": true,
+    "env_local_unchanged": true
+  },
+  "source_table_fingerprints": {
+    "avatar": {
+      "row_count": 2,
+      "rows_sha256": "431c02806f3fa5f032436b93a1d6d936c00a657bad6d3f8acdd759c39e1f7d91",
+      "columns_sha256": "f3c661ecd09343cf1112df2aee9b7fef3458b0edf5d3e58dddd423a9ca622e02",
+      "ddl_sha256": "6039fdc67544b102822d59bf159dc80a42cd9717d65ee015308cc0dec406fa07"
+    },
+    "comment_like": {
+      "row_count": 0,
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "columns_sha256": "b5e382588622c4df2e85cbcb38a273cdf42943f09dca0d01e4b4bf0682380923",
+      "ddl_sha256": "35a4face987f3e6ee11ed7111daa6ba2857040beb601b0a43c2140755f8906fd"
+    },
+    "comment_report": {
+      "row_count": 0,
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "columns_sha256": "90f0bc891ac9d448625b454baf4a5e8f4d6cf0cd4f5625a5e412f2ae26871d87",
+      "ddl_sha256": "5b12b88f60a87fe9be1c67d7a8e308bd18a80e310674b6a1e55e0fbec394c342"
+    },
+    "comments": {
+      "row_count": 0,
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "columns_sha256": "2c67cb3136374537ad7b8d9cb958e6ef82ce5193189bc498fabb27af19fd687e",
+      "ddl_sha256": "a3be7fff496959cf64af0f2869dddb6fcb3a2e02c749c8b738770384400c1abc"
+    },
+    "company": {
+      "row_count": 1,
+      "rows_sha256": "a9f421dc4665a64587b887e71638f1cf293db852c6fc5a629eb66a34dcabbade",
+      "columns_sha256": "e0eba07bc0621956d73beedfd0078b6899eac6d324ccd94306eaa28bf6a15536",
+      "ddl_sha256": "e48a390f33e8c8f8fd2c3865e91bb8b386dec0d61acdd6244487aa6ce6f7c45f"
+    },
+    "courses": {
+      "row_count": 66,
+      "rows_sha256": "c68e83abf16f4e083c2e52f00b0dfd821295b6d34a557d2d7b87fc12871c3934",
+      "columns_sha256": "fb48add469344221c0247849597829a4ed6adb86ae68ce88b305ea4e439e5e65",
+      "ddl_sha256": "d24fa456713765bca935932109b4aec6697bf3f96176f3af4ea3d4ba8912343a"
+    },
+    "dictation": {
+      "row_count": 1,
+      "rows_sha256": "3735175478ce103abd1a46107ac9cd206882ecf5edafe65748521ef4ec958542",
+      "columns_sha256": "07db56dae4dca9bd58bb26cf3cc828ecf50cbeee15eca14aab6e511affb903a0",
+      "ddl_sha256": "f81f3f3cd5e79d56ca70029e614469d5255b1361a64c45c1fe413b4f31183a0f"
+    },
+    "dictation_attempt": {
+      "row_count": 0,
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "columns_sha256": "d06002a77cb120ad1d9124672c23c97fc8280b2e3aea591cc8383b543d32609c",
+      "ddl_sha256": "c4bd3f69f46dad8459f7f93ac65d8f047f818ec60130ef4f1b6fd02006105453"
+    },
+    "dictation_version": {
+      "row_count": 2,
+      "rows_sha256": "0747a35e36128a8853494ccbb1c829c64b10c072c7a24aa65f5a73c2e9da7070",
+      "columns_sha256": "f5530643495cceeae3a92f6816889263a421231240492028d842fa5559fde255",
+      "ddl_sha256": "942f5cc8eb2d83dc30b03bdd680d174ef25e1f08346b6864451d72c541dc0647"
+    },
+    "doctrine_migration_versions": {
+      "row_count": 39,
+      "rows_sha256": "dac19f840c423a1f80cd74637e5f70ec290a328342e6a8d212e1c66849072176",
+      "columns_sha256": "4766f7ee51b743e6caba5a9dc8db1ede50f91831afe0546436d79110949c1187",
+      "ddl_sha256": "217e6db96207717feaaa04359e7c185d037075d28cc4677c260a25ddd55a7c56"
+    },
+    "exercice": {
+      "row_count": 26,
+      "rows_sha256": "3b0f8c9f3125e6fab009930a55eeb28ab79714392efeacf66be5ad6f0a0fa412",
+      "columns_sha256": "7b0e3135404c69d6141ad35c88671d3dbfbc9b05471a700ed15a6ebb4ce91850",
+      "ddl_sha256": "8ad541648fa700ac0e8850b54a02ab989d77994c6079eacfb72a7ba987b092ab"
+    },
+    "exercice_attempt": {
+      "row_count": 0,
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "columns_sha256": "fcf4b03bd86fdda99ff45fa697e52837227c5958f4f8b5b92f9da91170fe83a8",
+      "ddl_sha256": "c1e887c08eb3bfd42d1a1fe92fcca64550d89905a11efe871d5cbe28e714dac1"
+    },
+    "invitation": {
+      "row_count": 0,
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "columns_sha256": "d7003d38bd3cf0a2169e677f141205d874669c74b036da1b737e28b49ccf7c7d",
+      "ddl_sha256": "11eb04b06fe0ea87b78065e92e254e8815cd527016f1e440f4b4666d46ba2242"
+    },
+    "learning_reminder": {
+      "row_count": 0,
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "columns_sha256": "978448093c58efe6343b2a499462c1792d47129bc570f98b1534258dd392ae06",
+      "ddl_sha256": "819273cfae09a979156a48db7165d7c88d94a50288923ce92b2c46e9d9d4a3fa"
+    },
+    "lesson": {
+      "row_count": 1,
+      "rows_sha256": "3e3afe84e99ea15cdd8d0bbfc95649e019e1d581f36da5e36c8e5edfa9a37820",
+      "columns_sha256": "e3ee297b7ddadcc2724929003634b7966bfd62ec073753bfec4571657866aa54",
+      "ddl_sha256": "7913f837f94da741b0d8d527feb6d4ea2ec9108cf5dbdd965dd1605fbe109306"
+    },
+    "login_failure_alert": {
+      "row_count": 0,
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "columns_sha256": "85bf4dca38da99632388dc14afe9c891ccaa0ffd14d3b000786fcb521a5e78f4",
+      "ddl_sha256": "c0ff4efae73d1cd022b016e65a6fd1a7b38063f1ea50681132795cc693e277c3"
+    },
+    "login_failure_log": {
+      "row_count": 0,
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "columns_sha256": "f07620b43680e764e26373ff857a3cb54b2054116af0d7d5b362675d3b4931f5",
+      "ddl_sha256": "4b9377fcbff270c9e381e686cae984f56e322b45546ab5546b713ee4853692e2"
+    },
+    "messenger_messages": {
+      "row_count": 0,
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "columns_sha256": "07b8d8b83a8eb5a1c3ed3b074821fe40d41ec99b0a89069274631d055811a6e8",
+      "ddl_sha256": "001fc17171ba1f04844bd3683d7511048b66c7cc2d29710ba255022c8ea1c15a"
+    },
+    "program": {
+      "row_count": 1,
+      "rows_sha256": "daa3fae501b5baefe061cfe309242eb9e6aca03ac4ff1d9c3b835bece6a8a3a5",
+      "columns_sha256": "a4568c93215a78211a9181c26602803ce49b61e87793944607cb0933cadef09b",
+      "ddl_sha256": "af52e1fb976c1a4ed6c2fa3cd9bee993852517a7c249f3df54f85a20f252a096"
+    },
+    "program_detail": {
+      "row_count": 3,
+      "rows_sha256": "301dbb8b8e353b0a49322d7c57d99e195e5f9dfca625f5b733ddfb96c6c1ee71",
+      "columns_sha256": "3d210330743cecac53ad40e7ff4969155b60ff8f17dc9a36c2d45accd3d463c5",
+      "ddl_sha256": "e43bf3b432e58f975f686143e53a6c920a6604043e7a90983cd6bb2970260a31"
+    },
+    "program_highlight": {
+      "row_count": 1,
+      "rows_sha256": "1a030ccc650ef811ecb52ecb5ea395c28f3419e7d987d6441156a8b36b414004",
+      "columns_sha256": "3d210330743cecac53ad40e7ff4969155b60ff8f17dc9a36c2d45accd3d463c5",
+      "ddl_sha256": "736206986cd50fd7d8b28ef791ca44fdb8d918141affbbd615a184e5e8ef87c7"
+    },
+    "quiz": {
+      "row_count": 8,
+      "rows_sha256": "9ff4809dbad74034b195dd9125c27df27164f83cca8a392e6557fc8b8579c870",
+      "columns_sha256": "f25823d83823d0f01d8337dfb90df6a5e8a50af950db87acb5c35ef72c1628b7",
+      "ddl_sha256": "afc3fe6806572ab9aec489e4875e7ea1ede168d3aa0a837b6d773187b5ba41d3"
+    },
+    "quiz_answer": {
+      "row_count": 340,
+      "rows_sha256": "4fc9a3e8d9eeac9b8d4f46ed20f397932dbc2ae141493075f05d1ca983d26b8d",
+      "columns_sha256": "9b5a6afca4aa4faa6465fb9c28b3e9052e1e7b136fed16eba437452484b26b8a",
+      "ddl_sha256": "5e1ca69a5fd46371d89c44b82a639783d4121cc8248902ecc226a5b8e82b513b"
+    },
+    "quiz_attempt": {
+      "row_count": 1,
+      "rows_sha256": "4c9b54482d596bb4f5146fcfc4afab858d5c579edc6759dd658c80da86fc442c",
+      "columns_sha256": "6e53c45fbec5de3579a497a9cef7d09ed50440ee48a0dafd7d04dfd7f0b356db",
+      "ddl_sha256": "3192920d21953b4aeb46e83e929a98e935ad988dde2b3d5a35ee5c7284b92d4d"
+    },
+    "quiz_question": {
+      "row_count": 114,
+      "rows_sha256": "c8a5f48584db3133804243059405abbdfe8911a39e14940ee7a6f45502907ac8",
+      "columns_sha256": "cc4158443856feae2ff80312af35d621767c8d2e2cc5546515623c305a3073c0",
+      "ddl_sha256": "3343c35a6966c6a25c5f8868b116bb0f5e9fdac086409ce427b2a6bcec5bc9e7"
+    },
+    "rememberme_token": {
+      "row_count": 0,
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "columns_sha256": "a241d62c83767fdcc12e124ab634e78a85567ed52a1968ef5b829c0520a7879c",
+      "ddl_sha256": "6d8b77610c8713f6f1590501dc737d7e0e04e2304d2f627c3a6a95a4d8e1733f"
+    },
+    "sections": {
+      "row_count": 3,
+      "rows_sha256": "e538de40e19be3c794b4d0cf4d8afdb9f42215837ef3289ac4dfa01d770ddb41",
+      "columns_sha256": "ea1d9e66e2855cb127f6ebdd08901f98c8df817822f2461dc5ebfecb5c0bc61e",
+      "ddl_sha256": "546a576274b9c9f82977c96d1bec253c2f70dee7a740a295b9e65084f2669a6b"
+    },
+    "subscription": {
+      "row_count": 4,
+      "rows_sha256": "5ce883b5b34f8b379b861af74523c448d23d2a3c31992b8702bb8236d6e4b121",
+      "columns_sha256": "97d8d43e5d8188b27de97655c94b4076f3a1881eba570107d69aebac2aa4ea85",
+      "ddl_sha256": "4afba1230219475ee36c6b1385ed7992400efe66d90cee46b13745e88bc012c8"
+    },
+    "user": {
+      "row_count": 4,
+      "rows_sha256": "f903a92f72105a2fdd11eb974700e191364bc2742dc0dccc3cff9ca4ee904bc8",
+      "columns_sha256": "31ed84a2a5f8384c98f179fc1ef1f756bf837adadb311ebf78dfbc7ab88d0649",
+      "ddl_sha256": "4f7f858b398bf88846a5b06b90b10b2ba179f3cbed9ea703c65bdf346f50e17d"
+    },
+    "user_device": {
+      "row_count": 2,
+      "rows_sha256": "304e84a18a6dc34cf472ca6e317a53a6947c153a04e9837f3b39a7467ebb567a",
+      "columns_sha256": "d0a0d446437d20a4fd12287fbecd5ba4e2c4ff1488754937e91f6378a4de2d97",
+      "ddl_sha256": "39296261f2660f4b8a7433d978ae70ff0f44d5e3c8a273e41938d6b157fb4633"
+    }
+  },
+  "copy": {
+    "source": "orthogram",
+    "destination": "orthogram_quiz_reserve_lot3_b8ceb85b4af9",
+    "host": "127.0.0.1",
+    "env_hash": "cff446483b8895f4038e02ebeb321f5cd8469278c8e09575c2ba3325465e7c72",
+    "tables": 30,
+    "copy_identical": true
+  },
+  "environment": {
+    "env_local_modified": false,
+    "mailer": "null://null",
+    "messenger": "in-memory://",
+    "external_jobs_launched": false,
+    "copy_kept_for_local_review": true
+  },
+  "schema": {
+    "new_migration": "DoctrineMigrations\\Version20261025150000",
+    "executed_only_on_copy": true,
+    "executed_migrations": 1,
+    "sql_statements": 1,
+    "new_table": "quiz_reserve_import",
+    "composite_identity": [
+      "quiz_id",
+      "source_key"
+    ],
+    "question_reference_unique": true,
+    "deleted_question_keeps_null_provenance": true,
+    "no_existing_table_alteration": true,
+    "lot1_migration_replayed": false,
+    "orm_mapping_valid": true,
+    "full_schema_comparison_clean": false,
+    "preexisting_unrelated_schema_difference": "ALTER TABLE user RENAME INDEX idx_user_last_visited_course TO IDX_8D93D649AFDEBEB2;",
+    "down_strategy": "Irreversible ; désactivation fonctionnelle prioritaire, préservation des historiques"
+  },
+  "import_result": {
+    "action": "import",
+    "applied": true,
+    "questions_added": 94,
+    "answers_added": 188,
+    "plan_hash": "83e8018f5917a4c03e4a65b8e8a2dea2949f72fd509cfa0874f3b130e29d1db3",
+    "database": "orthogram_quiz_reserve_lot3_b8ceb85b4af9",
+    "write_requested": true
+  },
+  "data_comparison": {
+    "all_preexisting_rows_preserved": true,
+    "courses_attempts_responses_snapshots_progressions_unchanged": true,
+    "all_eight_fixed": true,
+    "sources": 47,
+    "added_questions": 94,
+    "added_answers": 188,
+    "total_questions": 208,
+    "total_answers": 528,
+    "sizes": [
+      10,
+      12,
+      12,
+      22,
+      14,
+      12,
+      12,
+      20
+    ],
+    "reserves": [
+      0,
+      0,
+      0,
+      0,
+      16,
+      13,
+      18,
+      47
+    ]
+  },
+  "reimport": {
+    "action": "import",
+    "applied": true,
+    "questions_added": 0,
+    "answers_added": 0,
+    "plan_hash": "f8f443f524fb42b25066c0ccd2125e5dafa530e0f42c1ece90f16ee00b6b344e",
+    "all_rows_and_schemas_identical": true
+  },
+  "activation": {
+    "action": "enable",
+    "applied": true,
+    "questions_added": 0,
+    "answers_added": 0,
+    "plan_hash": "7b62354a5c227b9cbe49b0c40efccf9999c7a9c70432d93261342efc8cb2eab5",
+    "only_quiz_mode_changed": true
+  },
+  "deactivation": {
+    "action": "disable",
+    "applied": true,
+    "questions_added": 0,
+    "answers_added": 0,
+    "plan_hash": "86ee8bc15e9b4093775a5553c6bee3a53d2c4d743e9f13b418bd4858a87f4652",
+    "only_quiz_mode_changed": true
+  },
+  "browser": {
+    "database": "orthogram_quiz_reserve_lot3_b8ceb85b4af9",
+    "opened": [
+      {
+        "key": "fundamentals_1",
+        "total": 10
+      },
+      {
+        "key": "fundamentals_2",
+        "total": 12
+      },
+      {
+        "key": "fundamentals_3",
+        "total": 12
+      },
+      {
+        "key": "fundamentals_4",
+        "total": 22
+      },
+      {
+        "key": "module1_test1",
+        "total": 14
+      },
+      {
+        "key": "module1_test2",
+        "total": 12
+      },
+      {
+        "key": "module1_test3",
+        "total": 12
+      },
+      {
+        "key": "module1_test4",
+        "total": 20
+      }
+    ],
+    "fixed": [
+      {
+        "key": "module1_test1",
+        "attempt_id": 3,
+        "score": 14,
+        "ids": [
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70
+        ]
+      },
+      {
+        "key": "module1_test2",
+        "attempt_id": 4,
+        "score": 12,
+        "ids": [
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82
+        ]
+      },
+      {
+        "key": "module1_test3",
+        "attempt_id": 5,
+        "score": 12,
+        "ids": [
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94
+        ]
+      },
+      {
+        "key": "module1_test4",
+        "attempt_id": 6,
+        "score": 20,
+        "ids": [
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114
+        ]
+      }
+    ],
+    "renewed": [
+      {
+        "key": "module1_test1",
+        "attempt_id": 7,
+        "ids": [
+          116,
+          115,
+          118,
+          119,
+          121,
+          123,
+          124,
+          117,
+          127,
+          59,
+          120,
+          122,
+          62,
+          125
+        ],
+        "reused": 2,
+        "theme_slots_identical": true,
+        "survived_deactivation": true
+      },
+      {
+        "key": "module1_test2",
+        "attempt_id": 8,
+        "ids": [
+          131,
+          135,
+          136,
+          132,
+          75,
+          133,
+          134,
+          72,
+          137,
+          140,
+          81,
+          142
+        ],
+        "reused": 3,
+        "theme_slots_identical": true,
+        "survived_deactivation": true
+      },
+      {
+        "key": "module1_test3",
+        "attempt_id": 9,
+        "ids": [
+          144,
+          145,
+          148,
+          146,
+          147,
+          149,
+          150,
+          151,
+          159,
+          155,
+          157,
+          152
+        ],
+        "reused": 0,
+        "theme_slots_identical": true,
+        "survived_deactivation": true
+      },
+      {
+        "key": "module1_test4",
+        "attempt_id": 10,
+        "ids": [
+          163,
+          164,
+          167,
+          174,
+          181,
+          168,
+          175,
+          165,
+          171,
+          177,
+          105,
+          169,
+          179,
+          166,
+          170,
+          186,
+          182,
+          172,
+          162,
+          190
+        ],
+        "reused": 1,
+        "theme_slots_identical": true,
+        "survived_deactivation": true
+      }
+    ],
+    "browser": "Chrome/155.0.8059.86",
+    "admin_counts": true,
+    "historical_correction_unchanged": true,
+    "answer_refresh_resume_identical": true,
+    "http_errors": [],
+    "javascript_exceptions": [],
+    "external_blocked": [],
+    "external_stubbed": [
+      "https://unpkg.com/@googlemaps/extended-component-library@0.6"
+    ],
+    "success": true
+  },
+  "browser_data_comparison": {
+    "all_editorial_data_equal_to_after_import": true,
+    "old_completed_attempts_and_lessons_unchanged": true,
+    "all_other_tables_identical": true,
+    "only_synthetic_user_bookmark_changed": true,
+    "new_attempts_and_lessons_only_for_synthetic_user": true,
+    "final_fixed_attempts": {
+      "module1_test1": {
+        "attempt_id": 11,
+        "all_initial_ids_and_order_equal": true,
+        "total": 14
+      },
+      "module1_test2": {
+        "attempt_id": 12,
+        "all_initial_ids_and_order_equal": true,
+        "total": 12
+      },
+      "module1_test3": {
+        "attempt_id": 13,
+        "all_initial_ids_and_order_equal": true,
+        "total": 12
+      },
+      "module1_test4": {
+        "attempt_id": 14,
+        "all_initial_ids_and_order_equal": true,
+        "total": 20
+      }
+    },
+    "old_active_snapshot_and_validated_response_unchanged": true,
+    "intentional_synthetic_attempts_added": 11
+  },
+  "intentional_recipe_data": {
+    "synthetic_user_id": 5,
+    "completed_before_import_attempt_id": 2,
+    "active_before_import_attempt_id": 3,
+    "preexisting_real_attempt_id": 1,
+    "preexisting_real_attempt_unchanged": true,
+    "browser_additional_attempts": 11,
+    "browser_historical_correction_was_synthetic_preimport": true,
+    "only_synthetic_user_bookmark_fields_changed": [
+      "last_visited_course_id",
+      "course_bookmark_version"
+    ]
+  },
+  "selection_behavior": {
+    "selector_algorithm_unchanged": true,
+    "deterministic": true,
+    "random": false,
+    "full_reserve_coverage_guaranteed": false,
+    "deja_has_no_reserve": true,
+    "measured_coverage": [
+      {
+        "quiz_key": "module1_test1",
+        "attempt_size": 14,
+        "reused_second_pass": 2,
+        "unique_first_two_passes": 26,
+        "bank_size": 30
+      },
+      {
+        "quiz_key": "module1_test2",
+        "attempt_size": 12,
+        "reused_second_pass": 3,
+        "unique_first_two_passes": 21,
+        "bank_size": 25
+      },
+      {
+        "quiz_key": "module1_test3",
+        "attempt_size": 12,
+        "reused_second_pass": 0,
+        "unique_first_two_passes": 24,
+        "bank_size": 30
+      },
+      {
+        "quiz_key": "module1_test4",
+        "attempt_size": 20,
+        "reused_second_pass": 1,
+        "unique_first_two_passes": 39,
+        "bank_size": 67
+      }
+    ],
+    "third_pass_automated_test": "same set of initial IDs, possible permutation within a theme"
+  },
+  "tests": {
+    "runtime": "PHP 8.4.27 / PHPUnit 13.2.3 / MySQL 8.4.7",
+    "targeted": {
+      "tests": 187,
+      "assertions": 2501,
+      "success": true
+    },
+    "new_import_tests": {
+      "tests": 8,
+      "assertions": 525,
+      "success": true
+    },
+    "new_concurrency_tests": {
+      "tests": 5,
+      "assertions": 77,
+      "success": true,
+      "scenarios": [
+        "two imports",
+        "import/editorial edit",
+        "import/start",
+        "import/fixed restart",
+        "enable/restart"
+      ],
+      "two_mysql_connections_and_two_processes": true,
+      "lock_wait_observed_before_release": true
+    },
+    "full": {
+      "tests": 1144,
+      "assertions": 38108,
+      "skipped": 1,
+      "success": true,
+      "skip_reason": "CourseFilesTest::testEscapingSymlinkIsRefused : Windows user cannot create file symlinks"
+    },
+    "failure_cases": [
+      "partial provenance",
+      "divergent content",
+      "deleted question",
+      "moved question",
+      "collision",
+      "stale preview",
+      "injected postPersist failure after SQL insertion, complete rollback"
+    ],
+    "database_isolation": "guarded random orthogram_dictation_2a_<16hex>_test databases, dropped after each test"
+  },
+  "phpstan": {
+    "command": "php -d memory_limit=512M -d xdebug.mode=off vendor/phpstan/phpstan/phpstan analyse --no-progress --error-format=json",
+    "baseline_artifact": "var/quiz-fixed-quota/phpstan-after.json (lot 2 fixed quota correction)",
+    "baseline_totals": {
+      "errors": 0,
+      "file_errors": 34
+    },
+    "after_totals": {
+      "errors": 0,
+      "file_errors": 34
+    },
+    "entire_json_identical": true,
+    "added_diagnostics": [],
+    "removed_diagnostics": [],
+    "unchanged_diagnostics": [
+      {
+        "file": "tests/Controller/Course/CourseInteractionTest.php",
+        "message": "Property App\\Tests\\Controller\\Course\\CourseInteractionTest::$previousUrls type has no value type specified in iterable type array.",
+        "line": 32,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Controller/Course/CourseInteractionTest.php",
+        "message": "Property App\\Tests\\Controller\\Course\\CourseInteractionTest::$commentTokens type has no value type specified in iterable type array.",
+        "line": 45,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Controller/Course/CourseInteractionTest.php",
+        "message": "Method App\\Tests\\Controller\\Course\\CourseInteractionTest::databaseState() return type has no value type specified in iterable type array.",
+        "line": 140,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Controller/Course/CourseInteractionTest.php",
+        "message": "Method App\\Tests\\Controller\\Course\\CourseInteractionTest::endpoints() return type has no value type specified in iterable type iterable.",
+        "line": 218,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Controller/Course/CourseInteractionTest.php",
+        "message": "Method App\\Tests\\Controller\\Course\\CourseInteractionTest::exerciseProfiles() return type has no value type specified in iterable type iterable.",
+        "line": 267,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Controller/Course/CourseInteractionTest.php",
+        "message": "Method App\\Tests\\Controller\\Course\\CourseInteractionTest::readerTypes() return type has no value type specified in iterable type iterable.",
+        "line": 303,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Controller/Course/CourseInteractionTest.php",
+        "message": "Method App\\Tests\\Controller\\Course\\CourseInteractionTest::authenticationProfiles() return type has no value type specified in iterable type iterable.",
+        "line": 410,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Controller/QuizResultsTest.php",
+        "message": "Method App\\Tests\\Controller\\QuizResultsTest::historicalCourseTypes() return type has no value type specified in iterable type iterable.",
+        "line": 328,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Integration/DictationEnrollmentMigrationTest.php",
+        "message": "Class DoctrineMigrations\\Version20261017180000 not found.",
+        "line": 28,
+        "ignorable": true,
+        "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+        "identifier": "class.notFound"
+      },
+      {
+        "file": "tests/Integration/DictationEnrollmentMigrationTest.php",
+        "message": "Class DoctrineMigrations\\Version20261017180000 not found.",
+        "line": 34,
+        "ignorable": true,
+        "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+        "identifier": "class.notFound"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarOccurrencesTest.php",
+        "message": "Offset 'separateFirstNotice' does not exist on array{ics: string, googleUrl: string|null, expiresAt: string, notice: string}.",
+        "line": 106,
+        "ignorable": true,
+        "identifier": "offsetAccess.notFound"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarOccurrencesTest.php",
+        "message": "Method App\\Tests\\Services\\LearningReminderCalendarOccurrencesTest::splitSeries() return type has no value type specified in iterable type iterable.",
+        "line": 151,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarOccurrencesTest.php",
+        "message": "Method App\\Tests\\Services\\LearningReminderCalendarOccurrencesTest::testInitialGapIsSeparateAndNominalSeriesResumes() has parameter $days with no value type specified in iterable type array.",
+        "line": 162,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarOccurrencesTest.php",
+        "message": "Method App\\Tests\\Services\\LearningReminderCalendarOccurrencesTest::testInitialGapIsSeparateAndNominalSeriesResumes() has parameter $firstStarts with no value type specified in iterable type array.",
+        "line": 162,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarOccurrencesTest.php",
+        "message": "Offset 'separateFirstNotice' does not exist on array{ics: string, googleUrl: string|null, expiresAt: string, notice: string}.",
+        "line": 211,
+        "ignorable": true,
+        "identifier": "offsetAccess.notFound"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarServiceTest.php",
+        "message": "Method App\\Tests\\Services\\LearningReminderCalendarServiceTest::splitDeadlines() return type has no value type specified in iterable type iterable.",
+        "line": 61,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarServiceTest.php",
+        "message": "Method App\\Tests\\Services\\LearningReminderCalendarServiceTest::unsplitNotices() return type has no value type specified in iterable type iterable.",
+        "line": 79,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarServiceTest.php",
+        "message": "Method App\\Tests\\Services\\LearningReminderCalendarServiceTest::testUnsplitExportsHaveNoSeparateNotice() has parameter $days with no value type specified in iterable type array.",
+        "line": 86,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarServiceTest.php",
+        "message": "Method App\\Tests\\Services\\LearningReminderCalendarServiceTest::ambiguousDeadlines() return type has no value type specified in iterable type iterable.",
+        "line": 187,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarServiceTest.php",
+        "message": "Method App\\Tests\\Services\\LearningReminderCalendarServiceTest::initialPassages() return type has no value type specified in iterable type iterable.",
+        "line": 202,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarServiceTest.php",
+        "message": "Method App\\Tests\\Services\\LearningReminderCalendarServiceTest::incoherentInstants() return type has no value type specified in iterable type iterable.",
+        "line": 226,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarServiceTest.php",
+        "message": "Method App\\Tests\\Services\\LearningReminderCalendarServiceTest::invalidAnchors() return type has no value type specified in iterable type iterable.",
+        "line": 240,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarServiceTest.php",
+        "message": "Method App\\Tests\\Services\\LearningReminderCalendarServiceTest::invalidWriterAnchors() return type has no value type specified in iterable type iterable.",
+        "line": 260,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Services/LearningReminderVtimezoneTest.php",
+        "message": "Access to an undefined property Sabre\\VObject\\Document::$X-ORTHOGRAM-UNTIL.",
+        "line": 26,
+        "ignorable": true,
+        "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+        "identifier": "property.notFound"
+      },
+      {
+        "file": "tests/Services/LearningReminderVtimezoneTest.php",
+        "message": "Access to an undefined property Sabre\\VObject\\Document::$X-ORTHOGRAM-UNTIL.",
+        "line": 45,
+        "ignorable": true,
+        "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+        "identifier": "property.notFound"
+      },
+      {
+        "file": "tests/Support/IcalendarOracleTest.php",
+        "message": "Method App\\Tests\\Support\\IcalendarOracleTest::invalidGroups() return type has no value type specified in iterable type iterable.",
+        "line": 142,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/manual/dictation_lot2b_browser_router.php",
+        "message": "Call to an undefined method Doctrine\\Persistence\\ObjectManager::getConnection().",
+        "line": 27,
+        "ignorable": true,
+        "identifier": "method.notFound"
+      },
+      {
+        "file": "tests/manual/dictation_lot6_manual_session.php",
+        "message": "Offset 'DICTATION_STORAGE_DIR' does not exist on non-empty-array<mixed, mixed>.",
+        "line": 97,
+        "ignorable": true,
+        "identifier": "offsetAccess.notFound"
+      },
+      {
+        "file": "tests/manual/dictation_lot6_manual_session.php",
+        "message": "Offset 'DICTATION_STORAGE_DIR' does not exist on non-empty-array<mixed, mixed>.",
+        "line": 105,
+        "ignorable": true,
+        "identifier": "offsetAccess.notFound"
+      },
+      {
+        "file": "tests/manual/dictation_lot6_manual_session.php",
+        "message": "Offset 'DICTATION_STORAGE_DIR' does not exist on non-empty-array<mixed, mixed>.",
+        "line": 113,
+        "ignorable": true,
+        "identifier": "offsetAccess.notFound"
+      },
+      {
+        "file": "tests/manual/dictation_lot6_manual_session.php",
+        "message": "Offset 'DICTATION_STORAGE_DIR' does not exist on non-empty-array<mixed, mixed>.",
+        "line": 113,
+        "ignorable": true,
+        "identifier": "offsetAccess.notFound"
+      },
+      {
+        "file": "tests/manual/dictation_lot6_manual_session.php",
+        "message": "Offset 'DICTATION_STORAGE_DIR' does not exist on non-empty-array<mixed, mixed>.",
+        "line": 118,
+        "ignorable": true,
+        "identifier": "offsetAccess.notFound"
+      },
+      {
+        "file": "tests/manual/dictation_lot6_manual_session.php",
+        "message": "Call to an undefined method Doctrine\\Persistence\\ObjectManager::getConnection().",
+        "line": 137,
+        "ignorable": true,
+        "identifier": "method.notFound"
+      },
+      {
+        "file": "tests/manual/generate_learning_reminder_calendar_cases.php",
+        "message": "Function expectedOccurrence() return type has no value type specified in iterable type array.",
+        "line": 16,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      }
+    ],
+    "new_exclusions": false,
+    "composer_lock_sha256": "0360316a93593460196024cc95bcb787c26a8a05b59406e18c01de8f0ca974b5",
+    "configuration_sha256": "179fcd5cc0542d9fd5374215008fa87898e982558d08a860c1ac4cef8b8ad751"
+  },
+  "quality": {
+    "php_lint": "12 changed/new PHP files pass",
+    "php_cs_fixer_dry_run": "0 changes needed on 12 files",
+    "lint_container": "pass",
+    "composer_validate": "valid; existing getid3 exact version and apache-pack wildcard warnings",
+    "git_diff_check": "pass"
+  },
+  "limits": [
+    "Schema comparison retains the preexisting user index naming difference.",
+    "One preexisting Windows symlink test skipped.",
+    "Browser uses synthetic local authentication; unrelated external Google Maps module stubbed, external requests blocked.",
+    "No import, activation or new migration on orthogram; later execution needs explicit authorization.",
+    "Deterministic minimum reuse does not guarantee all reserve questions will be presented."
+  ],
+  "local_raw_evidence_directory": "C:\\Formations\\orthogram\\var\\quiz-reserve-lot3",
+  "files": [
+    "migrations/Version20261025150000.php",
+    "resources/quiz/module1_reserve.json",
+    "src/Command/QuizRenewalCommand.php",
+    "src/Command/QuizReserveCommand.php",
+    "src/Entity/QuizReserveImport.php",
+    "src/Services/ModuleOneReserveImporter.php",
+    "src/Services/ModuleOneReserveManifest.php",
+    "src/Services/QuizAttemptService.php",
+    "src/Services/QuizEditorialService.php",
+    "tests/Integration/ModuleOneReserveConcurrencyTest.php",
+    "tests/Integration/ModuleOneReserveImportTest.php",
+    "tests/Support/ModuleOneReserveFixture.php",
+    "tests/Support/module1_reserve_worker.php",
+    "tests/manual/quiz_renewal_lot3.md",
+    "tests/manual/quiz_renewal_lot3_report.json"
+  ]
+}

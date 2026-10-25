@@ -20,10 +20,11 @@ final class QuizEditorialService
 
     /** @template T
      * @param callable(): T $action
+     * @param list<int>     $additionalQuizIds
      *
      * @return T
      */
-    public function transaction(Quiz|QuizQuestion|null $entity, ?int $targetQuizId, callable $action): mixed
+    public function transaction(Quiz|QuizQuestion|null $entity, ?int $targetQuizId, callable $action, array $additionalQuizIds = []): mixed
     {
         $connection = $this->em->getConnection();
         if ($connection->isTransactionActive()) {
@@ -40,7 +41,7 @@ final class QuizEditorialService
                 }
                 $sourceId = (int) $source;
             }
-            $ids = array_values(array_unique(array_filter([$sourceId, $targetQuizId], static fn ($id) => null !== $id)));
+            $ids = array_values(array_unique(array_filter([$sourceId, $targetQuizId, ...$additionalQuizIds], static fn ($id) => null !== $id)));
             sort($ids);
             $connection->beginTransaction();
             try {

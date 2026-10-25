@@ -129,6 +129,11 @@ final class QuizAttemptService
 
     private function create(User $user, Courses $course, Quiz $quiz, ?QuizAttempt $previous = null): QuizAttempt
     {
+        // After the user lock, share the editorial quiz lock before reading the
+        // composition. Imports/activation finish atomically before snapshot creation.
+        $this->em->refresh($quiz, LockMode::PESSIMISTIC_WRITE);
+        $this->em->createQuery('SELECT q, question, answer FROM App\\Entity\\Quiz q LEFT JOIN q.questions question LEFT JOIN question.answers answer WHERE q.id = :id')
+            ->setParameter('id', $quiz->getId())->setHint(Query::HINT_REFRESH, true)->setLockMode(LockMode::PESSIMISTIC_WRITE)->getResult();
         try {
             $questions = $this->selector->select($quiz, $previous);
         } catch (InvalidQuizConfiguration $error) {

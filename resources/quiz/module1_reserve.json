@@ -1,0 +1,3075 @@
+{
+  "schema_version": 1,
+  "approval": "Contenus candidate, corrections 42/54/64/92/98/101 et 28/51/77 et répartition validés explicitement par Stéphane pour préparation et recette sur copie le 25 octobre 2026. Aucune autorisation sur orthogram à cette étape.",
+  "source_files_sha256": {
+    "reserve_47_relecture.json": "67fef086830960605ec52fc2b26bed7d7335d82844fe25f89cf48a31a3ddd0e1",
+    "reference_58_initiales.json": "c54228bd7770f66396e0da2f45b58a8d68b65a1dce94ae40308f6b2684b06eb6",
+    "repartition_proposee.json": "6f5a569a3c4adabd4eea8427a7c44be3316df3493ea3a221e904e4fba94da153"
+  },
+  "sources": [
+    {
+      "source_key": "module1_docx_006",
+      "source_number": 6,
+      "theme": "terminaison du verbe en « -er » / « -ez » (1)",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "À vous écoutez, vous savez tout sur tout !",
+        "explanation": "Correction : « À vous écouter, vous savez tout sur tout ! » Après la préposition « à », « écouter » est à l’infinitif : on pourrait dire « à vous entendre ». « Vous » est ici le complément du verbe, pas son sujet.",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "À vous écouter, vous savez tout sur tout !",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_007",
+      "source_number": 7,
+      "theme": "les mots féminins se terminant par « -té » ou « -tié »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Ils se connaissent depuis si longtemps que leur amitié est sans faille.",
+        "explanation": "Phrase correcte. Le nom féminin « amitié » se termine par « -tié », sans « e » final.",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "Ils se connaissent depuis si longtemps que leur amitié est sans faille.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_015",
+      "source_number": 15,
+      "theme": "« si » / « s’y »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Si ! Si ! Je te promets que je l’ai fait comme tu le souhaitais.",
+        "explanation": "Phrase correcte. « Si » est ici un adverbe qui sert à affirmer le contraire d’une négation. Il ne s’agit pas du pronom « s’ » suivi de « y ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "Si ! Si ! Je te promets que je l’ai fait comme tu le souhaitais.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_021",
+      "source_number": 21,
+      "theme": "« peut-être » / « peut être »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "À qui peut être cette veste pendue au porte-manteau ?",
+        "explanation": "Phrase correcte. « Peut être » réunit le verbe « pouvoir » et l’infinitif « être » : on peut dire « À qui pourrait être cette veste ? ». Il n’y a donc pas de trait d’union entre ces deux verbes. La graphie « porte-manteau » est une variante admise.",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "À qui peut être cette veste pendue au porte-manteau ?",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_023",
+      "source_number": 23,
+      "theme": "« dites » / « dîtes »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Vous maudissez les journées pluvieuses.",
+        "explanation": "Phrase correcte. Au présent de l’indicatif, « maudire » se conjugue « vous maudissez ». Il ne suit pas la forme « vous dites » du verbe « dire ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "Vous maudissez les journées pluvieuses.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_028",
+      "source_number": 28,
+      "theme": "« ces » / « ses »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "« Pour qui sont ces serpents qui sifflent sur vos têtes ? » (Racine)",
+        "explanation": "Phrase correcte. « Ces » est un déterminant démonstratif : il désigne les serpents, « ces serpents-là ». C’est bien le mot employé dans ce vers de Racine.",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "« Pour qui sont ces serpents qui sifflent sur vos têtes ? » (Racine)",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_030",
+      "source_number": 30,
+      "theme": "« son » / « sont »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "À qui sont ces clés qui traînent sur le bureau ?",
+        "explanation": "Phrase correcte. « Sont » est le verbe « être » au présent : on peut le remplacer par « étaient » (« À qui étaient ces clés ? »).",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "À qui sont ces clés qui traînent sur le bureau ?",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_032",
+      "source_number": 32,
+      "theme": "terminaison du verbe en « -er » / « -ez » (2)",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Pensé-vous qu’il arrivera à temps pour le début de la séance ?",
+        "explanation": "Correction : « Pensez-vous qu’il arrivera à temps pour le début de la séance ? » Le sujet « vous » est placé après le verbe dans cette question. Au présent, on écrit « vous pensez », donc « pensez-vous » avec la terminaison « -ez ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "Pensez-vous qu’il arrivera à temps pour le début de la séance ?",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_033",
+      "source_number": 33,
+      "theme": "les mots se terminant par « -onnel » / « -onal »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Les élections régionales ont lieu tous les six ans.",
+        "explanation": "Phrase correcte. « Régional » s’écrit avec un seul « n ». Ici, l’adjectif s’accorde avec « élections », féminin pluriel : « régionales ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "Les élections régionales ont lieu tous les six ans.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_035",
+      "source_number": 35,
+      "theme": "« tout » / « tous » / « toute » / « toutes » (1)",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Tout ces applaudissements pour moi !",
+        "explanation": "Correction : « Tous ces applaudissements pour moi ! » « Tous » s’accorde avec « applaudissements », nom masculin pluriel.",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "Tous ces applaudissements pour moi !",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_040",
+      "source_number": 40,
+      "theme": "« ensemble » / « ensembles »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Les coloris de ce fauteuil et de ce tapis vont parfaitement ensembles.",
+        "explanation": "Correction : « Les coloris de ce fauteuil et de ce tapis vont parfaitement ensemble. » « Ensemble » est ici un adverbe : les deux coloris s’accordent l’un avec l’autre. Cet adverbe est invariable.",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "Les coloris de ce fauteuil et de ce tapis vont parfaitement ensemble.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_042",
+      "source_number": 42,
+      "theme": "les mots féminins se terminant par « -té » ou « -tié »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "La quantitée de farine indiquée dans cette recette est insuffisante.",
+        "explanation": "Correction : « La quantité de farine indiquée dans cette recette est insuffisante. » Le nom féminin « quantité » se termine par « -té », sans « e » final. La plupart des noms féminins en « -té » suivent cette règle, avec des exceptions comme « dictée » et « jetée ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "La quantité de farine indiquée dans cette recette est insuffisante.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_045",
+      "source_number": 45,
+      "theme": "« a » / « à »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Après cet exploit, ce chien d’aveugle s’attend a une belle récompense.",
+        "explanation": "Correction : « Après cet exploit, ce chien d’aveugle s’attend à une belle récompense. » On écrit « s’attendre à quelque chose ». Le remplacement par « avait » donnerait « s’attend avait une belle récompense », ce qui ne convient pas : il faut la préposition « à ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "Après cet exploit, ce chien d’aveugle s’attend à une belle récompense.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_046",
+      "source_number": 46,
+      "theme": "« ni » / « n’y »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Ta promotion ? N’y compte pas trop dans les prochains mois.",
+        "explanation": "Phrase correcte. « N’ » marque la négation et « y » reprend la promotion : « Ne compte pas trop sur cette promotion ». On écrit donc « n’y », en deux éléments.",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "Ta promotion ? N’y compte pas trop dans les prochains mois.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_047",
+      "source_number": 47,
+      "theme": "« ni » / « n’y »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "La nouvelle directrice est franche et ni va pas par quatre chemins.",
+        "explanation": "Correction : « La nouvelle directrice est franche et n’y va pas par quatre chemins. » Dans « ne pas y aller par quatre chemins », on emploie la négation « n’… pas » et le pronom « y », devant le verbe « va ». La conjonction « ni » ne convient pas.",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "La nouvelle directrice est franche et n’y va pas par quatre chemins.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_048",
+      "source_number": 48,
+      "theme": "« c’est » / « s’est »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Ma sœur c’est coupé toute seule les cheveux : quel massacre !",
+        "explanation": "Correction : « Ma sœur s’est coupé toute seule les cheveux : quel massacre ! » Il s’agit du verbe pronominal « se couper » : « elle s’est coupé les cheveux ». « Coupé » reste sans « e » : le complément direct « les cheveux » est placé après le verbe.",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "Ma sœur s’est coupé toute seule les cheveux : quel massacre !",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_049",
+      "source_number": 49,
+      "theme": "« c’est » / « s’est »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "C’est incroyable ce que tu me dis là !",
+        "explanation": "Phrase correcte. On peut remplacer « c’est » par « cela est » : « Cela est incroyable ». Il faut donc le pronom démonstratif « c’ ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "C’est incroyable ce que tu me dis là !",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_051",
+      "source_number": 51,
+      "theme": "« chaque »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Je vous propose de goûter chaques spécialité régionale.",
+        "explanation": "Correction : « Je vous propose de goûter chaque spécialité régionale. » « Chaque » ne prend jamais de « s » et accompagne ici un nom au singulier : « chaque spécialité ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "Je vous propose de goûter chaque spécialité régionale.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_053",
+      "source_number": 53,
+      "theme": "« si » / « s’y »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Karine est trop bavarde : son discours n’en finit plus et elle si perd un peu.",
+        "explanation": "Correction : « Karine est trop bavarde : son discours n’en finit plus et elle s’y perd un peu. » Il s’agit du verbe pronominal « se perdre » : « elle se perd dans son discours », donc « elle s’y perd ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "Karine est trop bavarde : son discours n’en finit plus et elle s’y perd un peu.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_054",
+      "source_number": 54,
+      "theme": "« malgré »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Malgrés les fenêtres ouvertes, l’odeur du tabac reste tenace dans cette pièce.",
+        "explanation": "Correction : « Malgré les fenêtres ouvertes, l’odeur du tabac reste tenace dans cette pièce. » La préposition « malgré » s’écrit sans « s ». Elle est ici suivie du groupe nominal « les fenêtres ouvertes ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "Malgré les fenêtres ouvertes, l’odeur du tabac reste tenace dans cette pièce.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_056",
+      "source_number": 56,
+      "theme": "« ou » / « où »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Grâce à cet opérateur, nos commerciaux ont du réseau presque partout où ils se trouvent.",
+        "explanation": "Phrase correcte. « Où » introduit une indication de lieu : l’endroit où les commerciaux se trouvent. Il prend un accent grave.",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "Grâce à cet opérateur, nos commerciaux ont du réseau presque partout où ils se trouvent.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_057",
+      "source_number": 57,
+      "theme": "« ou » / « où »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Pour être tranquilles, certaines personnalités n’aiment pas révéler l’endroit ou elles passent leurs vacances.",
+        "explanation": "Correction : « Pour être tranquilles, certaines personnalités n’aiment pas révéler l’endroit où elles passent leurs vacances. » « Où » renvoie à « l’endroit » et indique le lieu. Il prend un accent grave ; « ou bien » ne conviendrait pas.",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "Pour être tranquilles, certaines personnalités n’aiment pas révéler l’endroit où elles passent leurs vacances.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_064",
+      "source_number": 64,
+      "theme": "« ces » / « ses »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Ce client particulier a ses propres exigences.",
+        "explanation": "Phrase correcte. « Ses » est un déterminant possessif : il s’agit des exigences de ce client, les siennes. « Ses propres » rend ce sens explicite.",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "Ce client particulier a ses propres exigences.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_065",
+      "source_number": 65,
+      "theme": "« son » / « sont »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Les brunes sont-elles plus piquantes que les blondes ?",
+        "explanation": "Phrase correcte. « Sont » est le verbe « être » au présent, à la troisième personne du pluriel. On peut écrire « Les brunes étaient-elles… ? ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "Les brunes sont-elles plus piquantes que les blondes ?",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_073",
+      "source_number": 73,
+      "theme": "« ça » / « çà » / « sa »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Sa patience envers les enfants est remarquable.",
+        "explanation": "Phrase correcte. « Sa » est un déterminant possessif qui accompagne « patience », nom féminin singulier : il s’agit de sa patience à lui ou à elle.",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "Sa patience envers les enfants est remarquable.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_074",
+      "source_number": 74,
+      "theme": "« ça » / « çà » / « sa »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Ca te dirait d’aller prendre un café après la conférence ?",
+        "explanation": "Correction : « Ça te dirait d’aller prendre un café après la conférence ? » « Ça » peut être remplacé par « cela ». La cédille est nécessaire, même sur la majuscule « Ç ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "Ça te dirait d’aller prendre un café après la conférence ?",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_076",
+      "source_number": 76,
+      "theme": "« ensemble » / « ensembles »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Ensembles homme et femme à prix cassés !",
+        "explanation": "Phrase correcte. « Ensembles » désigne ici des vêtements : c’est un nom au pluriel. L’absence de déterminant est habituelle dans une annonce commerciale.",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "Ensembles homme et femme à prix cassés !",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_077",
+      "source_number": 77,
+      "theme": "les mots féminins se terminant par « -té » ou « -tié »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Après la tété, le bébé s’est endormi.",
+        "explanation": "Correction : « Après la tétée, le bébé s’est endormi. » Le nom féminin « tétée » s’écrit avec un « e » final. Il fait partie des exceptions à la règle générale des noms féminins en « -té », comme « dictée » et « jetée ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "Après la tétée, le bébé s’est endormi.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_079",
+      "source_number": 79,
+      "theme": "terminaison du verbe en « -er » / « -ez » (1)",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Ce n’est tout de même pas cette femme que vous surnommer « la perruche » ?",
+        "explanation": "Correction : « Ce n’est tout de même pas cette femme que vous surnommez « la perruche » ? » Le sujet du verbe est « vous ». Au présent, on écrit « vous surnommez », avec la terminaison « -ez ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "Ce n’est tout de même pas cette femme que vous surnommez « la perruche » ?",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_081",
+      "source_number": 81,
+      "theme": "« ni » / « n’y »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Il n’y a qu’eux pour réaliser cet exploit.",
+        "explanation": "Phrase correcte. Dans « il n’y a qu’eux », on retrouve le pronom « y » de l’expression « il y a ». La construction « ne… que » marque une restriction : eux seuls peuvent réaliser cet exploit.",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "Il n’y a qu’eux pour réaliser cet exploit.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_082",
+      "source_number": 82,
+      "theme": "« c’est » / « s’est »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Nous partons demain pour Dijon. C’est-il renseigné sur les horaires de train ?",
+        "explanation": "Correction : « Nous partons demain pour Dijon. S’est-il renseigné sur les horaires de train ? » Il s’agit du verbe pronominal « se renseigner » au passé composé : « il s’est renseigné », donc « s’est-il renseigné ? ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "Nous partons demain pour Dijon. S’est-il renseigné sur les horaires de train ?",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_085",
+      "source_number": 85,
+      "theme": "« si » / « s’y »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Si, c’est bien cette avenue que nous avons empruntée l’autre soir.",
+        "explanation": "Phrase correcte. « Si » a ici une valeur affirmative : il sert à contredire une affirmation négative (« Bien sûr que si »).",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "Si, c’est bien cette avenue que nous avons empruntée l’autre soir.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_087",
+      "source_number": 87,
+      "theme": "« ou » / « où »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Ou il arrive à l’heure, ou nous partons sans lui.",
+        "explanation": "Phrase correcte. Les deux « ou » présentent une alternative : « Ou bien il arrive à l’heure, ou bien nous partons sans lui ». Ils ne prennent pas d’accent.",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "Ou il arrive à l’heure, ou nous partons sans lui.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_088",
+      "source_number": 88,
+      "theme": "« peut-être » / « peut être »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Tes affaires sont peut-être dans le tiroir du bas ?",
+        "explanation": "Phrase correcte. « Peut-être » est un adverbe qui exprime une possibilité : on peut le remplacer par « probablement ». Il s’écrit avec un trait d’union.",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "Tes affaires sont peut-être dans le tiroir du bas ?",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_089",
+      "source_number": 89,
+      "theme": "« peut-être » / « peut être »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Son discours peut-être un peu long parfois.",
+        "explanation": "Correction : « Son discours peut être un peu long parfois. » On peut dire « Son discours pourrait être un peu long ». Il s’agit donc de « peut », verbe conjugué, suivi de l’infinitif « être », sans trait d’union.",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "Son discours peut être un peu long parfois.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_090",
+      "source_number": 90,
+      "theme": "« dites » / « dîtes »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Vous lui prédisez de belles rencontres amoureuses mais parfois houleuses.",
+        "explanation": "Phrase correcte. Au présent de l’indicatif, « prédire » se conjugue « vous prédisez », contrairement à « dire » qui donne « vous dites ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "Vous lui prédisez de belles rencontres amoureuses mais parfois houleuses.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_091",
+      "source_number": 91,
+      "theme": "« dites » / « dîtes »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Dites-leur d’arriver une heure à l’avance afin d’être bien placés dans la salle.",
+        "explanation": "Phrase correcte. À l’impératif, à la deuxième personne du pluriel, « dire » donne « dites », sans accent circonflexe. Le pronom complément « leur » est relié au verbe par un trait d’union.",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "Dites-leur d’arriver une heure à l’avance afin d’être bien placés dans la salle.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_092",
+      "source_number": 92,
+      "theme": "« ces » / « ses »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Elle reconnaît ses propres torts.",
+        "explanation": "Phrase correcte. « Ses » est un déterminant possessif : ce sont ses torts à elle, les siens. « Ses propres » rend ce sens explicite.",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "Elle reconnaît ses propres torts.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_094",
+      "source_number": 94,
+      "theme": "« son » / « sont »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Ces personnes croient tout ce qu’on leur raconte sans même se poser de questions : sont-elles naïves !",
+        "explanation": "Phrase correcte. « Sont » est le verbe « être », à la troisième personne du pluriel. Le sujet est inversé dans cette exclamation ; on pourrait écrire « étaient-elles naïves ! ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "Ces personnes croient tout ce qu’on leur raconte sans même se poser de questions : sont-elles naïves !",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_096",
+      "source_number": 96,
+      "theme": "terminaison du verbe en « -er » / « -ez » (2)",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Voulez-vous bien baissez le son ? On vous entend dans tout l’immeuble !",
+        "explanation": "Correction : « Voulez-vous bien baisser le son ? On vous entend dans tout l’immeuble ! » Après « voulez-vous », le verbe « baisser » est à l’infinitif : on pourrait dire « Voulez-vous bien réduire le son ? ». Il se termine donc par « -er ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "Voulez-vous bien baisser le son ? On vous entend dans tout l’immeuble !",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_097",
+      "source_number": 97,
+      "theme": "terminaison du verbe en « -er » / « -ez » (2)",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "À chaque fois que vous voulez vous exprimez, un contestataire vous coupe la parole.",
+        "explanation": "Correction : « À chaque fois que vous voulez vous exprimer, un contestataire vous coupe la parole. » Après « voulez », on emploie l’infinitif « vous exprimer ». Le second « vous » est le pronom du verbe pronominal « s’exprimer », pas le sujet d’un verbe à conjuguer en « -ez ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "À chaque fois que vous voulez vous exprimer, un contestataire vous coupe la parole.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_098",
+      "source_number": 98,
+      "theme": "les mots se terminant par « -onnel » / « -onal »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Ce festival internationnal attire de nombreux visiteurs.",
+        "explanation": "Correction : « Ce festival international attire de nombreux visiteurs. » « International » se termine par « -onal » avec un seul « n ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "Ce festival international attire de nombreux visiteurs.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_099",
+      "source_number": 99,
+      "theme": "les mots se terminant par « -onnel » / « -onal »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Le candidat de l’opposition vient de remporter les cantonnales.",
+        "explanation": "Correction : « Le candidat de l’opposition vient de remporter les cantonales. » « Cantonal » se termine par « -onal », avec un seul « n ». Ici, « les cantonales » désigne les élections cantonales.",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "Le candidat de l’opposition vient de remporter les cantonales.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_100",
+      "source_number": 100,
+      "theme": "« tout » / « tous » / « toute » / « toutes » (1)",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Zoé pense avoir bien répondu à tout les items.",
+        "explanation": "Correction : « Zoé pense avoir bien répondu à tous les items. » « Tous » s’accorde avec « items », nom masculin pluriel : « tous les items ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "Zoé pense avoir bien répondu à tous les items.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_101",
+      "source_number": 101,
+      "theme": "« tout » / « tous » / « toute » / « toutes » (1)",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "On dit que le temps guérit toute blessure.",
+        "explanation": "Phrase correcte. « Toute » s’accorde avec « blessure », nom féminin singulier : « toute blessure ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "On dit que le temps guérit toute blessure.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_102",
+      "source_number": 102,
+      "theme": "« ça » / « çà » / « sa »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "Ça te dérange si je téléphone depuis ton bureau ?",
+        "explanation": "Phrase correcte. « Ça » est un pronom démonstratif : on pourrait écrire « Cela te dérange ». Il porte une cédille, mais pas d’accent grave.",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": false,
+        "corrected_text": "Ça te dérange si je téléphone depuis ton bureau ?",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "module1_docx_105",
+      "source_number": 105,
+      "theme": "« ensemble » / « ensembles »",
+      "candidate": {
+        "title": "Combien d’erreurs contient ce texte ?",
+        "text": "C’était une vraie cacophonie : ils parlaient tous ensembles.",
+        "explanation": "Correction : « C’était une vraie cacophonie : ils parlaient tous ensemble. » « Ensemble » est un adverbe invariable : les personnes parlent en même temps. Le pluriel de « tous » n’entraîne pas de « s » à « ensemble ».",
+        "multiple": false,
+        "reserve": true,
+        "contains_error": true,
+        "corrected_text": "C’était une vraie cacophonie : ils parlaient tous ensemble.",
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      }
+    }
+  ],
+  "quizzes": [
+    {
+      "quiz_key": "module1_test1",
+      "expected_title": "Test 1 : consolider les premières règles du module 1",
+      "expected_initial_count": 14,
+      "initial_questions": [
+        {
+          "source_number": 5,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Pour entrer dans le bâtiment, nous devrons fournir une pièce d’identité.",
+            "explanation": "Phrase correcte. Le nom féminin « identité » se termine par « -té » sans « e » final. La plupart des noms féminins en « -té » suivent cette règle, avec des exceptions comme « jetée » ou « dictée ».",
+            "multiple": false,
+            "position": 0,
+            "theme": "les mots féminins se terminant par « -té » ou « -tié »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 2,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Pour tourner à droite, vous devez vous placers sur cette file.",
+            "explanation": "« Pour tourner à droite, vous devez vous placer sur cette file. » On peut remplacer «placer» par «mettre», par exemple. Rappelez-vous : un verbe à l’infinitif ne prend jamais de « s » !",
+            "multiple": false,
+            "position": 1,
+            "theme": "terminaison du verbe en « -er » / « -ez » (1)",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 4,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "À quel âge peut-on débuter les cours de conduite accompagnée ?",
+            "explanation": "« À quel âge peut-on débuter les cours de conduite accompagnée ? » La forme « avait quel âge » est incorrecte. Il s’agit donc de la préposition « à ».",
+            "multiple": false,
+            "position": 2,
+            "theme": "« a » / « à »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 9,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Cette notice est écrite en chinois : c’est à ni rien comprendre.",
+            "explanation": "Correction : « Cette notice est écrite en chinois : c’est à n’y rien comprendre. » « N’ » marque la négation et « y » est un pronom : on ne comprend rien à cela. La conjonction « ni » sert à coordonner des éléments dans une construction négative ; elle ne convient pas ici.",
+            "multiple": false,
+            "position": 3,
+            "theme": "« ni » / « n’y »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 12,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Si c’est vrai, tu t’es mis dans de beaux draps !",
+            "explanation": "Phrase correcte. On pourrait écrire « si cela (ou si ceci) est vrai ».",
+            "multiple": false,
+            "position": 4,
+            "theme": "« c’est » / « s’est »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 14,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Si tu me coupes chaques fois la parole, tu ne peux pas suivre mon raisonnement.",
+            "explanation": "Correction : « Si tu me coupes chaque fois la parole, tu ne peux pas suivre mon raisonnement. » « Chaque » ne prend jamais de « s ». Le nom « fois » possède déjà un « s » au singulier.",
+            "multiple": false,
+            "position": 5,
+            "theme": "« chaque »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 38,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Nous nous sommes fâchés avec elle, tout ça parce qu’elle ne veut jamais avoir tort.",
+            "explanation": "Phrase correcte. On pourrait remplacer « ça » par « cela ».",
+            "multiple": false,
+            "position": 6,
+            "theme": "« ça » / « çà » / « sa »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 3,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "S’il veut gagner la course, il doit gagner en rapiditée.",
+            "explanation": "Correction : « S’il veut gagner la course, il doit gagner en rapidité. » Le nom féminin « rapidité » s’écrit sans « e » final. La plupart des noms féminins en « -té » et les noms en « -tié » suivent cette règle ; attention aux exceptions en « -tée », comme « jetée » ou « dictée ».",
+            "multiple": false,
+            "position": 7,
+            "theme": "les mots féminins se terminant par « -té » ou « -tié »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 43,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Vous obtiendrez de bons résultats si vous continuez à travailler comme cela.",
+            "explanation": "Phrase correcte. On pourrait dire « si vous continuez à agir comme cela ». « Agir » est un verbe à l’infinitif, donc « travailler » l’est aussi et se termine par « -er ».",
+            "multiple": false,
+            "position": 8,
+            "theme": "terminaison du verbe en « -er » / « -ez » (1)",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 8,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Le chat a eu tellement peur qu’il s’est enfui a toute allure.",
+            "explanation": "« Le chat a eu tellement peur qu’il s’est enfui à toute allure. » Il est possible de remplacer le premier « a » par « avait ». Il s’agit bien de l’auxiliaire « avoir », qui s’écrit sans accent. En revanche, « avait toute allure » n’est pas correct. Il s’agit de la préposition « à ».",
+            "multiple": false,
+            "position": 9,
+            "theme": "« a » / « à »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 10,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Il faut juste un litre d’eau pour réaliser cette recette, ni plus ni moins.",
+            "explanation": "Phrase correcte. Dans l’expression « ni plus ni moins », il s’agit de la conjonction de coordination « ni » qui est répétée.",
+            "multiple": false,
+            "position": 10,
+            "theme": "« ni » / « n’y »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 11,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Voici la maison : s’est la bonne adresse.",
+            "explanation": "« Voici la maison : c’est la bonne adresse. » Il est possible de dire « ceci est la bonne adresse ».",
+            "multiple": false,
+            "position": 11,
+            "theme": "« c’est » / « s’est »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 13,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Chaque consigne est importante : écoutez bien !",
+            "explanation": "Phrase correcte. « Chaque » est un déterminant singulier et invariable. Il accompagne « consigne », au singulier ; le verbe « est » est également au singulier.",
+            "multiple": false,
+            "position": 12,
+            "theme": "« chaque »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 37,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Tu ne vas quand même pas te vexer pour çà…",
+            "explanation": "Correction : « Tu ne vas quand même pas te vexer pour ça… » « Ça » peut être remplacé par « cela ». « Çà », avec un accent grave, exprime le lieu et s’emploie notamment dans « çà et là ».",
+            "multiple": false,
+            "position": 13,
+            "theme": "« ça » / « çà » / « sa »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        }
+      ],
+      "course": {
+        "slug": "test-1-consolider-les-premieres-regles-du-module-1",
+        "section_slug": "module-1",
+        "program_slug": "formation-en-orthographe"
+      },
+      "source_keys": [
+        "module1_docx_006",
+        "module1_docx_007",
+        "module1_docx_042",
+        "module1_docx_045",
+        "module1_docx_046",
+        "module1_docx_047",
+        "module1_docx_048",
+        "module1_docx_049",
+        "module1_docx_051",
+        "module1_docx_073",
+        "module1_docx_074",
+        "module1_docx_077",
+        "module1_docx_079",
+        "module1_docx_081",
+        "module1_docx_082",
+        "module1_docx_102"
+      ],
+      "themes": [
+        {
+          "theme": "les mots féminins se terminant par « -té » ou « -tié »",
+          "initial_count_and_attempt_quota": 2,
+          "reserve_count": 3
+        },
+        {
+          "theme": "terminaison du verbe en « -er » / « -ez » (1)",
+          "initial_count_and_attempt_quota": 2,
+          "reserve_count": 2
+        },
+        {
+          "theme": "« a » / « à »",
+          "initial_count_and_attempt_quota": 2,
+          "reserve_count": 1
+        },
+        {
+          "theme": "« ni » / « n’y »",
+          "initial_count_and_attempt_quota": 2,
+          "reserve_count": 3
+        },
+        {
+          "theme": "« c’est » / « s’est »",
+          "initial_count_and_attempt_quota": 2,
+          "reserve_count": 3
+        },
+        {
+          "theme": "« chaque »",
+          "initial_count_and_attempt_quota": 2,
+          "reserve_count": 1
+        },
+        {
+          "theme": "« ça » / « çà » / « sa »",
+          "initial_count_and_attempt_quota": 2,
+          "reserve_count": 3
+        }
+      ]
+    },
+    {
+      "quiz_key": "module1_test2",
+      "expected_title": "Test 2 : distinguer les formes proches du module 1",
+      "expected_initial_count": 12,
+      "initial_questions": [
+        {
+          "source_number": 84,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Mon collègue est si sympathique que nous l’avons invité à dîner.",
+            "explanation": "Phrase correcte. « Si » marque l’intensité et peut être remplacé par « tellement ».",
+            "multiple": false,
+            "position": 0,
+            "theme": "« si » / « s’y »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 55,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Malgrés nos divergences, nous demeurons en bons termes.",
+            "explanation": "Correction : « Malgré nos divergences, nous demeurons en bons termes. » La préposition « malgré » s’écrit sans « s », quel que soit le nombre du nom qui suit.",
+            "multiple": false,
+            "position": 1,
+            "theme": "« malgré »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 20,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Où Charlotte a-t-elle rangé ses dossiers ? Elle ne les trouve nulle part.",
+            "explanation": "Phrase correcte. « Où » indique ici le lieu et peut être remplacé par « à quel endroit ? »",
+            "multiple": false,
+            "position": 2,
+            "theme": "« ou » / « où »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 22,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Sa nièce croit peut être qu’il fait tout ça pour elle.",
+            "explanation": "« Sa nièce croit peut-être qu’il fait tout ça pour elle. » « Peut-être » équivaut à « probablement ».",
+            "multiple": false,
+            "position": 3,
+            "theme": "« peut-être » / « peut être »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 26,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Tu pars déjà ? Mais on s’est à peine parlé !",
+            "explanation": "Phrase correcte. « Déjà » prend un accent aigu sur le « e » et un accent grave sur le « a ». L’adverbe indique ici que le départ arrive plus tôt que prévu.",
+            "multiple": false,
+            "position": 4,
+            "theme": "« déjà »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 24,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Comment disez-vous « orthographe » en anglais ?",
+            "explanation": "Correction : « Comment dites-vous “orthographe” en anglais ? » Au présent de l’indicatif, à la deuxième personne du pluriel, on écrit « vous dites », et non « vous disez ». L’inversion du sujet ne change pas la forme du verbe.",
+            "multiple": false,
+            "position": 5,
+            "theme": "« dites » / « dîtes »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 16,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Ces deux hommes se ressemblent tellement que c’est à si méprendre.",
+            "explanation": "« Ces deux hommes se ressemblent tellement que c’est à s’y méprendre. » Il s’agit du verbe pronominal « se méprendre ».",
+            "multiple": false,
+            "position": 6,
+            "theme": "« si » / « s’y »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 17,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Malgré son rhume, il est allé à la piscine.",
+            "explanation": "Phrase correcte. « Malgré » s’écrit sans « s » et introduit le groupe nominal « son rhume », qui exprime ici un obstacle n’empêchant pas l’action.",
+            "multiple": false,
+            "position": 7,
+            "theme": "« malgré »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 19,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Où tu sors, ou tu entres, mais tu te décides rapidement.",
+            "explanation": "« Ou tu sors, ou tu entres, mais tu te décides rapidement. » Ici, c’est le choix qui est suggéré : « Ou bien tu sors, ou bien tu entres. »",
+            "multiple": false,
+            "position": 8,
+            "theme": "« ou » / « où »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 58,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Vu la luminosité, il peut être aux alentours de huit heures.",
+            "explanation": "Phrase correcte. Il est possible de remplacer « peut être » par « pourrait être ».",
+            "multiple": false,
+            "position": 9,
+            "theme": "« peut-être » / « peut être »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 25,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "À peine partie, elle devance déja les autres concurrentes.",
+            "explanation": "Correction : « À peine partie, elle devance déjà les autres concurrentes. » « Déjà » prend un accent aigu sur le « e » et un accent grave sur le « a ».",
+            "multiple": false,
+            "position": 10,
+            "theme": "« déjà »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 61,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Votre réponse n’a pas été formulée clairement : redites-la-moi, s’il vous plaît.",
+            "explanation": "Phrase correcte. À l’impératif, le verbe « redire » s’écrit « redites » à la deuxième personne du pluriel, comme « dites ». Les pronoms qui suivent sont reliés au verbe par des traits d’union : « redites-la-moi ».",
+            "multiple": false,
+            "position": 11,
+            "theme": "« dites » / « dîtes »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        }
+      ],
+      "course": {
+        "slug": "test-2-distinguer-les-formes-proches-du-module-1",
+        "section_slug": "module-1",
+        "program_slug": "formation-en-orthographe"
+      },
+      "source_keys": [
+        "module1_docx_015",
+        "module1_docx_021",
+        "module1_docx_023",
+        "module1_docx_053",
+        "module1_docx_054",
+        "module1_docx_056",
+        "module1_docx_057",
+        "module1_docx_085",
+        "module1_docx_087",
+        "module1_docx_088",
+        "module1_docx_089",
+        "module1_docx_090",
+        "module1_docx_091"
+      ],
+      "themes": [
+        {
+          "theme": "« si » / « s’y »",
+          "initial_count_and_attempt_quota": 2,
+          "reserve_count": 3
+        },
+        {
+          "theme": "« malgré »",
+          "initial_count_and_attempt_quota": 2,
+          "reserve_count": 1
+        },
+        {
+          "theme": "« ou » / « où »",
+          "initial_count_and_attempt_quota": 2,
+          "reserve_count": 3
+        },
+        {
+          "theme": "« peut-être » / « peut être »",
+          "initial_count_and_attempt_quota": 2,
+          "reserve_count": 3
+        },
+        {
+          "theme": "« déjà »",
+          "initial_count_and_attempt_quota": 2,
+          "reserve_count": 0
+        },
+        {
+          "theme": "« dites » / « dîtes »",
+          "initial_count_and_attempt_quota": 2,
+          "reserve_count": 3
+        }
+      ]
+    },
+    {
+      "quiz_key": "module1_test3",
+      "expected_title": "Test 3 : maîtriser les accords et terminaisons du module 1",
+      "expected_initial_count": 12,
+      "initial_questions": [
+        {
+          "source_number": 27,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Marion est allée chez le coiffeur : ses cheveux teints sont de mauvais goût.",
+            "explanation": "Phrase correcte. Ce sont les cheveux de Marion qui sont teints, les siens.",
+            "multiple": false,
+            "position": 0,
+            "theme": "« ces » / « ses »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 66,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Quand ton associé va-t-il décrocher sont téléphone pour mettre fin à ce malentendu ?",
+            "explanation": "« Quand ton associé va-t-il décrocher son téléphone pour mettre fin à ce malentendu ? » Son téléphone à lui, le sien. Il s’agit ici du déterminant possessif.",
+            "multiple": false,
+            "position": 1,
+            "theme": "« son » / « sont »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 72,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Toute sa crédibilité est mise en jeu dans cette affaire.",
+            "explanation": "Phrase correcte. « Toute » accompagne « sa crédibilité » : il s’accorde au féminin singulier avec le nom « crédibilité ».",
+            "multiple": false,
+            "position": 2,
+            "theme": "« tout » / « tous » / « toute » / « toutes » (1)",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 67,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Vous devriez arrêter de vous inquiétez : vos progrès sont très encourageants.",
+            "explanation": "« Vous devriez arrêter de vous inquiéter : vos progrès sont très encourageants. » Le verbe « inquiéter » peut être remplacé par un verbe du troisième groupe à l’infinitif. Il doit donc s’écrire lui-même à l’infinitif avec « -er » : « Vous devriez arrêter de vous faire du souci. »",
+            "multiple": false,
+            "position": 3,
+            "theme": "terminaison du verbe en « -er » / « -ez » (2)",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 69,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Le vol en parachute ascensionnel provoque d’agréables sensations.",
+            "explanation": "Phrase correcte. « Ascensionnel » s’écrit avec deux « n », dans la terminaison « -onnel ». L’adjectif qualifie ici le nom masculin singulier « vol ».",
+            "multiple": false,
+            "position": 4,
+            "theme": "les mots se terminant par « -onnel » / « -onal »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 39,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "En mathématiques, mon fils travaille sur les différents ensemble de nombres.",
+            "explanation": "« En mathématiques, mon fils travaille sur les différents ensembles de nombres. » Il s’agit du nom commun « ensemble » ; il est précédé du déterminant « les », au pluriel.",
+            "multiple": false,
+            "position": 5,
+            "theme": "« ensemble » / « ensembles »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 63,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "À chacun ses qualités et ses défauts.",
+            "explanation": "Phrase correcte. Chacun possède ses propres qualités (les siennes) et ses propres défauts (les siens).",
+            "multiple": false,
+            "position": 6,
+            "theme": "« ces » / « ses »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 29,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Les plaisanteries les plus courtes sont souvent les meilleures.",
+            "explanation": "Phrase correcte. Il est possible de dire que « les plaisanteries les plus courtes étaient les meilleures ».",
+            "multiple": false,
+            "position": 7,
+            "theme": "« son » / « sont »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 36,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Cette pauvre poule semble bien mince : elle a perdu toute ses plumes.",
+            "explanation": "« Cette pauvre poule semble bien mince : elle a perdu toutes ses plumes. » « Toutes » s’accorde avec « plumes », féminin pluriel.",
+            "multiple": false,
+            "position": 8,
+            "theme": "« tout » / « tous » / « toute » / « toutes » (1)",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 68,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Vérifiez votre monnaie avant de partir.",
+            "explanation": "Phrase correcte. L’emploi de l’impératif (sans le pronom « vous ») exprime un conseil : « Vous devriez vérifier votre monnaie. »",
+            "multiple": false,
+            "position": 9,
+            "theme": "terminaison du verbe en « -er » / « -ez » (2)",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 34,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Ce site exceptionel est mentionné dans Le Guide Vert.",
+            "explanation": "Correction : « Ce site exceptionnel est mentionné dans Le Guide Vert. » « Exceptionnel » s’écrit avec deux « n », dans la terminaison « -onnel ».",
+            "multiple": false,
+            "position": 10,
+            "theme": "les mots se terminant par « -onnel » / « -onal »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 75,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Et si on y allait ensemble ?",
+            "explanation": "Phrase correcte. « Ensemble » est ici un adverbe qui signifie « les uns avec les autres » ou « en compagnie les uns des autres ». Il est invariable.",
+            "multiple": false,
+            "position": 11,
+            "theme": "« ensemble » / « ensembles »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        }
+      ],
+      "course": {
+        "slug": "test-3-maitriser-les-accords-et-terminaisons-du-module-1",
+        "section_slug": "module-1",
+        "program_slug": "formation-en-orthographe"
+      },
+      "source_keys": [
+        "module1_docx_028",
+        "module1_docx_030",
+        "module1_docx_032",
+        "module1_docx_033",
+        "module1_docx_035",
+        "module1_docx_040",
+        "module1_docx_064",
+        "module1_docx_065",
+        "module1_docx_076",
+        "module1_docx_092",
+        "module1_docx_094",
+        "module1_docx_096",
+        "module1_docx_097",
+        "module1_docx_098",
+        "module1_docx_099",
+        "module1_docx_100",
+        "module1_docx_101",
+        "module1_docx_105"
+      ],
+      "themes": [
+        {
+          "theme": "« ces » / « ses »",
+          "initial_count_and_attempt_quota": 2,
+          "reserve_count": 3
+        },
+        {
+          "theme": "« son » / « sont »",
+          "initial_count_and_attempt_quota": 2,
+          "reserve_count": 3
+        },
+        {
+          "theme": "« tout » / « tous » / « toute » / « toutes » (1)",
+          "initial_count_and_attempt_quota": 2,
+          "reserve_count": 3
+        },
+        {
+          "theme": "terminaison du verbe en « -er » / « -ez » (2)",
+          "initial_count_and_attempt_quota": 2,
+          "reserve_count": 3
+        },
+        {
+          "theme": "les mots se terminant par « -onnel » / « -onal »",
+          "initial_count_and_attempt_quota": 2,
+          "reserve_count": 3
+        },
+        {
+          "theme": "« ensemble » / « ensembles »",
+          "initial_count_and_attempt_quota": 2,
+          "reserve_count": 3
+        }
+      ]
+    },
+    {
+      "quiz_key": "module1_test4",
+      "expected_title": "Test général : réviser le module 1",
+      "expected_initial_count": 20,
+      "initial_questions": [
+        {
+          "source_number": 41,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Le coucher de soleil depuis la jeté offrait un spectacle grandiose.",
+            "explanation": "« Le coucher de soleil depuis la jetée offrait un spectacle grandiose. » Le nom « jetée » fait partie des exceptions concernant les noms féminins terminés par « -té »  : il s'écrit avec un « e » à la fin.",
+            "multiple": false,
+            "position": 0,
+            "theme": "les mots féminins se terminant par « -té » ou « -tié »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 52,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "« Qui s’y frotte s’y pique ! »",
+            "explanation": "Phrase correcte. « S’y » associe le pronom réfléchi « s’ » au pronom « y » dans les verbes pronominaux « se frotter » et « se piquer ». Il ne s’agit ni de l’affirmation « si », ni de l’adverbe d’intensité « si ».",
+            "multiple": false,
+            "position": 1,
+            "theme": "« si » / « s’y »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 93,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Après son accident, elle a dû faire toutes ses démarches seule auprès de l’assurance.",
+            "explanation": "Phrase correcte. « Ses démarches » désigne les démarches de cette personne, les siennes. « Ces démarches » serait aussi possible dans un autre contexte, pour désigner des démarches déjà évoquées : ce n’est pas une raison pour considérer « ses » comme fautif ici.",
+            "multiple": false,
+            "position": 2,
+            "theme": "« ces » / « ses »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 44,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Si tu savais à quelle heure elle est rentrée !",
+            "explanation": "Phrase correcte. « À » est une préposition dans « à quelle heure ». On ne peut pas la remplacer par « avait » : elle prend donc un accent grave.",
+            "multiple": false,
+            "position": 3,
+            "theme": "« a » / « à »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 18,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Le client a accepté bon gré malgré les conditions bancaires pour son prêt.",
+            "explanation": "« Le client a accepté bon gré mal gré les conditions bancaires pour son prêt. » L’expression indique que le client a dû accepter les conditions bancaires, même s’il n’était pas forcément d’accord.",
+            "multiple": false,
+            "position": 4,
+            "theme": "« malgré »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 95,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Les randonneurs son partis pour la journée.",
+            "explanation": "« Les randonneurs sont partis pour la journée. » Il est possible de remplacer « sont » par « étaient » : « Les randonneurs étaient partis pour la journée. »",
+            "multiple": false,
+            "position": 5,
+            "theme": "« son » / « sont »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 80,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Ce n’est ni le lieu n’y le moment pour aborder ce sujet délicat.",
+            "explanation": "« Ce n’est ni le lieu ni le moment pour aborder ce sujet délicat. » La conjonction de coordination « ni » est répétée. Elle est placée devant deux noms : « lieu » et « moment ».",
+            "multiple": false,
+            "position": 6,
+            "theme": "« ni » / « n’y »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 59,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Peut-être aimeraient-elles danser ?",
+            "explanation": "Phrase correcte. « Peut-être », avec un trait d’union, est un adverbe exprimant une possibilité : « Il est possible qu’elles aient envie de danser. » Il ne s’agit pas ici du verbe « pouvoir » suivi de « être ».",
+            "multiple": false,
+            "position": 7,
+            "theme": "« peut-être » / « peut être »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 71,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Tous le monde peut en faire autant avec un peu de volonté.",
+            "explanation": "« Tout le monde peut en faire autant avec un peu de volonté. » « Tout » s’accorde avec « monde », masculin singulier.",
+            "multiple": false,
+            "position": 8,
+            "theme": "« tout » / « tous » / « toute » / « toutes » (1)",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 83,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Elle s’est dépêchée afin d’arriver à l’heure.",
+            "explanation": "Phrase correcte. Il s’agit du verbe pronominal « se dépêcher ».",
+            "multiple": false,
+            "position": 9,
+            "theme": "« c’est » / « s’est »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 62,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Il est dejà 20 heures et je n’ai encore rien préparé pour le dîner !",
+            "explanation": "Correction : « Il est déjà 20 heures et je n’ai encore rien préparé pour le dîner ! » « Déjà » prend deux accents : un accent aigu sur le « e » et un accent grave sur le « a ». Ici, il manquait l’accent aigu.",
+            "multiple": false,
+            "position": 10,
+            "theme": "« déjà »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 31,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Si ces personnes vous agressent, défendez-vous !",
+            "explanation": "Phrase correcte. « Défendez » est à l’impératif, à la deuxième personne du pluriel : il exprime un ordre ou un conseil, sans sujet exprimé. Dans « défendez-vous », le pronom « vous » placé après le verbe est réfléchi ; ce n’est pas son sujet.",
+            "multiple": false,
+            "position": 11,
+            "theme": "terminaison du verbe en « -er » / « -ez » (2)",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 50,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Il éprouve chaque fois la même émotion en revoyant ce film.",
+            "explanation": "Phrase correcte. Le déterminant « chaque » est invariable et accompagne le nom singulier « fois ». On écrit donc « chaque fois », sans ajouter de « s » à « chaque ».",
+            "multiple": false,
+            "position": 12,
+            "theme": "« chaque »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 60,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Dès qu’ils ont le dos tourné, vous médites de vos soi-disant amis.",
+            "explanation": "Correction : « Dès qu’ils ont le dos tourné, vous médisez de vos soi-disant amis. » Au présent, à la deuxième personne du pluriel, « médire » donne « vous médisez ». Cette forme diffère de « vous dites » et de « vous redites ».",
+            "multiple": false,
+            "position": 13,
+            "theme": "« dites » / « dîtes »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 70,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Ses compétences professionelles lui promettent un bel avenir dans cette société.",
+            "explanation": "« Ses compétences professionnelles lui promettent un bel avenir dans cette société. »",
+            "multiple": false,
+            "position": 14,
+            "theme": "les mots se terminant par « -onnel » / « -onal »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 103,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Les gamins ont jeté des miettes ça et là pour les oiseaux.",
+            "explanation": "« Les gamins ont jeté des miettes çà et là pour les oiseaux. » Dans cette expression, « çà » (comme « là ») indique le lieu. Il prend un accent.",
+            "multiple": false,
+            "position": 15,
+            "theme": "« ça » / « çà » / « sa »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 86,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "C’était au temps ou nous étions encore amis.",
+            "explanation": "« C’était au temps où nous étions encore amis. » « Où » exprime ici le moment et s’écrit donc avec un accent.",
+            "multiple": false,
+            "position": 16,
+            "theme": "« ou » / « où »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": false,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": true,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": true,
+          "reserve": false
+        },
+        {
+          "source_number": 104,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Nous lui avons offert un nouvel ensemble pour son anniversaire.",
+            "explanation": "Phrase correcte. « Ensemble » est ici un nom commun masculin singulier, précédé du déterminant « un » et de l’adjectif « nouvel ». Il ne prend pas de « s » dans ce groupe.",
+            "multiple": false,
+            "position": 17,
+            "theme": "« ensemble » / « ensembles »",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 1,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Ne vous a-t-il pas demandé d’aller chercher ses affaires ?",
+            "explanation": "Phrase correcte. On pourrait remplacer « aller chercher » par « faire venir », deux verbes à l’infinitif.",
+            "multiple": false,
+            "position": 18,
+            "theme": "terminaison du verbe en « -er » / « -ez » (1)",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        },
+        {
+          "source_number": 78,
+          "expected_existing_payload": {
+            "title": "Combien d’erreurs contient ce texte ?",
+            "text": "Vous pensez intéresser qui avec vos histoires ?",
+            "explanation": "Phrase correcte. « Vous » est bien le sujet du verbe « pensez », donc ce dernier prend la terminaison « -ez ». « Intéresser » pourrait être remplacé par exemple par « surprendre », verbe à l’infinitif.",
+            "multiple": false,
+            "position": 19,
+            "theme": "terminaison du verbe en « -er » / « -ez » (1)",
+            "answers": [
+              {
+                "content": "0 erreur",
+                "correct": true,
+                "position": 0
+              },
+              {
+                "content": "1 erreur",
+                "correct": false,
+                "position": 1
+              }
+            ]
+          },
+          "contains_error": false,
+          "reserve": false
+        }
+      ],
+      "course": {
+        "slug": "test-general-reviser-le-module-1",
+        "section_slug": "module-1",
+        "program_slug": "formation-en-orthographe"
+      },
+      "source_keys": [
+        "module1_docx_006",
+        "module1_docx_007",
+        "module1_docx_015",
+        "module1_docx_021",
+        "module1_docx_023",
+        "module1_docx_028",
+        "module1_docx_030",
+        "module1_docx_032",
+        "module1_docx_033",
+        "module1_docx_035",
+        "module1_docx_040",
+        "module1_docx_042",
+        "module1_docx_045",
+        "module1_docx_046",
+        "module1_docx_047",
+        "module1_docx_048",
+        "module1_docx_049",
+        "module1_docx_051",
+        "module1_docx_053",
+        "module1_docx_054",
+        "module1_docx_056",
+        "module1_docx_057",
+        "module1_docx_064",
+        "module1_docx_065",
+        "module1_docx_073",
+        "module1_docx_074",
+        "module1_docx_076",
+        "module1_docx_077",
+        "module1_docx_079",
+        "module1_docx_081",
+        "module1_docx_082",
+        "module1_docx_085",
+        "module1_docx_087",
+        "module1_docx_088",
+        "module1_docx_089",
+        "module1_docx_090",
+        "module1_docx_091",
+        "module1_docx_092",
+        "module1_docx_094",
+        "module1_docx_096",
+        "module1_docx_097",
+        "module1_docx_098",
+        "module1_docx_099",
+        "module1_docx_100",
+        "module1_docx_101",
+        "module1_docx_102",
+        "module1_docx_105"
+      ],
+      "themes": [
+        {
+          "theme": "les mots féminins se terminant par « -té » ou « -tié »",
+          "initial_count_and_attempt_quota": 1,
+          "reserve_count": 3
+        },
+        {
+          "theme": "« si » / « s’y »",
+          "initial_count_and_attempt_quota": 1,
+          "reserve_count": 3
+        },
+        {
+          "theme": "« ces » / « ses »",
+          "initial_count_and_attempt_quota": 1,
+          "reserve_count": 3
+        },
+        {
+          "theme": "« a » / « à »",
+          "initial_count_and_attempt_quota": 1,
+          "reserve_count": 1
+        },
+        {
+          "theme": "« malgré »",
+          "initial_count_and_attempt_quota": 1,
+          "reserve_count": 1
+        },
+        {
+          "theme": "« son » / « sont »",
+          "initial_count_and_attempt_quota": 1,
+          "reserve_count": 3
+        },
+        {
+          "theme": "« ni » / « n’y »",
+          "initial_count_and_attempt_quota": 1,
+          "reserve_count": 3
+        },
+        {
+          "theme": "« peut-être » / « peut être »",
+          "initial_count_and_attempt_quota": 1,
+          "reserve_count": 3
+        },
+        {
+          "theme": "« tout » / « tous » / « toute » / « toutes » (1)",
+          "initial_count_and_attempt_quota": 1,
+          "reserve_count": 3
+        },
+        {
+          "theme": "« c’est » / « s’est »",
+          "initial_count_and_attempt_quota": 1,
+          "reserve_count": 3
+        },
+        {
+          "theme": "« déjà »",
+          "initial_count_and_attempt_quota": 1,
+          "reserve_count": 0
+        },
+        {
+          "theme": "terminaison du verbe en « -er » / « -ez » (2)",
+          "initial_count_and_attempt_quota": 1,
+          "reserve_count": 3
+        },
+        {
+          "theme": "« chaque »",
+          "initial_count_and_attempt_quota": 1,
+          "reserve_count": 1
+        },
+        {
+          "theme": "« dites » / « dîtes »",
+          "initial_count_and_attempt_quota": 1,
+          "reserve_count": 3
+        },
+        {
+          "theme": "les mots se terminant par « -onnel » / « -onal »",
+          "initial_count_and_attempt_quota": 1,
+          "reserve_count": 3
+        },
+        {
+          "theme": "« ça » / « çà » / « sa »",
+          "initial_count_and_attempt_quota": 1,
+          "reserve_count": 3
+        },
+        {
+          "theme": "« ou » / « où »",
+          "initial_count_and_attempt_quota": 1,
+          "reserve_count": 3
+        },
+        {
+          "theme": "« ensemble » / « ensembles »",
+          "initial_count_and_attempt_quota": 1,
+          "reserve_count": 3
+        },
+        {
+          "theme": "terminaison du verbe en « -er » / « -ez » (1)",
+          "initial_count_and_attempt_quota": 2,
+          "reserve_count": 2
+        }
+      ]
+    }
+  ],
+  "fundamentals": [
+    {
+      "quiz_key": "fundamentals_1",
+      "expected_title": "Test 1 : reconnaître les natures de mots",
+      "expected_initial_count": 10,
+      "course": {
+        "slug": "test-1-reconnaitre-les-natures-de-mots",
+        "section_slug": "les-fondamentaux",
+        "program_slug": "formation-en-orthographe"
+      }
+    },
+    {
+      "quiz_key": "fundamentals_2",
+      "expected_title": "Test 2 : reconnaître les natures de mots",
+      "expected_initial_count": 12,
+      "course": {
+        "slug": "test-2-reconnaitre-les-natures-de-mots",
+        "section_slug": "les-fondamentaux",
+        "program_slug": "formation-en-orthographe"
+      }
+    },
+    {
+      "quiz_key": "fundamentals_3",
+      "expected_title": "Test : reconnaître les fonctions dans la phrase",
+      "expected_initial_count": 12,
+      "course": {
+        "slug": "test-reconnaitre-les-fonctions-dans-la-phrase",
+        "section_slug": "les-fondamentaux",
+        "program_slug": "formation-en-orthographe"
+      }
+    },
+    {
+      "quiz_key": "fundamentals_4",
+      "expected_title": "Test général : réviser les fondamentaux",
+      "expected_initial_count": 22,
+      "course": {
+        "slug": "test-general-reviser-les-fondamentaux",
+        "section_slug": "les-fondamentaux",
+        "program_slug": "formation-en-orthographe"
+      }
+    }
+  ]
+}
