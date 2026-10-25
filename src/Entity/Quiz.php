@@ -104,6 +104,26 @@ class Quiz
         return $questions;
     }
 
+    public function getInitialQuestionCount(): int
+    {
+        return count($this->getInitialQuestions());
+    }
+
+    public function getReserveQuestionCount(): int
+    {
+        return $this->questions->count() - $this->getInitialQuestionCount();
+    }
+
+    public function getModeLabel(): string
+    {
+        return $this->renewalEnabled ? 'Avec renouvellement' : 'Fixe';
+    }
+
+    public function getBalanceLabel(): string
+    {
+        return null === $this->errorQuestionQuota ? 'Aucune contrainte d’équilibre' : $this->errorQuestionQuota.' phrase(s) contenant une erreur';
+    }
+
     public function addQuestion(QuizQuestion $question): static
     {
         if (!$this->questions->contains($question)) {

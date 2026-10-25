@@ -474,6 +474,335 @@ final class QuizAdminTest extends WebTestCase
         return $question;
     }
 
+    public function testRenewalDefaultsProgressiveCreationAndExplicitActivation(): void
+    {
+        $this->submit('/admin/quiz/new', 'Quiz', ['title' => 'Progressif']);
+        self::assertResponseRedirects();
+        $quiz = $this->em->getRepository(Quiz::class)->findOneBy(['title' => 'Progressif']);
+        $id = $quiz->getId();
+        self::assertFalse($quiz->isRenewalEnabled());
+        self::assertNull($quiz->getErrorQuestionQuota());
+        $this->submit('/admin/quiz/'.$id.'/edit', 'Quiz', ['title' => 'Saisie conservée', 'renewalEnabled' => '1']);
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorExists('#Quiz_renewalEnabled.is-invalid');
+        self::assertSelectorExists('#Quiz_title[value="Saisie conservée"]');
+        self::assertSelectorTextContains('.invalid-feedback', 'question initiale');
+        self::assertSame('Progressif', $this->em->getConnection()->fetchOne('SELECT title FROM quiz WHERE id = ?', [$id]));
+        $quiz = $this->em->find(Quiz::class, $id);
+        $this->submit('/admin/quiz-question/new', 'QuizQuestion', $this->questionPayload($quiz));
+        self::assertResponseRedirects();
+        $question = $this->em->getRepository(QuizQuestion::class)->findOneBy(['quiz' => $id]);
+        self::assertFalse($question->isReserve());
+        self::assertNull($question->getContainsError());
+        $this->submit('/admin/quiz/'.$id.'/edit', 'Quiz', ['renewalEnabled' => '1']);
+        self::assertResponseRedirects();
+        self::assertSame(1, (int) $this->em->getConnection()->fetchOne('SELECT renewal_enabled FROM quiz WHERE id = ?', [$id]));
+        $this->client->request('GET', '/admin/quiz');
+        self::assertSelectorTextContains('body', 'Avec renouvellement');
+        self::assertSelectorTextContains('body', 'Aucune contrainte d’équilibre');
+        self::assertSelectorNotExists('[data-ea-boolean-field]');
+        $this->client->request('GET', '/admin/quiz/'.$id);
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('.quiz-composition', '1 question(s) par tentative');
+        self::assertSelectorTextContains('.quiz-composition', 'Noms');
+        self::assertSelectorTextContains('.quiz-composition', 'insuffisante');
+    }
+
+    public function testCategoryAndQuotaKeepNullFalseTrueAndZeroDistinct(): void
+    {
+        $question = $this->persistQuestion();
+        $id = $question->getId();
+        $quizId = $question->getQuiz()->getId();
+        foreach (['0' => false, '1' => true, '' => null] as $value => $expected) {
+            $quiz = $this->em->find(Quiz::class, $quizId);
+            $payload = $this->questionPayload($quiz) + ['containsError' => (string) $value];
+            $this->submit('/admin/quiz-question/'.$id.'/edit', 'QuizQuestion', $payload);
+            self::assertResponseRedirects();
+            $this->em->clear();
+            self::assertSame($expected, $this->em->find(QuizQuestion::class, $id)->getContainsError());
+        }
+        $quiz = $this->em->find(Quiz::class, $quizId);
+        $this->submit('/admin/quiz-question/'.$id.'/edit', 'QuizQuestion', $this->questionPayload($quiz) + ['containsError' => '0']);
+        $this->submit('/admin/quiz/'.$quizId.'/edit', 'Quiz', ['renewalEnabled' => '1', 'errorQuestionQuota' => '0']);
+        self::assertResponseRedirects();
+        $this->em->clear();
+        self::assertSame(0, $this->em->find(Quiz::class, $quizId)->getErrorQuestionQuota());
+        $this->client->request('GET', '/admin/quiz');
+        self::assertSelectorTextContains('body', '0 phrase(s) contenant une erreur');
+        $this->submit('/admin/quiz/'.$quizId.'/edit', 'Quiz', ['errorQuestionQuota' => '']);
+        self::assertResponseRedirects();
+        $this->em->clear();
+        self::assertNull($this->em->find(Quiz::class, $quizId)->getErrorQuestionQuota());
+    }
+
+    public function testActiveQuizRejectsInvalidQuestionEditsMovesAndDeleteWithoutPartialWrites(): void
+    {
+        $question = $this->persistQuestion()->setContainsError(false);
+        $question->getQuiz()->setRenewalEnabled(true)->setErrorQuestionQuota(0);
+        $other = (new Quiz())->setTitle('Destination fixe');
+        $this->em->persist($other);
+        $this->em->flush();
+        $id = $question->getId();
+        $quizId = $question->getQuiz()->getId();
+        $otherId = $other->getId();
+        $before = $this->editorialRows();
+        foreach ([['theme' => ''], ['containsError' => ''], ['containsError' => '1'], ['reserve' => '1'], ['quiz' => (string) $otherId]] as $change) {
+            $quiz = $this->em->find(Quiz::class, $quizId);
+            $payload = array_replace($this->questionPayload($quiz), ['title' => 'Titre refusé', 'containsError' => '0'], $change);
+            $this->submit('/admin/quiz-question/'.$id.'/edit', 'QuizQuestion', $payload);
+            self::assertResponseStatusCodeSame(422);
+            self::assertSelectorExists('#QuizQuestion_title[value="Titre refusé"]');
+            self::assertSelectorExists('.invalid-feedback');
+            self::assertSame($before, $this->editorialRows());
+        }
+        $crawler = $this->client->request('GET', '/admin/quiz-question');
+        $token = $crawler->filter('input[name="token"]')->first()->attr('value');
+        $this->client->request('POST', '/admin/quiz-question/'.$id.'/delete', ['token' => $token]);
+        self::assertResponseRedirects();
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('body', 'Suppression refusée');
+        self::assertSame($before, $this->editorialRows());
+    }
+
+    public function testMoveValidatesDestinationAndDeactivationKeepsReserves(): void
+    {
+        $initial = $this->persistQuestion();
+        $quiz = $initial->getQuiz()->setRenewalEnabled(true);
+        $reserve = QuizFactory::question()->setQuiz($quiz)->setReserve(true);
+        $source = (new Quiz())->setTitle('Autre quiz');
+        $foreign = QuizFactory::question()->setQuiz($source)->setTheme('Autre thème')->setReserve(true);
+        $this->em->persist($source);
+        $this->em->flush();
+        $quizId = $quiz->getId();
+        $before = $this->editorialRows();
+        $this->submit('/admin/quiz-question/'.$foreign->getId().'/edit', 'QuizQuestion',
+            array_replace($this->questionPayload($quiz), ['theme' => 'Autre thème', 'reserve' => '1']));
+        self::assertResponseStatusCodeSame(422);
+        self::assertSame($before, $this->editorialRows());
+        $this->submit('/admin/quiz/'.$quizId.'/edit', 'Quiz', ['renewalEnabled' => '0']);
+        self::assertResponseRedirects();
+        $this->em->clear();
+        $quiz = $this->em->find(Quiz::class, $quizId);
+        self::assertFalse($quiz->isRenewalEnabled());
+        self::assertSame(1, $quiz->getInitialQuestionCount());
+        self::assertSame(1, $quiz->getReserveQuestionCount());
+        self::assertNotNull($this->em->find(QuizQuestion::class, $reserve->getId()));
+        $this->client->request('GET', '/admin/quiz-question');
+        self::assertSelectorTextContains('body', 'Question de réserve');
+        self::assertSelectorTextContains('body', 'Question initiale');
+    }
+
+    public function testEditorCannotBypassFormsWithAjaxBatchOrInvalidCsrf(): void
+    {
+        $question = $this->persistQuestion();
+        $before = $this->editorialRows();
+        $this->client->catchExceptions(true);
+        $this->client->request('PATCH', '/admin/quiz/'.$question->getQuiz()->getId().'/edit?fieldName=renewalEnabled&newValue=true', [], [], ['HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest']);
+        self::assertResponseStatusCodeSame(405);
+        $this->client->request('POST', '/admin/quiz-question/batch-delete', ['batchActionEntityIds' => [$question->getId()]]);
+        self::assertResponseStatusCodeSame(403);
+        $crawler = $this->client->request('GET', '/admin/quiz/'.$question->getQuiz()->getId().'/edit');
+        $form = $crawler->filter('form[name="Quiz"]')->form();
+        $values = $form->getPhpValues();
+        $values['Quiz']['_token'] = 'invalid';
+        $values['Quiz']['renewalEnabled'] = '1';
+        $this->client->request('POST', $form->getUri(), $values);
+        self::assertResponseStatusCodeSame(422);
+        $this->client->request('POST', '/admin/quiz-question/'.$question->getId().'/delete', ['token' => 'invalid']);
+        self::assertResponseRedirects();
+        self::assertSame($before, $this->editorialRows());
+    }
+
+    public function testActiveAnswersAndQuotaAreValidatedWithoutPartialWrites(): void
+    {
+        $question = $this->persistQuestion()->setContainsError(false);
+        $quiz = $question->getQuiz()->setRenewalEnabled(true)->setErrorQuestionQuota(0);
+        $this->em->flush();
+        $quizId = $quiz->getId();
+        $questionId = $question->getId();
+        $before = $this->editorialRows();
+        $payload = $this->questionPayload($quiz);
+        unset($payload['answers'][0]['correct']);
+        $payload['answers'][1]['content'] = 'Proposition refusée conservée';
+        $this->submit('/admin/quiz-question/'.$questionId.'/edit', 'QuizQuestion', $payload);
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('[data-quiz-answer-order]', 'bonne réponse');
+        self::assertContains('Proposition refusée conservée', $this->renderedAnswerContents());
+        self::assertSame($before, $this->editorialRows());
+        foreach (['-1', '1', '2'] as $quota) {
+            $this->submit('/admin/quiz/'.$quizId.'/edit', 'Quiz', ['errorQuestionQuota' => $quota]);
+            self::assertResponseStatusCodeSame(422);
+            self::assertSelectorExists('#Quiz_errorQuestionQuota.is-invalid');
+            self::assertSame($before, $this->editorialRows());
+        }
+    }
+
+    public function testEditorialFormsPreserveStartedSnapshotResponsesAndFixedLength(): void
+    {
+        [$learner, $course] = \App\Tests\Support\QuizPlayerFactory::create($this->em);
+        $quiz = $course->getQuiz();
+        $quizId = $quiz->getId();
+        $initial = $quiz->getInitialQuestions()[0];
+        $initialId = $initial->getId();
+        $service = self::getContainer()->get(\App\Services\QuizAttemptService::class);
+        $started = $service->mutate($learner, $course, 'start', []);
+        $snapshot = $this->em->find(\App\Entity\QuizAttempt::class, $started['attemptId'])->getSnapshot();
+        $question = $snapshot['questions'][0];
+        $service->mutate($learner, $course, 'answer', ['attemptId' => $started['attemptId'], 'questionId' => $question['id'],
+            'selectedIds' => array_column(array_filter($question['answers'], static fn ($answer) => $answer['correct']), 'id')]);
+        $connection = $this->em->getConnection();
+        $before = $connection->fetchAllAssociative('SELECT * FROM quiz_attempt ORDER BY id');
+        $lessons = $connection->fetchAllAssociative('SELECT * FROM lesson ORDER BY id');
+        $this->submit('/admin/quiz-question/new', 'QuizQuestion', array_replace($this->questionPayload($quiz), ['reserve' => '1', 'theme' => 'Thème libre']));
+        self::assertResponseRedirects();
+        $this->em->clear();
+        $quiz = $this->em->find(Quiz::class, $quizId);
+        self::assertSame(2, $quiz->getInitialQuestionCount());
+        self::assertSame(1, $quiz->getReserveQuestionCount());
+        self::assertFalse($quiz->isRenewalEnabled());
+        self::assertSame(2, $service->state($learner, $course)['total']);
+        $this->submit('/admin/quiz/'.$quizId.'/edit', 'Quiz', ['renewalEnabled' => '1']);
+        self::assertResponseRedirects();
+        $quiz = $this->em->find(Quiz::class, $quizId);
+        $this->submit('/admin/quiz-question/'.$initialId.'/edit', 'QuizQuestion', array_replace($this->questionPayload($quiz), [
+            'title' => 'Nouveau titre', 'text' => 'Nouveau texte', 'explanation' => 'Nouveau corrigé', 'theme' => 'Thème libre',
+        ]));
+        self::assertResponseRedirects();
+        $this->submit('/admin/quiz/'.$quizId.'/edit', 'Quiz', ['renewalEnabled' => '0']);
+        self::assertResponseRedirects();
+        self::assertSame($before, $connection->fetchAllAssociative('SELECT * FROM quiz_attempt ORDER BY id'));
+        self::assertSame($lessons, $connection->fetchAllAssociative('SELECT * FROM lesson ORDER BY id'));
+    }
+
+    public function testFixedQuotaIsRejectedBeforeItCanBreakTheNextStart(): void
+    {
+        [$learner, $course] = \App\Tests\Support\QuizPlayerFactory::create($this->em);
+        $quiz = $course->getQuiz();
+        foreach ($quiz->getInitialQuestions() as $question) {
+            self::assertNull($question->getContainsError());
+        }
+        $service = self::getContainer()->get(\App\Services\QuizAttemptService::class);
+        $started = $service->mutate($learner, $course, 'start', []);
+        self::assertSame(2, $started['total']);
+        $first = $quiz->getInitialQuestions()[0];
+        $answered = $service->mutate($learner, $course, 'answer', ['attemptId' => $started['attemptId'], 'questionId' => $first->getId(),
+            'selectedIds' => [$first->getAnswers()->first()->getId()]]);
+        self::assertSame(1, $answered['validated']);
+        $next = \App\Tests\Support\QuizPlayerFactory::user('next-fixed@example.test');
+        $this->em->persist($next);
+        $this->em->flush();
+        $before = $this->editorialRows();
+        $attempts = $this->em->getConnection()->fetchAllAssociative('SELECT * FROM quiz_attempt ORDER BY id');
+        $this->submit('/admin/quiz/'.$quiz->getId().'/edit', 'Quiz', ['title' => 'Saisie refusée', 'renewalEnabled' => '0', 'errorQuestionQuota' => '0']);
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorExists('#Quiz_errorQuestionQuota.is-invalid');
+        self::assertSelectorExists('#Quiz_title[value="Saisie refusée"]');
+        self::assertSelectorTextContains('.invalid-feedback', 'précisez explicitement');
+        self::assertSame($before, $this->editorialRows());
+        self::assertSame($attempts, $this->em->getConnection()->fetchAllAssociative('SELECT * FROM quiz_attempt ORDER BY id'));
+        $this->em->clear();
+        self::assertNull($this->em->find(Quiz::class, $quiz->getId())->getErrorQuestionQuota());
+        self::assertSame(2, $service->mutate($this->em->find(User::class, $next->getId()), $this->em->find(Courses::class, $course->getId()), 'start', [])['total']);
+    }
+
+    public function testFixedQuotaGuardsCategoriesRolesDeletesAndBothSidesOfMoves(): void
+    {
+        $correct = $this->persistQuestion()->setContainsError(false)->setTheme(null);
+        $quiz = $correct->getQuiz()->setErrorQuestionQuota(1);
+        $error = QuizFactory::question()->setQuiz($quiz)->setContainsError(true)->setTheme(null);
+        $target = (new Quiz())->setTitle('Autre quiz fixe');
+        $this->em->persist($target);
+        $this->em->flush();
+        $quizId = $quiz->getId();
+        $errorId = $error->getId();
+        $targetId = $target->getId();
+        $before = $this->editorialRows();
+        foreach ([['containsError' => ''], ['containsError' => '0'], ['reserve' => '1'], ['quiz' => (string) $targetId]] as $change) {
+            $quiz = $this->em->find(Quiz::class, $quizId);
+            $payload = array_replace($this->questionPayload($quiz), ['title' => 'Saisie refusée', 'containsError' => '1', 'theme' => ''], $change);
+            $this->submit('/admin/quiz-question/'.$errorId.'/edit', 'QuizQuestion', $payload);
+            self::assertResponseStatusCodeSame(422);
+            self::assertSelectorExists('#QuizQuestion_title[value="Saisie refusée"]');
+            self::assertSelectorExists('.invalid-feedback');
+            self::assertSame($before, $this->editorialRows());
+        }
+        $crawler = $this->client->request('GET', '/admin/quiz-question');
+        $token = $crawler->filter('input[name="token"]')->first()->attr('value');
+        $this->client->request('POST', '/admin/quiz-question/'.$errorId.'/delete', ['token' => $token]);
+        self::assertResponseRedirects();
+        $this->client->followRedirect();
+        self::assertSelectorTextContains('body', 'Suppression refusée');
+        self::assertSame($before, $this->editorialRows());
+
+        // Incoming questions must not invalidate a fixed destination's quota either.
+        $target = $this->em->find(Quiz::class, $targetId);
+        $foreign = QuizFactory::question()->setQuiz($target);
+        $this->em->flush();
+        $before = $this->editorialRows();
+        foreach (['', '1'] as $category) {
+            $quiz = $this->em->find(Quiz::class, $quizId);
+            $this->submit('/admin/quiz-question/'.$foreign->getId().'/edit', 'QuizQuestion',
+                $this->questionPayload($quiz) + ['containsError' => $category]);
+            self::assertResponseStatusCodeSame(422);
+            self::assertSame($before, $this->editorialRows());
+        }
+    }
+
+    public function testFixedPreparationNoQuotaAndOptionalReserveMetadataRemainSupported(): void
+    {
+        $this->submit('/admin/quiz/new', 'Quiz', ['title' => 'Préparation fixe', 'renewalEnabled' => '0']);
+        self::assertResponseRedirects();
+        $quiz = $this->em->getRepository(Quiz::class)->findOneBy(['title' => 'Préparation fixe']);
+        $id = $quiz->getId();
+        $this->submit('/admin/quiz/'.$id.'/edit', 'Quiz', ['errorQuestionQuota' => '0']);
+        self::assertResponseStatusCodeSame(422);
+        self::assertSelectorTextContains('.invalid-feedback', 'question initiale');
+        $quiz = $this->em->find(Quiz::class, $id);
+        self::assertNull($quiz->getErrorQuestionQuota());
+        $payload = array_replace($this->questionPayload($quiz), ['theme' => '', 'containsError' => '']);
+        $this->submit('/admin/quiz-question/new', 'QuizQuestion', $payload);
+        self::assertResponseRedirects();
+        $initial = $this->em->getRepository(QuizQuestion::class)->findOneBy(['quiz' => $id]);
+        $initialId = $initial->getId();
+        self::assertNull($initial->getContainsError());
+        self::assertNull($initial->getTheme());
+        $this->submit('/admin/quiz-question/'.$initialId.'/edit', 'QuizQuestion', ['containsError' => '0']);
+        self::assertResponseRedirects();
+        $this->submit('/admin/quiz/'.$id.'/edit', 'Quiz', ['errorQuestionQuota' => '0']);
+        self::assertResponseRedirects();
+        $quiz = $this->em->find(Quiz::class, $id);
+        self::assertSame(0, $quiz->getErrorQuestionQuota());
+        $this->submit('/admin/quiz-question/new', 'QuizQuestion', array_replace($payload, ['reserve' => '1']));
+        self::assertResponseRedirects();
+        $this->em->clear();
+        $quiz = $this->em->find(Quiz::class, $id);
+        self::assertSame(1, $quiz->getInitialQuestionCount());
+        self::assertSame(1, $quiz->getReserveQuestionCount());
+        self::getContainer()->get(\App\Services\QuizConfigurationValidator::class)->validate($quiz, true);
+        $this->submit('/admin/quiz-question/'.$initialId.'/edit', 'QuizQuestion', ['reserve' => '1']);
+        self::assertResponseStatusCodeSame(422);
+        $this->submit('/admin/quiz/'.$id.'/edit', 'Quiz', ['errorQuestionQuota' => '']);
+        self::assertResponseRedirects();
+        $this->submit('/admin/quiz-question/'.$initialId.'/edit', 'QuizQuestion', ['containsError' => '']);
+        self::assertResponseRedirects();
+        $this->em->clear();
+        $quiz = $this->em->find(Quiz::class, $id);
+        self::assertNull($quiz->getErrorQuestionQuota());
+        self::assertNull($this->em->find(QuizQuestion::class, $initialId)->getContainsError());
+        self::getContainer()->get(\App\Services\QuizConfigurationValidator::class)->validate($quiz, true);
+    }
+
+    /** @return array<string, list<array<string, mixed>>> */
+    private function editorialRows(): array
+    {
+        $rows = [];
+        foreach (['quiz', 'quiz_question', 'quiz_answer'] as $table) {
+            $rows[$table] = $this->em->getConnection()->fetchAllAssociative('SELECT * FROM '.$table.' ORDER BY id');
+        }
+
+        return $rows;
+    }
+
     /** @return list<array<string, mixed>> */
     private function answerRows(QuizQuestion $question): array
     {

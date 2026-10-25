@@ -17,11 +17,11 @@ final class QuizConfigurationValidator
     {
         $initial = $quiz->getInitialQuestions();
         if ([] === $initial) {
-            throw new InvalidQuizConfiguration('Le quiz doit contenir au moins une question initiale.');
+            throw new InvalidQuizConfiguration('Le quiz doit contenir au moins une question initiale.', 'questions');
         }
         $violations = $this->validator->validateProperty($quiz, 'title');
         if (count($violations) > 0) {
-            throw new InvalidQuizConfiguration((string) $violations[0]->getMessage());
+            throw new InvalidQuizConfiguration((string) $violations[0]->getMessage(), 'title');
         }
         $themes = [];
         foreach ($initial as $question) {
@@ -29,7 +29,7 @@ final class QuizConfigurationValidator
         }
         $quota = $quiz->getErrorQuestionQuota();
         if (null !== $quota && ($quota < 0 || $quota > count($initial))) {
-            throw new InvalidQuizConfiguration('Le quota de phrases erronées doit être compris entre zéro et le nombre de questions initiales.');
+            throw new InvalidQuizConfiguration('Le quota de phrases erronées doit être compris entre zéro et le nombre de questions initiales.', 'errorQuestionQuota');
         }
         $questions = $quiz->isRenewalEnabled() ? $quiz->getQuestions()->toArray() : $initial;
         $questionIds = [];
@@ -37,20 +37,20 @@ final class QuizConfigurationValidator
         foreach ($questions as $question) {
             $label = 'Question '.($question->getId() ?? $question->getTitle()).' : ';
             if ($question->getQuiz() !== $quiz) {
-                throw new InvalidQuizConfiguration($label.'le rattachement au quiz est incohérent.');
+                throw new InvalidQuizConfiguration($label.'le rattachement au quiz est incohérent.', 'quiz', $question->getId());
             }
             $violations = $this->validator->validate($question);
             if (count($violations) > 0) {
-                throw new InvalidQuizConfiguration($label.(string) $violations[0]->getMessage());
+                throw new InvalidQuizConfiguration($label.(string) $violations[0]->getMessage(), $violations[0]->getPropertyPath(), $question->getId());
             }
             if ($quiz->isRenewalEnabled()) {
                 $theme = trim($question->getTheme() ?? '');
                 if ('' === $theme || !isset($themes[$theme])) {
-                    throw new InvalidQuizConfiguration($label.'un thème du jeu initial est obligatoire pour le renouvellement.');
+                    throw new InvalidQuizConfiguration($label.'un thème du jeu initial est obligatoire pour le renouvellement.', 'theme', $question->getId());
                 }
             }
             if (null !== $quota && null === $question->getContainsError()) {
-                throw new InvalidQuizConfiguration($label.'précisez explicitement si la phrase contient une erreur.');
+                throw new InvalidQuizConfiguration($label.'précisez explicitement si la phrase contient une erreur.', 'containsError', $question->getId());
             }
             if ($requirePersisted) {
                 $id = $question->getId();
@@ -70,7 +70,7 @@ final class QuizConfigurationValidator
         // The mandatory first passage must satisfy the balance too. Once it does,
         // it also proves feasibility for every retry: initial questions stay eligible.
         if (null !== $quota && $quota !== count(array_filter($initial, static fn ($q) => true === $q->getContainsError()))) {
-            throw new InvalidQuizConfiguration('Composition impossible : le jeu initial ne respecte pas le quota de phrases erronées.');
+            throw new InvalidQuizConfiguration('Composition impossible : le jeu initial ne respecte pas le quota de phrases erronées.', 'errorQuestionQuota');
         }
     }
 }

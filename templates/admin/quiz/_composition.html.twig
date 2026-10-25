@@ -1,0 +1,15 @@
+<div class="quiz-composition">
+    <p><strong>{{ quiz.initialQuestionCount }} question(s) par tentative</strong> : {{ quiz.initialQuestionCount }} initiale(s), {{ quiz.reserveQuestionCount }} en réserve.</p>
+    <table class="table table-sm">
+        <caption>Répartition de toute la banque ; le nombre de questions initiales fixe le quota de chaque thème.</caption>
+        <thead><tr><th>Thème</th><th>Initiales</th><th>Réserve</th><th>Phrases correctes</th><th>Avec une erreur</th><th>Catégorie non renseignée</th></tr></thead>
+        <tbody>
+        {% for row in rows %}
+            <tr><td>{{ row.theme }}</td><td>{{ row.initial }}</td><td>{{ row.reserve }}</td><td>{{ row.correct }}</td><td>{{ row.error }}</td><td>{{ row.unknown }}</td></tr>
+        {% else %}
+            <tr><td colspan="6">Aucune question pour le moment. Ajoutez les questions initiales avant d’activer le renouvellement.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <p class="text-muted">Une réserve absente ou insuffisante n’empêche pas le renouvellement : certaines questions sont réutilisées. Les quotas par thème et l’équilibre global restent prioritaires.</p>
+</div>

@@ -163,6 +163,20 @@ class QuizQuestion
         return $this->reserve;
     }
 
+    public function getRoleLabel(): string
+    {
+        return $this->reserve ? 'Question de réserve' : 'Question initiale';
+    }
+
+    public function getCategoryLabel(): string
+    {
+        return match ($this->containsError) {
+            null => 'Non renseignée',
+            false => 'Phrase correcte',
+            true => 'Phrase contenant une erreur',
+        };
+    }
+
     public function setReserve(bool $reserve): static
     {
         $this->reserve = $reserve;
