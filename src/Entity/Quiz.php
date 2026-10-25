@@ -20,6 +20,13 @@ class Quiz
     #[Assert\Length(max: 255)]
     private string $title = '';
 
+    #[ORM\Column(options: ['default' => false])]
+    private bool $renewalEnabled = false;
+
+    // Null: no composition constraint. Otherwise exactly this many erroneous sentences.
+    #[ORM\Column(nullable: true)]
+    private ?int $errorQuestionQuota = null;
+
     /** @var Collection<int, QuizQuestion> */
     #[ORM\OneToMany(targetEntity: QuizQuestion::class, mappedBy: 'quiz', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[ORM\OrderBy(['position' => 'ASC', 'id' => 'ASC'])]
@@ -62,6 +69,39 @@ class Quiz
     public function getQuestions(): Collection
     {
         return $this->questions;
+    }
+
+    public function isRenewalEnabled(): bool
+    {
+        return $this->renewalEnabled;
+    }
+
+    public function setRenewalEnabled(bool $renewalEnabled): static
+    {
+        $this->renewalEnabled = $renewalEnabled;
+
+        return $this;
+    }
+
+    public function getErrorQuestionQuota(): ?int
+    {
+        return $this->errorQuestionQuota;
+    }
+
+    public function setErrorQuestionQuota(?int $errorQuestionQuota): static
+    {
+        $this->errorQuestionQuota = $errorQuestionQuota;
+
+        return $this;
+    }
+
+    /** @return list<QuizQuestion> */
+    public function getInitialQuestions(): array
+    {
+        $questions = array_values($this->questions->filter(static fn (QuizQuestion $q) => !$q->isReserve())->toArray());
+        usort($questions, static fn (QuizQuestion $a, QuizQuestion $b) => [$a->getPosition(), $a->getId()] <=> [$b->getPosition(), $b->getId()]);
+
+        return $questions;
     }
 
     public function addQuestion(QuizQuestion $question): static

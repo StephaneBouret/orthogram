@@ -9,6 +9,7 @@ use App\Entity\QuizAttempt;
 use App\Entity\QuizQuestion;
 use App\Enum\CourseContentType;
 use App\Enum\LessonStatus;
+use App\Tests\Support\QuizFactory;
 use App\Tests\Support\QuizPlayerFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
@@ -128,6 +129,74 @@ final class QuizPlayerTest extends WebTestCase
         self::assertArrayNotHasKey('correct', $state['question']['answers'][0]);
         self::assertStringNotContainsString('SECRET', json_encode($state));
         self::assertSame($state['attemptId'], $this->post('start')['attemptId']);
+    }
+
+    public function testReserveCountersRenewalAndResumeUseOnlyPersistentSnapshot(): void
+    {
+        $quiz = $this->em()->find(Courses::class, $this->courseId)->getQuiz();
+        $initialIds = array_map(static fn ($q) => $q->getId(), $quiz->getInitialQuestions());
+        $reserve = QuizFactory::question()->setReserve(true)->setPosition(20)->setQuiz($quiz);
+        $this->em()->flush();
+        $reserveId = $reserve->getId();
+        self::assertSame(2, $this->state()['total']);
+        $first = $this->post('start');
+        $attempt = $this->em()->find(QuizAttempt::class, $first['attemptId']);
+        self::assertSame($initialIds, array_column($attempt->getSnapshot()['questions'], 'id'));
+        $this->post('answer', ['attemptId' => $first['attemptId'], 'questionId' => $reserveId, 'selectedIds' => [$reserve->getAnswers()->first()->getId()]], 400);
+        $state = $this->answer($this->answer($this->state()));
+        $finished = $this->post('finish', ['attemptId' => $state['attemptId']]);
+        // An old fixed passage counts when renewal is enabled later.
+        $quiz = $this->em()->find(Courses::class, $this->courseId)->getQuiz();
+        $quiz->setRenewalEnabled(true);
+        $this->em()->flush();
+        $next = $this->post('restart', ['attemptId' => $first['attemptId']]);
+        self::assertSame(2, $next['total']);
+        self::assertSame($reserveId, $next['question']['id']);
+        self::assertArrayNotHasKey('containsError', $next['question']);
+        self::assertArrayNotHasKey('correct', $next['question']['answers'][0]);
+        $snapshot = $this->em()->find(QuizAttempt::class, $next['attemptId'])->getSnapshot();
+        $answered = $this->answer($next);
+        // Editorial invalidation must not block resumption or an idempotent restart.
+        $quiz = $this->em()->find(Courses::class, $this->courseId)->getQuiz();
+        $quiz->setErrorQuestionQuota(200);
+        $this->em()->find(QuizQuestion::class, $reserveId)->getAnswers()->first()->setCorrect(false);
+        $this->em()->flush();
+        self::assertSame($answered, $this->state());
+        self::assertSame($answered, $this->post('restart', ['attemptId' => $first['attemptId']]));
+        self::assertSame($answered, $this->post('start'));
+        self::assertSame($snapshot, $this->em()->find(QuizAttempt::class, $next['attemptId'])->getSnapshot());
+        self::assertSame($finished, $this->state($first['attemptId']));
+        $state = $this->answer($this->state($next['attemptId']));
+        self::assertSame(2, $state['score']);
+        $this->post('finish', ['attemptId' => $next['attemptId']]);
+        $error = $this->post('restart', ['attemptId' => $next['attemptId']], 409);
+        self::assertStringContainsString('quota', $error['error']);
+        self::assertSame(2, $this->em()->getRepository(QuizAttempt::class)->count([]));
+        self::assertSame(1, $this->em()->getRepository(Lesson::class)->count(['status' => LessonStatus::DONE]));
+        $this->client->request('GET', '/mes-resultats/tentatives/'.$next['attemptId']);
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('main', 'Votre résultat : 2 sur 2');
+        self::assertSelectorCount(2, '.course-correction');
+        $this->client->request('GET', '/mes-resultats/historique/'.$next['attemptId']);
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('#tentative-selectionnee', '2/2');
+        self::assertSelectorCount(2, 'tbody tr');
+    }
+
+    public function testRenewalFirstPassExcludesReserveAndInvalidStartWritesNothing(): void
+    {
+        $quiz = $this->em()->find(Courses::class, $this->courseId)->getQuiz()->setRenewalEnabled(true);
+        $initial = array_map(static fn ($q) => $q->getId(), $quiz->getInitialQuestions());
+        $reserve = QuizFactory::question()->setQuiz($quiz)->setReserve(true)->setTheme(null);
+        $this->em()->flush();
+        $reserveId = $reserve->getId();
+        $this->post('start', [], 409);
+        self::assertSame(0, $this->em()->getRepository(QuizAttempt::class)->count([]));
+        self::assertSame(0, $this->em()->getRepository(Lesson::class)->count([]));
+        $this->em()->find(QuizQuestion::class, $reserveId)->setTheme('Thème libre');
+        $this->em()->flush();
+        $state = $this->post('start');
+        self::assertSame($initial, array_column($this->em()->find(QuizAttempt::class, $state['attemptId'])->getSnapshot()['questions'], 'id'));
     }
 
     public function testResumeWrongAnswerFinishZeroAndRestartPreserveHistory(): void

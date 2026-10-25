@@ -6,17 +6,16 @@ use App\Entity\Courses;
 use App\Entity\Lesson;
 use App\Entity\Quiz;
 use App\Entity\QuizAttempt;
-use App\Entity\QuizQuestion;
 use App\Entity\User;
 use App\Enum\CourseContentType;
 use App\Enum\LessonStatus;
+use App\Exception\InvalidQuizConfiguration;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @phpstan-import-type Snapshot from QuizAttempt
@@ -27,7 +26,7 @@ final class QuizAttemptService
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly QuizCorrectionService $correction,
-        private readonly ValidatorInterface $validator,
+        private readonly QuizQuestionSelector $selector,
     ) {
     }
 
@@ -38,7 +37,7 @@ final class QuizAttemptService
         $attempt = null === $attemptId ? $this->latest($user, $course, $quiz) : $this->owned($attemptId, $user, $course, $quiz);
 
         return null === $attempt
-            ? ['attemptId' => null, 'title' => $quiz->getTitle(), 'total' => $quiz->getQuestions()->count(), 'validated' => 0, 'completed' => false]
+            ? ['attemptId' => null, 'title' => $quiz->getTitle(), 'total' => count($quiz->getInitialQuestions()), 'validated' => 0, 'completed' => false]
             : $this->present($attempt);
     }
 
@@ -130,11 +129,11 @@ final class QuizAttemptService
 
     private function create(User $user, Courses $course, Quiz $quiz, ?QuizAttempt $previous = null): QuizAttempt
     {
-        if (0 === $quiz->getQuestions()->count() || count($this->validator->validate($quiz)) > 0) {
-            throw new ConflictHttpException('Ce quiz est vide ou mal configuré.');
+        try {
+            $questions = $this->selector->select($quiz, $previous);
+        } catch (InvalidQuizConfiguration $error) {
+            throw new ConflictHttpException($error->getMessage(), $error);
         }
-        $questions = $quiz->getQuestions()->toArray();
-        usort($questions, static fn (QuizQuestion $a, QuizQuestion $b) => [$a->getPosition(), $a->getId()] <=> [$b->getPosition(), $b->getId()]);
         $frozen = [];
         foreach ($questions as $question) {
             $answers = $question->getAnswers()->toArray();

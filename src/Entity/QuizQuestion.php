@@ -46,6 +46,13 @@ class QuizQuestion
     #[Assert\Length(max: 255)]
     private ?string $theme = null;
 
+    #[ORM\Column(options: ['default' => false])]
+    private bool $reserve = false;
+
+    // Editorial metadata, independent of the answer labels and correction flags.
+    #[ORM\Column(nullable: true)]
+    private ?bool $containsError = null;
+
     /** @var Collection<int, QuizAnswer> */
     #[ORM\OneToMany(targetEntity: QuizAnswer::class, mappedBy: 'question', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[ORM\OrderBy(['position' => 'ASC', 'id' => 'ASC'])]
@@ -149,6 +156,30 @@ class QuizQuestion
     public function getTheme(): ?string
     {
         return $this->theme;
+    }
+
+    public function isReserve(): bool
+    {
+        return $this->reserve;
+    }
+
+    public function setReserve(bool $reserve): static
+    {
+        $this->reserve = $reserve;
+
+        return $this;
+    }
+
+    public function getContainsError(): ?bool
+    {
+        return $this->containsError;
+    }
+
+    public function setContainsError(?bool $containsError): static
+    {
+        $this->containsError = $containsError;
+
+        return $this;
     }
 
     public function setTheme(?string $theme): static

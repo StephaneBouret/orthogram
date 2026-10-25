@@ -60,7 +60,7 @@ try {
     }
     $em = new EntityManager($connection, $baseEm->getConfiguration(), $baseEm->getEventManager());
     $validator = $kernel->getContainer()->get('test.service_container')->get('validator');
-    $service = new QuizAttemptService($em, new QuizCorrectionService($validator), $validator);
+    $service = new QuizAttemptService($em, new QuizCorrectionService($validator), new App\Services\QuizQuestionSelector(new App\Services\QuizConfigurationValidator($validator)));
     if ($worker) {
         $user = $em->find(User::class, (int) $argv[3]);
         $course = $em->find(Courses::class, (int) $argv[4]);
