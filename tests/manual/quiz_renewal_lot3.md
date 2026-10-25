@@ -10,7 +10,7 @@ Le manifeste versionné `resources/quiz/module1_reserve.json` reprend les 47 can
 
 Les réponses et catégories sont explicites : `0 erreur` en position 0, `1 erreur` en position 1, une seule réponse correcte, cohérente avec `contains_error`. Aucun thème, quota ou corrigé n'est déduit d'un libellé. `corrected_text` reste documentaire ; l'explication validée est importée dans le champ existant `explanation`.
 
-La résolution exige un titre exact, le chemin programme/section/cours attendu, un rattachement unique et huit quiz distincts. Les identifiants ci-dessous ont été **observés**, pas utilisés comme constantes de résolution. Les tests décalent les identifiants pour vérifier ce point.
+La résolution exige un titre exact, le chemin programme/section/cours attendu, un rattachement unique et huit quiz distincts. Pour la seule clé `fundamentals_4`, la compatibilité bêta accepte « Test général : réviser les fondamentaux » et « Test : réviser les fondamentaux », avec une correspondance unique sur l'ensemble des deux titres et les trois slugs inchangés. Les sept autres quiz gardent leur titre exact du manifeste. Cette compatibilité est portée par le résolveur, sans modifier le manifeste ni son empreinte ; voir la [procédure de production](../../ops/quiz_renewal_production.md#compatibilité-précise-du-titre-de-fundamentals_4). Les identifiants ci-dessous ont été **observés**, pas utilisés comme constantes de résolution. Les tests décalent les identifiants pour vérifier ce point.
 
 | Quiz | ID observé | Cours observé | Initiales / taille de tentative | Réserves prévues |
 | --- | ---: | ---: | ---: | ---: |

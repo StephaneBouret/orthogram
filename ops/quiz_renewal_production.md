@@ -4,6 +4,29 @@ Préparation locale du 25 octobre 2026, depuis `9a1f2c0095c12f4ae3ba7cd03a8dc30a
 
 Cette procédure complète [le déploiement existant](deploy_beta.md) et les recettes [lot 1](../tests/manual/quiz_renewal_lot1.md), [lot 2](../tests/manual/quiz_renewal_lot2.md), [lot 3](../tests/manual/quiz_renewal_lot3.md). Elle ne remplace pas les protections des cours et dictées. Les commandes sont du **Bash Linux**, à exécuter ultérieurement après autorisation de livraison. Arrêter à toute erreur ; ne pas réparer ou restaurer automatiquement.
 
+## Compatibilité précise du titre de `fundamentals_4`
+
+Diagnostic communiqué pendant le déploiement : la bêta utilise **« Test : réviser les fondamentaux »**, tandis que le manifeste porte **« Test général : réviser les fondamentaux »**. La prévisualisation précédente a refusé la résolution avec `applied=false`. Selon ce diagnostic, les deux migrations sont déjà appliquées, aucun import ni renouvellement n'a été activé et la maintenance reste active. Ce correctif est préparé et testé localement ; aucun état distant n'a été consulté ou modifié pour le produire.
+
+Le résolveur accepte explicitement **ces deux titres et eux seuls pour la clé `fundamentals_4`**, dans la requête SQL puis dans la comparaison stricte PHP. Les trois rattachements restent obligatoires :
+
+- `course.slug = test-general-reviser-les-fondamentaux` ;
+- `section.slug = les-fondamentaux` ;
+- `program.slug = formation-en-orthographe`.
+
+Une seule correspondance doit exister **sur l'ensemble des deux titres**. Si chacun désigne un quiz satisfaisant ces rattachements, la résolution est ambiguë et refusée : aucune priorité au titre du manifeste, aucun choix du premier résultat. Un titre non autorisé, une variante de casse ou un espace supplémentaire restent refusés par la vérification PHP. Le rattachement unique, les huit quiz distincts et le titre exact du manifeste pour chacun des sept autres quiz restent exigés. Aucun identifiant n'est codé en dur.
+
+Ce changement ne renomme rien et n'écrit aucune donnée. `resources/quiz/module1_reserve.json` reste strictement inchangé, SHA-256 **`a7ea9d939aa93971fdf29e3661f400f5043a77ca51fd87c462ab841e4cef72ba`**. Les empreintes de manifeste/contenu enregistrées dans `quiz_reserve_import` et leur validation ne sont pas modifiées. Les réserves déjà importées sont toujours reconnues ; une empreinte altérée reste signalée comme divergence.
+
+Après une future livraison autorisée de ce correctif, reprendre la **prévisualisation** avec la destination vérifiée et un nouveau fichier, en conservant la maintenance. Ne pas rejouer les migrations déjà appliquées, renommer le quiz, modifier les slugs ou reprendre une ancienne empreinte de plan pour contourner le blocage. Dans la session Bash où `PHP_BIN`, `DEST` et `BACKUP_DIR` ont été vérifiés :
+
+```bash
+"$PHP_BIN" bin/console app:quiz:module1-reserves --env=prod --no-debug "${DEST[@]}" \
+  --report="$BACKUP_DIR/import-preview-title-compat.json" > "$BACKUP_DIR/import-preview-title-compat.stdout.json"
+```
+
+Cette commande n'importe rien. Lire le nouveau rapport avant toute action ultérieure autorisée. Les autres contrôles de contenu, composition, provenance, destination et transaction restent applicables. Voir le [bilan du correctif et de ses tests locaux](../tests/manual/quiz_fundamentals_title_compat_report.json).
+
 ## 1. Fonctionnement constaté du déploiement
 
 `ops/deploy_beta.sh` ne fait ni `git pull`, ni checkout, ni push. La documentation existante décrit la publication automatique Hostinger de **`preprod`**, avec installation Composer, puis l'exécution manuelle de `/home/u849885333/domains/orthogram.fr/deploy_beta.sh`. Ce déclenchement et la branche configurée dans hPanel restent à reconfirmer sur place ; le script SSH réellement installé doit être comparé à celui livré.

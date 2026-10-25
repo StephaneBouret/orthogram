@@ -21,11 +21,16 @@ final class ModuleOneReserveImporter
         $result = [];
         foreach ([...$this->manifest->data['fundamentals'], ...$this->manifest->data['quizzes']] as $spec) {
             $course = $spec['course'];
-            $ids = $this->em->getConnection()->fetchFirstColumn('SELECT q.id FROM quiz q JOIN courses c ON c.quiz_id = q.id JOIN sections s ON s.id = c.section_id JOIN program p ON p.id = s.program_id WHERE q.title = ? AND c.slug = ? AND s.slug = ? AND p.slug = ?',
-                [$spec['expected_title'], $course['slug'], $course['section_slug'], $course['program_slug']]);
+            // Confirmed beta title compatibility; keep the provenance manifest unchanged.
+            $titles = 'fundamentals_4' === $spec['quiz_key']
+                ? ['Test général : réviser les fondamentaux', 'Test : réviser les fondamentaux']
+                : [$spec['expected_title']];
+            $placeholders = implode(', ', array_fill(0, count($titles), '?'));
+            $ids = $this->em->getConnection()->fetchFirstColumn('SELECT q.id FROM quiz q JOIN courses c ON c.quiz_id = q.id JOIN sections s ON s.id = c.section_id JOIN program p ON p.id = s.program_id WHERE q.title IN ('.$placeholders.') AND c.slug = ? AND s.slug = ? AND p.slug = ?',
+                [...$titles, $course['slug'], $course['section_slug'], $course['program_slug']]);
             ModuleOneReserveManifest::require(1 === count($ids), 'Résolution ambiguë ou impossible : '.$spec['quiz_key']);
             $quiz = $this->em->find(Quiz::class, (int) $ids[0]);
-            ModuleOneReserveManifest::require(null !== $quiz && $quiz->getTitle() === $spec['expected_title'], 'Identité du quiz différente.');
+            ModuleOneReserveManifest::require(null !== $quiz && in_array($quiz->getTitle(), $titles, true), 'Identité du quiz différente.');
             ModuleOneReserveManifest::require(1 === $quiz->getCourses()->count(), 'Rattachements multiples : '.$spec['quiz_key']);
             $result[$spec['quiz_key']] = $quiz;
         }
