@@ -1,5 +1,7 @@
 # Lot 3 — Réserves du module 1
 
+Pour une livraison sur `beta.orthogram.fr`, voir la [procédure SSH de production](../../ops/quiz_renewal_production.md). Les commandes locales ci-dessous conservent leurs protections ; la production exige une destination complète, `--expect-env=prod` et l'autorisation distincte `--allow-production-database` pour écrire.
+
 Préparation et recette du 25 octobre 2026. L'import, l'activation et la nouvelle migration ont été exécutés **uniquement sur copie jetable**. La base de travail `orthogram` reste inchangée. Les commandes de la section « Exécution locale ultérieure » attendent une autorisation distincte de Stéphane.
 
 ## Manifeste et audit

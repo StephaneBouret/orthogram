@@ -1,0 +1,436 @@
+{
+  "date": "2026-10-25",
+  "baseline_commit": "9a1f2c0095c12f4ae3ba7cd03a8dc30a1154084c",
+  "branch": "preprod",
+  "initial_worktree_clean": true,
+  "scope": "Local production preparation only; no Hostinger access, work/production database writes, commit, push, merge or deployment.",
+  "deployment": {
+    "script": "ops/deploy_beta.sh",
+    "script_changed": false,
+    "script_sha256": "a74787ac8eceb91c008054f1baa97fa9daf5488374300f268cbf2c2662044393",
+    "project_path": "/home/u849885333/domains/orthogram.fr/public_html/beta",
+    "environment_source": "/home/u849885333/domains/orthogram.fr/.env.beta",
+    "maintenance_marker": "/home/u849885333/domains/orthogram.fr/.orthogram-maintenance",
+    "maintenance_created_by_script": false,
+    "maintenance_removed_by_script": false,
+    "automatic_migration": "php bin/console doctrine:migrations:migrate --env=prod --no-debug --no-interaction",
+    "automatic_import_or_activation": false,
+    "other_write_to_review": "app:avatars:repair may change user/avatar data; snapshot comparison must not silently exclude it.",
+    "required_migration_scope": [
+      "DoctrineMigrations\\Version20261025120000",
+      "DoctrineMigrations\\Version20261025150000"
+    ],
+    "other_pending_migrations": "Stop before global migration and explain; do not assume local and production status match.",
+    "php_binary": "php resolved from the remote PATH, not an invented absolute binary path",
+    "historical_database_name_not_assumed_current": "u849885333_orthogram_beta (reported 2026-10-18)"
+  },
+  "production_controls": {
+    "preview_read_only_by_default": true,
+    "required_assertions": [
+      "expect-env=prod",
+      "expect-database",
+      "expect-host",
+      "expect-port",
+      "expect-server"
+    ],
+    "write_authorization": "--allow-production-database plus --apply and --expect-plan",
+    "allow_work_database_not_production_consent": true,
+    "plan_bound_to_destination_and_environment": true,
+    "fresh_plan_rechecked_under_lock": true,
+    "production_initial_differences_block_writes": true,
+    "transactions_editorial_validation_and_locks_preserved": true,
+    "local_copy_and_work_database_protections_preserved": true,
+    "production_repeat_requires_fresh_current_plan": true,
+    "no_credentials_or_raw_technical_exception_text_in_command_reports": true
+  },
+  "audit_tool": {
+    "script": "ops/quiz_release_snapshot.php",
+    "capture_read_only": true,
+    "compare_offline_no_connection": true,
+    "phases": [
+      "migration",
+      "import",
+      "enable",
+      "identical"
+    ],
+    "migration_defaults_real_mysql_tested": true,
+    "only_expected_changes_accepted": true,
+    "no_automatic_repair": true,
+    "output_location": "Private backup directory outside public_html, with umask 077"
+  },
+  "tests": {
+    "targeted": {
+      "tests": 22,
+      "assertions": 697,
+      "success": true
+    },
+    "snapshot_final_with_cli_comparison": {
+      "tests": 1,
+      "assertions": 14,
+      "success": true
+    },
+    "guards_final": {
+      "tests": 4,
+      "assertions": 7,
+      "success": true
+    },
+    "deployment_contract_scenarios_passed": 33,
+    "bash_runbook_blocks_syntax_checked": 13,
+    "writes_only_to_random_disposable_databases": true,
+    "nonlocal_destination_test_uses_mock_no_network": true,
+    "browser_recipe_replayed": false,
+    "full_application_suite_replayed": false
+  },
+  "phpstan": {
+    "baseline": "var/quiz-fixed-quota/phpstan-after.json",
+    "command": "php -d memory_limit=512M -d xdebug.mode=off vendor/bin/phpstan analyse --no-progress --memory-limit=512M --error-format=json",
+    "before_totals": {
+      "errors": 0,
+      "file_errors": 34
+    },
+    "after_totals": {
+      "errors": 0,
+      "file_errors": 34
+    },
+    "entire_json_identical": true,
+    "added": [],
+    "removed": [],
+    "new_exclusions": false,
+    "unchanged_diagnostics": [
+      {
+        "file": "tests/Controller/Course/CourseInteractionTest.php",
+        "message": "Property App\\Tests\\Controller\\Course\\CourseInteractionTest::$previousUrls type has no value type specified in iterable type array.",
+        "line": 32,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Controller/Course/CourseInteractionTest.php",
+        "message": "Property App\\Tests\\Controller\\Course\\CourseInteractionTest::$commentTokens type has no value type specified in iterable type array.",
+        "line": 45,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Controller/Course/CourseInteractionTest.php",
+        "message": "Method App\\Tests\\Controller\\Course\\CourseInteractionTest::databaseState() return type has no value type specified in iterable type array.",
+        "line": 140,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Controller/Course/CourseInteractionTest.php",
+        "message": "Method App\\Tests\\Controller\\Course\\CourseInteractionTest::endpoints() return type has no value type specified in iterable type iterable.",
+        "line": 218,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Controller/Course/CourseInteractionTest.php",
+        "message": "Method App\\Tests\\Controller\\Course\\CourseInteractionTest::exerciseProfiles() return type has no value type specified in iterable type iterable.",
+        "line": 267,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Controller/Course/CourseInteractionTest.php",
+        "message": "Method App\\Tests\\Controller\\Course\\CourseInteractionTest::readerTypes() return type has no value type specified in iterable type iterable.",
+        "line": 303,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Controller/Course/CourseInteractionTest.php",
+        "message": "Method App\\Tests\\Controller\\Course\\CourseInteractionTest::authenticationProfiles() return type has no value type specified in iterable type iterable.",
+        "line": 410,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Controller/QuizResultsTest.php",
+        "message": "Method App\\Tests\\Controller\\QuizResultsTest::historicalCourseTypes() return type has no value type specified in iterable type iterable.",
+        "line": 328,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Integration/DictationEnrollmentMigrationTest.php",
+        "message": "Class DoctrineMigrations\\Version20261017180000 not found.",
+        "line": 28,
+        "ignorable": true,
+        "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+        "identifier": "class.notFound"
+      },
+      {
+        "file": "tests/Integration/DictationEnrollmentMigrationTest.php",
+        "message": "Class DoctrineMigrations\\Version20261017180000 not found.",
+        "line": 34,
+        "ignorable": true,
+        "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+        "identifier": "class.notFound"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarOccurrencesTest.php",
+        "message": "Offset 'separateFirstNotice' does not exist on array{ics: string, googleUrl: string|null, expiresAt: string, notice: string}.",
+        "line": 106,
+        "ignorable": true,
+        "identifier": "offsetAccess.notFound"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarOccurrencesTest.php",
+        "message": "Method App\\Tests\\Services\\LearningReminderCalendarOccurrencesTest::splitSeries() return type has no value type specified in iterable type iterable.",
+        "line": 151,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarOccurrencesTest.php",
+        "message": "Method App\\Tests\\Services\\LearningReminderCalendarOccurrencesTest::testInitialGapIsSeparateAndNominalSeriesResumes() has parameter $days with no value type specified in iterable type array.",
+        "line": 162,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarOccurrencesTest.php",
+        "message": "Method App\\Tests\\Services\\LearningReminderCalendarOccurrencesTest::testInitialGapIsSeparateAndNominalSeriesResumes() has parameter $firstStarts with no value type specified in iterable type array.",
+        "line": 162,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarOccurrencesTest.php",
+        "message": "Offset 'separateFirstNotice' does not exist on array{ics: string, googleUrl: string|null, expiresAt: string, notice: string}.",
+        "line": 211,
+        "ignorable": true,
+        "identifier": "offsetAccess.notFound"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarServiceTest.php",
+        "message": "Method App\\Tests\\Services\\LearningReminderCalendarServiceTest::splitDeadlines() return type has no value type specified in iterable type iterable.",
+        "line": 61,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarServiceTest.php",
+        "message": "Method App\\Tests\\Services\\LearningReminderCalendarServiceTest::unsplitNotices() return type has no value type specified in iterable type iterable.",
+        "line": 79,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarServiceTest.php",
+        "message": "Method App\\Tests\\Services\\LearningReminderCalendarServiceTest::testUnsplitExportsHaveNoSeparateNotice() has parameter $days with no value type specified in iterable type array.",
+        "line": 86,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarServiceTest.php",
+        "message": "Method App\\Tests\\Services\\LearningReminderCalendarServiceTest::ambiguousDeadlines() return type has no value type specified in iterable type iterable.",
+        "line": 187,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarServiceTest.php",
+        "message": "Method App\\Tests\\Services\\LearningReminderCalendarServiceTest::initialPassages() return type has no value type specified in iterable type iterable.",
+        "line": 202,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarServiceTest.php",
+        "message": "Method App\\Tests\\Services\\LearningReminderCalendarServiceTest::incoherentInstants() return type has no value type specified in iterable type iterable.",
+        "line": 226,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarServiceTest.php",
+        "message": "Method App\\Tests\\Services\\LearningReminderCalendarServiceTest::invalidAnchors() return type has no value type specified in iterable type iterable.",
+        "line": 240,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Services/LearningReminderCalendarServiceTest.php",
+        "message": "Method App\\Tests\\Services\\LearningReminderCalendarServiceTest::invalidWriterAnchors() return type has no value type specified in iterable type iterable.",
+        "line": 260,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/Services/LearningReminderVtimezoneTest.php",
+        "message": "Access to an undefined property Sabre\\VObject\\Document::$X-ORTHOGRAM-UNTIL.",
+        "line": 26,
+        "ignorable": true,
+        "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+        "identifier": "property.notFound"
+      },
+      {
+        "file": "tests/Services/LearningReminderVtimezoneTest.php",
+        "message": "Access to an undefined property Sabre\\VObject\\Document::$X-ORTHOGRAM-UNTIL.",
+        "line": 45,
+        "ignorable": true,
+        "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+        "identifier": "property.notFound"
+      },
+      {
+        "file": "tests/Support/IcalendarOracleTest.php",
+        "message": "Method App\\Tests\\Support\\IcalendarOracleTest::invalidGroups() return type has no value type specified in iterable type iterable.",
+        "line": 142,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      },
+      {
+        "file": "tests/manual/dictation_lot2b_browser_router.php",
+        "message": "Call to an undefined method Doctrine\\Persistence\\ObjectManager::getConnection().",
+        "line": 27,
+        "ignorable": true,
+        "identifier": "method.notFound"
+      },
+      {
+        "file": "tests/manual/dictation_lot6_manual_session.php",
+        "message": "Offset 'DICTATION_STORAGE_DIR' does not exist on non-empty-array<mixed, mixed>.",
+        "line": 97,
+        "ignorable": true,
+        "identifier": "offsetAccess.notFound"
+      },
+      {
+        "file": "tests/manual/dictation_lot6_manual_session.php",
+        "message": "Offset 'DICTATION_STORAGE_DIR' does not exist on non-empty-array<mixed, mixed>.",
+        "line": 105,
+        "ignorable": true,
+        "identifier": "offsetAccess.notFound"
+      },
+      {
+        "file": "tests/manual/dictation_lot6_manual_session.php",
+        "message": "Offset 'DICTATION_STORAGE_DIR' does not exist on non-empty-array<mixed, mixed>.",
+        "line": 113,
+        "ignorable": true,
+        "identifier": "offsetAccess.notFound"
+      },
+      {
+        "file": "tests/manual/dictation_lot6_manual_session.php",
+        "message": "Offset 'DICTATION_STORAGE_DIR' does not exist on non-empty-array<mixed, mixed>.",
+        "line": 113,
+        "ignorable": true,
+        "identifier": "offsetAccess.notFound"
+      },
+      {
+        "file": "tests/manual/dictation_lot6_manual_session.php",
+        "message": "Offset 'DICTATION_STORAGE_DIR' does not exist on non-empty-array<mixed, mixed>.",
+        "line": 118,
+        "ignorable": true,
+        "identifier": "offsetAccess.notFound"
+      },
+      {
+        "file": "tests/manual/dictation_lot6_manual_session.php",
+        "message": "Call to an undefined method Doctrine\\Persistence\\ObjectManager::getConnection().",
+        "line": 137,
+        "ignorable": true,
+        "identifier": "method.notFound"
+      },
+      {
+        "file": "tests/manual/generate_learning_reminder_calendar_cases.php",
+        "message": "Function expectedOccurrence() return type has no value type specified in iterable type array.",
+        "line": 16,
+        "ignorable": true,
+        "tip": "See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type",
+        "identifier": "missingType.iterableValue"
+      }
+    ],
+    "composer_lock_sha256": "0360316a93593460196024cc95bcb787c26a8a05b59406e18c01de8f0ca974b5",
+    "config_sha256": "179fcd5cc0542d9fd5374215008fa87898e982558d08a860c1ac4cef8b8ad751"
+  },
+  "quality": {
+    "php_lint": "8 changed/new PHP files pass",
+    "style": "0 remaining changes on 8 files",
+    "container_lint": "pass",
+    "git_diff_check": "pass"
+  },
+  "local_source_preservation": {
+    "all_rows_and_schemas_identical": true,
+    "env_local_unchanged": true,
+    "read_only_sql_session": true
+  },
+  "browser_report_clarification": [
+    {
+      "directory": "var/local-reserve-import-20261025",
+      "verify_stage": "Before browser check: false means not checked yet, not failed.",
+      "final_stage": "verify-browser compares the complete final snapshot with after.json and succeeds.",
+      "raw_evidence_not_modified": true,
+      "after_and_after_browser_identical": true,
+      "sha256": {
+        "operation.php": "151567d7fd7ebd74260bb5204de21e069a293ebbe632b8a456e2a535e07ead78",
+        "verify.json": "6b10c13c92392641075d6f4c976344be0e4aeb854eab92020f44e6831732ad8e",
+        "verify-browser.json": "1212bd30a19dc56e13f5d421d112444a3e77aa11d96b283c6937323b38482c55",
+        "report.json": "b04cae72081f4b02602b367ae8e1ce869754ae51a6e80abe5379ece66b93d014",
+        "browser-report.json": "9af836ef4b4d635672939721b505fa9ffe11d32388a97e9ecd6ff1d96ae976f3",
+        "after.json": "41cee39bcae766c9cc6af8f7211ecd436435e58a8ca84df77084b095cddb792b",
+        "after-browser.json": "41cee39bcae766c9cc6af8f7211ecd436435e58a8ca84df77084b095cddb792b"
+      }
+    },
+    {
+      "directory": "var/local-renewal-enable-20261025",
+      "verify_stage": "Before browser check: false means not checked yet, not failed.",
+      "final_stage": "verify-browser compares the complete final snapshot with after.json and succeeds.",
+      "raw_evidence_not_modified": true,
+      "after_and_after_browser_identical": true,
+      "sha256": {
+        "operation.php": "1ef4ff44954a4e11777bc251d391f655f89dc084b302c9daf9c67553a719894c",
+        "verify.json": "ed259f762dd34d24f6c60017288bda4fff2a1c42c8df22bb69d9aa4af3adbd62",
+        "verify-browser.json": "2378f82c3656dbf2fcd1c05d3587c5c295db63889f4f6d170395018a3ad4772b",
+        "report.json": "daec6a7a61fd724a1fec5437b6e819594a3d7cc8ca9ca13c43bdd95b02ee5302",
+        "browser-report.json": "394ef33138287c8c10b043c832ef740679e27a042328833fdcedc853e6e40b0f",
+        "after.json": "6f3a8ca14840576f17d187e39c458dcc1763d3bfe82c0d59f016d32a2591e792",
+        "after-browser.json": "6f3a8ca14840576f17d187e39c458dcc1763d3bfe82c0d59f016d32a2591e792"
+      }
+    }
+  ],
+  "remote_checks_still_required": [
+    "Authorized release SHA and Hostinger publication branch/trigger",
+    "Installed SSH script compared to published script",
+    "Effective MySQL database/host/port/server and credentials from hPanel",
+    "Effective maintenance on all actual hosts/aliases and stopped workers/cron",
+    "PHP CLI/web compatibility and client binaries",
+    "Actual pending migrations and production quiz content/history inventory",
+    "Complete backup and verified isolated restoration",
+    "Post-reopening real EasyAdmin/history consultation"
+  ],
+  "files": [
+    "ops/deploy_beta.md",
+    "ops/quiz_release_snapshot.php",
+    "ops/quiz_renewal_production.md",
+    "ops/quiz_renewal_production_report.json",
+    "src/Command/QuizReserveCommand.php",
+    "src/Services/ModuleOneReserveImporter.php",
+    "src/Services/QuizCommandDestination.php",
+    "src/Services/QuizReleaseSnapshot.php",
+    "tests/Integration/QuizProductionCommandTest.php",
+    "tests/Integration/QuizReleaseSnapshotTest.php",
+    "tests/Services/QuizCommandDestinationTest.php",
+    "tests/manual/quiz_renewal_lot3.md"
+  ]
+}

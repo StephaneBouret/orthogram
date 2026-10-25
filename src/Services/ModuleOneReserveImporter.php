@@ -34,13 +34,19 @@ final class ModuleOneReserveImporter
         return $result;
     }
 
-    /** @return array<string, mixed> */
-    public function plan(string $action = 'import'): array
+    /** @param array<string, mixed> $destination
+     * @return array<string, mixed> */
+    public function plan(string $action = 'import', array $destination = []): array
     {
         ModuleOneReserveManifest::require(in_array($action, ['audit', 'import', 'enable', 'disable'], true), 'Action inconnue.');
         $quizzes = $this->resolve();
         $report = ['action' => $action, 'manifest_sha256' => $this->manifest->hash, 'sources' => 47, 'quizzes' => [], 'initial_differences' => [], 'errors' => [],
             'initial_metadata_changes' => [], 'schema_ready' => $this->em->getConnection()->createSchemaManager()->tablesExist(['quiz_reserve_import'])];
+        if ([] !== $destination) {
+            $report['destination'] = $destination;
+        }
+        $report['targets'] = array_combine(array_column($this->manifest->data['quizzes'], 'quiz_key'),
+            array_map(static fn ($spec) => $quizzes[$spec['quiz_key']]->getId(), $this->manifest->data['quizzes']));
         foreach ([...$this->manifest->data['fundamentals'], ...$this->manifest->data['quizzes']] as $spec) {
             $quiz = $quizzes[$spec['quiz_key']];
             $initial = $quiz->getInitialQuestions();
@@ -145,20 +151,24 @@ final class ModuleOneReserveImporter
         return $report;
     }
 
-    /** @return array<string, mixed> */
-    public function apply(string $action, string $expectedPlan): array
+    /** @param array<string, mixed> $destination
+     * @return array<string, mixed> */
+    public function apply(string $action, string $expectedPlan, array $destination = []): array
     {
         ModuleOneReserveManifest::require(in_array($action, ['import', 'enable', 'disable'], true), 'Action d’écriture invalide.');
         $quizzes = $this->resolve();
         $ids = array_map(static fn ($spec) => (int) $quizzes[$spec['quiz_key']]->getId(), $this->manifest->data['quizzes']);
 
-        return $this->editorial->transaction(null, null, function () use ($action, $expectedPlan): array {
+        return $this->editorial->transaction(null, null, function () use ($action, $expectedPlan, $destination): array {
             // Resolve and inspect again after all quiz locks, never trust a preview.
-            $plan = $this->plan($action);
-            if ('import' !== $action || 94 !== $plan['existing_copies']) {
+            $plan = $this->plan($action, $destination);
+            if ([] !== $destination || 'import' !== $action || 94 !== $plan['existing_copies']) {
                 ModuleOneReserveManifest::require(hash_equals($expectedPlan, $plan['plan_hash']), 'La prévisualisation a changé sous verrou ; refaire le rapport.');
             }
             ModuleOneReserveManifest::require([] === $plan['errors'], implode("\n", $plan['errors']));
+            if ([] !== $destination && 'disable' !== $action) {
+                ModuleOneReserveManifest::require([] === $plan['initial_differences'], 'Différences sur les initiales : examiner le rapport avant toute écriture en production.');
+            }
             ModuleOneReserveManifest::require($plan['schema_ready'] || 'disable' === $action, 'Migration de traçabilité requise sur la destination.');
             $quizzes = $this->resolve();
             if ('import' === $action) {

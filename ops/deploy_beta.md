@@ -1,5 +1,7 @@
 # Bêta — livraison des dictées
 
+Pour la livraison du renouvellement des quiz, suivre aussi la [procédure dédiée](quiz_renewal_production.md) : audit des deux migrations du chantier avant le `migrate` global déjà présent, import et activation distincts sous maintenance conservée. Aucun import ou activation de quiz n'est ajouté au script ordinaire.
+
 Préparation locale du 18 octobre 2026, branche `preprod`, base
 `a082e4694ca80dba17cf3229d2871678c9c471d7`. Avant modification,
 `git diff HEAD -- ops/deploy_beta.sh` était vide : la référence fournie comme
