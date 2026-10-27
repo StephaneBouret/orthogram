@@ -14,7 +14,7 @@ La comparaison complète des 32 tables autorise exactement trois différences : 
 
 ## Code et tests
 
-Le garde-fou module 2 autorise désormais `enable` et `disable` sur `orthogram` en `dev` avec `--allow-work-database`, comme l’import. Les cinq assertions de destination, le contrôle du port effectif, le plan lié à la destination et son recalcul sous verrou sont conservés. Production et hôtes distants restent refusés. Les commandes du module 1, les services partagés et le sélecteur ne sont pas modifiés.
+À l’issue de ce lot local, le garde-fou autorisait `enable` et `disable` sur `orthogram` en `dev` avec `--allow-work-database`, comme l’import, et refusait production et hôtes distants. Les cinq assertions de destination, le contrôle du port effectif, le plan lié à la destination et son recalcul sous verrou sont conservés. L’extension ultérieure à la production est documentée dans la [procédure bêta](module2_quiz_production.md), avec un consentement distinct. Les commandes du module 1, les services partagés et le sélecteur ne sont pas modifiés.
 
 Le rapport présente les `renewal_changes` prévus et l’application retourne `quizzes_changed`. Une répétition avec un nouveau plan valide retourne `noop=true` sans flush. Un ancien plan devenu périmé est toujours refusé, même pour une répétition.
 
@@ -70,6 +70,8 @@ Les rapports opérationnels et captures restent hors Git dans `var/module2-renew
 Une désactivation ultérieure exige sa propre prévisualisation `disable`, son plan et le même consentement local. Elle ne supprime pas les historiques. Aucune désactivation n’a été réalisée sur la base de travail pendant cette opération.
 
 ## Courte recette navigateur restante
+
+Cette recette a ensuite été entièrement validée par l’utilisateur le 27 octobre 2026 : renouvellement, tailles 12/12/24, reprise, bilans et historiques. Les étapes ci-dessous conservent la trace du contrôle demandé à la fin de l’activation locale.
 
 1. Sur chacun des trois cours, terminer un premier passage puis utiliser **Recommencer** : toujours 12/12/24 questions, mêmes quotas de thèmes, avec utilisation des réserves. Sans tentative précédente persistée, le premier passage conserve le jeu initial.
 2. Interrompre une tentative renouvelée puis recharger/reprendre : mêmes questions, même avancement et mêmes réponses déjà validées.

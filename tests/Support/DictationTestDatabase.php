@@ -70,6 +70,9 @@ final class DictationTestDatabase
         if ($connection->fetchOne('SELECT DATABASE()') !== $this->name) {
             throw new \LogicException('Connexion non isolée.');
         }
+        // Wamp MariaDB can default to MyISAM. Fixtures need real FK/rollback
+        // semantics; this changes only this disposable connection's session.
+        $connection->executeStatement("SET SESSION default_storage_engine = 'InnoDB'");
         $this->connections[] = $connection;
 
         return new EntityManager($connection, $this->baseManager->getConfiguration(), $this->baseManager->getEventManager());

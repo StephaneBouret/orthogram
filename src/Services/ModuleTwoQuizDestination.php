@@ -4,7 +4,7 @@ namespace App\Services;
 
 use Doctrine\DBAL\Connection;
 
-/** Local import and renewal require explicit consent; remote/production remain forbidden. */
+/** Separate work/production consent, using the shared effective-destination assertions. */
 final class ModuleTwoQuizDestination
 {
     public function __construct(private readonly QuizCommandDestination $destination)
@@ -16,14 +16,17 @@ final class ModuleTwoQuizDestination
     public function verify(Connection $db, array $options, string $action = 'import'): array
     {
         ModuleTwoQuizManifest::require(in_array($action, ['import', 'enable', 'disable'], true), 'Action module 2 invalide.');
-        ModuleTwoQuizManifest::require(in_array($db->getParams()['host'] ?? '', ['127.0.0.1', 'localhost', '::1'], true), 'Module 2 : destinations distantes interdites.');
-        ModuleTwoQuizManifest::require('prod' !== ($options['expect-env'] ?? null), 'Module 2 : environnement de production interdit.');
         $write = (bool) ($options['apply'] ?? false);
         $allowWork = (bool) ($options['allow-work-database'] ?? false);
+        $writeOptions = $options;
         $options['apply'] = false;
         $context = $this->destination->verify($db, $options);
-        ModuleTwoQuizManifest::require(in_array($context['environment'], ['dev', 'test'], true), 'Module 2 : environnement de production interdit.');
         ModuleTwoQuizManifest::require((int) $db->fetchOne('SELECT @@port') === $context['port'], 'Module 2 : port effectif du serveur différent.');
+        if ('prod' === $context['environment']) {
+            // The shared guard requires prod + all assertions even for preview,
+            // and rejects work consent even when production consent is also present.
+            return $this->destination->verify($db, $writeOptions);
+        }
         if ($write) {
             foreach (['env', 'host', 'port', 'server', 'database'] as $field) {
                 ModuleTwoQuizManifest::require(is_string($options['expect-'.$field] ?? null) && '' !== $options['expect-'.$field], '--expect-'.$field.' requis pour écrire.');

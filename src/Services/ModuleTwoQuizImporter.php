@@ -181,10 +181,10 @@ final class ModuleTwoQuizImporter
 
     /** @param array<string, mixed> $context
      * @return array<string, mixed> */
-    public function apply(string $action, string $expectedPlan, array $context, bool $allowWorkDatabase = false): array
+    public function apply(string $action, string $expectedPlan, array $context, bool $allowWorkDatabase = false, bool $allowProductionDatabase = false): array
     {
         $db = $this->em->getConnection();
-        $options = ['apply' => true, 'allow-work-database' => $allowWorkDatabase];
+        $options = ['apply' => true, 'allow-work-database' => $allowWorkDatabase, 'allow-production-database' => $allowProductionDatabase];
         foreach (['environment' => 'env', 'database' => 'database', 'host' => 'host', 'port' => 'port', 'server' => 'server'] as $field => $option) {
             $options['expect-'.$option] = (string) ($context[$field] ?? '');
         }

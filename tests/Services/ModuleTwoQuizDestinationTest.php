@@ -94,6 +94,58 @@ final class ModuleTwoQuizDestinationTest extends TestCase
         $db->expects(self::never())->method('fetchAssociative');
         $db->expects(self::never())->method('fetchOne');
         $this->expectException(\DomainException::class);
-        (new ModuleTwoQuizDestination(new QuizCommandDestination('prod')))->verify($db, $this->options());
+        (new ModuleTwoQuizDestination(new QuizCommandDestination('dev')))->verify($db, $this->options());
+    }
+
+    #[DataProvider('actions')]
+    public function testProductionRequiresSeparateConsentEvenWithAllAssertions(string $action): void
+    {
+        $guard = new ModuleTwoQuizDestination(new QuizCommandDestination('prod'));
+        // Remote identity is simulated only. No remote connection is opened.
+        $db = $this->connection('beta_fixture', 'remote.invalid');
+        $options = array_replace($this->options(), ['expect-env' => 'prod', 'expect-database' => 'beta_fixture', 'expect-host' => 'remote.invalid']);
+        self::assertSame('prod', $guard->verify($db, array_replace($options, ['apply' => false]), $action)['environment']);
+        try {
+            $guard->verify($db, $options, $action);
+            self::fail('Production consent required');
+        } catch (\DomainException $error) {
+            self::assertStringContainsString('--allow-production-database', $error->getMessage());
+        }
+        self::assertSame('beta_fixture', $guard->verify($db, $options + ['allow-production-database' => true], $action)['database']);
+    }
+
+    /** @return iterable<string, array{string, string}> */
+    public static function productionRefusals(): iterable
+    {
+        foreach (['import', 'enable', 'disable'] as $action) {
+            foreach (['env', 'database', 'host', 'port', 'server', 'missing-env', 'missing-database', 'missing-host', 'missing-port', 'missing-server', 'work-consent', 'actual-port'] as $mode) {
+                yield $action.'/'.$mode => [$action, $mode];
+            }
+        }
+    }
+
+    #[DataProvider('productionRefusals')]
+    public function testProductionConsentNeverBypassesAssertions(string $action, string $mode): void
+    {
+        $options = array_replace($this->options(), ['expect-env' => 'prod', 'allow-production-database' => true]);
+        $db = $this->connection();
+        if (str_starts_with($mode, 'missing-')) {
+            unset($options['expect-'.substr($mode, 8)]);
+        } elseif ('work-consent' === $mode) {
+            $options['allow-work-database'] = true;
+        } elseif ('actual-port' === $mode) {
+            $db = $this->connection(serverPort: 3307);
+        } else {
+            $options['expect-'.$mode] = 'port' === $mode ? '3307' : 'wrong';
+        }
+        $this->expectException(\DomainException::class);
+        (new ModuleTwoQuizDestination(new QuizCommandDestination('prod')))->verify($db, $options, $action);
+    }
+
+    #[DataProvider('actions')]
+    public function testProductionConsentDoesNotAuthorizeDev(string $action): void
+    {
+        $this->expectException(\DomainException::class);
+        (new ModuleTwoQuizDestination(new QuizCommandDestination('dev')))->verify($this->connection(), $this->options() + ['allow-production-database' => true, 'allow-work-database' => true], $action);
     }
 }

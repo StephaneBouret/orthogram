@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'app:quiz:module2-import', description: 'Prévisualisation du module 2 ; import fixe local avec consentement explicite.')]
+#[AsCommand(name: 'app:quiz:module2-import', description: 'Prévisualisation du module 2 ; import fixe avec consentement distinct local/production.')]
 class ModuleTwoQuizImportCommand extends Command
 {
     public function __construct(private readonly ModuleTwoQuizImporter $importer, private readonly EntityManagerInterface $em, private readonly ModuleTwoQuizDestination $destination)
@@ -22,8 +22,9 @@ class ModuleTwoQuizImportCommand extends Command
 
     protected function configure(): void
     {
-        $this->addOption('apply', null, InputOption::VALUE_NONE, 'Appliquer sur la destination locale vérifiée.')
+        $this->addOption('apply', null, InputOption::VALUE_NONE, 'Appliquer sur la destination vérifiée.')
             ->addOption('allow-work-database', null, InputOption::VALUE_NONE, 'Consentir explicitement à l’opération demandée sur orthogram en dev.')
+            ->addOption('allow-production-database', null, InputOption::VALUE_NONE, 'Consentir explicitement à l’opération demandée en prod, avec toutes les assertions de destination.')
             ->addOption('expect-plan', null, InputOption::VALUE_REQUIRED, 'SHA-256 du plan relu.')
             ->addOption('report', null, InputOption::VALUE_REQUIRED, 'Enregistrer le rapport JSON.');
         foreach (['database', 'env', 'host', 'port', 'server'] as $field) {
@@ -46,7 +47,7 @@ class ModuleTwoQuizImportCommand extends Command
             if ($input->getOption('apply')) {
                 $hash = $input->getOption('expect-plan');
                 ModuleTwoQuizManifest::require(is_string($hash) && 1 === preg_match('/^[a-f0-9]{64}$/D', $hash), '--expect-plan SHA-256 requis.');
-                $report = $this->importer->apply($action, $hash, $context, (bool) $input->getOption('allow-work-database'));
+                $report = $this->importer->apply($action, $hash, $context, (bool) $input->getOption('allow-work-database'), (bool) $input->getOption('allow-production-database'));
             } else {
                 $db->executeStatement('SET TRANSACTION READ ONLY');
                 $db->beginTransaction();

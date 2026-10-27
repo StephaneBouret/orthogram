@@ -12,12 +12,14 @@ use App\Services\ModuleOneReserveManifest;
 use App\Services\ModuleTwoQuizDestination;
 use App\Services\ModuleTwoQuizImporter;
 use App\Services\ModuleTwoQuizManifest;
+use App\Services\ModuleTwoQuizSnapshot;
 use App\Services\QuizAttemptService;
 use App\Services\QuizCommandDestination;
 use App\Services\QuizConfigurationValidator;
 use App\Services\QuizCorrectionService;
 use App\Services\QuizEditorialService;
 use App\Services\QuizQuestionSelector;
+use App\Services\QuizReleaseSnapshot;
 use App\Tests\Support\DictationFactory;
 use App\Tests\Support\DictationTestDatabase;
 use App\Tests\Support\ModuleOneReserveFixture;
@@ -48,7 +50,12 @@ final class ModuleTwoQuizImportTest extends TestCase
     protected function setUp(): void
     {
         $this->database = new DictationTestDatabase(recipe: 'module2');
-        $this->database->install();
+        try {
+            $this->database->install();
+        } catch (\Throwable $error) {
+            $this->database->close();
+            throw $error;
+        }
         $this->em = $this->database->manager();
         $this->manifest = new ModuleTwoQuizManifest(dirname(__DIR__, 2).'/resources/quiz/module2/module2_quiz_manifest.json');
         $validator = Validation::createValidatorBuilder()->enableAttributeMapping()->getValidator();
@@ -103,6 +110,75 @@ final class ModuleTwoQuizImportTest extends TestCase
         return $options;
     }
 
+    public function testOfflineConservationChecksRejectAnyUnrelatedChange(): void
+    {
+        [$user, $course] = QuizPlayerFactory::create($this->em);
+        $this->attempts->mutate($user, $course, 'start', []);
+        $capture = fn () => ['destination' => $this->context, 'tables' => (new QuizReleaseSnapshot())->capture($this->em->getConnection())];
+        $audit = new ModuleTwoQuizSnapshot();
+        $before = $capture();
+        $this->apply();
+        $after = $capture();
+        $plan = $this->importer->plan('import', $this->context);
+        self::assertSame(['quiz' => 3, 'quiz_question' => 177, 'quiz_answer' => 354, 'quiz_reserve_import' => 177, 'quiz_manifest_identity' => 3], $audit->compare($before, $after, 'import', $plan)['changes']);
+        self::assertTrue($audit->compare($after, $after, 'identical')['success']);
+        self::assertSame(0, $audit->compare($after, $after, 'import', $plan)['changes']['quiz']);
+        foreach (array_keys($after['tables']) as $table) {
+            $corrupt = $after;
+            $corrupt['tables'][$table]['rows'][] = ['unexpected' => 'row'];
+            try {
+                $audit->compare($after, $corrupt, 'identical');
+                self::fail('Unexpected change accepted: '.$table);
+            } catch (\DomainException $error) {
+                self::assertStringContainsString($table, $error->getMessage());
+            }
+        }
+        $activation = $this->importer->plan('enable', $this->context);
+        $this->apply('enable');
+        $enabled = $capture();
+        self::assertCount(3, $audit->compare($after, $enabled, 'enable', $activation)['changes']);
+        $corrupt = $enabled;
+        $corrupt['tables']['quiz']['rows'][0]['error_question_quota'] = 1;
+        try {
+            $audit->compare($after, $corrupt, 'enable', $activation);
+            self::fail('Quota change accepted');
+        } catch (\DomainException $error) {
+            self::assertStringContainsString('quiz', $error->getMessage());
+        }
+        $disable = $this->importer->plan('disable', $this->context);
+        $this->apply('disable');
+        self::assertCount(3, $audit->compare($enabled, $capture(), 'disable', $disable)['changes']);
+        self::assertTrue($audit->compare($after, $capture(), 'identical')['success']);
+        $file = tempnam(sys_get_temp_dir(), 'module2-audit-');
+        try {
+            file_put_contents($file, json_encode($after, JSON_THROW_ON_ERROR));
+            $cli = new Process([PHP_BINARY, '-d', 'xdebug.mode=off', dirname(__DIR__, 2).'/ops/module2_quiz_compare.php', '--phase=identical', '--before='.$file, '--after='.$file, '--output='.$file.'.result']);
+            self::assertSame(0, $cli->run(), $cli->getErrorOutput());
+            self::assertTrue(json_decode(file_get_contents($file.'.result'), true, 512, JSON_THROW_ON_ERROR)['success']);
+            // A rerun cannot overwrite operational evidence.
+            self::assertSame(1, $cli->run());
+        } finally {
+            unlink($file);
+            if (is_file($file.'.result')) {
+                unlink($file.'.result');
+            }
+        }
+        // Actual registry DDL is covered separately; verify the migration journal allowance.
+        $oldSchema = $after;
+        unset($oldSchema['tables']['quiz_manifest_identity']);
+        $newSchema = $oldSchema;
+        $newSchema['tables']['quiz_manifest_identity'] = $after['tables']['quiz_manifest_identity'];
+        $newSchema['tables']['quiz_manifest_identity']['rows'] = [];
+        $oldSchema['tables']['doctrine_migration_versions'] = ['rows' => [], 'columns' => [], 'ddl' => 'journal'];
+        $newSchema['tables']['doctrine_migration_versions'] = ['rows' => [['version' => 'DoctrineMigrations\\Version20261027120000']], 'columns' => [], 'ddl' => 'journal'];
+        ksort($oldSchema['tables']);
+        ksort($newSchema['tables']);
+        self::assertTrue($audit->compare($oldSchema, $newSchema, 'migration')['success']);
+        $newSchema['tables']['doctrine_migration_versions']['rows'][] = ['version' => 'unexpected migration'];
+        $this->expectException(\DomainException::class);
+        $audit->compare($oldSchema, $newSchema, 'migration');
+    }
+
     public function testConsentOptionOnDisposableDatabasePreservesDestinationAndPlanChecks(): void
     {
         $tester = new CommandTester(new ModuleTwoQuizImportCommand($this->importer, $this->em, $this->destination));
@@ -125,6 +201,54 @@ final class ModuleTwoQuizImportTest extends TestCase
         $next = json_decode($tester->getDisplay(), true, 512, JSON_THROW_ON_ERROR);
         self::assertSame(0, $tester->execute(array_replace($apply, ['--expect-plan' => $next['plan_hash']])));
         self::assertSame($after, $this->rows());
+    }
+
+    public function testProductionCommandsOnDisposableDatabaseRequireConsentForEveryOperation(): void
+    {
+        $configuration = new QuizConfigurationValidator(Validation::createValidatorBuilder()->enableAttributeMapping()->getValidator());
+        $this->destination = new ModuleTwoQuizDestination(new QuizCommandDestination('prod'));
+        $this->importer = new ModuleTwoQuizImporter($this->em, $this->manifest, $configuration, new QuizEditorialService($this->em, $configuration), $this->destination);
+        $this->context['environment'] = 'prod';
+        $before = $this->rows();
+        $import = new CommandTester(new ModuleTwoQuizImportCommand($this->importer, $this->em, $this->destination));
+        $renewal = new CommandTester(new ModuleTwoQuizRenewalCommand($this->importer, $this->em, $this->destination));
+        self::assertSame(1, $renewal->execute($this->options() + ['mode' => 'enable']));
+        self::assertSame($before, $this->rows());
+        foreach (['import', 'enable', 'disable'] as $action) {
+            $tester = 'import' === $action ? $import : $renewal;
+            $options = $this->options() + ('import' === $action ? [] : ['mode' => $action]);
+            $before = $this->rows();
+            self::assertSame(0, $tester->execute($options));
+            $plan = json_decode($tester->getDisplay(), true, 512, JSON_THROW_ON_ERROR);
+            self::assertSame($before, $this->rows());
+            $apply = $options + ['--apply' => true, '--expect-plan' => $plan['plan_hash']];
+            self::assertSame(1, $tester->execute($apply));
+            self::assertSame(1, $tester->execute($apply + ['--allow-work-database' => true]));
+            self::assertSame(1, $tester->execute(array_replace($apply, ['--expect-server' => 'wrong', '--allow-production-database' => true])));
+            // Direct service calls must also recheck consent, not just the CLI.
+            try {
+                $this->importer->apply($action, $plan['plan_hash'], $this->context);
+                self::fail('Consent must reach the service');
+            } catch (\DomainException $error) {
+                self::assertStringContainsString('--allow-production-database', $error->getMessage());
+            }
+            self::assertSame($before, $this->rows());
+            $apply['--allow-production-database'] = true;
+            self::assertSame(0, $tester->execute($apply));
+            $after = $this->rows();
+            self::assertSame(1, $tester->execute($apply));
+            self::assertStringContainsString('périmé', $tester->getDisplay());
+            self::assertSame($after, $this->rows());
+            self::assertSame(0, $tester->execute($options));
+            $next = json_decode($tester->getDisplay(), true, 512, JSON_THROW_ON_ERROR);
+            foreach ($next['quizzes'] as $quiz) {
+                self::assertSame('enable' === $action, $quiz['renewal_enabled']);
+                self::assertNull($quiz['error_question_quota']);
+            }
+            self::assertSame(0, $tester->execute(array_replace($apply, ['--expect-plan' => $next['plan_hash']])));
+            self::assertTrue(json_decode($tester->getDisplay(), true, 512, JSON_THROW_ON_ERROR)['noop']);
+            self::assertSame($after, $this->rows());
+        }
     }
 
     public function testRenewalCycleChangesOnlyThreeFlagsAndPreservesAllLearnerData(): void

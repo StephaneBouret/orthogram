@@ -1,5 +1,7 @@
 # Bêta — livraison des dictées
 
+Pour le module 2, suivre la [procédure d’import et d’activation séparée](module2_quiz_production.md). Elle place la sauvegarde restaurée et la revue de toutes les migrations en attente avant le script global ; aucun import ni renouvellement n’est ajouté au déploiement ordinaire.
+
 Pour la livraison du renouvellement des quiz, suivre aussi la [procédure dédiée](quiz_renewal_production.md) : audit des deux migrations du chantier avant le `migrate` global déjà présent, import et activation distincts sous maintenance conservée. Aucun import ou activation de quiz n'est ajouté au script ordinaire.
 
 Préparation locale du 18 octobre 2026, branche `preprod`, base

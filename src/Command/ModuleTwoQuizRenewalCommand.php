@@ -7,7 +7,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 
-#[AsCommand(name: 'app:quiz:module2-renewal', description: 'Activation/désactivation des trois quiz tracés du module 2 ; consentement explicite sur orthogram locale.')]
+#[AsCommand(name: 'app:quiz:module2-renewal', description: 'Activation/désactivation séparée des trois quiz tracés du module 2 ; consentement distinct local/production.')]
 final class ModuleTwoQuizRenewalCommand extends ModuleTwoQuizImportCommand
 {
     protected function configure(): void
