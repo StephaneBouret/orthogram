@@ -4,7 +4,7 @@ namespace App\Services;
 
 use Doctrine\DBAL\Connection;
 
-/** Local fixed import requires explicit consent; renewal stays on disposable databases. */
+/** Local import and renewal require explicit consent; remote/production remain forbidden. */
 final class ModuleTwoQuizDestination
 {
     public function __construct(private readonly QuizCommandDestination $destination)
@@ -31,7 +31,6 @@ final class ModuleTwoQuizDestination
             $disposable = 'test' === $context['environment'] && 1 === preg_match('/^orthogram_module2_[a-f0-9]{16}_test$/D', $context['database']);
             $work = 'dev' === $context['environment'] && 'orthogram' === $context['database'];
             ModuleTwoQuizManifest::require($disposable || ($work && $allowWork), 'Écriture module 2 : base jetable de recette, ou orthogram en dev avec --allow-work-database requis.');
-            ModuleTwoQuizManifest::require(!$work || 'import' === $action, 'Renouvellement module 2 interdit sur la base de travail ; recette jetable uniquement.');
         }
 
         return $context;

@@ -23,7 +23,7 @@ class ModuleTwoQuizImportCommand extends Command
     protected function configure(): void
     {
         $this->addOption('apply', null, InputOption::VALUE_NONE, 'Appliquer sur la destination locale vérifiée.')
-            ->addOption('allow-work-database', null, InputOption::VALUE_NONE, 'Consentir explicitement à l’import fixe sur orthogram en dev ; aucun renouvellement.')
+            ->addOption('allow-work-database', null, InputOption::VALUE_NONE, 'Consentir explicitement à l’opération demandée sur orthogram en dev.')
             ->addOption('expect-plan', null, InputOption::VALUE_REQUIRED, 'SHA-256 du plan relu.')
             ->addOption('report', null, InputOption::VALUE_REQUIRED, 'Enregistrer le rapport JSON.');
         foreach (['database', 'env', 'host', 'port', 'server'] as $field) {

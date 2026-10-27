@@ -17,7 +17,7 @@ Le dossier livré est conservé à l’identique dans `resources/quiz/module2/`,
 
 Options communes : `--expect-database`, `--expect-env`, `--expect-host`, `--expect-port`, `--expect-server`, `--expect-plan`, `--apply`, `--allow-work-database`, `--report`. La sortie est un rapport JSON indenté ; `--report` en conserve une copie. Les erreurs de contenu détaillent quiz, source, champ, attendu et constaté. Une prévisualisation ouvre une transaction MySQL en lecture seule ; elle n’exécute aucune migration. `--expect-database` est toujours requis ; les cinq assertions de destination sont obligatoires pour appliquer.
 
-Les écritures de recette restent autorisées en environnement `test` sur une base locale nommée `orthogram_module2_<16 caractères hexadécimaux>_test`. L’import fixe sur la base locale `orthogram`, en environnement `dev`, exige en plus `--allow-work-database`. Ce consentement est transmis à l’importeur puis revérifié sur la connexion réelle ; il ne fait pas partie de l’identité de destination et ne remplace aucune assertion ni l’empreinte du plan. Le port effectif `@@port` est également contrôlé. Les hôtes distants sont refusés avant connexion ; la production est interdite pour ce lot. L’activation et la désactivation sur la base de travail restent interdites, même avec ce consentement. Les protections et commandes du module 1 ne sont pas élargies. Aucune option ne permet de forcer une adoption, une correction ou un remplacement de données existantes.
+Les écritures de recette restent autorisées en environnement `test` sur une base locale nommée `orthogram_module2_<16 caractères hexadécimaux>_test`. L’import fixe, l’activation et la désactivation sur la base locale `orthogram`, en environnement `dev`, exigent en plus `--allow-work-database`. Ce consentement porte sur l’action demandée ; il est transmis à l’importeur puis revérifié sur la connexion réelle. Il ne fait pas partie de l’identité de destination et ne remplace aucune assertion ni l’empreinte du plan. Le port effectif `@@port` est également contrôlé. Les hôtes distants sont refusés avant connexion ; la production est interdite pour ce lot. Les protections et commandes du module 1 ne sont pas élargies. Aucune option ne permet de forcer une adoption, une correction ou un remplacement de données existantes.
 
 Exemples de syntaxe PowerShell, uniquement pour une base de recette déjà créée et une connexion configurée vers cette base. Les variables doivent provenir de l’identification réelle de cette connexion ; ce ne sont pas des noms de destination à inventer :
 
@@ -31,7 +31,7 @@ php bin/console app:quiz:module2-import @destination --report=var/module2-previe
 php bin/console app:quiz:module2-import @destination --apply "--expect-plan=$ReviewedPlanHash"
 # Refaire un aperçu après l'import : son application identique doit être un no-op.
 php bin/console app:quiz:module2-import @destination --report=var/module2-second-preview.json
-# Activation distincte, uniquement en recette dans cette livraison.
+# Activation distincte dans cette recette jetable.
 php bin/console app:quiz:module2-renewal enable @destination --report=var/module2-enable-preview.json
 php bin/console app:quiz:module2-renewal enable @destination --apply "--expect-plan=$ReviewedEnableHash"
 ```
@@ -77,6 +77,8 @@ php bin/console app:quiz:module2-import @local --report=var/module2-local/previe
 php bin/console app:quiz:module2-import @local --apply --allow-work-database "--expect-plan=$ReviewedLocalPlanHash" --report=var/module2-local/import.json
 ```
 
-Le rattachement EasyAdmin est manuel et n’est pas effectué par l’import. Le renouvellement réel, les opérations distantes, le push et le déploiement restent hors périmètre. Le commit local sur `preprod` est autorisé après réussite de l’import et des contrôles.
+Le rattachement EasyAdmin est manuel et n’est pas effectué par l’import. Après validation de la recette locale, le renouvellement local est autorisé dans une étape distincte, décrite dans [module2_local_renewal.md](module2_local_renewal.md). Les opérations distantes, le push et le déploiement restent hors périmètre. Le commit local sur `preprod` est autorisé après réussite des contrôles.
+
+Pour le renouvellement, le plan liste explicitement `renewal_changes` (identité tracée, ID résolu, état avant/après). L’application retourne `quizzes_changed`. Une répétition avec un nouveau plan cohérent retourne `noop=true`, sans flush ; l’ancien plan est refusé si l’état a changé. Aucun quota, contenu, rattachement ni historique n’est réinitialisé.
 
 La réserve n’allonge jamais une tentative. Le moteur reste inchangé : il peut cycler sur une partie de la banque et ne promet pas de parcourir toutes les réserves. Le thème « tout » du général impose au moins une reprise entre deux tentatives. Aucun quota global d’erreurs n’est ajouté. Le contrôle DOCX n’a pas été réexécuté ici, le Word original n’étant pas dans l’archive ; la validation Python locale et les tests Symfony/MySQL restent des preuves distinctes.

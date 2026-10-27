@@ -8,6 +8,7 @@ use App\Entity\Courses;
 use App\Entity\Quiz;
 use App\Entity\QuizAttempt;
 use App\Entity\QuizReserveImport;
+use App\Services\ModuleOneReserveManifest;
 use App\Services\ModuleTwoQuizDestination;
 use App\Services\ModuleTwoQuizImporter;
 use App\Services\ModuleTwoQuizManifest;
@@ -19,6 +20,7 @@ use App\Services\QuizEditorialService;
 use App\Services\QuizQuestionSelector;
 use App\Tests\Support\DictationFactory;
 use App\Tests\Support\DictationTestDatabase;
+use App\Tests\Support\ModuleOneReserveFixture;
 use App\Tests\Support\QuizFactory;
 use App\Tests\Support\QuizPlayerFactory;
 use Doctrine\DBAL\Schema\Schema;
@@ -123,6 +125,72 @@ final class ModuleTwoQuizImportTest extends TestCase
         $next = json_decode($tester->getDisplay(), true, 512, JSON_THROW_ON_ERROR);
         self::assertSame(0, $tester->execute(array_replace($apply, ['--expect-plan' => $next['plan_hash']])));
         self::assertSame($after, $this->rows());
+    }
+
+    public function testRenewalCycleChangesOnlyThreeFlagsAndPreservesAllLearnerData(): void
+    {
+        $fixture = ModuleOneReserveFixture::create($this->em, new ModuleOneReserveManifest(dirname(__DIR__, 2).'/resources/quiz/module1_reserve.json'));
+        $user = $fixture['user'];
+        $template = $fixture['courses']['module1_test1'];
+        $fixture['quizzes']['module1_test1']->setRenewalEnabled(true);
+        $this->em->flush();
+        $oldAttempt = $this->attempts->mutate($user, $template, 'start', []);
+        $this->finish($user, $template, $this->em->find(QuizAttempt::class, $oldAttempt['attemptId']));
+        $this->apply();
+        $imported = $this->importer->plan('import', $this->context);
+        $targetIds = [];
+        foreach ($this->manifest->data['quizzes'] as $spec) {
+            $key = $spec['quiz_key'];
+            $quiz = $this->em->find(Quiz::class, $imported['quizzes'][$key]['id']);
+            $targetIds[] = $quiz->getId();
+            if ('module2_test1' === $key) {
+                $quiz->setErrorQuestionQuota(7);
+            }
+            $course = (new Courses())->setName($key)->setSlug($key)->setSection($template->getSection())->setContentType($template->getContentType())->setQuiz($quiz);
+            $this->em->persist($course);
+            $this->em->flush();
+            $first = $this->attempts->mutate($user, $course, 'start', []);
+            $this->finish($user, $course, $this->em->find(QuizAttempt::class, $first['attemptId']));
+            $this->attempts->mutate($user, $course, 'restart', ['attemptId' => $first['attemptId']]);
+        }
+        $before = $this->rows();
+        $tester = new CommandTester(new ModuleTwoQuizRenewalCommand($this->importer, $this->em, $this->destination));
+        self::assertSame(0, $tester->execute($this->options() + ['mode' => 'enable']));
+        $plan = json_decode($tester->getDisplay(), true, 512, JSON_THROW_ON_ERROR);
+        self::assertCount(3, $plan['renewal_changes']);
+        self::assertSame($targetIds, array_column($plan['renewal_changes'], 'quiz_id'));
+        self::assertSame([false, false, false], array_column($plan['renewal_changes'], 'before'));
+        self::assertSame([true, true, true], array_column($plan['renewal_changes'], 'after'));
+        self::assertSame($before, $this->rows());
+        $options = $this->options() + ['mode' => 'enable', '--apply' => true, '--allow-work-database' => true, '--expect-plan' => $plan['plan_hash']];
+        self::assertSame(1, $tester->execute(array_replace($options, ['--expect-database' => 'orthogram'])));
+        $prodTester = new CommandTester(new ModuleTwoQuizRenewalCommand($this->importer, $this->em, new ModuleTwoQuizDestination(new QuizCommandDestination('prod'))));
+        self::assertSame(1, $prodTester->execute(array_replace($options, ['--expect-env' => 'prod'])));
+        self::assertSame($before, $this->rows());
+        self::assertSame(0, $tester->execute($options));
+        self::assertSame(3, json_decode($tester->getDisplay(), true, 512, JSON_THROW_ON_ERROR)['quizzes_changed']);
+        $expected = $before;
+        foreach ($expected['quiz'] as &$row) {
+            if (in_array($row['id'], $targetIds, true)) {
+                $row['renewal_enabled'] = 1;
+            }
+        }
+        unset($row);
+        self::assertSame($expected, $this->rows());
+        self::assertSame(1, $tester->execute($options));
+        self::assertStringContainsString('périmé', $tester->getDisplay());
+        self::assertSame($expected, $this->rows());
+        $next = $this->importer->plan('enable', $this->context);
+        self::assertSame([], $next['renewal_changes']);
+        self::assertSame(0, $tester->execute(array_replace($options, ['--expect-plan' => $next['plan_hash']])));
+        $noop = json_decode($tester->getDisplay(), true, 512, JSON_THROW_ON_ERROR);
+        self::assertTrue($noop['noop']);
+        self::assertSame(0, $noop['quizzes_changed']);
+        self::assertSame($expected, $this->rows());
+        self::assertSame(3, $this->apply('disable')['quizzes_changed']);
+        self::assertSame($before, $this->rows());
+        self::assertTrue($this->apply('disable')['noop']);
+        self::assertSame($before, $this->rows());
     }
 
     public function testMigrationPreviewImportNoopAndConservation(): void

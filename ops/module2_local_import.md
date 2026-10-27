@@ -1,5 +1,7 @@
 # Module 2 — import local vérifié le 27 octobre 2026
 
+Ce document conserve le bilan de l’import initial en mode fixe. L’étape ultérieure de renouvellement local est documentée séparément dans [module2_local_renewal.md](module2_local_renewal.md), avec une nouvelle sauvegarde de l’état après recette utilisateur.
+
 Les trois quiz ont été importés sur **orthogram**, en `dev`, via `127.0.0.1:3306`, serveur MySQL `STEF-LEGION` (8.4.7). La destination a été identifiée par la connexion effective, `SELECT DATABASE()`, `@@hostname` et `@@port`. Aucun accès distant n’a été effectué.
 
 | Clé | ID local | Initiales | Réserves | Mode | Quota global |
@@ -12,7 +14,7 @@ L’import a ajouté 177 questions, 354 propositions, 177 traces de copie et 3 i
 
 ## Adaptations du code
 
-`ModuleTwoQuizImportCommand` expose `--allow-work-database` et transmet ce consentement à `ModuleTwoQuizImporter::apply()`, qui revérifie la destination. `ModuleTwoQuizDestination` autorise uniquement l’import fixe sur `orthogram` en `dev` avec ce consentement et toutes les assertions. Le port effectif est vérifié. Les destinations distantes et la production sont refusées ; le renouvellement sur la base de travail demeure interdit. Les règles des bases jetables sont conservées.
+Lors de cette étape, `ModuleTwoQuizImportCommand` expose `--allow-work-database` et transmet ce consentement à `ModuleTwoQuizImporter::apply()`, qui revérifie la destination. `ModuleTwoQuizDestination` autorise alors uniquement l’import fixe sur `orthogram` en `dev` avec ce consentement et toutes les assertions. Le port effectif est vérifié. Les destinations distantes et la production sont refusées ; le renouvellement sur la base de travail était encore interdit. Les règles des bases jetables sont conservées.
 
 Les commandes/services du module 1 et le dossier éditorial n’ont pas été modifiés. Le plan inclut toujours la destination et est recalculé sous verrou. Le refus des collisions, divergences, imports partiels et plans périmés reste inchangé.
 

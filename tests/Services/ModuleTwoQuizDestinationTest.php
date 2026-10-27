@@ -27,36 +27,46 @@ final class ModuleTwoQuizDestinationTest extends TestCase
         return $db;
     }
 
-    public function testWorkImportRequiresConsentAndPreviewDoesNotWrite(): void
+    /** @return iterable<string, array{string}> */
+    public static function actions(): iterable
+    {
+        foreach (['import', 'enable', 'disable'] as $action) {
+            yield $action => [$action];
+        }
+    }
+
+    #[DataProvider('actions')]
+    public function testWorkOperationsRequireConsentAndPreviewDoesNotWrite(string $action): void
     {
         $guard = new ModuleTwoQuizDestination(new QuizCommandDestination('dev'));
         $db = $this->connection();
         $options = $this->options();
-        self::assertSame('orthogram', $guard->verify($db, array_replace($options, ['apply' => false]))['database']);
+        self::assertSame('orthogram', $guard->verify($db, array_replace($options, ['apply' => false]), $action)['database']);
         try {
-            $guard->verify($db, $options);
+            $guard->verify($db, $options, $action);
             self::fail('Explicit consent required');
         } catch (\DomainException $error) {
             self::assertStringContainsString('--allow-work-database', $error->getMessage());
         }
-        $allowed = $guard->verify($db, $options + ['allow-work-database' => true]);
+        $allowed = $guard->verify($db, $options + ['allow-work-database' => true], $action);
         self::assertSame(['environment' => 'dev', 'database' => 'orthogram', 'host' => '127.0.0.1', 'port' => 3306, 'server' => 'local-test'], $allowed);
     }
 
-    /** @return iterable<string, array{string}> */
+    /** @return iterable<string, array{string, string}> */
     public static function refused(): iterable
     {
-        foreach (['database', 'host', 'port', 'server', 'env', 'missing-host', 'missing-env', 'server-port', 'remote', 'prod', 'enable', 'disable', 'other-database'] as $mode) {
-            yield $mode => [$mode];
+        foreach (['import', 'enable', 'disable'] as $action) {
+            foreach (['database', 'host', 'port', 'server', 'env', 'missing-host', 'missing-env', 'server-port', 'remote', 'prod', 'other-database'] as $mode) {
+                yield $action.'/'.$mode => [$mode, $action];
+            }
         }
     }
 
     #[DataProvider('refused')]
-    public function testExplicitConsentNeverBypassesOtherProtections(string $mode): void
+    public function testExplicitConsentNeverBypassesOtherProtections(string $mode, string $action): void
     {
         $options = $this->options() + ['allow-work-database' => true];
         $environment = 'dev';
-        $action = 'import';
         $db = $this->connection();
         if (in_array($mode, ['database', 'host', 'port', 'server', 'env'], true)) {
             $options['expect-'.$mode] = 'port' === $mode ? '3307' : 'different';
@@ -72,8 +82,6 @@ final class ModuleTwoQuizDestinationTest extends TestCase
         } elseif ('other-database' === $mode) {
             $db = $this->connection(database: 'orthogram_other');
             $options['expect-database'] = 'orthogram_other';
-        } else {
-            $action = $mode;
         }
         $this->expectException(\DomainException::class);
         (new ModuleTwoQuizDestination(new QuizCommandDestination($environment)))->verify($db, $options, $action);

@@ -41,7 +41,7 @@ final class ModuleTwoQuizImporter
         $report = ['action' => $action, 'destination' => $context, 'manifest_sha256' => $this->manifest->hash,
             'counts' => $this->manifest->data['counts'], 'held_sources' => $this->manifest->data['constraints']['held_source_keys'],
             'schema_missing' => $missing, 'quizzes' => [], 'differences' => [], 'configuration_differences' => [], 'errors' => [],
-            'add_quizzes' => 0, 'add_questions' => 0, 'add_answers' => 0, 'existing_copies' => 0];
+            'add_quizzes' => 0, 'add_questions' => 0, 'add_answers' => 0, 'existing_copies' => 0, 'renewal_changes' => []];
         if ([] !== $missing) {
             $report['errors'][] = 'Migrations requises séparément : '.implode(', ', $missing);
         }
@@ -92,6 +92,9 @@ final class ModuleTwoQuizImporter
                 $report['configuration_differences'][$key] = ['renewal_enabled' => (bool) $quiz['renewal_enabled'], 'error_question_quota' => $quiz['error_question_quota'], 'policy' => 'preserved_on_import'];
             }
             if ('import' !== $action) {
+                if ((bool) $quiz['renewal_enabled'] !== ('enable' === $action)) {
+                    $report['renewal_changes'][] = ['quiz_key' => $key, 'quiz_id' => $id, 'field' => 'renewal_enabled', 'before' => (bool) $quiz['renewal_enabled'], 'after' => 'enable' === $action];
+                }
                 $future->setErrorQuestionQuota($quiz['error_question_quota']);
                 try {
                     $this->validator->validate($future);
@@ -199,8 +202,8 @@ final class ModuleTwoQuizImporter
                 $plan = $this->plan($action, $context);
                 ModuleTwoQuizManifest::require(hash_equals($expectedPlan, $plan['plan_hash']), 'Plan périmé sous verrou ; refaire la prévisualisation.');
                 ModuleTwoQuizManifest::require([] === $plan['errors'], implode("\n", $plan['errors']));
-                if ('import' === $action && 0 === $plan['add_quizzes']) {
-                    return ['applied' => true, 'noop' => true, 'questions_added' => 0, 'answers_added' => 0, 'plan_hash' => $expectedPlan];
+                if (('import' === $action && 0 === $plan['add_quizzes']) || ('import' !== $action && [] === $plan['renewal_changes'])) {
+                    return ['applied' => true, 'noop' => true, 'questions_added' => 0, 'answers_added' => 0, 'quizzes_changed' => 0, 'plan_hash' => $expectedPlan];
                 }
                 foreach ($this->manifest->data['quizzes'] as $spec) {
                     $key = $spec['quiz_key'];
@@ -227,7 +230,7 @@ final class ModuleTwoQuizImporter
                 $this->em->flush();
 
                 return ['applied' => true, 'noop' => false, 'questions_added' => 'import' === $action ? $plan['add_questions'] : 0,
-                    'answers_added' => 'import' === $action ? $plan['add_answers'] : 0, 'plan_hash' => $expectedPlan];
+                    'answers_added' => 'import' === $action ? $plan['add_answers'] : 0, 'quizzes_changed' => count($plan['renewal_changes']), 'plan_hash' => $expectedPlan];
             }, array_map('intval', $ids));
         } finally {
             $db->fetchOne('SELECT RELEASE_LOCK(?)', [$lock]);
