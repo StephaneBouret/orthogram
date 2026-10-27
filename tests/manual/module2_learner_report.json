@@ -1,0 +1,22 @@
+{
+    "destination": {
+        "environment": "test",
+        "database": "orthogram_module2_1b3e6d2ccec1ecdb_test",
+        "host": "127.0.0.1",
+        "port": 3306,
+        "server": "STEF-LEGION"
+    },
+    "fixed_lengths": [
+        12,
+        12,
+        24
+    ],
+    "initial_and_second_attempts_match_documentary_simulator": true,
+    "resume_and_history_preserved": true,
+    "minimum_reuse": [
+        0,
+        0,
+        1
+    ],
+    "activation_then_import_noop": true
+}

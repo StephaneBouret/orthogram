@@ -1,0 +1,1694 @@
+{
+    "destination": {
+        "environment": "test",
+        "database": "orthogram_module2_2e3fe5a5ad576a36_test",
+        "host": "127.0.0.1",
+        "port": 3306,
+        "server": "STEF-LEGION"
+    },
+    "schema_preview": {
+        "action": "import",
+        "destination": {
+            "environment": "test",
+            "database": "orthogram_module2_2e3fe5a5ad576a36_test",
+            "host": "127.0.0.1",
+            "port": 3306,
+            "server": "STEF-LEGION"
+        },
+        "manifest_sha256": "2ce76e2738a3f8221fd0c121861b59d1888c13d6259930a6d539959ef39a2571",
+        "counts": {
+            "sources_total": 116,
+            "sources_importable": 110,
+            "sources_on_hold": 6,
+            "source_copies": 177,
+            "initial_copies": 48,
+            "reserve_copies": 129,
+            "answer_rows": 354,
+            "sources_with_two_copies": 67,
+            "sources_with_one_copy": 43
+        },
+        "held_sources": [
+            "module2_docx_002",
+            "module2_docx_044",
+            "module2_docx_045",
+            "module2_docx_075",
+            "module2_docx_080",
+            "module2_docx_111"
+        ],
+        "schema_missing": [
+            "quiz_manifest_identity"
+        ],
+        "quizzes": {
+            "module2_test1": {
+                "id": null,
+                "title": "Test : écrire les nombres et les expressions courantes",
+                "initial": 12,
+                "reserve": 19,
+                "themes": [
+                    {
+                        "theme": "Les jours de la semaine",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 3,
+                        "source_keys": [
+                            "module2_docx_001",
+                            "module2_docx_041",
+                            "module2_docx_042",
+                            "module2_docx_081",
+                            "module2_docx_082"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_001",
+                            "module2_docx_081"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_041",
+                            "module2_docx_042",
+                            "module2_docx_082"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« lorsque » / « lorsqu’ »",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 3,
+                        "source_keys": [
+                            "module2_docx_003",
+                            "module2_docx_004",
+                            "module2_docx_043",
+                            "module2_docx_083",
+                            "module2_docx_084"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_003",
+                            "module2_docx_084"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_004",
+                            "module2_docx_043",
+                            "module2_docx_083"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "Les nombres",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 3,
+                        "source_keys": [
+                            "module2_docx_005",
+                            "module2_docx_006",
+                            "module2_docx_046",
+                            "module2_docx_085",
+                            "module2_docx_086"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_006",
+                            "module2_docx_085"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_005",
+                            "module2_docx_046",
+                            "module2_docx_086"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« demi » / « à demi » / « et demi »",
+                        "initial_count_and_attempt_quota": 3,
+                        "reserve_count": 3,
+                        "source_keys": [
+                            "module2_docx_007",
+                            "module2_docx_008",
+                            "module2_docx_047",
+                            "module2_docx_048",
+                            "module2_docx_087",
+                            "module2_docx_088"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_007",
+                            "module2_docx_008",
+                            "module2_docx_047"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_048",
+                            "module2_docx_087",
+                            "module2_docx_088"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« certes »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 3,
+                        "source_keys": [
+                            "module2_docx_009",
+                            "module2_docx_010",
+                            "module2_docx_049",
+                            "module2_docx_050"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_010"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_009",
+                            "module2_docx_049",
+                            "module2_docx_050"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« plutôt » / « plus tôt »",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_011",
+                            "module2_docx_012",
+                            "module2_docx_051",
+                            "module2_docx_052",
+                            "module2_docx_089",
+                            "module2_docx_090"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_011",
+                            "module2_docx_090"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_012",
+                            "module2_docx_051",
+                            "module2_docx_052",
+                            "module2_docx_089"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    }
+                ]
+            },
+            "module2_test2": {
+                "id": null,
+                "title": "Test : distinguer les formes et les terminaisons",
+                "initial": 12,
+                "reserve": 24,
+                "themes": [
+                    {
+                        "theme": "« on » / « on n’ »",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_013",
+                            "module2_docx_014",
+                            "module2_docx_053",
+                            "module2_docx_054",
+                            "module2_docx_091",
+                            "module2_docx_092"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_014",
+                            "module2_docx_053"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_013",
+                            "module2_docx_054",
+                            "module2_docx_091",
+                            "module2_docx_092"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« exigence » / « exigeant »",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_015",
+                            "module2_docx_016",
+                            "module2_docx_055",
+                            "module2_docx_056",
+                            "module2_docx_093",
+                            "module2_docx_094"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_015",
+                            "module2_docx_016"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_055",
+                            "module2_docx_056",
+                            "module2_docx_093",
+                            "module2_docx_094"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« employé » / « employer »",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_017",
+                            "module2_docx_018",
+                            "module2_docx_057",
+                            "module2_docx_058",
+                            "module2_docx_095",
+                            "module2_docx_096"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_017",
+                            "module2_docx_018"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_057",
+                            "module2_docx_058",
+                            "module2_docx_095",
+                            "module2_docx_096"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« faites » / « faîte »",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_019",
+                            "module2_docx_020",
+                            "module2_docx_059",
+                            "module2_docx_060",
+                            "module2_docx_097",
+                            "module2_docx_098"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_020",
+                            "module2_docx_097"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_019",
+                            "module2_docx_059",
+                            "module2_docx_060",
+                            "module2_docx_098"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« presque » / « presqu’ »",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_021",
+                            "module2_docx_022",
+                            "module2_docx_061",
+                            "module2_docx_062",
+                            "module2_docx_099",
+                            "module2_docx_100"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_021",
+                            "module2_docx_062"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_022",
+                            "module2_docx_061",
+                            "module2_docx_099",
+                            "module2_docx_100"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "Adverbes en « -amment » / « -emment »",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_023",
+                            "module2_docx_024",
+                            "module2_docx_063",
+                            "module2_docx_064",
+                            "module2_docx_101",
+                            "module2_docx_102"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_024",
+                            "module2_docx_064"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_023",
+                            "module2_docx_063",
+                            "module2_docx_101",
+                            "module2_docx_102"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    }
+                ]
+            },
+            "module2_general": {
+                "id": null,
+                "title": "Test général : réviser le module 2",
+                "initial": 24,
+                "reserve": 86,
+                "themes": [
+                    {
+                        "theme": "Les jours de la semaine",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_001",
+                            "module2_docx_041",
+                            "module2_docx_042",
+                            "module2_docx_081",
+                            "module2_docx_082"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_041"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_001",
+                            "module2_docx_042",
+                            "module2_docx_081",
+                            "module2_docx_082"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« lorsque » / « lorsqu’ »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_003",
+                            "module2_docx_004",
+                            "module2_docx_043",
+                            "module2_docx_083",
+                            "module2_docx_084"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_004"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_003",
+                            "module2_docx_043",
+                            "module2_docx_083",
+                            "module2_docx_084"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "Les nombres",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_005",
+                            "module2_docx_006",
+                            "module2_docx_046",
+                            "module2_docx_085",
+                            "module2_docx_086"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_005"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_006",
+                            "module2_docx_046",
+                            "module2_docx_085",
+                            "module2_docx_086"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« demi » / « à demi » / « et demi »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 5,
+                        "source_keys": [
+                            "module2_docx_007",
+                            "module2_docx_008",
+                            "module2_docx_047",
+                            "module2_docx_048",
+                            "module2_docx_087",
+                            "module2_docx_088"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_048"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_007",
+                            "module2_docx_008",
+                            "module2_docx_047",
+                            "module2_docx_087",
+                            "module2_docx_088"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« certes »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 3,
+                        "source_keys": [
+                            "module2_docx_009",
+                            "module2_docx_010",
+                            "module2_docx_049",
+                            "module2_docx_050"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_049"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_009",
+                            "module2_docx_010",
+                            "module2_docx_050"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« plutôt » / « plus tôt »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 5,
+                        "source_keys": [
+                            "module2_docx_011",
+                            "module2_docx_012",
+                            "module2_docx_051",
+                            "module2_docx_052",
+                            "module2_docx_089",
+                            "module2_docx_090"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_012"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_011",
+                            "module2_docx_051",
+                            "module2_docx_052",
+                            "module2_docx_089",
+                            "module2_docx_090"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« on » / « on n’ »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 5,
+                        "source_keys": [
+                            "module2_docx_013",
+                            "module2_docx_014",
+                            "module2_docx_053",
+                            "module2_docx_054",
+                            "module2_docx_091",
+                            "module2_docx_092"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_054"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_013",
+                            "module2_docx_014",
+                            "module2_docx_053",
+                            "module2_docx_091",
+                            "module2_docx_092"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« exigence » / « exigeant »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 5,
+                        "source_keys": [
+                            "module2_docx_015",
+                            "module2_docx_016",
+                            "module2_docx_055",
+                            "module2_docx_056",
+                            "module2_docx_093",
+                            "module2_docx_094"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_093"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_015",
+                            "module2_docx_016",
+                            "module2_docx_055",
+                            "module2_docx_056",
+                            "module2_docx_094"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« employé » / « employer »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 5,
+                        "source_keys": [
+                            "module2_docx_017",
+                            "module2_docx_018",
+                            "module2_docx_057",
+                            "module2_docx_058",
+                            "module2_docx_095",
+                            "module2_docx_096"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_058"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_017",
+                            "module2_docx_018",
+                            "module2_docx_057",
+                            "module2_docx_095",
+                            "module2_docx_096"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« faites » / « faîte »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 5,
+                        "source_keys": [
+                            "module2_docx_019",
+                            "module2_docx_020",
+                            "module2_docx_059",
+                            "module2_docx_060",
+                            "module2_docx_097",
+                            "module2_docx_098"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_059"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_019",
+                            "module2_docx_020",
+                            "module2_docx_060",
+                            "module2_docx_097",
+                            "module2_docx_098"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« presque » / « presqu’ »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 5,
+                        "source_keys": [
+                            "module2_docx_021",
+                            "module2_docx_022",
+                            "module2_docx_061",
+                            "module2_docx_062",
+                            "module2_docx_099",
+                            "module2_docx_100"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_100"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_021",
+                            "module2_docx_022",
+                            "module2_docx_061",
+                            "module2_docx_062",
+                            "module2_docx_099"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "Adverbes en « -amment » / « -emment »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 5,
+                        "source_keys": [
+                            "module2_docx_023",
+                            "module2_docx_024",
+                            "module2_docx_063",
+                            "module2_docx_064",
+                            "module2_docx_101",
+                            "module2_docx_102"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_101"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_023",
+                            "module2_docx_024",
+                            "module2_docx_063",
+                            "module2_docx_064",
+                            "module2_docx_102"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« d’en » / « dans »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 5,
+                        "source_keys": [
+                            "module2_docx_025",
+                            "module2_docx_026",
+                            "module2_docx_065",
+                            "module2_docx_066",
+                            "module2_docx_103",
+                            "module2_docx_104"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_065"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_025",
+                            "module2_docx_026",
+                            "module2_docx_066",
+                            "module2_docx_103",
+                            "module2_docx_104"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« pause » / « pose »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 5,
+                        "source_keys": [
+                            "module2_docx_027",
+                            "module2_docx_028",
+                            "module2_docx_067",
+                            "module2_docx_068",
+                            "module2_docx_105",
+                            "module2_docx_106"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_105"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_027",
+                            "module2_docx_028",
+                            "module2_docx_067",
+                            "module2_docx_068",
+                            "module2_docx_106"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« voilà »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 3,
+                        "source_keys": [
+                            "module2_docx_029",
+                            "module2_docx_030",
+                            "module2_docx_069",
+                            "module2_docx_070"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_069"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_029",
+                            "module2_docx_030",
+                            "module2_docx_070"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« près de » / « prêt à »",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_031",
+                            "module2_docx_032",
+                            "module2_docx_071",
+                            "module2_docx_072",
+                            "module2_docx_107",
+                            "module2_docx_108"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_031",
+                            "module2_docx_108"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_032",
+                            "module2_docx_071",
+                            "module2_docx_072",
+                            "module2_docx_107"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« tache » / « tâche »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 5,
+                        "source_keys": [
+                            "module2_docx_033",
+                            "module2_docx_034",
+                            "module2_docx_073",
+                            "module2_docx_074",
+                            "module2_docx_109",
+                            "module2_docx_110"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_074"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_033",
+                            "module2_docx_034",
+                            "module2_docx_073",
+                            "module2_docx_109",
+                            "module2_docx_110"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« à l’attention » / « à l’intention »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 3,
+                        "source_keys": [
+                            "module2_docx_035",
+                            "module2_docx_036",
+                            "module2_docx_076",
+                            "module2_docx_112"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_112"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_035",
+                            "module2_docx_036",
+                            "module2_docx_076"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« quasi »",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_037",
+                            "module2_docx_038",
+                            "module2_docx_077",
+                            "module2_docx_078",
+                            "module2_docx_113",
+                            "module2_docx_114"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_038",
+                            "module2_docx_078"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_037",
+                            "module2_docx_077",
+                            "module2_docx_113",
+                            "module2_docx_114"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« tout » (2)",
+                        "initial_count_and_attempt_quota": 3,
+                        "reserve_count": 2,
+                        "source_keys": [
+                            "module2_docx_039",
+                            "module2_docx_040",
+                            "module2_docx_079",
+                            "module2_docx_115",
+                            "module2_docx_116"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_039",
+                            "module2_docx_040",
+                            "module2_docx_115"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_079",
+                            "module2_docx_116"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 1,
+                        "full_replacement_numerically_possible": false
+                    }
+                ]
+            }
+        },
+        "differences": [],
+        "configuration_differences": [],
+        "errors": [
+            "Migrations requises séparément : quiz_manifest_identity"
+        ],
+        "add_quizzes": 3,
+        "add_questions": 177,
+        "add_answers": 354,
+        "existing_copies": 0,
+        "plan_hash": "fa13190f9fa2e7ca8ce5fb9c00ae52b279cc2e8cc55021b53015fa0ebb43b729"
+    },
+    "preview": {
+        "action": "import",
+        "destination": {
+            "environment": "test",
+            "database": "orthogram_module2_2e3fe5a5ad576a36_test",
+            "host": "127.0.0.1",
+            "port": 3306,
+            "server": "STEF-LEGION"
+        },
+        "manifest_sha256": "2ce76e2738a3f8221fd0c121861b59d1888c13d6259930a6d539959ef39a2571",
+        "counts": {
+            "sources_total": 116,
+            "sources_importable": 110,
+            "sources_on_hold": 6,
+            "source_copies": 177,
+            "initial_copies": 48,
+            "reserve_copies": 129,
+            "answer_rows": 354,
+            "sources_with_two_copies": 67,
+            "sources_with_one_copy": 43
+        },
+        "held_sources": [
+            "module2_docx_002",
+            "module2_docx_044",
+            "module2_docx_045",
+            "module2_docx_075",
+            "module2_docx_080",
+            "module2_docx_111"
+        ],
+        "schema_missing": [],
+        "quizzes": {
+            "module2_test1": {
+                "id": null,
+                "title": "Test : écrire les nombres et les expressions courantes",
+                "initial": 12,
+                "reserve": 19,
+                "themes": [
+                    {
+                        "theme": "Les jours de la semaine",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 3,
+                        "source_keys": [
+                            "module2_docx_001",
+                            "module2_docx_041",
+                            "module2_docx_042",
+                            "module2_docx_081",
+                            "module2_docx_082"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_001",
+                            "module2_docx_081"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_041",
+                            "module2_docx_042",
+                            "module2_docx_082"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« lorsque » / « lorsqu’ »",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 3,
+                        "source_keys": [
+                            "module2_docx_003",
+                            "module2_docx_004",
+                            "module2_docx_043",
+                            "module2_docx_083",
+                            "module2_docx_084"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_003",
+                            "module2_docx_084"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_004",
+                            "module2_docx_043",
+                            "module2_docx_083"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "Les nombres",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 3,
+                        "source_keys": [
+                            "module2_docx_005",
+                            "module2_docx_006",
+                            "module2_docx_046",
+                            "module2_docx_085",
+                            "module2_docx_086"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_006",
+                            "module2_docx_085"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_005",
+                            "module2_docx_046",
+                            "module2_docx_086"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« demi » / « à demi » / « et demi »",
+                        "initial_count_and_attempt_quota": 3,
+                        "reserve_count": 3,
+                        "source_keys": [
+                            "module2_docx_007",
+                            "module2_docx_008",
+                            "module2_docx_047",
+                            "module2_docx_048",
+                            "module2_docx_087",
+                            "module2_docx_088"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_007",
+                            "module2_docx_008",
+                            "module2_docx_047"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_048",
+                            "module2_docx_087",
+                            "module2_docx_088"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« certes »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 3,
+                        "source_keys": [
+                            "module2_docx_009",
+                            "module2_docx_010",
+                            "module2_docx_049",
+                            "module2_docx_050"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_010"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_009",
+                            "module2_docx_049",
+                            "module2_docx_050"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« plutôt » / « plus tôt »",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_011",
+                            "module2_docx_012",
+                            "module2_docx_051",
+                            "module2_docx_052",
+                            "module2_docx_089",
+                            "module2_docx_090"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_011",
+                            "module2_docx_090"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_012",
+                            "module2_docx_051",
+                            "module2_docx_052",
+                            "module2_docx_089"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    }
+                ]
+            },
+            "module2_test2": {
+                "id": null,
+                "title": "Test : distinguer les formes et les terminaisons",
+                "initial": 12,
+                "reserve": 24,
+                "themes": [
+                    {
+                        "theme": "« on » / « on n’ »",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_013",
+                            "module2_docx_014",
+                            "module2_docx_053",
+                            "module2_docx_054",
+                            "module2_docx_091",
+                            "module2_docx_092"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_014",
+                            "module2_docx_053"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_013",
+                            "module2_docx_054",
+                            "module2_docx_091",
+                            "module2_docx_092"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« exigence » / « exigeant »",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_015",
+                            "module2_docx_016",
+                            "module2_docx_055",
+                            "module2_docx_056",
+                            "module2_docx_093",
+                            "module2_docx_094"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_015",
+                            "module2_docx_016"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_055",
+                            "module2_docx_056",
+                            "module2_docx_093",
+                            "module2_docx_094"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« employé » / « employer »",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_017",
+                            "module2_docx_018",
+                            "module2_docx_057",
+                            "module2_docx_058",
+                            "module2_docx_095",
+                            "module2_docx_096"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_017",
+                            "module2_docx_018"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_057",
+                            "module2_docx_058",
+                            "module2_docx_095",
+                            "module2_docx_096"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« faites » / « faîte »",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_019",
+                            "module2_docx_020",
+                            "module2_docx_059",
+                            "module2_docx_060",
+                            "module2_docx_097",
+                            "module2_docx_098"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_020",
+                            "module2_docx_097"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_019",
+                            "module2_docx_059",
+                            "module2_docx_060",
+                            "module2_docx_098"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« presque » / « presqu’ »",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_021",
+                            "module2_docx_022",
+                            "module2_docx_061",
+                            "module2_docx_062",
+                            "module2_docx_099",
+                            "module2_docx_100"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_021",
+                            "module2_docx_062"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_022",
+                            "module2_docx_061",
+                            "module2_docx_099",
+                            "module2_docx_100"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "Adverbes en « -amment » / « -emment »",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_023",
+                            "module2_docx_024",
+                            "module2_docx_063",
+                            "module2_docx_064",
+                            "module2_docx_101",
+                            "module2_docx_102"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_024",
+                            "module2_docx_064"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_023",
+                            "module2_docx_063",
+                            "module2_docx_101",
+                            "module2_docx_102"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    }
+                ]
+            },
+            "module2_general": {
+                "id": null,
+                "title": "Test général : réviser le module 2",
+                "initial": 24,
+                "reserve": 86,
+                "themes": [
+                    {
+                        "theme": "Les jours de la semaine",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_001",
+                            "module2_docx_041",
+                            "module2_docx_042",
+                            "module2_docx_081",
+                            "module2_docx_082"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_041"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_001",
+                            "module2_docx_042",
+                            "module2_docx_081",
+                            "module2_docx_082"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« lorsque » / « lorsqu’ »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_003",
+                            "module2_docx_004",
+                            "module2_docx_043",
+                            "module2_docx_083",
+                            "module2_docx_084"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_004"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_003",
+                            "module2_docx_043",
+                            "module2_docx_083",
+                            "module2_docx_084"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "Les nombres",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_005",
+                            "module2_docx_006",
+                            "module2_docx_046",
+                            "module2_docx_085",
+                            "module2_docx_086"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_005"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_006",
+                            "module2_docx_046",
+                            "module2_docx_085",
+                            "module2_docx_086"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« demi » / « à demi » / « et demi »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 5,
+                        "source_keys": [
+                            "module2_docx_007",
+                            "module2_docx_008",
+                            "module2_docx_047",
+                            "module2_docx_048",
+                            "module2_docx_087",
+                            "module2_docx_088"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_048"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_007",
+                            "module2_docx_008",
+                            "module2_docx_047",
+                            "module2_docx_087",
+                            "module2_docx_088"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« certes »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 3,
+                        "source_keys": [
+                            "module2_docx_009",
+                            "module2_docx_010",
+                            "module2_docx_049",
+                            "module2_docx_050"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_049"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_009",
+                            "module2_docx_010",
+                            "module2_docx_050"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« plutôt » / « plus tôt »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 5,
+                        "source_keys": [
+                            "module2_docx_011",
+                            "module2_docx_012",
+                            "module2_docx_051",
+                            "module2_docx_052",
+                            "module2_docx_089",
+                            "module2_docx_090"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_012"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_011",
+                            "module2_docx_051",
+                            "module2_docx_052",
+                            "module2_docx_089",
+                            "module2_docx_090"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« on » / « on n’ »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 5,
+                        "source_keys": [
+                            "module2_docx_013",
+                            "module2_docx_014",
+                            "module2_docx_053",
+                            "module2_docx_054",
+                            "module2_docx_091",
+                            "module2_docx_092"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_054"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_013",
+                            "module2_docx_014",
+                            "module2_docx_053",
+                            "module2_docx_091",
+                            "module2_docx_092"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« exigence » / « exigeant »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 5,
+                        "source_keys": [
+                            "module2_docx_015",
+                            "module2_docx_016",
+                            "module2_docx_055",
+                            "module2_docx_056",
+                            "module2_docx_093",
+                            "module2_docx_094"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_093"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_015",
+                            "module2_docx_016",
+                            "module2_docx_055",
+                            "module2_docx_056",
+                            "module2_docx_094"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« employé » / « employer »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 5,
+                        "source_keys": [
+                            "module2_docx_017",
+                            "module2_docx_018",
+                            "module2_docx_057",
+                            "module2_docx_058",
+                            "module2_docx_095",
+                            "module2_docx_096"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_058"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_017",
+                            "module2_docx_018",
+                            "module2_docx_057",
+                            "module2_docx_095",
+                            "module2_docx_096"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« faites » / « faîte »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 5,
+                        "source_keys": [
+                            "module2_docx_019",
+                            "module2_docx_020",
+                            "module2_docx_059",
+                            "module2_docx_060",
+                            "module2_docx_097",
+                            "module2_docx_098"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_059"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_019",
+                            "module2_docx_020",
+                            "module2_docx_060",
+                            "module2_docx_097",
+                            "module2_docx_098"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« presque » / « presqu’ »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 5,
+                        "source_keys": [
+                            "module2_docx_021",
+                            "module2_docx_022",
+                            "module2_docx_061",
+                            "module2_docx_062",
+                            "module2_docx_099",
+                            "module2_docx_100"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_100"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_021",
+                            "module2_docx_022",
+                            "module2_docx_061",
+                            "module2_docx_062",
+                            "module2_docx_099"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "Adverbes en « -amment » / « -emment »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 5,
+                        "source_keys": [
+                            "module2_docx_023",
+                            "module2_docx_024",
+                            "module2_docx_063",
+                            "module2_docx_064",
+                            "module2_docx_101",
+                            "module2_docx_102"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_101"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_023",
+                            "module2_docx_024",
+                            "module2_docx_063",
+                            "module2_docx_064",
+                            "module2_docx_102"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« d’en » / « dans »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 5,
+                        "source_keys": [
+                            "module2_docx_025",
+                            "module2_docx_026",
+                            "module2_docx_065",
+                            "module2_docx_066",
+                            "module2_docx_103",
+                            "module2_docx_104"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_065"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_025",
+                            "module2_docx_026",
+                            "module2_docx_066",
+                            "module2_docx_103",
+                            "module2_docx_104"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« pause » / « pose »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 5,
+                        "source_keys": [
+                            "module2_docx_027",
+                            "module2_docx_028",
+                            "module2_docx_067",
+                            "module2_docx_068",
+                            "module2_docx_105",
+                            "module2_docx_106"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_105"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_027",
+                            "module2_docx_028",
+                            "module2_docx_067",
+                            "module2_docx_068",
+                            "module2_docx_106"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« voilà »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 3,
+                        "source_keys": [
+                            "module2_docx_029",
+                            "module2_docx_030",
+                            "module2_docx_069",
+                            "module2_docx_070"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_069"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_029",
+                            "module2_docx_030",
+                            "module2_docx_070"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« près de » / « prêt à »",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_031",
+                            "module2_docx_032",
+                            "module2_docx_071",
+                            "module2_docx_072",
+                            "module2_docx_107",
+                            "module2_docx_108"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_031",
+                            "module2_docx_108"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_032",
+                            "module2_docx_071",
+                            "module2_docx_072",
+                            "module2_docx_107"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« tache » / « tâche »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 5,
+                        "source_keys": [
+                            "module2_docx_033",
+                            "module2_docx_034",
+                            "module2_docx_073",
+                            "module2_docx_074",
+                            "module2_docx_109",
+                            "module2_docx_110"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_074"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_033",
+                            "module2_docx_034",
+                            "module2_docx_073",
+                            "module2_docx_109",
+                            "module2_docx_110"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« à l’attention » / « à l’intention »",
+                        "initial_count_and_attempt_quota": 1,
+                        "reserve_count": 3,
+                        "source_keys": [
+                            "module2_docx_035",
+                            "module2_docx_036",
+                            "module2_docx_076",
+                            "module2_docx_112"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_112"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_035",
+                            "module2_docx_036",
+                            "module2_docx_076"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« quasi »",
+                        "initial_count_and_attempt_quota": 2,
+                        "reserve_count": 4,
+                        "source_keys": [
+                            "module2_docx_037",
+                            "module2_docx_038",
+                            "module2_docx_077",
+                            "module2_docx_078",
+                            "module2_docx_113",
+                            "module2_docx_114"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_038",
+                            "module2_docx_078"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_037",
+                            "module2_docx_077",
+                            "module2_docx_113",
+                            "module2_docx_114"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 0,
+                        "full_replacement_numerically_possible": true
+                    },
+                    {
+                        "theme": "« tout » (2)",
+                        "initial_count_and_attempt_quota": 3,
+                        "reserve_count": 2,
+                        "source_keys": [
+                            "module2_docx_039",
+                            "module2_docx_040",
+                            "module2_docx_079",
+                            "module2_docx_115",
+                            "module2_docx_116"
+                        ],
+                        "initial_source_keys": [
+                            "module2_docx_039",
+                            "module2_docx_040",
+                            "module2_docx_115"
+                        ],
+                        "reserve_source_keys": [
+                            "module2_docx_079",
+                            "module2_docx_116"
+                        ],
+                        "minimum_reuse_from_previous_attempt": 1,
+                        "full_replacement_numerically_possible": false
+                    }
+                ]
+            }
+        },
+        "differences": [],
+        "configuration_differences": [],
+        "errors": [],
+        "add_quizzes": 3,
+        "add_questions": 177,
+        "add_answers": 354,
+        "existing_copies": 0,
+        "plan_hash": "68d1cea7cf12e3c239566cd9c18cc8a784fced8967fd4b9612bcbaf5a4e265c3"
+    },
+    "second_import": {
+        "applied": true,
+        "noop": true,
+        "questions_added": 0,
+        "answers_added": 0,
+        "plan_hash": "f02b89c3d9911b1d0697e70e9e7c50eb9702f91f7c8d6a9e8244a50cbb3aea65"
+    },
+    "all_preexisting_rows_preserved": true,
+    "after_import_sha256": "6f6662299dc2ed2ff910fcafed93c8dc272ce4e939d6143027528001d5ea4308",
+    "after_second_import_sha256": "6f6662299dc2ed2ff910fcafed93c8dc272ce4e939d6143027528001d5ea4308",
+    "database_cleanup": "tearDown drops the disposable database"
+}

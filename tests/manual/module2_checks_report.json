@@ -1,0 +1,217 @@
+{
+  "date": "2026-10-27",
+  "scope": "Module 2 preparation; quiz/module 1 regression; disposable MySQL and SQLite only",
+  "manifest_sha256": "2ce76e2738a3f8221fd0c121861b59d1888c13d6259930a6d539959ef39a2571",
+  "phpunit": {
+    "command": "php -d memory_limit=512M -d xdebug.mode=off vendor/bin/phpunit --filter 'ModuleOne|ModuleTwo|Quiz' --log-junit var/module2_quiz_regression.xml",
+    "tests": 248,
+    "assertions": 3100,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "seconds": 238.763542,
+    "suites": [
+      {
+        "name": "App\\Tests\\Controller\\Admin\\CoursesFreeAccessTest",
+        "tests": 3,
+        "assertions": 41,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      {
+        "name": "App\\Tests\\Controller\\Admin\\QuizAdminTest",
+        "tests": 43,
+        "assertions": 462,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      {
+        "name": "App\\Tests\\Controller\\Course\\CourseInteractionTest",
+        "tests": 1,
+        "assertions": 19,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      {
+        "name": "App\\Tests\\Controller\\Course\\FreeCoursesTest",
+        "tests": 5,
+        "assertions": 115,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      {
+        "name": "App\\Tests\\Controller\\Course\\QuizPlayerTest",
+        "tests": 28,
+        "assertions": 292,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      {
+        "name": "App\\Tests\\Controller\\QuizResultsTest",
+        "tests": 33,
+        "assertions": 372,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      {
+        "name": "App\\Tests\\Entity\\CoursesTest",
+        "tests": 2,
+        "assertions": 6,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      {
+        "name": "App\\Tests\\Entity\\QuizQuestionTest",
+        "tests": 12,
+        "assertions": 23,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      {
+        "name": "App\\Tests\\Integration\\ModuleOneReserveConcurrencyTest",
+        "tests": 5,
+        "assertions": 77,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      {
+        "name": "App\\Tests\\Integration\\ModuleOneReserveImportTest",
+        "tests": 8,
+        "assertions": 525,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      {
+        "name": "App\\Tests\\Integration\\ModuleOneReserveResolutionTest",
+        "tests": 19,
+        "assertions": 81,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      {
+        "name": "App\\Tests\\Integration\\ModuleTwoQuizImportTest",
+        "tests": 19,
+        "assertions": 227,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      {
+        "name": "App\\Tests\\Integration\\QuizEditorialConcurrencyTest",
+        "tests": 4,
+        "assertions": 60,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      {
+        "name": "App\\Tests\\Integration\\QuizProductionCommandTest",
+        "tests": 4,
+        "assertions": 77,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      {
+        "name": "App\\Tests\\Integration\\QuizReleaseSnapshotTest",
+        "tests": 1,
+        "assertions": 14,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      {
+        "name": "App\\Tests\\Integration\\QuizRenewalPersistenceTest",
+        "tests": 2,
+        "assertions": 53,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      {
+        "name": "App\\Tests\\Services\\ModuleTwoQuizManifestTest",
+        "tests": 14,
+        "assertions": 193,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      {
+        "name": "App\\Tests\\Services\\QuizCommandDestinationTest",
+        "tests": 4,
+        "assertions": 7,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      {
+        "name": "App\\Tests\\Services\\QuizCorrectionServiceTest",
+        "tests": 24,
+        "assertions": 24,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      {
+        "name": "App\\Tests\\Services\\QuizQuestionSelectorTest",
+        "tests": 16,
+        "assertions": 426,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      {
+        "name": "App\\Tests\\Services\\QuizScoreTest",
+        "tests": 1,
+        "assertions": 6,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      }
+    ]
+  },
+  "quality": {
+    "phpstan": "PASS, level 6, changed PHP services/entities/commands/tests/helper, memory-limit=512M",
+    "container": "PASS: php bin/console lint:container",
+    "syntax": "PASS: migration, manifest and importer",
+    "php_cs_fixer": "PASS: 11 changed PHP files, zero fixes required",
+    "git_diff_check": "PASS",
+    "editorial_validator": "PASS: py resources/quiz/module2/valider_module2.py; no source DOCX supplied",
+    "dossier_checksums": "PASS: all five delivered file hashes unchanged"
+  },
+  "cleanup": {
+    "remaining_module2_recipe_databases": [],
+    "failed_run_database_removed": "orthogram_module2_8aeaf54174c3dc00_test",
+    "temporary_worker_files": "removed by test finally blocks",
+    "temporary_cleanup_script": "removed after verification"
+  },
+  "limits": [
+    "Full unrelated application test suite not run.",
+    "Original DOCX comparison not rerun: original Word file absent from supplied archive.",
+    "No working/production database migration, import, activation, commit, push or deployment.",
+    "Current module 2 write guard permits only named disposable local MySQL databases in test. Real destination support requires a separately authorized extension."
+  ],
+  "initial_run_issues": [
+    "128M PHP memory limit interrupted initial recipe; retried with 512M and explicit object cleanup. Leaked disposable database removed.",
+    "Snapshot test adjusted to compare canonical JSON content because MySQL reorders object keys; array ordering remains checked."
+  ],
+  "evidence": [
+    "module2_import_report.json",
+    "module2_offsets_report.json",
+    "module2_concurrency_report.json",
+    "module2_learner_report.json",
+    "module2_dossier_checksums_report.json",
+    "module2_editorial_validation_report.json"
+  ]
+}

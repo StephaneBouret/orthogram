@@ -1,0 +1,27 @@
+[
+  {
+    "file": "module2_guide_relecture.md",
+    "sha256": "537808c661de58fa5b821e35c86025fac0f5ac9470084055c6dc29a74607174a",
+    "unchanged": true
+  },
+  {
+    "file": "module2_quiz_manifest.json",
+    "sha256": "2ce76e2738a3f8221fd0c121861b59d1888c13d6259930a6d539959ef39a2571",
+    "unchanged": true
+  },
+  {
+    "file": "module2_prompt_codex.md",
+    "sha256": "9cd2fd2f9dd8e86d31cde4716ca91684952a0eb1d821fb1f32c96d3e021bb3e0",
+    "unchanged": true
+  },
+  {
+    "file": "valider_module2.py",
+    "sha256": "f5fda6d750f2e7c39491babd8e430ea374181707c88bb421d71f1ff11accde59",
+    "unchanged": true
+  },
+  {
+    "file": "module2_validation.json",
+    "sha256": "5fe1b9d5838cfba18da3377cb4a43d761c057b6c6bee40d2787e9f88b6f25a19",
+    "unchanged": true
+  }
+]

@@ -1,0 +1,16 @@
+{
+    "destination": {
+        "environment": "test",
+        "database": "orthogram_module2_90da7a75dedc44dd_test",
+        "host": "127.0.0.1",
+        "port": 3306,
+        "server": "STEF-LEGION"
+    },
+    "rollback_preserved_rows": true,
+    "second_import_noop": true,
+    "quiz_ids": [
+        7003,
+        7004,
+        7005
+    ]
+}

@@ -1,0 +1,27 @@
+{
+    "destination": {
+        "environment": "test",
+        "database": "orthogram_module2_fa00b19c90246ab5_test",
+        "host": "127.0.0.1",
+        "port": 3306,
+        "server": "STEF-LEGION"
+    },
+    "workers": [
+        {
+            "success": false,
+            "error": "Plan périmé sous verrou ; refaire la prévisualisation."
+        },
+        {
+            "success": true,
+            "result": {
+                "applied": true,
+                "noop": false,
+                "questions_added": 177,
+                "answers_added": 354,
+                "plan_hash": "0976c245300b185f5b989bad29f1190c1fe558d7f563c058e945b84db8fd24bd"
+            }
+        }
+    ],
+    "identities": 3,
+    "copies": 177
+}

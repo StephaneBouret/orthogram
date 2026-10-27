@@ -31,10 +31,13 @@ final class DictationTestDatabase
     private array $connections = [];
     public readonly string $name;
 
-    public function __construct(?string $existingWorkerDatabase = null)
+    public function __construct(?string $existingWorkerDatabase = null, string $recipe = 'dictation_2a')
     {
-        $this->name = $existingWorkerDatabase ?? 'orthogram_dictation_2a_'.bin2hex(random_bytes(8)).'_test';
-        if (1 !== preg_match('/^orthogram_dictation_2a_[a-f0-9]{16}_test$/D', $this->name)) {
+        if (!in_array($recipe, ['dictation_2a', 'module2'], true)) {
+            throw new \LogicException('Recette inconnue.');
+        }
+        $this->name = $existingWorkerDatabase ?? 'orthogram_'.$recipe.'_'.bin2hex(random_bytes(8)).'_test';
+        if (1 !== preg_match('/^orthogram_'.preg_quote($recipe, '/').'_[a-f0-9]{16}_test$/D', $this->name)) {
             throw new \LogicException('Base de test isolée requise.');
         }
         $this->kernel = new Kernel('test', true);
