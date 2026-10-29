@@ -215,6 +215,11 @@ final class QuizPlayerTest extends WebTestCase
         $finished = $this->post('finish', ['attemptId' => $state['attemptId'], 'score' => 999, 'total' => 999]);
         self::assertSame(0, $finished['score']);
         self::assertTrue($finished['completed']);
+        self::assertFalse($this->client->getResponse()->headers->has('Location'));
+        foreach (['desktop', 'mobile'] as $prefix) {
+            self::assertStringContainsString('1/1 complété(s)', $finished['progress'][$prefix]);
+            self::assertStringContainsString('data-sidebar-complete="true"', $finished['progress'][$prefix]);
+        }
         self::assertSame($finished, $this->post('finish', ['attemptId' => $state['attemptId']]));
         self::assertSame(1, $this->em()->getRepository(Lesson::class)->count(['status' => LessonStatus::DONE]));
         $next = $this->post('restart', ['attemptId' => $state['attemptId']]);

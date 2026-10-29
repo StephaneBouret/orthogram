@@ -1,15 +1,11 @@
 import { Controller } from '@hotwired/stimulus';
+import { syncSidebarTrigger } from '../js/course_sidebar.js';
 
 export default class extends Controller {
     connect() {
         this.onCollapse = (event) => {
             const panel = event.target;
-            const trigger = this.element.querySelector(`[aria-controls="${panel.id}"]`);
-            if (!trigger) return;
-
-            const expanded = event.type === 'shown.bs.collapse';
-            trigger.querySelector('.closed').classList.toggle('d-none', expanded);
-            trigger.querySelector('.opened').classList.toggle('d-none', !expanded);
+            syncSidebarTrigger(this.element, panel, event.type === 'shown.bs.collapse');
         };
         this.element.addEventListener('shown.bs.collapse', this.onCollapse);
         this.element.addEventListener('hidden.bs.collapse', this.onCollapse);

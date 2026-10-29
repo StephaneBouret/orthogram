@@ -1,6 +1,7 @@
 {% set collapsePrefix = collapsePrefix|default('course') %}
 {% set currentSection = currentSection|default(null) %}
 {% set currentCourse = currentCourse|default(null) %}
+{% set expandedSectionId = currentSection ? currentSection.id : (currentCourse ? currentCourse.section.id : null) %}
 
 <ol class="sticky-contents pl-0 list-unstyled" data-controller="course-sidebar">
     <li class="list-group list-group-xs list-group-menu mb-6">
@@ -43,11 +44,23 @@
     {% for section in sections %}
         {% set collapseId = collapsePrefix ~ '-collapse-' ~ section.id %}
         {% set isCurrentSection = currentSection and currentSection.id == section.id %}
-        {% set isExpanded = not sectionCompletion[section.id] %}
+        {% set canViewSection = is_granted('SECTION_VIEW', section) %}
+        {# Public discovery may expose a free course without access to the section page. #}
+        {% set isAccessible = canViewSection %}
+        {% if not isAccessible %}
+            {% for candidate in section.courses %}
+                {% if is_granted('VIEW_COURSE', candidate) %}{% set isAccessible = true %}{% endif %}
+            {% endfor %}
+        {% endif %}
+        {% set canContinue = isAccessible and section.courses|length > 0 and not sectionCompletion[section.id] %}
+        {% if expandedSectionId is null and canContinue %}
+            {% set expandedSectionId = section.id %}
+        {% endif %}
+        {% set isExpanded = expandedSectionId == section.id %}
         <li class="list-group list-group-menu list-group-xs mb-6">
             <nav aria-label="{{ section.name }}">
                 <header class="d-flex align-items-center n2ymm7">
-                    <a href="{{ is_granted('SECTION_VIEW', section) ? path('app_course_section', {'programSlug': program.slug, 'sectionSlug': section.slug}) : path('app_course_program_summary', {slug: program.slug}) ~ '#section-' ~ section.id }}" class="course-section-link{{ isCurrentSection ? ' is-active' : '' }}" data-action="course-menu#closeOnNavigate">
+                    <a href="{{ canViewSection ? path('app_course_section', {'programSlug': program.slug, 'sectionSlug': section.slug}) : path('app_course_program_summary', {slug: program.slug}) ~ '#section-' ~ section.id }}" class="course-section-link{{ isCurrentSection ? ' is-active' : '' }}" data-action="course-menu#closeOnNavigate">
                         <h2 class="h4 text-md mb-2">
                             {{ section.name }}
                         </h2>
@@ -61,7 +74,9 @@
                         </span>
                     </button>
                 </header>
-                <div id="{{ collapseId }}" class="collapse{{ isExpanded ? ' show' : '' }}">
+                <div id="{{ collapseId }}" class="collapse{{ isExpanded ? ' show' : '' }}"
+                     data-sidebar-section="{{ section.id }}" data-sidebar-complete="{{ sectionCompletion[section.id] ? 'true' : 'false' }}"
+                     data-sidebar-continuable="{{ canContinue ? 'true' : 'false' }}">
                     <ol class="pl-0 mb-0 list-unstyled">
                         {% include 'course/_dictation_entry.html.twig' with {position: 'before'} %}
                         {% for course in section.courses %}

@@ -5,6 +5,7 @@ namespace App\Controller\Course;
 use App\Entity\Courses;
 use App\Entity\User;
 use App\Security\Voter\CourseVoter;
+use App\Services\Courses\CourseProgressRenderer;
 use App\Services\QuizAttemptService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,7 +20,7 @@ final class QuizController extends AbstractController
 {
     #[Route('/course/{id}/quiz', name: 'app_course_quiz_state', requirements: ['id' => '\\d+'], methods: ['GET'])]
     #[Route('/course/{id}/quiz/{action}', name: 'app_course_quiz_mutate', requirements: ['id' => '\\d+', 'action' => 'start|answer|finish|restart'], methods: ['POST'])]
-    public function __invoke(Courses $course, Request $request, QuizAttemptService $service, string $action = 'state'): JsonResponse
+    public function __invoke(Courses $course, Request $request, QuizAttemptService $service, CourseProgressRenderer $progress, string $action = 'state'): JsonResponse
     {
         try {
             $this->denyAccessUnlessGranted(CourseVoter::INTERACT, $course);
@@ -50,6 +51,11 @@ final class QuizController extends AbstractController
                     return $this->reply(['error' => 'Le corps de la requête doit être un objet JSON valide.'], 400);
                 }
                 $data = $service->mutate($user, $course, $action, $payload);
+            }
+
+            // Also cover recovery after a committed finish whose HTTP response was lost.
+            if ($data['completed'] ?? false) {
+                $data['progress'] = $progress->render($user, $course);
             }
 
             return $this->reply($data);

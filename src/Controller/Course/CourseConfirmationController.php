@@ -9,6 +9,7 @@ use App\Enum\CourseContentType;
 use App\Enum\LessonStatus;
 use App\Repository\LessonRepository;
 use App\Security\Voter\CourseVoter;
+use App\Services\Courses\CourseProgressRenderer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,7 +27,7 @@ final class CourseConfirmationController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/course/confirmation/{id}', name: 'app_course_confirmation', methods: ['POST'])]
-    public function __invoke(Courses $course, Request $request): Response
+    public function __invoke(Courses $course, Request $request, CourseProgressRenderer $progress): Response
     {
         $this->denyAccessUnlessGranted(CourseVoter::INTERACT, $course, "Vous n'avez pas accès à ce cours.");
 
@@ -64,6 +65,13 @@ final class CourseConfirmationController extends AbstractController
             ->setStudiedAt($now);
 
         $this->entityManager->flush();
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->json([
+                'progress' => $progress->render($user, $course),
+                'completion' => $this->renderView('course/show/_completion_button.html.twig', ['course' => $course, 'lesson' => $lesson]),
+            ], headers: ['Cache-Control' => 'private, no-store']);
+        }
 
         return $this->redirectToRoute('app_course_show', [
             'programSlug' => $course->getSection()?->getProgram()?->getSlug(),

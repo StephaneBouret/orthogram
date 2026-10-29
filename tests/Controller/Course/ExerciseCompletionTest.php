@@ -112,7 +112,8 @@ final class ExerciseCompletionTest extends WebTestCase
         self::assertTrue($result['courseCompleted']);
         foreach (['desktop', 'mobile'] as $prefix) {
             self::assertStringContainsString('1/1 complété(s)', $result['progress'][$prefix]);
-            self::assertStringContainsString('class="collapse"', $result['progress'][$prefix]);
+            self::assertStringContainsString('data-sidebar-complete="true"', $result['progress'][$prefix]);
+            self::assertStringContainsString('class="collapse show"', $result['progress'][$prefix]);
         }
         $lesson = $this->em()->getRepository(Lesson::class)->findOneBy(['course' => $this->courseId]);
         $id = $lesson->getId();

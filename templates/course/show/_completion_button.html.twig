@@ -7,9 +7,9 @@
     </span>
 </div>
 {% elseif contentType != 'quiz' %}
-<div id="completion-button">
+<div id="completion-button" data-controller="course-completion" data-action="turbo:before-cache@document->course-completion#disconnect">
     {% set isDone = lesson is defined and lesson and lesson.done %}
-    <form method="post" action="{{ path('app_course_confirmation', {'id': course.id}) }}">
+    <form method="post" action="{{ path('app_course_confirmation', {'id': course.id}) }}" data-turbo="false" data-action="submit->course-completion#submit">
         <input type="hidden" name="_token" value="{{ csrf_token('lesson_toggle_' ~ course.id) }}">
         <button type="submit" class="btn btn-md {{ isDone ? 'btn-secondary' : 'btn-dark' }} btn-icon">
             {% if isDone %}
@@ -21,5 +21,6 @@
             {% endif %}
         </button>
     </form>
+    <p class="text-danger mt-2" role="alert" data-course-completion-target="error" hidden></p>
 </div>
 {% endif %}

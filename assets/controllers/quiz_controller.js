@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
+import { updateCourseProgress } from '../js/course_sidebar.js';
 
 export default class extends Controller {
     static targets = ['title', 'stage', 'error', 'choice', 'validate'];
@@ -66,6 +67,7 @@ export default class extends Controller {
             error.status = response.status;
             throw error;
         }
+        updateCourseProgress(data.progress);
         return data;
     }
 
@@ -184,7 +186,7 @@ export default class extends Controller {
                 this.needsSync = false;
                 if (fresh.attemptId !== this.state.attemptId || fresh.validated !== this.state.validated || fresh.completed !== this.state.completed) {
                     this.state = fresh;
-                    return () => fresh.completed ? window.location.reload() : this.current();
+                    return () => this.current();
                 }
                 this.state = fresh;
             }
@@ -199,7 +201,6 @@ export default class extends Controller {
                     const changed = fresh.attemptId !== this.state?.attemptId || fresh.validated !== this.state?.validated || fresh.completed !== this.state?.completed;
                     this.state = fresh;
                     if (changed) return () => {
-                        if (fresh.completed) return window.location.reload();
                         this.current();
                         this.errorTarget.textContent = 'L’état enregistré a été récupéré. Vous pouvez poursuivre.';
                         this.errorTarget.hidden = false;
@@ -211,8 +212,7 @@ export default class extends Controller {
             }
             return () => {
                 if (action === 'finish') {
-                    // Navigation refreshes the existing server-rendered lesson/sidebar progress.
-                    window.location.reload();
+                    this.summary();
                 } else if (action === 'answer') {
                     const review = this.state.review.find(item => item.id === payload.questionId);
                     this.correction(review);

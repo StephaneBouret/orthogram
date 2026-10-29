@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\DomCrawler\Crawler;
 
 final class SidebarCompletionTest extends WebTestCase
 {
@@ -23,6 +24,8 @@ final class SidebarCompletionTest extends WebTestCase
     private int $courseId;
     private int $sectionId;
     private int $emptySectionId;
+    private int $nextSectionId;
+    private int $nextCourseId;
     private int $otherUserId;
     private int $userId;
     private ?string $previousEnvUrl;
@@ -44,19 +47,25 @@ final class SidebarCompletionTest extends WebTestCase
         $course->setContentType(CourseContentType::Twig)->setPosition(0);
         $section = $course->getSection();
         $lastCourse = (new Courses())->setName('Cours suivant')->setSlug('cours-suivant')->setSection($section)->setPosition(1);
-        $emptySection = (new Sections())->setName('Section vide')->setSlug('section-vide')->setProgram($section->getProgram());
+        $section->setPosition(0);
+        $emptySection = (new Sections())->setName('Section vide')->setSlug('section-vide')->setProgram($section->getProgram())->setPosition(1);
+        $nextSection = (new Sections())->setName('La suite')->setSlug('la-suite')->setProgram($section->getProgram())->setPosition(2);
+        $nextCourse = (new Courses())->setName('La suite')->setSlug('la-suite')->setSection($nextSection);
         $otherUser = QuizPlayerFactory::user('sidebar-other@example.test');
         $lesson = (new Lesson())->setName('Cours suivant')->setUser($user)->setCourse($lastCourse)->setStatus(LessonStatus::DONE);
-        foreach ([$lastCourse, $emptySection, $otherUser, $lesson] as $entity) {
+        foreach ([$lastCourse, $emptySection, $nextSection, $nextCourse, $otherUser, $lesson] as $entity) {
             $this->em()->persist($entity);
         }
         $this->em()->flush();
         $this->courseId = $course->getId();
         $this->sectionId = $section->getId();
         $this->emptySectionId = $emptySection->getId();
+        $this->nextSectionId = $nextSection->getId();
+        $this->nextCourseId = $nextCourse->getId();
         $this->otherUserId = $otherUser->getId();
         $this->userId = $user->getId();
         $this->client->loginUser($user);
+        $this->em()->clear();
     }
 
     protected function tearDown(): void
@@ -119,6 +128,42 @@ final class SidebarCompletionTest extends WebTestCase
         self::assertSame(0, $this->em()->getRepository(Lesson::class)->count(['course' => $this->courseId]));
     }
 
+    public function testAjaxValidationReturnsProgressWithoutNavigation(): void
+    {
+        $page = $this->client->request('GET', self::COURSE_URL);
+        $token = $page->filter('#completion-button input')->attr('value');
+        $this->client->request('POST', '/course/confirmation/'.$this->courseId, ['_token' => $token], server: ['HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest']);
+        self::assertResponseIsSuccessful();
+        self::assertFalse($this->client->getResponse()->headers->has('Location'));
+        self::assertTrue($this->client->getResponse()->headers->hasCacheControlDirective('no-store'));
+        $data = json_decode($this->client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
+        self::assertStringContainsString('Terminé', $data['completion']);
+        foreach (['desktop', 'mobile'] as $prefix) {
+            $fragment = new Crawler($data['progress'][$prefix]);
+            self::assertSame('true', $fragment->filter('#'.$prefix.'-collapse-'.$this->sectionId)->attr('data-sidebar-complete'));
+            self::assertSame('true', $fragment->filter('#'.$prefix.'-collapse-'.$this->nextSectionId)->attr('data-sidebar-continuable'));
+            self::assertSame('false', $fragment->filter('#'.$prefix.'-collapse-'.$this->emptySectionId)->attr('data-sidebar-continuable'));
+        }
+        // The client applies the transition; a later deliberate visit opens the current section.
+        $this->assertAllPages(true);
+    }
+
+    public function testAllCompleteSummaryAndExplicitEmptySectionVisit(): void
+    {
+        $this->toggleCourse();
+        $lesson = (new Lesson())->setName('La suite')->setUser($this->em()->find(User::class, $this->userId))
+            ->setCourse($this->em()->find(Courses::class, $this->nextCourseId))->setStatus(LessonStatus::DONE);
+        $this->em()->persist($lesson);
+        $this->em()->flush();
+        $this->client->request('GET', '/courses/quiz-formation');
+        self::assertSelectorCount(0, '[data-sidebar-section].show');
+        $this->client->request('GET', '/courses/quiz-formation/section-vide');
+        foreach (['desktop', 'mobile'] as $prefix) {
+            self::assertSelectorExists('#'.$prefix.'-collapse-'.$this->emptySectionId.'.show');
+        }
+        self::assertSelectorCount(2, '[data-sidebar-section].show');
+    }
+
     private function toggleCourse(?bool $expectedComplete = null): void
     {
         $crawler = $this->client->request('GET', self::COURSE_URL);
@@ -135,22 +180,25 @@ final class SidebarCompletionTest extends WebTestCase
             $this->client->request('GET', $url);
             self::assertResponseIsSuccessful();
             self::assertSelectorExists('head meta[name="turbo-cache-control"][content="no-cache"]');
-            $this->assertSidebar($complete);
+            $this->assertSidebar($complete, 0 === $index);
             self::assertSelectorCount($index > 0 ? 2 : 0, '.course-section-link.is-active');
         }
     }
 
-    private function assertSidebar(bool $complete): void
+    private function assertSidebar(bool $complete, bool $summary = false): void
     {
+        $expanded = !$summary || !$complete;
         foreach (['desktop', 'mobile'] as $prefix) {
             $id = $prefix.'-collapse-'.$this->sectionId;
-            self::assertSelectorExists('#'.$id.'.collapse'.($complete ? ':not(.show)' : '.show'));
+            self::assertSelectorExists('#'.$id.'.collapse'.($expanded ? '.show' : ':not(.show)'), $this->client->getCrawler()->filter('#'.$id)->outerHtml());
+            self::assertSelectorExists('#'.$id.'[data-sidebar-complete="'.($complete ? 'true' : 'false').'"]');
             $button = 'button[aria-controls="'.$id.'"]';
-            self::assertSelectorExists($button.'[type="button"][data-bs-target="#'.$id.'"][aria-expanded="'.($complete ? 'false' : 'true').'"]');
-            self::assertSelectorExists($button.($complete ? '.collapsed' : ':not(.collapsed)'));
-            self::assertSelectorExists($button.' .closed'.($complete ? ':not(.d-none)' : '.d-none'));
-            self::assertSelectorExists($button.' .opened'.($complete ? '.d-none' : ':not(.d-none)'));
-            self::assertSelectorExists('#'.$prefix.'-collapse-'.$this->emptySectionId.'.collapse.show');
+            self::assertSelectorExists($button.'[type="button"][data-bs-target="#'.$id.'"][aria-expanded="'.($expanded ? 'true' : 'false').'"]');
+            self::assertSelectorExists($button.($expanded ? ':not(.collapsed)' : '.collapsed'));
+            self::assertSelectorExists($button.' .closed'.($expanded ? '.d-none' : ':not(.d-none)'));
+            self::assertSelectorExists($button.' .opened'.($expanded ? ':not(.d-none)' : '.d-none'));
+            self::assertSelectorExists('#'.$prefix.'-collapse-'.$this->emptySectionId.'.collapse:not(.show)');
+            self::assertSelectorExists('#'.$prefix.'-collapse-'.$this->nextSectionId.'.collapse'.($summary && $complete ? '.show' : ':not(.show)'));
         }
     }
 }

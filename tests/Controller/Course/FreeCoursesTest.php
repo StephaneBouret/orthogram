@@ -137,6 +137,31 @@ final class FreeCoursesTest extends WebTestCase
         }
     }
 
+    public function testSidebarSkipsInaccessibleAndEmptySectionsInDiscovery(): void
+    {
+        $section = $this->free->getSection();
+        $section->setPosition(2);
+        $empty = (new Sections())->setName('Vide')->setSlug('vide')->setPosition(0)->setProgram($section->getProgram());
+        $private = (new Sections())->setName('Privée')->setSlug('privee')->setPosition(1)->setProgram($section->getProgram());
+        $paid = (new Courses())->setName('Réservé')->setSlug('reserve')->setSection($private);
+        foreach ([$empty, $private, $paid] as $entity) {
+            $this->em->persist($entity);
+        }
+        $this->em->flush();
+        $sectionId = $section->getId();
+        $privateId = $private->getId();
+        $emptyId = $empty->getId();
+        $this->em->clear();
+        $this->client->request('GET', self::SUMMARY);
+        self::assertResponseIsSuccessful();
+        foreach (['desktop', 'mobile'] as $prefix) {
+            self::assertSelectorExists('#'.$prefix.'-collapse-'.$sectionId.'.show');
+            self::assertSelectorExists('#'.$prefix.'-collapse-'.$privateId.':not(.show)[data-sidebar-continuable="false"]');
+            self::assertSelectorExists('#'.$prefix.'-collapse-'.$emptyId.':not(.show)[data-sidebar-continuable="false"]');
+        }
+        self::assertSelectorCount(2, '[data-sidebar-section].show');
+    }
+
     #[DataProvider('publicProfiles')]
     public function testPublicSummaryAndReaderContainNoPrivateData(string $profile): void
     {

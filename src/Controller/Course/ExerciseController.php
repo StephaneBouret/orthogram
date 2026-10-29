@@ -5,12 +5,9 @@ namespace App\Controller\Course;
 use App\Entity\Courses;
 use App\Entity\Exercice;
 use App\Entity\User;
-use App\Repository\CoursesRepository;
 use App\Repository\ExerciceAttemptRepository;
-use App\Repository\LessonRepository;
-use App\Repository\SectionsRepository;
 use App\Security\Voter\CourseVoter;
-use App\Services\Courses\SectionCompletionService;
+use App\Services\Courses\CourseProgressRenderer;
 use App\Services\ExerciceAttemptService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -42,7 +39,7 @@ class ExerciseController extends AbstractController
     }
 
     #[Route('/{id}/submit', name: 'app_exercise_submit', methods: ['POST'])]
-    public function submit(Exercice $exercice, Request $request, CoursesRepository $courses, LessonRepository $lessons, SectionsRepository $sections, SectionCompletionService $completion): JsonResponse
+    public function submit(Exercice $exercice, Request $request, CourseProgressRenderer $progress): JsonResponse
     {
         if (!$this->getUser() instanceof User) {
             // Preserve the firewall entry point for expired/invalidated sessions.
@@ -83,21 +80,9 @@ class ExerciseController extends AbstractController
             throw $this->createAccessDeniedException();
         }
         $result = $this->attemptService->submit($user, $exercice, $selected, $course);
-        if (null !== $course && null !== $program = $course->getSection()?->getProgram()) {
-            $programSections = $sections->findByProgramWithCourses($program);
-            $completedIds = $lessons->findDoneCourseIdsByUserAndProgram($user, $program);
-            $context = [
-                'program' => $program, 'sections' => $programSections,
-                'currentSection' => $course->getSection(), 'currentCourse' => $course,
-                'canInteract' => true, 'nbrCourses' => $courses->countByProgram($program),
-                'nbrLessonsDone' => count($completedIds), 'completedCourseIds' => $completedIds,
-                'sectionCompletion' => $completion->calculate($programSections, $completedIds),
-            ];
+        if (null !== $course) {
             // Render only progress fragments after commit; the correction stays in place.
-            $result['progress'] = [
-                'desktop' => $this->renderView('course/program_summary/_sidebar_content.html.twig', $context + ['collapsePrefix' => 'desktop']),
-                'mobile' => $this->renderView('course/program_summary/_sidebar_content.html.twig', $context + ['collapsePrefix' => 'mobile']),
-            ];
+            $result['progress'] = $progress->render($user, $course);
         }
 
         return $this->json($result, headers: ['Cache-Control' => 'private, no-store']);

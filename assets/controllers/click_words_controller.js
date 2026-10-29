@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
+import { updateCourseProgress } from '../js/course_sidebar.js';
 
 export default class extends Controller {
     static targets = ['result', 'submit', 'token', 'completion'];
@@ -119,12 +120,7 @@ export default class extends Controller {
             const status = document.getElementById('completion-button');
             if (status) status.hidden = false;
         }
-        if (data.progress) {
-            const desktop = document.getElementById('customer-sidebar');
-            const mobile = document.querySelector('.course-mobile-menu-panel');
-            if (desktop) desktop.innerHTML = data.progress.desktop;
-            if (mobile) mobile.innerHTML = data.progress.mobile;
-        }
+        updateCourseProgress(data.progress);
     }
 
     applyCorrection(data) {
