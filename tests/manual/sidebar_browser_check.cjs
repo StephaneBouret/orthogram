@@ -159,6 +159,44 @@ async function main() {
     await check(`document.querySelector('[aria-controls="mobile-collapse-' + sectionIds.exercise + '"]').getAttribute('aria-expanded') === 'false'`, 'Clavier Espace : une seule bascule après plusieurs navigations');
     await check('new Set([...document.querySelectorAll("[id]")].map(e => e.id)).size === document.querySelectorAll("[id]").length', 'Identifiants uniques');
     await check('browserErrors.length === 0', 'Aucune erreur JavaScript');
+
+    // Public rendering and manual collapse use the same real sidebar on both pages.
+    for (const route of [summary, summary + '/intro/first']) {
+        await send('Page.navigate', { url: base + route + '?anonymous=1' });
+        await wait(`document.readyState === 'complete' && !!window.Turbo && !!document.querySelector('.course-discovery-actions a[href="/login"]')`);
+        await check('document.querySelectorAll("[data-sidebar-section].show").length === 12', `${route}: toutes les sections ouvertes en anonyme`);
+        await check('!document.querySelector("[role=progressbar], #completion-button, .program-summary-stats")', `${route}: aucune progression ni statistique vide`);
+        await check('!document.querySelector(".navbar").textContent.includes("📣 Contact") && !document.querySelector(".main-content").textContent.includes("Durée totale")', `${route}: Contact et durée totale absents`);
+        for (const [prefix, width] of [['desktop', 1440], ['mobile', 390]]) {
+            await send('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: false });
+            if (prefix === 'mobile') await click('.course-mobile-menu-toggle');
+            await toggle(prefix, 'intro');
+            await check(`!${open(prefix, 'intro')} && document.querySelector('[aria-controls="${prefix}-collapse-' + sectionIds.intro + '"]').getAttribute('aria-expanded') === 'false' && document.querySelector('[aria-controls="${prefix}-collapse-' + sectionIds.intro + '"] .opened').classList.contains('d-none')`, `${route} ${prefix}: repli manuel et chevron`);
+            await toggle(prefix, 'intro');
+            await check(`${open(prefix, 'intro')} && document.querySelector('[aria-controls="${prefix}-collapse-' + sectionIds.intro + '"]').getAttribute('aria-expanded') === 'true'`, `${route} ${prefix}: réouverture manuelle`);
+            if (prefix === 'mobile') await click('.course-mobile-menu-toggle');
+            for (const theme of ['light', 'dark']) {
+                await ev(`document.documentElement.setAttribute('data-bs-theme', '${theme}')`);
+                await check(`(() => {
+                    const button = document.querySelector('.course-discovery-actions .btn-outline-grey');
+                    const style = getComputedStyle(button);
+                    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+                    return Math.abs(parseFloat(style.paddingTop) - .85 * rem) < .02
+                        && Math.abs(parseFloat(style.paddingBottom) - .85 * rem) < .02
+                        && Math.abs(parseFloat(style.paddingLeft) - 1.4 * rem) < .02
+                        && Math.abs(parseFloat(style.paddingRight) - 1.4 * rem) < .02
+                        && button.getAttribute('href') === '/login'
+                        && document.documentElement.scrollWidth <= innerWidth;
+                })()`, `${route} ${prefix} ${theme}: padding calculé, connexion et absence de débordement`);
+                if (route === summary) {
+                    await ev(`document.querySelector('.course-discovery-actions .btn-outline-grey').scrollIntoView({block: 'center'})`);
+                    const screenshot = await send('Page.captureScreenshot', { format: 'png' });
+                    fs.writeFileSync(path.join(artifacts, `discovery-${prefix}-${theme}.png`), Buffer.from(screenshot.data, 'base64'));
+                }
+            }
+        }
+        await check('browserErrors.length === 0', `${route}: aucune erreur JavaScript en anonyme`);
+    }
     fs.writeFileSync(path.join(artifacts, 'report.json'), JSON.stringify(report, null, 2));
     console.log(`Report: ${artifacts}`);
 }

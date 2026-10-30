@@ -42,6 +42,7 @@ if ($initialize) {
         $em->persist($section);
         foreach ('empty' === $slug ? [] : ('intro' === $slug ? ['first', 'second'] : [$slug]) as $courseSlug) {
             $course = (new App\Entity\Courses())->setName($courseSlug)->setSlug($courseSlug)->setSection($section)->setPosition('second' === $courseSlug ? 1 : 0);
+            $course->setIsFree('first' === $courseSlug);
             $em->persist($course);
             if ('done' === $slug) {
                 $em->persist((new App\Entity\Lesson())->setUser($user)->setCourse($course)->setName($slug)->setStatus(App\Enum\LessonStatus::DONE));
@@ -58,11 +59,12 @@ if ($initialize) {
     $em->flush();
     $em->clear();
 }
-$jarPath = $root.'/browser.cookies';
+$anonymous = '1' === ($_GET['anonymous'] ?? null);
+$jarPath = $root.($anonymous ? '/anonymous.cookies' : '/browser.cookies');
 $jar = is_file($jarPath) ? unserialize(file_get_contents($jarPath)) : new Symfony\Component\BrowserKit\CookieJar();
 $client = new Symfony\Bundle\FrameworkBundle\KernelBrowser($kernel, [], null, $jar);
 $client->disableReboot();
-if (!is_file($jarPath)) {
+if (!$anonymous && !is_file($jarPath)) {
     $client->loginUser($em->getRepository(App\Entity\User::class)->findOneBy(['email' => 'quiz-player@example.test']));
 }
 $headers = array_filter($_SERVER, static fn ($key) => (str_starts_with($key, 'HTTP_') && 'HTTP_COOKIE' !== $key) || in_array($key, ['CONTENT_TYPE', 'CONTENT_LENGTH'], true), ARRAY_FILTER_USE_KEY);

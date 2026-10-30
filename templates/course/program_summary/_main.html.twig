@@ -1,6 +1,3 @@
-{% set programTotalHours = (programTotalDurationMinutes / 60)|round(0, 'floor') %}
-{% set programRemainingMinutes = programTotalDurationMinutes % 60 %}
-
 <div
     class="main-content"
     {% if canInteract %}
@@ -71,6 +68,7 @@
     {% endif %}
     </div>
 
+    {% if program.description or canInteract %}
     <section class="program-summary-overview spacer-section" aria-label="Présentation de la formation">
         {% if program.description %}
             <div class="program-summary-lead">
@@ -78,8 +76,8 @@
             </div>
         {% endif %}
 
-        <div class="program-summary-stats" aria-label="{{ canInteract ? 'Votre progression dans la formation' : 'Durée de la formation' }}">
-            {% if canInteract %}
+        {% if canInteract %}
+        <div class="program-summary-stats" aria-label="Votre progression dans la formation">
             <div class="program-summary-stat">
                 <span class="program-summary-stat-icon" aria-hidden="true">
                     <i class="bi bi-check2-circle"></i>
@@ -89,25 +87,10 @@
                     <span>Cours terminés</span>
                 </span>
             </div>
-
-            {% endif %}
-            <div class="program-summary-stat">
-                <span class="program-summary-stat-icon" aria-hidden="true">
-                    <i class="bi bi-clock"></i>
-                </span>
-                <span class="program-summary-stat-content">
-                    <strong>
-                        {% if programTotalHours > 0 %}
-                            {{ programTotalHours }} h{% if programRemainingMinutes > 0 %} {{ programRemainingMinutes }} min{% endif %}
-                        {% else %}
-                            {{ programRemainingMinutes }} min
-                        {% endif %}
-                    </strong>
-                    <span>Durée totale</span>
-                </span>
-            </div>
         </div>
+        {% endif %}
     </section>
+    {% endif %}
 
     {% if canInteract %}
     <div

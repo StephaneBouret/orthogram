@@ -137,8 +137,10 @@ final class FreeCoursesTest extends WebTestCase
         }
     }
 
-    public function testSidebarSkipsInaccessibleAndEmptySectionsInDiscovery(): void
+    #[DataProvider('publicProfiles')]
+    public function testSidebarExpandsAllSectionsOnlyForAnonymousVisitors(string $profile): void
     {
+        $this->profile($profile);
         $section = $this->free->getSection();
         $section->setPosition(2);
         $empty = (new Sections())->setName('Vide')->setSlug('vide')->setPosition(0)->setProgram($section->getProgram());
@@ -152,14 +154,26 @@ final class FreeCoursesTest extends WebTestCase
         $privateId = $private->getId();
         $emptyId = $empty->getId();
         $this->em->clear();
-        $this->client->request('GET', self::SUMMARY);
-        self::assertResponseIsSuccessful();
-        foreach (['desktop', 'mobile'] as $prefix) {
-            self::assertSelectorExists('#'.$prefix.'-collapse-'.$sectionId.'.show');
-            self::assertSelectorExists('#'.$prefix.'-collapse-'.$privateId.':not(.show)[data-sidebar-continuable="false"]');
-            self::assertSelectorExists('#'.$prefix.'-collapse-'.$emptyId.':not(.show)[data-sidebar-continuable="false"]');
+        foreach ([self::SUMMARY, self::READER] as $url) {
+            $this->client->request('GET', $url);
+            self::assertResponseIsSuccessful();
+            foreach (['desktop', 'mobile'] as $prefix) {
+                foreach ([$sectionId, $privateId, $emptyId] as $id) {
+                    $expanded = 'anonymous' === $profile || $id === $sectionId;
+                    $panel = '#'.$prefix.'-collapse-'.$id;
+                    $button = 'button[aria-controls="'.$prefix.'-collapse-'.$id.'"]';
+                    self::assertSelectorExists($panel.($expanded ? '.show' : ':not(.show)'));
+                    self::assertSelectorExists($button.'[aria-expanded="'.($expanded ? 'true' : 'false').'"]');
+                    self::assertSelectorExists($button.($expanded ? ':not(.collapsed)' : '.collapsed'));
+                    self::assertSelectorExists($button.' .opened'.($expanded ? ':not(.d-none)' : '.d-none'));
+                    self::assertSelectorExists($button.' .closed'.($expanded ? '.d-none' : ':not(.d-none)'));
+                    if ($id !== $sectionId) {
+                        self::assertSelectorExists($panel.'[data-sidebar-continuable="false"]');
+                    }
+                }
+            }
+            self::assertSelectorCount('anonymous' === $profile ? 6 : 2, '[data-sidebar-section].show');
         }
-        self::assertSelectorCount(2, '[data-sidebar-section].show');
     }
 
     #[DataProvider('publicProfiles')]
@@ -192,6 +206,10 @@ final class FreeCoursesTest extends WebTestCase
             self::assertSelectorExists('a[href="/abonnement"]');
             self::assertSelectorTextContains('.navbar a[href="'.self::SUMMARY.'"]', 'Découvrir les cours');
             if (self::SUMMARY === $url) {
+                self::assertSelectorNotExists('.program-summary-stats');
+                self::assertSelectorTextContains('.program-course-content-heading', '1 section · 4 cours');
+                self::assertSelectorTextNotContains('.main-content', 'Durée totale');
+                self::assertSelectorNotExists('[aria-label="Durée de la formation"]');
                 self::assertSelectorCount(1, '.program-course-content .badge');
                 self::assertSelectorTextContains('.program-course-content .badge', 'Gratuit');
             }
@@ -252,6 +270,10 @@ final class FreeCoursesTest extends WebTestCase
             self::assertResponseIsSuccessful();
             self::assertSelectorExists('[data-controller="learning-reminder"]');
             self::assertSelectorExists('[role="progressbar"]');
+            self::assertSelectorCount(1, '.program-summary-stat');
+            self::assertSelectorTextContains('.program-summary-stats', '1 / 4 Cours terminés');
+            self::assertSelectorNotExists('.program-summary-stats .bi-clock');
+            self::assertSelectorTextNotContains('.main-content', 'Durée totale');
             self::assertSelectorExists('a[href="'.self::SUMMARY.'/quiz-section/cours-reserve"]');
             self::assertSelectorNotExists('.course-page .badge');
             self::assertSelectorNotExists('.navbar a[href="'.self::SUMMARY.'"]');
@@ -285,6 +307,8 @@ final class FreeCoursesTest extends WebTestCase
         $this->client->request('GET', '/login');
         self::assertResponseIsSuccessful();
         $discovery = '.navbar a[href="'.self::SUMMARY.'"]';
+        self::assertSelectorTextNotContains('.navbar', '📣 Contact');
+        self::assertSelectorNotExists('.navbar a[href="#"]');
         if (in_array($profile, ['subscriber', 'admin'], true)) {
             self::assertSelectorNotExists($discovery);
         } else {
@@ -297,6 +321,13 @@ final class FreeCoursesTest extends WebTestCase
             self::assertSelectorExists('.navbar a[href="/ma-formation"]');
             self::assertSelectorExists('.navbar a[href="/mes-resultats"]');
         }
+        $this->client->request('GET', '/program/formation-en-orthographe');
+        self::assertResponseIsSuccessful();
+        $link = $this->client->getCrawler()->selectLink('👀 Montrez-moi les 2 premières heures !')->link();
+        self::assertSame(self::SUMMARY, parse_url($link->getUri(), PHP_URL_PATH));
+        $this->client->click($link);
+        self::assertResponseIsSuccessful();
+        self::assertSelectorTextContains('#program-course-content-title', 'Contenu de la formation');
     }
 
     public function testInactiveAndIncompleteTwoFactorCannotReadFreeCourse(): void
