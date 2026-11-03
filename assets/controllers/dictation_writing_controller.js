@@ -274,15 +274,16 @@ export default class extends Controller {
 
     select() { this.choose(Number(this.selectTarget.value)); }
     previous() { this.choose(this.index - 1); }
-    next() { this.choose(this.index + 1); }
-    choose(index) {
+    next() { this.choose(this.index + 1, true); }
+    choose(index, autoplay = false) {
         if (index < 0 || index >= this.segmentsValue.length) return;
         this.stop();
         this.index = index;
         this.selectTarget.value = String(index);
         this.writingTarget.currentTime = this.segmentsValue[index].start / 1000;
         this.updateButtons();
-        this.audioTargetMessage(`Segment ${index + 1} sélectionné. Lancez la lecture quand vous le souhaitez.`);
+        if (autoplay) this.play(this.writingTarget);
+        else this.audioTargetMessage(`Segment ${index + 1} sélectionné. Lancez la lecture quand vous le souhaitez.`);
     }
     full() {
         if (this.activeAudio === this.completeTarget && !this.completeTarget.paused) { this.stop(); return; }

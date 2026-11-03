@@ -47,7 +47,7 @@ Le téléchargement de secours est **masqué dans le parcours normal**, y compri
 
 ## Audio
 
-Deux éléments audio privés, `preload=none`, sans lecture automatique. Lecture/pause complète, sélection numérotée des segments, précédent/suivant, lecture/pause et réécoute du segment. Le changement de sélection suspend la lecture ; il ne lance pas le segment suivant. Une seule piste joue à la fois. Les promesses de lecture sont protégées par un compteur de génération ; les changements rapides ne réactivent pas une ancienne sélection. Erreurs de chargement visibles, écouteurs et minuteries supprimés à la déconnexion Stimulus.
+Deux éléments audio privés, `preload=none`, sans lecture automatique au chargement de la page. Lecture/pause complète, sélection numérotée des segments, précédent/suivant, lecture/pause et réécoute du segment. Depuis le correctif du 3 novembre 2026, **Suivant** suspend la lecture courante, sélectionne le segment suivant et le lit depuis son début ; ses raccourcis ont le même effet. **Précédent** et le sélecteur suspendent toujours la lecture sans la relancer. Une seule piste joue à la fois. Les promesses de lecture sont protégées par un compteur de génération ; les changements rapides ne réactivent pas une ancienne sélection. Erreurs de chargement visibles, écouteurs et minuteries supprimés à la déconnexion Stimulus.
 
 L’intitulé visible **Écoute complète** précède son bouton à icône. La piste d’écriture conserve son sélecteur et la disposition **Précédent / icône lecture-pause / Suivant**, ainsi que **Réécouter le segment**. Les pictogrammes réutilisent Bootstrap Icons déjà présent ; aucun ajout de dépendance, aucun lecteur vertical supplémentaire. Le code change les classes de l’icône et les attributs du bouton, sans remplacer son contenu. Noms accessibles et infobulles décrivent l’action disponible et le numéro du segment. L’état vient de `paused`/`ended` du média actif et des événements `play`, `playing`, `pause`, `ended`, `emptied` et `error`. Le contrôle de borne démarre à la lecture effective. Cibles de commande et sélecteur d’au moins 44 px, focus clavier explicite, thèmes clair/sombre conservés.
 
@@ -217,3 +217,41 @@ L’utilisateur confirme également la recette manuelle de sauvegarde et de conf
 La recette manuelle locale est donc validée pour ces scénarios. **Aucune recette sur mobile physique n’a été réalisée ou déclarée comme telle** : les vérifications à 390 px décrites plus haut correspondent uniquement à un viewport de navigateur automatisé. Cette validation ne s’étend pas à toutes les configurations de clavier, de navigateur ou de système.
 
 Cette confirmation autorise le commit local du lot 3 sur `preprod`, avec ses correctifs et sa documentation, sous le message `feat(dictation): ajouter l’écriture apprenant et la sauvegarde automatique`. La fonctionnalité reste désactivée par défaut (`DICTATION_LEARNER_ENABLED=0`). Les archives, médias privés, sauvegardes, fichiers temporaires et réglages locaux restent exclus ; aucune modification de base ou de contenu de recette, aucun push, déploiement ou travail du lot 4.
+
+## Suivant lance le segment — 3 novembre 2026
+
+Modification ciblée de `dictation_writing_controller.js` : `next()` demande à `choose()` de lancer la lecture via `play()` après l’arrêt et le repositionnement existants. La validation des bornes précède toute action : au dernier segment, même un appel direct ou clavier ne suspend ni ne relance la lecture. Le compteur `audioEpoch`, la gestion des refus de `play()`, les icônes et le nettoyage Stimulus restent réutilisés. Aucun changement de sauvegarde, de reprise, de serveur, de dépendance ou de base de données. Aucun commit, push ou déploiement pour ce correctif.
+
+### Vérifications réellement exécutées
+
+Le nouveau `tests/manual/dictation_next_browser_check.cjs` passe **32 vérifications dans Chrome 156.0.8078.80 headless sous Windows**. Il sert une page isolée sur loopback, avec les commandes extraites du template Twig, les vrais modules Stimulus/Turbo et le MP3 de test du dépôt. Il ne démarre pas Symfony et ne consulte aucune base de données.
+
+- Suivant avant tout chargement audio, après pause, après fin et pendant la lecture ; repositionnement et arrêt à la borne du segment choisi, sans enchaînement.
+- Dernier segment : bouton désactivé et appel direct sans effet ; Précédent et sélecteur sans lecture automatique ; exclusivité avec Écoute complète.
+- Ctrl+F8 et Alt+Maj+Droite lancent le suivant ; Maj+F8 conserve Précédent ; texte, focus et sélection du textarea préservés.
+- Clics natifs rapides ; résolutions de promesses retardées dans l’ordre inverse ; ancien rejet après nouveau démarrage ; Précédent pendant une promesse en attente.
+- Refus de lecture simulé (`NotAllowedError`) et exception synchrone : interface cohérente, relance manuelle fonctionnelle, aucune promesse rejetée non gérée.
+- Navigation Turbo réelle pendant une lecture avec promesse retardée : médias arrêtés, écouteurs annulés, ancienne résolution sans effet. Aucune exception JavaScript.
+
+Les courses contrôlées retardent la résolution de `play()` en conservant la lecture native ; le refus est injecté, pas obtenu par une politique réelle de navigateur. Les vérifications des positions, de la pause, des icônes et des noms accessibles sont automatisées ; elles ne remplacent pas une écoute humaine.
+
+Commandes exécutées (Chrome headless lancé avec un profil isolé sous `var/dictation-next-chrome` et CDP sur le port 8816) :
+
+```powershell
+$node = 'C:\Users\STEF-LEGION\AppData\Local\Logi\LogiPluginService\PluginHosts\node22\node\node.exe'
+& $node tests/manual/dictation_next_browser_check.cjs
+& $node --check assets/controllers/dictation_writing_controller.js
+& $node --check tests/manual/dictation_next_browser_check.cjs
+git diff --check
+git diff --no-index --check -- NUL tests/manual/dictation_next_browser_check.cjs
+```
+
+Syntaxe JavaScript et contrôles d’espaces conformes. Les anciennes suites Symfony/PHP et les parcours complets de sauvegarde/reprise n’ont pas été relancés pour ce changement JavaScript. Aucun essai sur mobile physique, Safari ou Firefox n’a été réalisé.
+
+### Recette courte pour Stéphane et Caroline
+
+1. Ouvrir une dictée d’au moins trois segments et saisir quelques mots. Sans lancer Play, cliquer sur Suivant : le segment 2 doit démarrer immédiatement.
+2. Mettre en pause, puis cliquer sur Suivant. Refaire depuis le premier segment pendant sa lecture : le nouveau segment doit repartir de son début, sans entendre la suite du précédent. Attendre sa fin : aucun enchaînement.
+3. Cliquer rapidement plusieurs fois sur Suivant. Seul le dernier segment choisi doit rester audible ; au dernier, Suivant doit être indisponible. Vérifier les numéros et icônes Play/Pause.
+4. Avec le focus dans la copie, essayer Ctrl+F8 et Alt+Maj+Droite, puis Maj+F8/Précédent : ces derniers sélectionnent sans lire. Vérifier aussi le sélecteur et Écoute complète.
+5. Vérifier « Enregistré », recharger et retrouver la copie ; quitter pendant une lecture et vérifier son arrêt. Refaire sur un téléphone réel. Si le navigateur refuse la lecture, vérifier le message et la relance par Play.
