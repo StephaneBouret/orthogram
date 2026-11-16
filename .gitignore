@@ -58,3 +58,8 @@
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
+
+###> maintenance deployment ###
+/.orthogram-maintenance
+/public/.orthogram-maintenance
+###< maintenance deployment ###
