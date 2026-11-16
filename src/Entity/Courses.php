@@ -36,6 +36,9 @@ class Courses
     #[ORM\Column(options: ['default' => false])]
     private bool $isFree = false;
 
+    #[ORM\Column(options: ['default' => true])]
+    private bool $isPublished = true;
+
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $shortDescription = null;
 
@@ -158,6 +161,18 @@ class Courses
     public function isFree(): bool
     {
         return $this->isFree;
+    }
+
+    public function isPublished(): bool
+    {
+        return $this->isPublished;
+    }
+
+    public function setIsPublished(bool $isPublished): static
+    {
+        $this->isPublished = $isPublished;
+
+        return $this;
     }
 
     public function isFreeLesson(): bool

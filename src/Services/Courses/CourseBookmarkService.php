@@ -24,6 +24,7 @@ final class CourseBookmarkService
         $program = $section?->getProgram();
 
         return $this->tokens->getToken()?->getUser() instanceof User
+            && $course->isPublished()
             && $course->getSlug() && $section?->getSlug() && $program?->getSlug()
             && $this->authorization->isGranted(CourseVoter::INTERACT, $course)
             && $this->authorization->isGranted(CourseVoter::VIEW, $course);
@@ -45,6 +46,21 @@ final class CourseBookmarkService
             ->where('u.id = :user')->setParameter('user', $user->getId())
             ->getQuery()->getOneOrNullResult();
 
-        return $course instanceof Courses && $this->canUse($course) ? $course : null;
+        if (!$course instanceof Courses) {
+            return null;
+        }
+        if ($this->canUse($course)) {
+            return $course;
+        }
+
+        // Keep the historical bookmark. Fall back to the first accessible published
+        // course in the same program; the UI uses the summary if none is available.
+        foreach ($this->em->getRepository(Courses::class)->findOrderedByProgram($course->getSection()->getProgram()) as $candidate) {
+            if ($this->canUse($candidate)) {
+                return $candidate;
+            }
+        }
+
+        return null;
     }
 }

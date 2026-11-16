@@ -18,9 +18,11 @@ class CoursesRepository extends ServiceEntityRepository
         parent::__construct($registry, Courses::class);
     }
 
+    /** Learner totals count published courses only; ordering helpers below retain all courses. */
     public function countNumberCoursesBySection(Sections $section): int
     {
         return (int) $this->createQueryBuilder('c')
+            ->andWhere('c.isPublished = true')
             ->select('COUNT(c.id)')
             ->andWhere('c.section = :section')
             ->setParameter('section', $section)
@@ -68,9 +70,11 @@ class CoursesRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
+    /** Published learner catalogue. */
     public function countByProgram(Program $program): int
     {
         return (int) $this->createQueryBuilder('c')
+            ->andWhere('c.isPublished = true')
             ->select('COUNT(c.id)')
             ->join('c.section', 's')
             ->andWhere('s.program = :program')
@@ -80,11 +84,13 @@ class CoursesRepository extends ServiceEntityRepository
     }
 
     /**
+     * Published learner catalogue.
      * @return array<int, int>
      */
     public function countCoursesBySections(?Program $program = null): array
     {
         $queryBuilder = $this->createQueryBuilder('c')
+            ->andWhere('c.isPublished = true')
             ->select('s.id AS section_id, COUNT(c.id) AS course_count')
             ->join('c.section', 's')
             ->groupBy('s.id')
@@ -123,6 +129,7 @@ class CoursesRepository extends ServiceEntityRepository
     public function findOrderedByProgram(Program $program): array
     {
         return $this->createQueryBuilder('c')
+            ->andWhere('c.isPublished = true')
             ->join('c.section', 's')
             ->andWhere('s.program = :program')
             ->setParameter('program', $program)

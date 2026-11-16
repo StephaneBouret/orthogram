@@ -18,7 +18,7 @@ final class SectionDurationService
         foreach ($sections as $section) {
             $totalDuration = 0;
 
-            foreach ($section->getCourses() as $course) {
+            foreach ($section->getPublishedCourses() as $course) {
                 $totalDuration += $course->getDurationMinutes() ?? 0;
             }
 

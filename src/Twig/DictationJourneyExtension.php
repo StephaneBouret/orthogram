@@ -59,7 +59,7 @@ final class DictationJourneyExtension
     #[AsTwigFunction('dictation_course_prerequisite')]
     public function prerequisite(Courses $course): ?string
     {
-        if ($course->isFreeLesson() || null === $course->getSection()) {
+        if (!$course->isPublished() || $course->isFreeLesson() || null === $course->getSection()) {
             return null;
         }
         $journey = $this->section($course->getSection());

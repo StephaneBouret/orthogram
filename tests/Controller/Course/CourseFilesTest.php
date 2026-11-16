@@ -194,6 +194,32 @@ final class CourseFilesTest extends WebTestCase
         }
     }
 
+    public function testUnpublishedMediaIsDeniedButAdminCanStillRetrieveFiles(): void
+    {
+        $this->profile('subscriber');
+        $this->client->request('GET', $this->url());
+        self::assertResponseIsSuccessful();
+        $this->course->setIsPublished(false);
+        $this->em->flush();
+        foreach (['audio' => CourseContentType::Audio, 'video' => CourseContentType::Video] as $kind => $type) {
+            $this->course->setContentType($type);
+            $this->em->flush();
+            foreach (['GET', 'HEAD'] as $method) {
+                $this->client->request($method, $this->url($kind), server: [
+                    'HTTP_RANGE' => 'bytes=2-7', 'HTTP_IF_MODIFIED_SINCE' => 'Wed, 01 Jan 2031 00:00:00 GMT',
+                ]);
+                self::assertResponseStatusCodeSame(403);
+                self::assertNotInstanceOf(BinaryFileResponse::class, $this->client->getResponse());
+            }
+        }
+        $this->profile('admin');
+        foreach (['source', 'audio', 'video'] as $kind) {
+            $this->client->request('GET', $this->url($kind, true));
+            self::assertResponseIsSuccessful();
+            self::assertInstanceOf(BinaryFileResponse::class, $this->client->getResponse());
+        }
+    }
+
     /** @return iterable<string, array{string, CourseContentType}> */
     public static function freeMediaProfiles(): iterable
     {

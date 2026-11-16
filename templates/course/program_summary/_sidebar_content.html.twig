@@ -48,11 +48,11 @@
         {# Public discovery may expose a free course without access to the section page. #}
         {% set isAccessible = canViewSection %}
         {% if not isAccessible %}
-            {% for candidate in section.courses %}
+            {% for candidate in section.publishedCourses %}
                 {% if is_granted('VIEW_COURSE', candidate) %}{% set isAccessible = true %}{% endif %}
             {% endfor %}
         {% endif %}
-        {% set canContinue = isAccessible and section.courses|length > 0 and not sectionCompletion[section.id] %}
+        {% set canContinue = isAccessible and section.publishedCourses|length > 0 and not sectionCompletion[section.id] %}
         {% if expandedSectionId is null and canContinue %}
             {% set expandedSectionId = section.id %}
         {% endif %}
@@ -79,7 +79,7 @@
                      data-sidebar-continuable="{{ canContinue ? 'true' : 'false' }}">
                     <ol class="pl-0 mb-0 list-unstyled">
                         {% include 'course/_dictation_entry.html.twig' with {position: 'before'} %}
-                        {% for course in section.courses %}
+                        {% for course in section.publishedCourses %}
                             <li data-action="click->course-menu#closeOnNavigate">
                                 {% include 'course/program_summary/_course_item.html.twig' with { course: course, currentCourse: currentCourse } %}
                             </li>

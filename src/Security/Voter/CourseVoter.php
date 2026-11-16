@@ -47,7 +47,7 @@ final class CourseVoter extends Voter
         $user = $token->getUser();
 
         $freeReading = self::VIEW === $attribute && $subject instanceof Courses
-            && $subject->isFreeLesson() && $subject->getSection()?->getProgram() instanceof Program;
+            && $subject->isPublished() && $subject->isFreeLesson() && $subject->getSection()?->getProgram() instanceof Program;
 
         if (null === $user) {
             return $freeReading;
@@ -92,7 +92,7 @@ final class CourseVoter extends Voter
     {
         $program = $course->getSection()?->getProgram();
 
-        return $program instanceof Program && $this->canViewProgram($program, $user)
+        return $course->isPublished() && $program instanceof Program && $this->canViewProgram($program, $user)
             && !($this->dictationJourney?->isLocked($user, $course->getSection()) ?? false);
     }
 

@@ -86,6 +86,60 @@ final class CoursesFreeAccessTest extends WebTestCase
         self::assertSelectorNotExists('[data-toggle-url]');
     }
 
+    public function testPublicationFormPreservesDataAndRequiresAdminAndCsrf(): void
+    {
+        $this->course->setPosition(8);
+        $this->em->flush();
+        $this->client->request('GET', '/admin/courses/new');
+        self::assertSelectorExists('input[name="Courses[isPublished]"][checked]');
+        $before = $this->rows();
+        $this->submit($this->editUrl(), ['isPublished' => null]);
+        self::assertResponseRedirects();
+        self::assertSame(0, (int) $this->em->getConnection()->fetchOne('SELECT is_published FROM courses WHERE id = ?', [$this->course->getId()]));
+        $this->client->request('GET', '/admin/courses');
+        self::assertSelectorExists('td[data-column="isPublished"]');
+        self::assertSelectorNotExists('td[data-column="isPublished"] input');
+        self::assertSelectorTextContains('body', 'Quiz cours');
+        $this->client->request('GET', $this->editUrl());
+        self::assertResponseIsSuccessful();
+        self::assertSelectorExists('input[name="Courses[isPublished]"]:not([checked])');
+        $unpublished = $this->rows();
+        foreach ($unpublished['courses'] as &$row) {
+            $row['is_published'] = 1;
+        }
+        unset($row);
+        self::assertSame($before, $unpublished, 'Publication must preserve contents, positions, associations and results.');
+        $this->submit($this->editUrl(), ['isPublished' => '1', '_token' => 'invalid']);
+        self::assertResponseStatusCodeSame(422);
+        self::assertSame(0, (int) $this->em->getConnection()->fetchOne('SELECT is_published FROM courses WHERE id = ?', [$this->course->getId()]));
+        // Discard the invalid form's managed entity before the next request.
+        $id = $this->course->getId();
+        $this->em->clear();
+        $this->course = $this->em->find(Courses::class, $id);
+        $this->submit($this->editUrl(), ['isPublished' => '1']);
+        self::assertResponseRedirects();
+        self::assertSame($before, $this->rows());
+
+        $this->client->catchExceptions(true);
+        $session = self::getContainer()->get('session.factory')->createSession();
+        $session->setId($this->client->getCookieJar()->get($session->getName())->getValue());
+        $session->set('_csrf/'.BooleanField::CSRF_TOKEN_NAME, 'publication-toggle-test');
+        $session->save();
+        $this->client->request('PATCH', $this->editUrl().'?'.http_build_query([
+            'fieldName' => 'isPublished', 'newValue' => 'false', 'csrfToken' => 'publication-toggle-test',
+        ]), server: ['HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest']);
+        self::assertResponseStatusCodeSame(400);
+        $learner = QuizPlayerFactory::user('publication-learner@example.test')->setRoles(['ROLE_USER']);
+        $this->em->persist($learner);
+        $this->em->flush();
+        $this->client->loginUser($learner);
+        foreach (['GET', 'POST'] as $method) {
+            $this->client->request($method, $this->editUrl(), ['Courses' => ['isPublished' => '0']]);
+            self::assertResponseStatusCodeSame(403);
+        }
+        self::assertSame($before, $this->rows());
+    }
+
     /** @return iterable<string, array{string}> */
     public static function allowedTypes(): iterable
     {
@@ -277,6 +331,9 @@ final class CoursesFreeAccessTest extends WebTestCase
         $values['Courses'] = array_replace($values['Courses'], $payload);
         if (array_key_exists('isFree', $payload) && null === $payload['isFree']) {
             unset($values['Courses']['isFree']);
+        }
+        if (array_key_exists('isPublished', $payload) && null === $payload['isPublished']) {
+            unset($values['Courses']['isPublished']);
         }
         $this->client->request('POST', $form->getUri(), $values, $files);
     }

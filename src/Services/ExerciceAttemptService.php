@@ -40,6 +40,14 @@ final class ExerciceAttemptService
         return $this->em->wrapInTransaction(function () use ($user, $exercice, $selected, $course): array {
             $this->em->refresh($user, LockMode::PESSIMISTIC_WRITE);
             $this->em->refresh($exercice);
+            // Refresh associated courses as well: no courseId must not bypass
+            // publication, including after waiting for the user lock.
+            $this->em->createQueryBuilder()->select('e', 'c')->from(Exercice::class, 'e')
+                ->leftJoin('e.courses', 'c')->where('e = :exercise')->setParameter('exercise', $exercice)
+                ->getQuery()->setHint(Query::HINT_REFRESH, true)->getResult();
+            if (!$this->security->isGranted(CourseVoter::INTERACT, $exercice)) {
+                throw new AccessDeniedHttpException('Vous n’avez pas accès à cet exercice.');
+            }
             if (null !== $course) {
                 $this->em->refresh($course);
                 if (CourseContentType::Exercise !== $course->getContentType() || $course->getExercice()?->getId() !== $exercice->getId()) {

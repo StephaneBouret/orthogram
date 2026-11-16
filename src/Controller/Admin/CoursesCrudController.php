@@ -63,6 +63,8 @@ class CoursesCrudController extends AbstractCrudController
         return [
             IdField::new('id')->onlyOnIndex(),
             TextField::new('name', 'Nom du cours'),
+            BooleanField::new('isPublished', 'Publié')->renderAsSwitch(false)
+                ->setHelp('Un cours dépublié est retiré du parcours apprenant. Son contenu et les résultats sont conservés.'),
             TextField::new('slug', 'Slug')->onlyOnIndex(),
             BooleanField::new('isFree', 'Accès gratuit')
                 ->renderAsSwitch(false)
@@ -156,7 +158,13 @@ class CoursesCrudController extends AbstractCrudController
     {
         $previousSection = $this->getPreviousSection($entityManager, $entityInstance);
 
-        $this->reorderCourse($entityInstance, $previousSection);
+        if ($entityInstance instanceof Courses) {
+            $originalData = $entityManager->getUnitOfWork()->getOriginalEntityData($entityInstance);
+            if (($originalData['position'] ?? null) !== $entityInstance->getPosition()
+                || $previousSection !== $entityInstance->getSection()) {
+                $this->reorderCourse($entityInstance, $previousSection);
+            }
+        }
         $this->normalizeContentAssociations($entityInstance);
         $this->estimateDuration($entityInstance, $entityInstance instanceof Courses && null !== $entityInstance->getPartialFile());
 
@@ -168,6 +176,9 @@ class CoursesCrudController extends AbstractCrudController
         // EasyAdmin's AJAX edit bypasses form validation, even without a visible switch.
         if ('isFree' === $propertyName) {
             throw $this->createAccessDeniedException('Modifiez l’accès gratuit depuis le formulaire du cours.');
+        }
+        if ('isPublished' === $propertyName) {
+            throw $this->createAccessDeniedException('Modifiez la publication depuis le formulaire du cours.');
         }
 
         return parent::ajaxEdit($entityDto, $propertyName, $newValue);

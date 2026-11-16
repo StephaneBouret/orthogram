@@ -138,6 +138,14 @@ class Sections
         return $this->courses;
     }
 
+    /** Learner catalogue only; keep the mapped collection intact for administration and history.
+     * @return Collection<int, Courses>
+     */
+    public function getPublishedCourses(): Collection
+    {
+        return $this->courses->filter(static fn (Courses $course): bool => $course->isPublished());
+    }
+
     public function addCourse(Courses $course): static
     {
         if (!$this->courses->contains($course)) {

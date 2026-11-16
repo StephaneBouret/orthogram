@@ -209,7 +209,7 @@
         </header>
 
         {% for section in sections %}
-            {% set courseCount = coursesBySection[section.id] ?? section.courses|length %}
+            {% set courseCount = coursesBySection[section.id] ?? section.publishedCourses|length %}
             <div class="card v9d3ks" id="section-{{ section.id }}">
                 <div class="card-body">
                     <div class="list-group list-group-menu list-group-sm">
@@ -231,7 +231,7 @@
                             </header>
                             <ol class="pl-0 mb-0 list-unstyled">
                                 {% include 'course/_dictation_entry.html.twig' with {position: 'before'} %}
-                                {% for course in section.courses %}
+                                {% for course in section.publishedCourses %}
                                     <li>
                                         {% include 'course/program_summary/_course_item.html.twig' with { course: course } %}
                                     </li>

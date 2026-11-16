@@ -54,6 +54,7 @@ final class CoursesAutocompleteField extends AbstractType
             'query_builder' => static function (Options $options): callable {
                 return static function (EntityRepository $repository) use ($options) {
                     $queryBuilder = $repository->createQueryBuilder('c')
+                        ->andWhere('c.isPublished = true')
                         ->join('c.section', 's')
                         ->join('s.program', 'p')
                         ->orderBy('s.position', 'ASC')

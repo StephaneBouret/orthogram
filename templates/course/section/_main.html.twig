@@ -62,7 +62,7 @@
                 <nav aria-label="{{ section.name }}">
                     <ol class="pl-0 mb-0 list-unstyled">
                         {% include 'course/_dictation_entry.html.twig' with {position: 'before'} %}
-                        {% for course in section.courses %}
+                        {% for course in section.publishedCourses %}
                             <li>
                                 {% include 'course/program_summary/_course_item.html.twig' with { course: course } %}
                             </li>

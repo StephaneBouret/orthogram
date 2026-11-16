@@ -36,12 +36,16 @@ final class SectionCompletionService
         $completedIds = array_fill_keys($completedCourseIds, true);
         $hasCourses = false;
         foreach ($courses as $course) {
+            if (!$course->isPublished()) {
+                continue;
+            }
             $hasCourses = true;
             if (!isset($completedIds[$course->getId()])) {
                 return false;
             }
         }
 
+        // An empty published catalogue is not complete, including for dictation prerequisites.
         return $hasCourses;
     }
 }

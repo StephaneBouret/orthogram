@@ -56,6 +56,9 @@ final class QuizAttemptService
         return $this->em->wrapInTransaction(function () use ($user, $course, $action, $payload): array {
             $this->em->refresh($user, LockMode::PESSIMISTIC_WRITE);
             $this->em->refresh($course);
+            if (!$course->isPublished() && !in_array('ROLE_ADMIN', $user->getRoles(), true)) {
+                throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException('Vous n’avez plus accès à ce cours.');
+            }
             $quiz = $this->quiz($course);
             if ('start' === $action) {
                 $attempt = $this->latest($user, $course, $quiz) ?? $this->create($user, $course, $quiz);

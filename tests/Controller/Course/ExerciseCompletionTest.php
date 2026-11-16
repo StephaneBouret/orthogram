@@ -206,6 +206,13 @@ final class ExerciseCompletionTest extends WebTestCase
         self::assertSame(0, $this->em()->getRepository(ExerciceAttempt::class)->count([]));
         self::assertSame(0, $this->em()->getRepository(Lesson::class)->count([]));
         self::assertTrue($this->submit(['yes'])['courseCompleted']);
+        // The remaining published association is locked by a dictation prerequisite.
+        $this->em()->find(Courses::class, $this->courseId)->setIsPublished(false);
+        $this->em()->flush();
+        $this->submit(['yes'], standalone: true);
+        self::assertResponseStatusCodeSame(403);
+        self::assertSame(1, $this->em()->getRepository(ExerciceAttempt::class)->count([]));
+        self::assertSame(1, $this->em()->getRepository(Lesson::class)->count([]));
     }
 
     public function testInvalidCsrfAndUnauthorizedUserCannotWrite(): void

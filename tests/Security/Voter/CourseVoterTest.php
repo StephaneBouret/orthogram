@@ -24,6 +24,29 @@ use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 
 final class CourseVoterTest extends TestCase
 {
+    public function testPublicationOverridesFreeAndPaidAccessForEveryContentTypeExceptAdmin(): void
+    {
+        $section = (new Sections())->setProgram(new Program());
+        $learner = (new User())->setEmail('publication@example.test');
+        $learner->addSubscription((new Subscription())->setStatus(SubscriptionStatus::ACTIVE)->setIsLifetime(true));
+        $admin = (new User())->setRoles(['ROLE_ADMIN']);
+        foreach (CourseContentType::cases() as $type) {
+            foreach ([false, true] as $free) {
+                $course = (new Courses())->setSection($section)->setContentType($type)->setIsFree($free)->setIsPublished(false);
+                foreach ([new NullToken(), new UsernamePasswordToken($learner, 'main', $learner->getRoles())] as $token) {
+                    foreach ([CourseVoter::VIEW, CourseVoter::INTERACT] as $attribute) {
+                        self::assertSame(VoterInterface::ACCESS_DENIED, $this->voter()->vote($token, $course, [$attribute]));
+                    }
+                }
+                foreach ([CourseVoter::VIEW, CourseVoter::INTERACT] as $attribute) {
+                    self::assertSame(VoterInterface::ACCESS_GRANTED, $this->voter()->vote(new UsernamePasswordToken($admin, 'main', $admin->getRoles()), $course, [$attribute]));
+                }
+                $course->setIsPublished(true);
+                self::assertSame(VoterInterface::ACCESS_GRANTED, $this->voter()->vote(new UsernamePasswordToken($learner, 'main', $learner->getRoles()), $course, [CourseVoter::VIEW]));
+            }
+        }
+    }
+
     #[DataProvider('profiles')]
     public function testPrivateRightsIgnoreFreeFlag(string $profile, bool $allowed): void
     {

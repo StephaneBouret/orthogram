@@ -34,6 +34,7 @@ class LessonRepository extends ServiceEntityRepository
     public function countDoneByUserAndProgram(User $user, Program $program): int
     {
         return (int) $this->createQueryBuilder('l')
+            ->andWhere('c.isPublished = true')
             ->select('COUNT(l.id)')
             ->innerJoin('l.course', 'c')
             ->innerJoin('c.section', 's')
@@ -55,6 +56,7 @@ class LessonRepository extends ServiceEntityRepository
         return array_map(
             static fn (mixed $courseId): int => (int) $courseId,
             $this->createQueryBuilder('l')
+                ->andWhere('c.isPublished = true')
                 ->select('IDENTITY(l.course)')
                 ->innerJoin('l.course', 'c')
                 ->innerJoin('c.section', 's')

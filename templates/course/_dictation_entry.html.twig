@@ -1,6 +1,6 @@
 {% set journey = dictation_journey(section) %}
 {% if journey %}
-    {% set hasCourses = section.courses|length > 0 %}
+    {% set hasCourses = section.publishedCourses|length > 0 %}
     <li class="dictation-journey-entry" data-dictation-position="{{ position }}">
         {% if position == 'before' %}
             <a class="list-group-item list-group-item-action" href="{{ journey.url }}">

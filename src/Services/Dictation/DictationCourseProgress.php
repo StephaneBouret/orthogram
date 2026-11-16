@@ -26,10 +26,12 @@ final class DictationCourseProgress
     {
         $courses = $this->em->createQueryBuilder()->select('c')->from(Courses::class, 'c')
             ->where('c.section = :section')->setParameter('section', $section)
+            ->andWhere('c.isPublished = true')
             ->orderBy('c.id', 'ASC')->getQuery()->setLockMode(LockMode::PESSIMISTIC_READ)
             ->setHint(Query::HINT_REFRESH, true)->getResult();
         $lessons = $this->em->createQueryBuilder()->select('l')->from(Lesson::class, 'l')
             ->innerJoin('l.course', 'c')->where('c.section = :section AND l.user = :user')
+            ->andWhere('c.isPublished = true')
             ->setParameter('section', $section)->setParameter('user', $user)
             ->orderBy('l.id', 'ASC')->getQuery()->setLockMode(LockMode::PESSIMISTIC_READ)
             ->setHint(Query::HINT_REFRESH, true)->getResult();
@@ -45,6 +47,6 @@ final class DictationCourseProgress
         }
 
         return ['complete' => $this->completion->areCoursesComplete($courses, $doneIds),
-            'started' => [] !== $lessons || (null !== $bookmark && $bookmark->getSection()?->getId() === $section->getId())];
+            'started' => [] !== $lessons || (null !== $bookmark && $bookmark->isPublished() && $bookmark->getSection()?->getId() === $section->getId())];
     }
 }
