@@ -1,6 +1,8 @@
-# Shared maintenance switch, outside the directory replaced by Hostinger publication.
+# Keep all three maintenance markers; publication may replace the local markers.
+# DOCUMENT_ROOT covers the active web root; the external marker is a fallback only.
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    RewriteCond %{DOCUMENT_ROOT}/.orthogram-maintenance -f [OR]
     RewriteCond /home/u849885333/domains/orthogram.fr/.orthogram-maintenance -f
     RewriteRule ^ - [R=503,L]
 </IfModule>

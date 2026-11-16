@@ -5,6 +5,15 @@ set -euo pipefail
 PROJECT_DIR="/home/u849885333/domains/orthogram.fr/public_html/beta"
 ENV_FILE="/home/u849885333/domains/orthogram.fr/.env.beta"
 MAINTENANCE_FILE="/home/u849885333/domains/orthogram.fr/.orthogram-maintenance"
+MAINTENANCE_FILES=("$MAINTENANCE_FILE" "$PROJECT_DIR/.orthogram-maintenance" "$PROJECT_DIR/public/.orthogram-maintenance")
+MAINTENANCE_URLS=(
+    "https://beta.orthogram.fr/"
+    "https://beta.orthogram.fr/login"
+    "https://beta.orthogram.fr/admin"
+    "https://beta.orthogram.fr/public/"
+    "https://beta.orthogram.fr/public/index.php"
+    "https://orthogram.fr/beta/public/index.php"
+)
 SHARED_ROOT="/home/u849885333/domains/orthogram.fr/public_html/shared"
 LEGACY_COURSES="$SHARED_ROOT/courses"
 SHARED_AVATARS="$SHARED_ROOT/avatars"
@@ -14,11 +23,35 @@ READY_FILE="$PRIVATE_COURSES/.orthogram-private-ready"
 
 fail() { echo "STOP: $*" >&2; exit 1; }
 
-# This script does not establish maintenance or prove HTTP isolation. See the runbook.
-# Keep maintenance active on any failure and until the post-deploy HTTP acceptance.
+# Point-in-time checks only: Hostinger publication must have finished beforehand.
+# This script NEVER creates, removes or restores maintenance markers, even on failure.
+check_maintenance() {
+    local phase="$1" marker method url status
+    echo "Maintenance : $phase"
+    for marker in "${MAINTENANCE_FILES[@]}"; do
+        [[ -f "$marker" && ! -L "$marker" ]] || fail "Missing or linked maintenance marker: $marker; restore maintenance manually and verify all HTTP paths"
+    done
+    command -v curl >/dev/null 2>&1 || fail "curl is required to verify maintenance before migrations"
+    for url in "${MAINTENANCE_URLS[@]}"; do
+        for method in GET HEAD; do
+            local -a options=(--disable --silent --show-error --connect-timeout 5 --max-time 15
+                --proto '=https' --output /dev/null --write-out '%{http_code}'
+                --header 'Cache-Control: no-cache' --header 'Pragma: no-cache')
+            [[ "$method" != HEAD ]] || options+=(--head)
+            # No redirects, retries, --fail or insecure TLS. A redirect to a 503 is NOT a 503 here.
+            # Bypass ordinary cached responses; this cannot prove continuous origin isolation.
+            if ! status=$(curl "${options[@]}" "$url?orthogram_maintenance_check=$$-$SECONDS-$RANDOM"); then
+                fail "Maintenance HTTP check failed ($phase): $method $url; keep all markers"
+            fi
+            [[ "$status" == 503 ]] || fail "Maintenance HTTP check failed ($phase): $method $url returned $status, expected 503; keep all markers"
+            echo "503 $method $url"
+        done
+    done
+}
+
+# Keep maintenance active on any failure and until the manual post-deploy acceptance.
 MODE="${1:---deploy}"
 [[ "$MODE" == "--initial-switch" || "$MODE" == "--deploy" ]] || fail "Use --initial-switch or --deploy"
-[[ -f "$MAINTENANCE_FILE" ]] || fail "Create $MAINTENANCE_FILE and verify HTTP 503 before deployment"
 [[ "${ORTHOGRAM_MAINTENANCE_CONFIRMED:-}" == 1 ]] || fail "Stop HTTP traffic/uploads and workers first; then set ORTHOGRAM_MAINTENANCE_CONFIRMED=1"
 # Existing course storage only; this is NOT an attestation for new dictation storage.
 [[ "${ORTHOGRAM_PRIVATE_STORAGE_VERIFIED:-}" == 1 ]] || fail "Verify existing COURSE storage PHP access, ownership and all web roots/aliases; then set ORTHOGRAM_PRIVATE_STORAGE_VERIFIED=1"
@@ -28,6 +61,7 @@ if [[ "${ORTHOGRAM_DICTATION_WEB_DEFERRED:-0}" == 1 ]]; then
     echo "Validation PHP web des dictées DIFFÉRÉE à la recette EasyAdmin ; flag apprenant 0 obligatoire."
 fi
 
+check_maintenance "avant toute préparation"
 cd "$PROJECT_DIR"
 
 echo "0. Stockage privé des cours (avatars inchangés)"
@@ -131,9 +165,11 @@ echo "2. Création du .htaccess racine"
 HTACCESS_TMP="$(mktemp "$PROJECT_DIR/.htaccess.tmp.XXXXXX")"
 trap 'rm -f -- "$HTACCESS_TMP"' EXIT
 cat > "$HTACCESS_TMP" <<'EOF'
-# Shared maintenance switch, outside the directory replaced by Hostinger publication.
+# Keep all three maintenance markers; publication may replace the local markers.
+# DOCUMENT_ROOT covers the active web root; the external marker is a fallback only.
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    RewriteCond %{DOCUMENT_ROOT}/.orthogram-maintenance -f [OR]
     RewriteCond /home/u849885333/domains/orthogram.fr/.orthogram-maintenance -f
     RewriteRule ^ - [R=503,L]
 </IfModule>
@@ -173,6 +209,7 @@ check_environment container
 echo "6. Exécution des migrations Doctrine"
 # Backup, remote status and dry-run must already have been reviewed: ops/deploy_beta.md.
 # The cache warmers compile metadata/templates; they do not load dictation/user rows.
+check_maintenance "immédiatement avant les migrations"
 php bin/console doctrine:migrations:migrate --env=prod --no-debug --no-interaction
 
 echo "6bis. Vérification des références pédagogiques (lecture seule)"
@@ -203,8 +240,10 @@ if [[ "$MODE" == "--initial-switch" ]]; then
     # Marker outside mappings, only after transfer, DB-reference checks and preparation succeed.
     (umask 007; printf '%s\n' 'orthogram-private-courses-v1' > "$READY_FILE")
 fi
+check_maintenance "fin de préparation, sans réouverture"
 echo "Code bêta préparé. Conserver la maintenance jusqu'aux contrôles techniques de sortie décrits dans la procédure."
 if [[ "${ORTHOGRAM_DICTATION_WEB_DEFERRED:-0}" == 1 ]]; then
     echo "Stockage dictées : CLI seulement, PHP web NON VALIDÉ. Import et lecture EasyAdmin requis avant toute activation apprenant."
 fi
-echo "Témoin conservé : $MAINTENANCE_FILE. Retrait manuel uniquement lors de la réouverture contrôlée."
+printf 'Témoin conservé : %s\n' "${MAINTENANCE_FILES[@]}"
+echo "Retrait des trois témoins manuel uniquement, lors de la réouverture contrôlée."

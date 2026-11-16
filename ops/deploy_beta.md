@@ -1,4 +1,223 @@
-# Bêta — livraison des dictées
+# Bêta — maintenance et déploiement
+
+## Correctif de maintenance du 16 novembre 2026
+
+Base propre vérifiée : `preprod` et GitHub `preprod` au commit
+`87ff947e80e05595235c2f98be25f01cf8f9a08c` (lot 1 publication des cours).
+Sa recette et sa migration **locales** sont confirmées par l'opérateur. Ce commit
+reste intact ; le correctif de maintenance est préparé séparément, sans commit,
+push, déploiement ni migration distante. Aucun réglage des dictées, média,
+avatar ou secret n'est modifié par ce correctif.
+
+**La procédure courante de maintenance est celle-ci**, y compris pour les autres
+runbooks qui ne citent encore qu'un témoin. Les sections historiques de livraison
+des dictées ci-dessous ne sont pas une instruction de rejouer leur configuration,
+leurs migrations ou leur activation pour ce lot. L'état distant et le lot livré
+déterminent les opérations métier encore nécessaires.
+
+### Incident constaté et règle conservée
+
+Selon le constat opérateur, le témoin extérieur existe et `mod_rewrite` fonctionne,
+mais son test par chemin absolu ne déclenche pas la maintenance sur
+`beta.orthogram.fr`. L'essai `DOCUMENT_ROOT/../../` n'a pas résolu l'incident.
+La cause hébergeur reste indéterminée : aucune hypothèse de droits, de chroot ou
+de configuration PHP n'est présentée comme un diagnostic.
+
+Le contournement constaté conserve les trois fichiers suivants :
+
+| Témoin | Chemin |
+| --- | --- |
+| Extérieur | `/home/u849885333/domains/orthogram.fr/.orthogram-maintenance` |
+| Racine publiée | `/home/u849885333/domains/orthogram.fr/public_html/beta/.orthogram-maintenance` |
+| Public | `/home/u849885333/domains/orthogram.fr/public_html/beta/public/.orthogram-maintenance` |
+
+Placer en tête des **deux** `.htaccess` (racine et `public`), avant toute
+redirection/front controller, en préservant leurs autres directives :
+
+```apache
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{DOCUMENT_ROOT}/.orthogram-maintenance -f [OR]
+    RewriteCond /home/u849885333/domains/orthogram.fr/.orthogram-maintenance -f
+    RewriteRule ^ - [R=503,L]
+</IfModule>
+ErrorDocument 503 "Maintenance en cours. Merci de reessayer dans quelques instants."
+```
+
+`DOCUMENT_ROOT` désigne la racine du virtual host de la requête, pas nécessairement
+le répertoire du `.htaccess`. Pour l'alias `orthogram.fr/beta/...`, ne pas déduire
+le fonctionnement de celui du sous-domaine. L'opérateur a constaté les six URL
+ci-dessous en 503 après le contournement ; ces réponses n'ont pas été recontrôlées
+à distance pendant cette préparation.
+
+### Mise en maintenance et contrôles HTTP
+
+Exemples à exécuter ultérieurement sur le serveur par l'opérateur, pas en local :
+
+```bash
+set -euo pipefail
+DOMAIN=/home/u849885333/domains/orthogram.fr
+PROJECT="$DOMAIN/public_html/beta"
+MARKERS=("$DOMAIN/.orthogram-maintenance" "$PROJECT/.orthogram-maintenance" "$PROJECT/public/.orthogram-maintenance")
+test -d "$PROJECT/public"
+for marker in "${MARKERS[@]}"; do test ! -L "$marker"; done
+touch -- "${MARKERS[@]}"
+for marker in "${MARKERS[@]}"; do test -f "$marker"; done
+```
+
+Installer/vérifier les deux blocs complets ; sauvegarder les fichiers et remplacer
+chaque `.htaccess` par renommage d'un fichier temporaire complet dans le même
+répertoire, sans le vider ni le supprimer au préalable. Interrompre les écritures,
+workers et cron comme prévu par la procédure existante.
+
+Depuis un client extérieur, puis depuis le serveur, utiliser des **GET et HEAD
+directs**, sans `-L`, sans `--fail` et sans désactiver TLS. Une redirection 301/302,
+une erreur réseau/TLS, un délai dépassé, 000, 200, 403 ou 500 arrête la procédure.
+Il faut une réponse **503 sur chaque requête**, pas seulement après redirection :
+
+```bash
+URLS=(
+  'https://beta.orthogram.fr/'
+  'https://beta.orthogram.fr/login'
+  'https://beta.orthogram.fr/admin'
+  'https://beta.orthogram.fr/public/'
+  'https://beta.orthogram.fr/public/index.php'
+  'https://orthogram.fr/beta/public/index.php'
+)
+check_maintenance_http() {
+  local url method code
+  local -a options
+  for url in "${URLS[@]}"; do
+    for method in GET HEAD; do
+      options=(--disable --silent --show-error --connect-timeout 5 --max-time 15
+        --proto '=https' --output /dev/null --write-out '%{http_code}'
+        --header 'Cache-Control: no-cache' --header 'Pragma: no-cache')
+      if [[ "$method" == HEAD ]]; then options+=(--head); fi
+      code=$(curl "${options[@]}" "$url?orthogram_maintenance_check=$$-$SECONDS-$RANDOM") || return 1
+      printf '%s %s %s\n' "$code" "$method" "$url"
+      [[ "$code" == 503 ]] || return 1
+    done
+  done
+}
+check_maintenance_http
+```
+
+Compléter l'inventaire avec `/index.php`, une URL d'asset réellement existante et
+tout autre alias d'accès à la bêta. Ne pas interpréter une 503 en cache comme la
+preuve du blocage de l'origine : la requête aléatoire et les en-têtes réduisent
+ce risque sans remplacer la vérification de la configuration proxy/CDN.
+
+### Garanties connues, inconnues et fenêtre de publication
+
+| Étape | Garantie / limite |
+| --- | --- |
+| Témoin extérieur | Hors de `public_html/beta` ; le script ne le modifie pas. Son existence seule ne garantit pas la 503, comme le montre l'incident. |
+| Témoins locaux | État d'exploitation absent des fichiers suivis par Git. Ni leur présence actuelle, ni un éventuel `.gitignore` ne garantissent leur survie à une publication, un nettoyage ou un remplacement du répertoire. |
+| Publication Hostinger | Le dépôt décrit une publication de `preprod` puis Composer, mais ne contient pas de garantie de conservation des fichiers non suivis, de l'ordre des remplacements, ni d'atomicité. Le `.htaccess` racine est ignoré par Git ; `public/.htaccess` est suivi et remplacé avec le code. |
+| Script manuel | Ne publie pas le code et ne crée, retire ni restaure les témoins. Exige les trois fichiers ordinaires sans lien, puis les 12 réponses HTTP 503 au démarrage, immédiatement avant l'unique `migrations:migrate` et à la fin. Remplace le `.htaccess` racine par renommage atomique sur le même système de fichiers ; ne modifie pas `public/.htaccess`. |
+| Arrêt ou erreur | Aucun retrait automatique, même en cas de succès, erreur HTTP, migration en échec ou sortie du script. Le trap existant nettoie seulement le fichier temporaire du `.htaccess`. Un témoin déjà disparu reste à rétablir manuellement ; ne pas confondre conservation des fichiers restants et maintien prouvé du blocage HTTP. |
+
+**Période non garantie :** si Hostinger retire/remplace un témoin local ou un
+`.htaccess`, l'accès peut être rouvert dès cette modification, avant les contrôles
+post-publication et avant le lancement du script. Un hook qui recrée les témoins
+après copie, ou une surveillance périodique des 503, détecte/réduit la fenêtre
+mais ne prouve pas qu'elle n'a jamais existé. Les contrôles du script sont
+ponctuels ; une publication concurrente ou une modification après un contrôle
+peut également rouvrir l'accès, y compris pendant une migration.
+
+Avant toute publication, faire préciser et vérifier dans hPanel/la procédure
+réelle : déclencheur automatique ou manuel (le lot 1 est déjà poussé), branche et
+SHA, répertoire réellement nettoyé/remplacé, conservation des fichiers non suivis,
+ordre de copie des deux `.htaccess`, des témoins et de Composer, éventuels hooks
+pré/post-publication, virtual hosts/alias et caches en amont. Ne pas supposer
+qu'un nouveau push est nécessaire ou que celui déjà effectué n'a rien publié.
+
+**Pour garantir une coupure continue**, établir et tester avant publication une
+barrière indépendante du répertoire remplacé, couvrant les deux domaines et
+tous les accès à la bêta (configuration hébergeur/proxy/vhost vérifiée). À défaut,
+obtenir une procédure de publication dont la conservation effective des témoins
+et des règles pendant toute l'opération est démontrée. Ne pas lancer une nouvelle
+publication sur la seule base de contrôles 503 avant/après. Le mécanisme actuel
+à trois témoins ne prouve pas cette continuité. Ne pas inventer ni installer ici
+une règle serveur non vérifiée ; une règle parente peut affecter aussi le site principal.
+
+### Ordre restant pour cette livraison
+
+1. Relire le diff de maintenance séparé du lot 1, puis préparer son commit/push
+   ultérieurement. Avant toute action susceptible de déclencher Hostinger,
+   vérifier le déclencheur et la livraison éventuellement déjà partie avec `87ff947`.
+2. Confirmer les trois témoins, les deux blocs, l'arrêt des écritures/workers et
+   les 12 contrôles externes GET/HEAD. Obtenir la protection continue décrite
+   ci-dessus avant d'autoriser la publication.
+3. Sauvegarder/vérifier la destination et l'état distant selon les procédures
+   existantes. Livrer ensuite le SHA approuvé, attendre la fin de Hostinger et
+   de Composer ; aucune publication ne doit chevaucher le script manuel.
+4. Contrôler le SHA/les empreintes livrés, les trois témoins et les deux blocs.
+   Si un témoin manque, arrêter, conserver la barrière indépendante, rétablir
+   manuellement les trois témoins et refaire tous les contrôles GET/HEAD. Comparer
+   puis installer la copie SSH du script hors publication, sans perdre de
+   protection distante supplémentaire. Valider `bash -n` et la disponibilité de curl.
+5. Vérifier la base distante, les sauvegardes restaurables, les migrations réellement
+   en attente et leur dry-run avant l'unique application par le script. La migration
+   locale du lot 1 ne prouve pas son application distante. Ne pas rejouer les
+   migrations déjà appliquées ni modifier les réglages des dictées pour ce correctif.
+6. Lancer ultérieurement le script sous les confirmations existantes, sans changer
+   leurs valeurs métier. Tout contrôle HTTP échoué avant les migrations arrête le
+   script sans les appeler. Garder les témoins et la barrière en cas d'erreur.
+7. Vérifier le résultat, les journaux et les 503 extérieures. Si une barrière amont
+   masque les règles applicatives, contrôler celles-ci par un accès d'origine
+   fiable et couvert par la même maintenance avant de lever cette barrière.
+8. Réouvrir uniquement sur décision manuelle, après tous les contrôles techniques :
+   retirer les **trois** témoins, puis lever la barrière indépendante si elle est
+   encore active. Ne relancer les écritures/workers qu'après la recette de sortie.
+
+Réouverture manuelle (commandes volontairement absentes du script de déploiement) :
+
+```bash
+# Après validation seulement. Le premier retrait peut déjà rouvrir un des accès
+# si aucune barrière indépendante ne le couvre : les trois retraits ne sont pas atomiques.
+rm -- "$PROJECT/public/.orthogram-maintenance" "$PROJECT/.orthogram-maintenance" "$DOMAIN/.orthogram-maintenance"
+for marker in "${MARKERS[@]}"; do test ! -e "$marker"; done
+# Lever ensuite la barrière indépendante selon la procédure hébergeur validée.
+```
+
+Recontrôler les six URL en GET et HEAD **sans exiger 503** : comparer aux statuts
+et redirections normaux de chaque route (connexion/admin compris), vérifier
+l'absence de 5xx et d'accès anormal par l'alias, puis la recette du lot 1. Ne pas
+imposer 200 aux pages qui redirigent normalement. En cas d'échec, remettre la
+barrière, recréer les trois témoins avec `touch -- "${MARKERS[@]}"`, vérifier les
+deux blocs et refaire `check_maintenance_http`. Aucun retrait automatique sur erreur.
+
+### Vérifications locales du correctif
+
+```powershell
+& 'C:\Program Files\Git\bin\bash.exe' -n ops/deploy_beta.sh
+python tests/ops/deploy_beta_test.py --maintenance-only
+python tests/ops/deploy_beta_test.py
+git diff --check
+```
+
+Les tests exécutent une copie du script dans des fixtures jetables sous `var/`.
+curl, PHP applicatif et Composer sont simulés ; les contrôles PHP/Dotenv utilisent
+uniquement des valeurs synthétiques. Aucun appel HTTP distant, déploiement ou
+migration réelle. Ils ne prouvent ni l'interprétation Apache/LiteSpeed distante,
+ni les permissions Linux/PHP web, ni le comportement de publication Hostinger.
+
+Résultats locaux : `bash -n` et `git diff --check` réussis ; **39 scénarios ciblés
+maintenance**, puis **56 scénarios Bash et 12 scénarios PHP/Dotenv** réussis dans
+la suite complète de déploiement. Les cas couvrent les trois témoins conservés,
+la disparition de chacun des témoins locaux avant les migrations, l'échec de
+chaque GET/HEAD sur les six URL au démarrage et juste avant migration, les
+redirections, 500/000/réponse malformée, erreurs TLS/délai, l'échec de migration
+et l'échec HTTP final sans réouverture. Les blocs racine/public sont comparés.
+L'essai existant des permissions d'assets vérifie les cibles et arguments chmod ;
+les modes POSIX effectifs restent non vérifiables sous Windows/MSYS. Une assertion
+de conservation dans sa fixture de lien MSYS a été adaptée pour lire la cible
+réelle déplacée ; la suite complète relancée passe sans désactiver de scénario.
+Les fichiers du lot 1 (`src`, migrations, templates, assets, configuration) ne
+présentent aucun diff par rapport au commit `87ff947`.
+
+## Historique — livraison des dictées
 
 Pour le module 2, suivre la [procédure d’import et d’activation séparée](module2_quiz_production.md). Elle place la sauvegarde restaurée et la revue de toutes les migrations en attente avant le script global ; aucun import ni renouvellement n’est ajouté au déploiement ordinaire.
 
@@ -35,23 +254,19 @@ En SSH avec le compte de déploiement, dans Bash :
 set -euo pipefail
 DOMAIN=/home/u849885333/domains/orthogram.fr
 PROJECT="$DOMAIN/public_html/beta"
-touch "$DOMAIN/.orthogram-maintenance"
+touch "$DOMAIN/.orthogram-maintenance" "$PROJECT/.orthogram-maintenance" "$PROJECT/public/.orthogram-maintenance"
 ```
 
-Depuis un client HTTP extérieur, vérifier **GET et HEAD = 503** sur
-`https://beta.orthogram.fr/`, `/login`, `/index.php`, `/public/index.php` et
-une URL d'asset réellement existante. Exemple de contrôle bloquant :
-
-```bash
-URL=https://beta.orthogram.fr/login
-test "$(curl -sS -L -o /dev/null -w '%{http_code}' "$URL")" = 503
-test "$(curl -sS -I -L -o /dev/null -w '%{http_code}' "$URL")" = 503
-```
+Depuis un client HTTP extérieur, vérifier **GET et HEAD directs = 503** sur
+les six URL du correctif de maintenance en tête de ce document, puis `/index.php`
+et une URL d'asset réellement existante. Utiliser `check_maintenance_http`
+ci-dessus, sans suivre les redirections.
 
 Répéter sur les autres accès réels à la bêta (`/beta/`, `/beta/public/`, alias
 constatés), puis interrompre workers/cron pouvant écrire. Ne pas pousser si ces
-contrôles échouent. Le script ne crée pas la maintenance et ne retire jamais le
-témoin, même après succès. Une 503 ne prouve pas le blocage permanent des médias.
+contrôles échouent ou si la continuité pendant la publication n'est pas garantie.
+Le script ne crée pas les témoins et n'en retire aucun, même après succès.
+Une 503 ne prouve pas le blocage permanent des médias.
 
 Éditer **sur le serveur** `$DOMAIN/.env.beta`, sans afficher son contenu dans des
 logs ni le copier dans Git. Ajouter une seule définition de chaque variable :
@@ -128,7 +343,8 @@ livrer (`git rev-parse HEAD`), puis seulement après les 503 :
 git push origin preprod
 ```
 
-Attendre la **fin réussie** de la publication automatique Hostinger et de son
+Établir d'abord la protection continue décrite en tête de ce document ; la survie
+des témoins locaux n'est pas acquise. Attendre la **fin réussie** de la publication Hostinger et de son
 installation Composer depuis `composer.lock`. Vérifier le SHA publié dans les
 journaux Hostinger (et `git rev-parse HEAD` sur la copie publiée si elle a `.git`).
 Recontrôler les 503. Ne pas lancer simultanément publication et script SSH.
@@ -148,7 +364,7 @@ En SSH, sauvegarder/comparer puis installer la copie révisée, hors publication
 
 ```bash
 cd "$PROJECT"
-test -f "$DOMAIN/.orthogram-maintenance"
+for marker in "$DOMAIN/.orthogram-maintenance" "$PROJECT/.orthogram-maintenance" "$PROJECT/public/.orthogram-maintenance"; do test -f "$marker"; done
 bash -n ops/deploy_beta.sh
 php -l ops/check_beta_environment.php
 composer check-platform-reqs --no-dev
@@ -315,13 +531,13 @@ confirmations existantes restent nécessaires. La confirmation de stockage porte
 sur les cours ; ajouter le choix explicite du report pour les dictées :
 
 ```bash
-test -f "$DOMAIN/.orthogram-maintenance"
+for marker in "$DOMAIN/.orthogram-maintenance" "$PROJECT/.orthogram-maintenance" "$PROJECT/public/.orthogram-maintenance"; do test -f "$marker"; done
 ORTHOGRAM_MAINTENANCE_CONFIRMED=1 \
 ORTHOGRAM_PRIVATE_STORAGE_VERIFIED=1 \
 ORTHOGRAM_LEGACY_HTTP_BLOCKED=1 \
 ORTHOGRAM_DICTATION_WEB_DEFERRED=1 \
   "$DOMAIN/deploy_beta.sh" --deploy
-test -f "$DOMAIN/.orthogram-maintenance"
+for marker in "$DOMAIN/.orthogram-maintenance" "$PROJECT/.orthogram-maintenance" "$PROJECT/public/.orthogram-maintenance"; do test -f "$marker"; done
 ```
 
 `--deploy` exige le témoin de bascule privée des cours et ne recopie jamais les
@@ -332,7 +548,8 @@ inchangés. Le script contient **une seule application** `migrations:migrate` ;
 ne pas lancer une application manuelle en plus du script.
 
 Ordre conservé : environnement compilé → cache → contrôle de configuration
-résolue → migrations → références cours/avatars/assets. Les constructeurs ne
+résolue → contrôles des trois témoins et des 12 réponses 503 → migrations →
+références cours/avatars/assets → nouveaux contrôles 503, sans retrait des témoins. Les constructeurs ne
 lisent pas les dictées/utilisateurs ; les warmers Doctrine chargent les métadonnées,
 Twig compile sans rendre les pages, et le listener d'inscription ne s'exécute
 que sur `prePersist`. La vérification locale avec un pilote interdisant toute
@@ -344,7 +561,8 @@ fichiers ordinaires de `public/assets` uniquement**, même avec un `umask 077`.
 Il refuse une racine ou un parent symbolique et utilise `find -P` pour ignorer
 les liens internes, sans modifier leurs cibles. Aucun changement d'umask global,
 de permissions des stockages privés ou des fichiers d'environnement. Un échec
-de cette correction arrête le script et laisse la maintenance active.
+de cette correction arrête le script sans retirer les témoins ; recontrôler
+l'effet HTTP comme décrit dans le correctif de maintenance.
 Test ciblé : `python tests/ops/deploy_beta_test.py --assets-only` (compilation et
 commandes applicatives simulées). Il couvre le lancement sous `077`, les liens
 et un échec de chmod. Sous Windows/MSYS, seuls les arguments/cibles de chmod
@@ -375,13 +593,13 @@ restrictions permanentes de tous les anciens
 chemins/alias, l'absence de lien public vers les dictées, et purger les anciens
 caches publics éventuels. Les 503 ne suffisent pas à prouver ces restrictions.
 
-Seulement après ces succès techniques, retirer **manuellement** le témoin pour
-une réouverture surveillée :
+Seulement après ces succès techniques, suivre la réouverture manuelle à **trois
+témoins** décrite en tête de ce document, avec contrôle de la barrière indépendante :
 
 ```bash
-rm -- "$DOMAIN/.orthogram-maintenance"
+rm -- "$PROJECT/public/.orthogram-maintenance" "$PROJECT/.orthogram-maintenance" "$DOMAIN/.orthogram-maintenance"
 # Si une recette échoue :
-# touch "$DOMAIN/.orthogram-maintenance"
+# touch "$DOMAIN/.orthogram-maintenance" "$PROJECT/.orthogram-maintenance" "$PROJECT/public/.orthogram-maintenance"
 ```
 
 Tester alors accueil, connexion, cours, avatars, administration et refus des
@@ -427,7 +645,7 @@ La suite comporte quatre étapes distinctes :
    partir de l'activation reçoivent leur instantané des dictées utilisables ;
    aucune reconstruction rétroactive.
 
-## Vérifications locales reproductibles et limites
+## Historique des vérifications locales de la livraison des dictées
 
 ```powershell
 & 'C:\Program Files\Git\bin\bash.exe' -n ops/deploy_beta.sh

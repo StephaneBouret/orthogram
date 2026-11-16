@@ -3,7 +3,7 @@
 Only a rewritten copy of the deployment script runs, below a fresh var/ directory.
 PHP/Composer application commands are simulated there; the PHP config checker is
 also exercised separately with the real Dotenv library and synthetic env files.
-No production/local application env file is loaded; no database is contacted.
+No production/local application env file is loaded; no database or remote HTTP endpoint is contacted.
 """
 import hashlib
 import argparse
@@ -17,6 +17,7 @@ import stat
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--assets-only", action="store_true", help="Only isolated public asset permission scenarios")
+parser.add_argument("--maintenance-only", action="store_true", help="Only maintenance guards and preservation scenarios")
 OPTIONS = parser.parse_args()
 
 REPO = Path(__file__).resolve().parents[2]
@@ -53,7 +54,30 @@ assert original.count("php bin/console doctrine:migrations:migrate ") == 1
 expect(run([BASH, "-n", str(REPO / "ops/deploy_beta.sh")]), True)
 ASSET_SCENARIOS = ["assets-umask", "assets-root-link", "assets-parent-link", "assets-chmod-failure"]
 SCENARIOS = ["success", "deferred", "bad-deferral", "initial", "missing-maintenance", "missing-confirmation", "bad-source", "bad-compiled", "bad-container", "platform-failure", "migration-failure", "storage-file", "storage-link", "dangling-link", "ancestor-link", "nested-link", "create-storage"]
-for scenario in ASSET_SCENARIOS if OPTIONS.assets_only else SCENARIOS + ASSET_SCENARIOS:
+URLS = ["https://beta.orthogram.fr/", "https://beta.orthogram.fr/login", "https://beta.orthogram.fr/admin",
+        "https://beta.orthogram.fr/public/", "https://beta.orthogram.fr/public/index.php",
+        "https://orthogram.fr/beta/public/index.php"]
+# Fail each individual GET/HEAD at entry and immediately before migrations.
+HTTP_FAILURES = {f"http-{phase}-{method}-{index}": (phase, method, url, "200", 0)
+                 for phase in (1, 2) for method in ("GET", "HEAD") for index, url in enumerate(URLS)}
+HTTP_FAILURES.update({
+    "http-redirect": (2, "HEAD", URLS[-1], "302", 0),
+    "http-server-error": (2, "GET", URLS[0], "500", 0),
+    "http-zero": (1, "HEAD", URLS[0], "000", 0),
+    "http-malformed": (2, "HEAD", URLS[-1], "503503", 0),
+    "http-timeout": (2, "HEAD", URLS[-1], "000", 28),
+    "http-tls-error": (1, "GET", URLS[0], "503", 60),
+    "http-final-failure": (3, "HEAD", URLS[-1], "200", 0),
+})
+MAINTENANCE_SCENARIOS = ["missing-project-marker", "missing-public-marker", "lost-project-marker", "lost-public-marker"] + list(HTTP_FAILURES)
+public_htaccess = (REPO / "public/.htaccess").read_text(encoding="utf-8")
+maintenance_block = public_htaccess.split("\n\n", 1)[0]
+assert "RewriteCond %{DOCUMENT_ROOT}/.orthogram-maintenance -f [OR]\n    RewriteCond /home/u849885333/domains/orthogram.fr/.orthogram-maintenance -f\n    RewriteRule ^ - [R=503,L]" in maintenance_block
+assert maintenance_block in original
+scenarios = ASSET_SCENARIOS if OPTIONS.assets_only else (
+    ["success", "initial", "migration-failure", "missing-maintenance"] + MAINTENANCE_SCENARIOS
+    if OPTIONS.maintenance_only else SCENARIOS + ASSET_SCENARIOS + MAINTENANCE_SCENARIOS)
+for scenario in scenarios:
     root = ROOT / scenario
     project = root / "public_html/beta"
     courses = root / "private/orthogram/courses"
@@ -62,6 +86,11 @@ for scenario in ASSET_SCENARIOS if OPTIONS.assets_only else SCENARIOS + ASSET_SC
     (project / "var/cache").mkdir(parents=True)
     write(root / ".env.beta", "synthetic config only")
     write(root / ".orthogram-maintenance", "keep maintenance")
+    write(project / ".orthogram-maintenance", "keep project maintenance")
+    write(project / "public/.orthogram-maintenance", "keep public maintenance")
+    write(project / "public/.htaccess", public_htaccess)
+    marker_contents = {path: path.read_bytes() for path in (
+        root / ".orthogram-maintenance", project / ".orthogram-maintenance", project / "public/.orthogram-maintenance")}
     for category in ("files", "audios", "videos"):
         (courses / category).mkdir(parents=True)
     write(courses / ".orthogram-private-ready", "orthogram-private-courses-v1\n")
@@ -76,6 +105,8 @@ case "$SCENARIO:$*" in
     bad-container:*check_beta_environment.php\ container*) exit 13;;
     platform-failure:check-platform-reqs*) exit 14;;
     migration-failure:*doctrine:migrations:migrate*) exit 15;;
+    lost-project-marker:*check_beta_environment.php\ container*) rm -- .orthogram-maintenance;;
+    lost-public-marker:*check_beta_environment.php\ container*) rm -- public/.orthogram-maintenance;;
 esac
 if [[ "$*" == 'bin/console asset-map:compile --env=prod --no-debug' ]]; then
     case "$SCENARIO" in
@@ -96,8 +127,46 @@ fi
 exit 0
 """)
         (root / "mock-bin" / name).chmod(0o755)
+    # Never fall through to real curl: assert its invocation, then simulate the HTTP boundary.
+    write(root / "mock-bin/curl", r'''#!/bin/bash
+set -eu
+[[ "$1" == --disable ]] || exit 90
+method=GET
+connect_timeout=0
+max_time=0
+no_cache=0
+for arg in "$@"; do
+    case "$arg" in
+        --head) method=HEAD;;
+        --connect-timeout) connect_timeout=1;;
+        --max-time) max_time=1;;
+        'Cache-Control: no-cache') no_cache=1;;
+        -L|--location|-k|--insecure|-f|--fail|--retry) exit 91;;
+    esac
+done
+[[ "$connect_timeout$max_time$no_cache" == 111 ]] || exit 92
+url="${!#}"
+[[ "$url" == *'?orthogram_maintenance_check='* ]] || exit 93
+url="${url%%\?*}"
+count=0
+[[ ! -f "$HTTP_COUNT" ]] || read -r count < "$HTTP_COUNT"
+count=$((count + 1))
+printf '%s\n' "$count" > "$HTTP_COUNT"
+phase=$(((count - 1) / 12 + 1))
+printf 'http %s %s %s\n' "$phase" "$method" "$url" >> "$MOCK_LOG"
+if [[ "$phase" == "$HTTP_BAD_PHASE" && "$method" == "$HTTP_BAD_METHOD" && "$url" == "$HTTP_BAD_URL" ]]; then
+    printf '%s' "$HTTP_BAD_STATUS"
+    exit "$HTTP_BAD_EXIT"
+fi
+printf '503'
+''')
+    (root / "mock-bin/curl").chmod(0o755)
     if scenario == "missing-maintenance":
         (root / ".orthogram-maintenance").unlink()
+    if scenario == "missing-project-marker":
+        (project / ".orthogram-maintenance").unlink()
+    if scenario == "missing-public-marker":
+        (project / "public/.orthogram-maintenance").unlink()
     if scenario in ("storage-file", "storage-link", "dangling-link", "create-storage"):
         (storage / "existing.mp3").unlink()
         storage.rmdir()
@@ -127,9 +196,14 @@ exit 0
     env = ENV | {
         "PATH": str(root / "mock-bin") + os.pathsep + ENV["PATH"],
         "MOCK_LOG": posix(root / "commands.log"), "SCENARIO": scenario,
+        "MOCK_BIN": posix(root / "mock-bin"), "HTTP_COUNT": posix(root / "http-count"),
+        "HTTP_BAD_PHASE": "0", "HTTP_BAD_METHOD": "", "HTTP_BAD_URL": "", "HTTP_BAD_STATUS": "", "HTTP_BAD_EXIT": "0",
         "ORTHOGRAM_MAINTENANCE_CONFIRMED": "1",
         "ORTHOGRAM_PRIVATE_STORAGE_VERIFIED": "1", "ORTHOGRAM_LEGACY_HTTP_BLOCKED": "1",
     }
+    if scenario in HTTP_FAILURES:
+        env.update(dict(zip(("HTTP_BAD_PHASE", "HTTP_BAD_METHOD", "HTTP_BAD_URL", "HTTP_BAD_STATUS", "HTTP_BAD_EXIT"),
+                            map(str, HTTP_FAILURES[scenario]))))
     if scenario in ASSET_SCENARIOS:
         write(root / "private/orthogram/courses/files/course.pdf", "private course")
         protected = [storage / "existing.mp3", root / ".env.beta", root / ".orthogram-maintenance",
@@ -156,15 +230,43 @@ exec "$REAL_CHMOD" "$@"
         env["ORTHOGRAM_DICTATION_WEB_DEFERRED"] = "1" if scenario == "deferred" else "maybe"
     args = [str(root / "deploy.sh"), "--initial-switch" if scenario == "initial" else "--deploy"]
     # Git Bash prepends its tools to PATH on startup; put the mocks first afterwards.
-    result = run([BASH, "-c", 'export PATH="$ASSET_MOCK_BIN:$PATH"; umask 077; source "$1" "${@:2}"', "test", *args] if scenario in ASSET_SCENARIOS else [BASH, *args], env=env)
+    result = run([BASH, "-c", 'export PATH="$MOCK_BIN:$PATH"; if [[ "$SCENARIO" == assets-* ]]; then umask 077; fi; source "$1" "${@:2}"', "test", *args], env=env)
     success = scenario in ("success", "deferred", "initial", "create-storage", "assets-umask")
     expect(result, success)
     log = (root / "commands.log").read_text() if (root / "commands.log").exists() else ""
-    if scenario != "missing-maintenance":
-        assert (root / ".orthogram-maintenance").read_text() == "keep maintenance"
+    for path, contents in marker_contents.items():
+        absent = ((scenario == "missing-maintenance" and path == root / ".orthogram-maintenance")
+                  or (scenario in ("missing-project-marker", "lost-project-marker") and path == project / ".orthogram-maintenance")
+                  or (scenario in ("missing-public-marker", "lost-public-marker") and path == project / "public/.orthogram-maintenance"))
+        if absent:
+            assert not path.exists(), "The script must not silently recreate a lost marker"
+        else:
+            # Python cannot follow MSYS-emulated links on Windows; inspect the
+            # actual target moved by the existing assets-parent-link fixture.
+            actual_path = (root / "moved-public/.orthogram-maintenance"
+                           if scenario == "assets-parent-link" and path == project / "public/.orthogram-maintenance" else path)
+            assert actual_path.read_bytes() == contents, "All remaining markers must survive success or failure"
     if scenario not in ("storage-file", "storage-link", "dangling-link", "create-storage", "ancestor-link"):
         assert hashlib.sha256((storage / "existing.mp3").read_bytes()).hexdigest() == before
-    assert log.count("doctrine:migrations:migrate") == (1 if success or scenario == "migration-failure" or scenario in ASSET_SCENARIOS else 0)
+    assert log.count("doctrine:migrations:migrate") == (1 if success or scenario in ("migration-failure", "http-final-failure") or scenario in ASSET_SCENARIOS else 0)
+    http_calls = [line for line in log.splitlines() if line.startswith("http ")]
+    if success:
+        assert http_calls == [f"http {phase} {method} {url}" for phase in (1, 2, 3) for url in URLS for method in ("GET", "HEAD")]
+        lines = log.splitlines()
+        migration_index = next(i for i, line in enumerate(lines) if "doctrine:migrations:migrate" in line)
+        assert lines[migration_index - 1] == f"http 2 HEAD {URLS[-1]}"
+        assert (project / ".htaccess").read_text().startswith(maintenance_block.replace("/home/u849885333/domains/orthogram.fr", posix(root)))
+    if scenario in HTTP_FAILURES:
+        phase, method, url, _, _ = HTTP_FAILURES[scenario]
+        assert http_calls[-1] == f"http {phase} {method} {url}"
+        assert "Maintenance HTTP check failed" in result.stderr
+        if phase == 1:
+            assert all(line.startswith("http ") for line in log.splitlines()), "Early failure must precede application commands"
+    if scenario in ("lost-project-marker", "lost-public-marker"):
+        assert len(http_calls) == 12
+        assert "Missing or linked maintenance marker" in result.stderr
+    if scenario == "http-final-failure":
+        assert "Code bêta préparé" not in result.stdout
     if scenario == "migration-failure":
         assert "app:avatars:repair" not in log and "asset-map:compile" not in log
     if scenario != "initial":
@@ -207,7 +309,7 @@ exec "$REAL_CHMOD" "$@"
             assert (project / "public/assets/styles/dictations.css").read_text() == "dictations"
     print("PASS shell", scenario)
 
-if OPTIONS.assets_only:
+if OPTIONS.assets_only or OPTIONS.maintenance_only:
     print("Fixtures retained for inspection:", ROOT)
     raise SystemExit(0)
 
