@@ -47,7 +47,7 @@ export default class extends Controller {
         'finishLabel',
         'finishSpinner',
         'timezoneLabel',
-        'courseContentTitle',
+        'overview',
         'calendarButton',
         'calendarDetails',
         'separateFirstNotice',
@@ -111,7 +111,7 @@ export default class extends Controller {
         event.preventDefault();
 
         this.sectionTarget.hidden = true;
-        this.courseContentTitleTarget.focus();
+        this.overviewTarget.focus();
     }
 
     async disable(event) {

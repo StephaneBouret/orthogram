@@ -1619,6 +1619,28 @@ button.btn.btn-abandonment:hover {
     color: var(--course-link-hover) !important;
 }
 
+.course-page .course-section-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--course-link);
+    font: inherit;
+    text-align: left;
+}
+
+.course-page .course-section-toggle:hover {
+    color: var(--course-link-hover);
+}
+
+.course-page .course-section-toggle:focus-visible {
+    outline: 2px solid var(--course-link-hover);
+    outline-offset: 3px;
+}
+
 .course-page .thumb,
 .course-page .list-group .list-group-item .list-group-icon,
 .course-page .list-group .list-group-item .list-group-icon.completed {
@@ -2428,11 +2450,6 @@ html[data-bs-theme="dark"] .word-token--missed {
     cursor: progress;
 }
 
-.program-schedule-section {
-    border-bottom: 1px solid var(--course-border);
-    padding-bottom: 2rem;
-}
-
 .program-schedule-icon {
     font-size: 1.5rem;
     height: 3rem;
@@ -3072,25 +3089,6 @@ html[data-bs-theme="dark"] .word-token--missed {
     outline: 3px solid var(--orthogram-text);
     outline-offset: 3px;
     box-shadow: none;
-}
-
-.program-course-content-heading {
-    align-items: end;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1.25rem;
-}
-
-.program-course-content-heading h2 {
-    color: var(--course-text);
-    font-size: 1.3rem;
-    font-weight: 700;
-    margin-bottom: 0.25rem;
-}
-
-.program-course-content-heading p {
-    color: var(--course-muted);
-    margin-bottom: 0;
 }
 
 @media (max-width: 767.98px) {

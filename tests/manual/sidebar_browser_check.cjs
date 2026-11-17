@@ -54,9 +54,9 @@ async function main() {
     const check = async (expression, label) => { assert.ok(await ev(expression), label); report.push(label); console.log(`OK ${label}`); };
     const click = selector => ev(`document.querySelector(${JSON.stringify(selector)}).click()`);
     const summary = '/courses/quiz-formation';
-    const visit = async route => {
+    const visit = async (route, destination = route) => {
         await ev(`window.Turbo.visit(${JSON.stringify(route)})`);
-        await wait(`location.pathname === ${JSON.stringify(route)} && document.readyState === 'complete' && !!document.querySelector('[data-sidebar-section]')`);
+        await wait(`location.pathname === ${JSON.stringify(destination)} && document.readyState === 'complete' && !!document.querySelector('[data-sidebar-section]')`);
         await pause(150);
     };
     const panel = (prefix, slug) => `document.querySelector('#${prefix}-collapse-' + window.sectionIds[${JSON.stringify(slug)}])`;
@@ -81,7 +81,50 @@ async function main() {
     await send('Page.addScriptToEvaluateOnNewDocument', { source: `window.sectionIds = ${JSON.stringify(ids)};` });
     for (const prefix of ['desktop', 'mobile']) await check(`${open(prefix, 'intro')} && !${open(prefix, 'empty')} && !${open(prefix, 'exercise')}`, `${prefix}: seule l’introduction est ouverte`);
     await check('document.querySelectorAll("[data-sidebar-section].show").length === 2', 'Une seule section ouverte par menu');
+    await check(`!document.querySelector('.program-course-content, #program-course-content-title, a[href*="#section-"]')`, 'Sommaire apprenant : liste centrale et ancres supprimées');
+    const mouseClick = async selector => {
+        await ev(`document.querySelector(${JSON.stringify(selector)}).scrollIntoView({block: 'center', behavior: 'instant'})`);
+        const point = await ev(`(() => { const r = document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect(); return {x: r.x + r.width / 2, y: r.y + r.height / 2}; })()`);
+        await send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...point });
+        await send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...point });
+    };
+    for (const [prefix, width] of [['desktop', 1440], ['mobile', 390]]) {
+        await send('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: false });
+        await visit(summary + '/intro/first');
+        await visit(summary);
+        await check('!!document.querySelector("[data-course-resume] a")', `${prefix}: lien de reprise conservé`);
+        if (prefix === 'mobile') await mouseClick('.course-mobile-menu-toggle');
+        const button = `[aria-controls="${prefix}-collapse-${ids.intro}"]`;
+        await mouseClick(button + ' > span:first-child');
+        await wait(`!${panel(prefix, 'intro')}.classList.contains('collapsing')`);
+        await check(`!${open(prefix, 'intro')} && location.pathname === '${summary}'`, `${prefix}: clic sur le nom replie sans navigation`);
+        await mouseClick(button + ' .icon');
+        await wait(`${open(prefix, 'intro')} && !${panel(prefix, 'intro')}.classList.contains('collapsing')`);
+        await check(`document.querySelector(${JSON.stringify(button)}).getAttribute('aria-expanded') === 'true'`, `${prefix}: chevron et titre partagent une seule bascule`);
+        if (prefix === 'mobile') {
+            await check('document.querySelector(".course-mobile-menu").classList.contains("is-open")', 'Déplier une section conserve le menu mobile ouvert');
+            await mouseClick('.course-mobile-menu-toggle');
+        }
+        for (const theme of ['light', 'dark']) {
+            await ev(`document.documentElement.setAttribute('data-bs-theme', '${theme}')`);
+            await check('document.documentElement.scrollWidth <= innerWidth', `${prefix} ${theme}: aucun débordement apprenant`);
+            if (prefix === 'desktop') {
+                await mouseClick('[data-fullscreen-target="openButton"]');
+                await check('document.querySelector(".sidebar-container").classList.contains("is-fullscreen") && getComputedStyle(document.querySelector("#customer-sidebar")).display === "none"', `${theme}: mode agrandi actif`);
+                await mouseClick('[data-fullscreen-target="closeButton"]');
+                await check('!document.querySelector(".sidebar-container").classList.contains("is-fullscreen")', `${theme}: retour au mode normal`);
+            }
+            await ev('document.querySelector(".program-summary-overview").scrollIntoView({block: "center", behavior: "instant"})');
+            const screenshot = await send('Page.captureScreenshot', { format: 'png' });
+            fs.writeFileSync(path.join(artifacts, `learner-${prefix}-${theme}.png`), Buffer.from(screenshot.data, 'base64'));
+        }
+        await mouseClick('[data-action="learning-reminder#reject"]');
+        await check('document.querySelector("[data-learning-reminder-target=section]").hidden && document.activeElement.matches(".program-summary-overview") && document.activeElement.getBoundingClientRect().height > 0 && getComputedStyle(document.activeElement).visibility === "visible"', `${prefix}: Rejeter masque la carte et place le focus sur la présentation visible`);
+        await check('browserErrors.length === 0', `${prefix}: Rejeter sans erreur JavaScript`);
+    }
+    await send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
     await visit(summary + '/intro/first');
+    await check(String.raw`document.querySelector("#lesson-header .breadcrumb").textContent.replace(/\s+/g, " ").trim() === "Accueil Sommaire Cours"`, 'Lecteur : breadcrumb sans section');
     await toggle('desktop', 'intro'); await toggle('desktop', 'exercise');
     await validate();
     await check(`!${open('desktop', 'intro')} && ${open('desktop', 'exercise')} && ${open('mobile', 'intro')} && !${open('mobile', 'exercise')}`, 'Validation partielle : choix indépendants conservés, menu masqué inclus');
@@ -135,8 +178,8 @@ async function main() {
     await check('document.querySelectorAll("[data-sidebar-section].show").length === 0', 'Sommaire entièrement terminé replié');
     await visit(summary + '/intro/first');
     await check(`${open('desktop', 'intro')} && ${open('mobile', 'intro')}`, 'Lien direct vers un cours terminé : section courante ouverte');
-    await visit(summary + '/exercise');
-    await check(`${open('desktop', 'exercise')} && ${open('mobile', 'exercise')}`, 'Page de section terminée : section courante ouverte');
+    await visit(summary + '/exercise', summary);
+    await check('document.querySelectorAll("[data-sidebar-section].show").length === 0', 'Ancienne URL de section : sommaire sans sélection de cours');
     await ev('history.back()');
     await wait(`location.pathname === '${summary}/intro/first' && ${open('desktop', 'intro')}`);
     await check(`${open('mobile', 'intro')} && !${open('desktop', 'exercise')}`, 'Retour Turbo : états recalculés');
@@ -157,45 +200,73 @@ async function main() {
     await send('Input.dispatchKeyEvent', { type: 'keyUp', key: ' ', code: 'Space', windowsVirtualKeyCode: 32 });
     await wait(`!${open('mobile', 'exercise')} && !${panel('mobile', 'exercise')}.classList.contains('collapsing')`);
     await check(`document.querySelector('[aria-controls="mobile-collapse-' + sectionIds.exercise + '"]').getAttribute('aria-expanded') === 'false'`, 'Clavier Espace : une seule bascule après plusieurs navigations');
+    await check('document.querySelector(".course-mobile-menu").classList.contains("is-open")', 'Clavier : le menu mobile reste ouvert');
     await check('new Set([...document.querySelectorAll("[id]")].map(e => e.id)).size === document.querySelectorAll("[id]").length', 'Identifiants uniques');
     await check('browserErrors.length === 0', 'Aucune erreur JavaScript');
 
-    // Public rendering and manual collapse use the same real sidebar on both pages.
-    for (const route of [summary, summary + '/intro/first']) {
-        await send('Page.navigate', { url: base + route + '?anonymous=1' });
-        await wait(`document.readyState === 'complete' && !!window.Turbo && !!document.querySelector('.course-discovery-actions a[href="/login"]')`);
-        await check('document.querySelectorAll("[data-sidebar-section].show").length === 12', `${route}: toutes les sections ouvertes en anonyme`);
-        await check('!document.querySelector("[role=progressbar], #completion-button, .program-summary-stats")', `${route}: aucune progression ni statistique vide`);
-        await check('!document.querySelector(".navbar").textContent.includes("📣 Contact") && !document.querySelector(".main-content").textContent.includes("Durée totale")', `${route}: Contact et durée totale absents`);
-        for (const [prefix, width] of [['desktop', 1440], ['mobile', 390]]) {
-            await send('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: false });
-            if (prefix === 'mobile') await click('.course-mobile-menu-toggle');
-            await toggle(prefix, 'intro');
-            await check(`!${open(prefix, 'intro')} && document.querySelector('[aria-controls="${prefix}-collapse-' + sectionIds.intro + '"]').getAttribute('aria-expanded') === 'false' && document.querySelector('[aria-controls="${prefix}-collapse-' + sectionIds.intro + '"] .opened').classList.contains('d-none')`, `${route} ${prefix}: repli manuel et chevron`);
-            await toggle(prefix, 'intro');
-            await check(`${open(prefix, 'intro')} && document.querySelector('[aria-controls="${prefix}-collapse-' + sectionIds.intro + '"]').getAttribute('aria-expanded') === 'true'`, `${route} ${prefix}: réouverture manuelle`);
-            if (prefix === 'mobile') await click('.course-mobile-menu-toggle');
-            for (const theme of ['light', 'dark']) {
-                await ev(`document.documentElement.setAttribute('data-bs-theme', '${theme}')`);
-                await check(`(() => {
-                    const button = document.querySelector('.course-discovery-actions .btn-outline-grey');
-                    const style = getComputedStyle(button);
-                    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
-                    return Math.abs(parseFloat(style.paddingTop) - .85 * rem) < .02
-                        && Math.abs(parseFloat(style.paddingBottom) - .85 * rem) < .02
-                        && Math.abs(parseFloat(style.paddingLeft) - 1.4 * rem) < .02
-                        && Math.abs(parseFloat(style.paddingRight) - 1.4 * rem) < .02
-                        && button.getAttribute('href') === '/login'
-                        && document.documentElement.scrollWidth <= innerWidth;
-                })()`, `${route} ${prefix} ${theme}: padding calculé, connexion et absence de débordement`);
-                if (route === summary) {
-                    await ev(`document.querySelector('.course-discovery-actions .btn-outline-grey').scrollIntoView({block: 'center'})`);
-                    const screenshot = await send('Page.captureScreenshot', { format: 'png' });
-                    fs.writeFileSync(path.join(artifacts, `discovery-${prefix}-${theme}.png`), Buffer.from(screenshot.data, 'base64'));
-                }
+    // All four identities use the same controls, with their actual access rights.
+    for (const profile of ['anonymous', 'unsubscribed', 'subscriber', 'admin']) {
+        const hasAccess = ['subscriber', 'admin'].includes(profile);
+        for (const route of [summary, summary + '/intro/first']) {
+            await send('Page.navigate', { url: base + route + '?profile=' + profile });
+            await wait(`location.pathname === '${route}' && location.search === '?profile=${profile}' && document.readyState === 'complete' && !!window.Turbo && !!document.querySelector('[data-sidebar-section]')`);
+            const label = `${profile} ${route}`;
+            const expectedOpen = profile === 'anonymous' ? 12 : profile === 'admin' && route === summary ? 0 : 2;
+            await check(`document.querySelectorAll('[data-sidebar-section].show').length === ${expectedOpen}`, `${label}: ouverture initiale préservée`);
+            await check(`!document.querySelector('.program-course-content, #program-course-content-title, [id^="section-"], a[href*="#section-"]')`, `${label}: liste centrale et ancres absentes`);
+            await check('document.querySelectorAll("button.course-section-toggle").length === 12 && !document.querySelector("a.course-section-link, .course-section-toggle a, .course-section-toggle button")', `${label}: un bouton par section et par menu`);
+            if (hasAccess) {
+                await check('!!document.querySelector("[role=progressbar]") && !document.querySelector(".course-discovery-actions")', `${label}: progression réservée conservée`);
+            } else {
+                await check('!document.querySelector("[role=progressbar], #completion-button, .program-summary-stats, #resume-course-title, [data-controller=learning-reminder]")', `${label}: éléments réservés absents`);
+                await check(`!!document.querySelector('.course-discovery-actions a[href="/abonnement"]') && ${profile === 'anonymous' ? '' : '!'}document.querySelector('.course-discovery-actions a[href="/login"]')`, `${label}: boutons de découverte conservés selon la connexion`);
             }
+            if (route === summary) await check('document.querySelector(".program-summary-lead").textContent.includes("Test isolé")', `${label}: présentation conservée`);
+            for (const [prefix, width] of [['desktop', 1440], ['mobile', 390]]) {
+                await send('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: false });
+                if (prefix === 'mobile') await mouseClick('.course-mobile-menu-toggle');
+                const button = `[aria-controls="${prefix}-collapse-${ids.intro}"]`;
+                if (!await ev(open(prefix, 'intro'))) await toggle(prefix, 'intro');
+                await mouseClick(button + ' > span:first-child');
+                await wait(`!${panel(prefix, 'intro')}.classList.contains('collapsing')`);
+                await check(`!${open(prefix, 'intro')} && location.pathname === '${route}'`, `${label} ${prefix}: clic sur le nom sans navigation`);
+                await ev(`document.querySelector(${JSON.stringify(button)}).focus()`);
+                await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, text: '\r' });
+                await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 });
+                await wait(`${open(prefix, 'intro')} && !${panel(prefix, 'intro')}.classList.contains('collapsing')`);
+                await check(`document.querySelector(${JSON.stringify(button)}).getAttribute('aria-expanded') === 'true' && !document.querySelector('${button} .opened').classList.contains('d-none')`, `${label} ${prefix}: Entrée et aria-expanded cohérents`);
+                await send('Input.dispatchKeyEvent', { type: 'keyDown', key: ' ', code: 'Space', windowsVirtualKeyCode: 32 });
+                await send('Input.dispatchKeyEvent', { type: 'keyUp', key: ' ', code: 'Space', windowsVirtualKeyCode: 32 });
+                await wait(`!${open(prefix, 'intro')} && !${panel(prefix, 'intro')}.classList.contains('collapsing')`);
+                await check(`document.querySelector(${JSON.stringify(button)}).getAttribute('aria-expanded') === 'false'`, `${label} ${prefix}: Espace, une seule bascule`);
+                await mouseClick(button + ' .icon');
+                await wait(`${open(prefix, 'intro')} && !${panel(prefix, 'intro')}.classList.contains('collapsing')`);
+                await check(`location.pathname === '${route}'`, `${label} ${prefix}: chevron sans navigation`);
+                if (!hasAccess) await check(`${panel(prefix, 'intro')}.querySelector('.badge').textContent === 'Gratuit' && !!${panel(prefix, 'intro')}.querySelector('[aria-disabled="true"] svg') && ${panel(prefix, 'intro')}.textContent.includes('Réservé aux abonnés')`, `${label} ${prefix}: gratuit, cadenas et mentions conservés`);
+                if (prefix === 'mobile') await check('document.querySelector(".course-mobile-menu").classList.contains("is-open")', `${label}: menu mobile maintenu ouvert`);
+                for (const theme of ['light', 'dark']) {
+                    await ev(`document.documentElement.setAttribute('data-bs-theme', '${theme}')`);
+                    await check('document.documentElement.scrollWidth <= innerWidth', `${label} ${prefix} ${theme}: aucun débordement`);
+                    if (route === summary) {
+                        await ev(`document.querySelector(${JSON.stringify(button)}).scrollIntoView({block: 'center', behavior: 'instant'})`);
+                        const screenshot = await send('Page.captureScreenshot', { format: 'png' });
+                        fs.writeFileSync(path.join(artifacts, `${profile}-${prefix}-${theme}.png`), Buffer.from(screenshot.data, 'base64'));
+                    }
+                }
+                if (prefix === 'mobile') await mouseClick('.course-mobile-menu-toggle');
+            }
+            const access = await ev(`(async () => { const r = await fetch('${summary}/intro/second'); return {status: r.status, path: new URL(r.url).pathname}; })()`);
+            assert.equal(access.status, profile === 'unsubscribed' ? 403 : 200, `${label}: accès direct réservé`);
+            assert.equal(access.path, profile === 'anonymous' ? '/login' : summary + '/intro/second');
+            report.push(`${label}: accès direct réservé contrôlé`);
+            if (route === summary) {
+                await mouseClick('.course-mobile-menu-toggle');
+                await mouseClick(`.course-mobile-menu-panel a[href="${summary}/intro/first"]`);
+                await wait(`location.pathname === '${summary}/intro/first' && !!document.querySelector('#lesson-content')`);
+                await check('!document.querySelector(".course-mobile-menu").classList.contains("is-open")', `${label}: lien du cours gratuit utilisable, menu fermé à la navigation`);
+            }
+            await check('browserErrors.length === 0', `${label}: aucune erreur JavaScript`);
         }
-        await check('browserErrors.length === 0', `${route}: aucune erreur JavaScript en anonyme`);
     }
     fs.writeFileSync(path.join(artifacts, 'report.json'), JSON.stringify(report, null, 2));
     console.log(`Report: ${artifacts}`);

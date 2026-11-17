@@ -88,7 +88,7 @@ final class DictationController extends AbstractController
 
             return $this->render($template, [
                 'writing' => $data,
-                'sectionUrl' => $this->generateUrl('app_course_section', ['programSlug' => $section->getProgram()->getSlug(), 'sectionSlug' => $section->getSlug()]),
+                'summaryUrl' => $this->generateUrl('app_course_program_summary', ['slug' => $section->getProgram()->getSlug()]),
             ]);
         });
     }

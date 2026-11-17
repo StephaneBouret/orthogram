@@ -16,9 +16,6 @@
                                 <li class="breadcrumb-item">
                                     <a href="{{ path('app_course_program_summary', {'slug': program.slug}) }}" class="text-muted">Sommaire</a>
                                 </li>
-                                <li class="breadcrumb-item">
-                                    <a href="{{ is_granted('SECTION_VIEW', section) ? path('app_course_section', {'programSlug': program.slug, 'sectionSlug': section.slug}) : path('app_course_program_summary', {slug: program.slug}) ~ '#section-' ~ section.id }}" class="text-muted">Section</a>
-                                </li>
                                 <li class="breadcrumb-item active" aria-current="page">Cours</li>
                             </ol>
                         </nav>

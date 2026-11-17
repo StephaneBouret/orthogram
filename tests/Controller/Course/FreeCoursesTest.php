@@ -162,6 +162,9 @@ final class FreeCoursesTest extends WebTestCase
                     $expanded = 'anonymous' === $profile || $id === $sectionId;
                     $panel = '#'.$prefix.'-collapse-'.$id;
                     $button = 'button[aria-controls="'.$prefix.'-collapse-'.$id.'"]';
+                    self::assertSelectorCount(1, $button);
+                    self::assertSelectorExists($button.'.course-section-toggle[type="button"]:not([data-action])');
+                    self::assertSelectorNotExists($button.' a, '.$button.' button');
                     self::assertSelectorExists($panel.($expanded ? '.show' : ':not(.show)'));
                     self::assertSelectorExists($button.'[aria-expanded="'.($expanded ? 'true' : 'false').'"]');
                     self::assertSelectorExists($button.($expanded ? ':not(.collapsed)' : '.collapsed'));
@@ -187,6 +190,7 @@ final class FreeCoursesTest extends WebTestCase
             self::assertTrue($this->client->getResponse()->headers->hasCacheControlDirective('no-store'));
             self::assertSelectorExists('meta[name="turbo-cache-control"][content="no-cache"]');
             $html = $this->client->getResponse()->getContent();
+            self::assertSelectorNotExists('.program-course-content, #program-course-content-title, [id^="section-"], a[href*="#section-"]');
             self::assertStringNotContainsString('SECRET', $html);
             self::assertStringNotContainsString('data-learning-reminder-', $html);
             foreach (['#comments', '#completion-button', '[role="progressbar"]', '.completed',
@@ -200,6 +204,8 @@ final class FreeCoursesTest extends WebTestCase
                 self::assertSame(1, $list->filter('a[href="'.self::READER.'"]')->count());
                 self::assertSame(3, $list->filter('[aria-disabled="true"]')->count());
                 self::assertSame(1, $list->filter('.badge')->count());
+                self::assertStringContainsString('Gratuit', $list->filter('.badge')->text());
+                self::assertSame(3, $list->filter('[aria-disabled="true"] .list-group-icon[aria-hidden="true"] svg')->count());
                 self::assertStringContainsString('Réservé aux abonnés', $list->text());
             }
             self::assertSelectorNotExists('a[href="'.self::SUMMARY.'/quiz-section"]');
@@ -207,11 +213,15 @@ final class FreeCoursesTest extends WebTestCase
             self::assertSelectorTextContains('.navbar a[href="'.self::SUMMARY.'"]', 'Découvrir les cours');
             if (self::SUMMARY === $url) {
                 self::assertSelectorNotExists('.program-summary-stats');
-                self::assertSelectorTextContains('.program-course-content-heading', '1 section · 4 cours');
                 self::assertSelectorTextNotContains('.main-content', 'Durée totale');
                 self::assertSelectorNotExists('[aria-label="Durée de la formation"]');
-                self::assertSelectorCount(1, '.program-course-content .badge');
-                self::assertSelectorTextContains('.program-course-content .badge', 'Gratuit');
+                self::assertSelectorTextContains('.program-summary-lead', 'Test isolé');
+                self::assertSelectorTextContains('.course-discovery-actions a[href="/abonnement"]', 'Découvrir l’offre');
+                if ('anonymous' === $profile) {
+                    self::assertSelectorTextContains('.course-discovery-actions a[href="/login"]', 'Se connecter');
+                } else {
+                    self::assertSelectorNotExists('.course-discovery-actions a[href="/login"]');
+                }
             }
         }
         self::assertSelectorTextContains('#lesson-content > .badge', 'Cours gratuit');
@@ -269,6 +279,9 @@ final class FreeCoursesTest extends WebTestCase
             $this->client->request('GET', $url);
             self::assertResponseIsSuccessful();
             self::assertSelectorExists('[data-controller="learning-reminder"]');
+            self::assertSelectorNotExists('.program-course-content, #program-course-content-title, [id^="section-"]');
+            self::assertSelectorNotExists('a[href*="#section-"], a[href="'.self::SUMMARY.'/quiz-section"]');
+            self::assertSelectorExists('.program-summary-overview[tabindex="-1"][data-learning-reminder-target="overview"]');
             self::assertSelectorExists('[role="progressbar"]');
             self::assertSelectorCount(1, '.program-summary-stat');
             self::assertSelectorTextContains('.program-summary-stats', '1 / 4 Cours terminés');
@@ -327,7 +340,60 @@ final class FreeCoursesTest extends WebTestCase
         self::assertSame(self::SUMMARY, parse_url($link->getUri(), PHP_URL_PATH));
         $this->client->click($link);
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('#program-course-content-title', 'Contenu de la formation');
+        self::assertSelectorNotExists('.program-course-content, #program-course-content-title, a[href*="#section-"]');
+    }
+
+    #[DataProvider('privateProfiles')]
+    public function testLegacySectionRedirectsToItsOwnProgramAndKeeps404s(string $profile): void
+    {
+        $this->profile($profile);
+        $other = (new Program())->setName('Autre formation')->setSlug('autre')->setDescription('Autre')->setPrice(0);
+        $section = (new Sections())->setName('Autre section')->setSlug('autre-section')->setProgram($other);
+        $this->em->persist($other);
+        $this->em->persist($section);
+        $this->em->flush();
+        foreach ([self::SUMMARY.'/quiz-section' => self::SUMMARY, '/courses/autre/autre-section' => '/courses/autre'] as $url => $summary) {
+            $this->client->request('GET', $url);
+            self::assertResponseRedirects($summary, 302);
+            self::assertTrue($this->client->getResponse()->headers->hasCacheControlDirective('no-store'));
+            $this->client->followRedirect();
+            self::assertResponseIsSuccessful();
+            self::assertSelectorNotExists('.program-course-content');
+        }
+        foreach ([self::SUMMARY.'/autre-section', '/courses/autre/quiz-section', '/courses/inconnu/quiz-section', self::SUMMARY.'/inconnue'] as $url) {
+            $this->client->request('GET', $url);
+            self::assertResponseStatusCodeSame(404);
+        }
+    }
+
+    #[DataProvider('displayProfiles')]
+    public function testLegacySectionDoesNotBypassAuthorization(string $profile): void
+    {
+        $this->profile($profile);
+        $this->client->request('GET', self::SUMMARY.'/quiz-section');
+        if (in_array($profile, ['subscriber', 'admin'], true)) {
+            self::assertResponseRedirects(self::SUMMARY, 302);
+        } elseif (in_array($profile, ['anonymous', 'remember-me'], true)) {
+            self::assertResponseRedirects('/login');
+        } else {
+            self::assertResponseStatusCodeSame(403);
+        }
+    }
+
+    #[DataProvider('privateProfiles')]
+    public function testReaderBreadcrumbForLessonsExercisesAndQuizzes(string $profile): void
+    {
+        $this->profile($profile);
+        foreach ([self::READER => 'Lecture gratuite', self::SUMMARY.'/quiz-section/exercice-reserve' => 'Exercice réservé', self::SUMMARY.'/quiz-section/quiz-cours' => 'Quiz cours'] as $url => $title) {
+            $this->client->request('GET', $url);
+            self::assertResponseIsSuccessful();
+            self::assertSelectorCount(3, '#lesson-header .breadcrumb-item');
+            self::assertSelectorTextContains('#lesson-header .breadcrumb', 'Accueil Sommaire Cours');
+            self::assertSelectorExists('#lesson-header .breadcrumb a[href="/"]');
+            self::assertSelectorExists('#lesson-header .breadcrumb a[href="'.self::SUMMARY.'"]');
+            self::assertSelectorTextContains('#lesson-header h1.pr-md-6', $title);
+            self::assertSelectorNotExists('a[href*="#section-"], a[href="'.self::SUMMARY.'/quiz-section"]');
+        }
     }
 
     public function testInactiveAndIncompleteTwoFactorCannotReadFreeCourse(): void

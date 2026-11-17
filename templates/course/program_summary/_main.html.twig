@@ -69,7 +69,7 @@
     </div>
 
     {% if program.description or canInteract %}
-    <section class="program-summary-overview spacer-section" aria-label="Présentation de la formation">
+    <section class="program-summary-overview spacer-section learning-reminder-focus-target" aria-label="Présentation de la formation"{% if canInteract %} tabindex="-1" data-learning-reminder-target="overview"{% endif %}>
         {% if program.description %}
             <div class="program-summary-lead">
                 {{ program.description|raw|nl2br }}
@@ -94,7 +94,7 @@
 
     {% if canInteract %}
     <div
-        class="program-schedule-section spacer-section"
+        class="program-schedule-section"
         data-learning-reminder-target="section"
     >
         <section
@@ -190,68 +190,4 @@
         {% include 'course/program_summary/_discovery.html.twig' %}
     {% endif %}
 
-    <section class="program-course-content" aria-labelledby="program-course-content-title">
-        <header class="program-course-content-heading">
-            <div>
-                <h2
-                    id="program-course-content-title"
-                    class="learning-reminder-focus-target"
-                    tabindex="-1"
-                    {% if canInteract %}data-learning-reminder-target="courseContentTitle"{% endif %}
-                >
-                    Contenu de la formation
-                </h2>
-                <p>
-                    {{ sections|length }} {{ sections|length > 1 ? 'sections' : 'section' }}
-                    · {{ nbrCourses }} cours
-                </p>
-            </div>
-        </header>
-
-        {% for section in sections %}
-            {% set courseCount = coursesBySection[section.id] ?? section.publishedCourses|length %}
-            <div class="card v9d3ks" id="section-{{ section.id }}">
-                <div class="card-body">
-                    <div class="list-group list-group-menu list-group-sm">
-                        <nav aria-label="{{ section.name }}">
-                            <header class="pb7jep">
-                                <a class="lk25pol" href="{{ is_granted('SECTION_VIEW', section) ? path('app_course_section', {'programSlug': program.slug, 'sectionSlug': section.slug}) : '#section-' ~ section.id }}">
-                                    <h2>
-                                        {{ section.name }}
-                                    </h2>
-                                </a>
-                                {% if canInteract and section.shortDescription %}
-                                    <div class="text-longform text-lg text-muted mb-2">
-                                        <div>{{ section.shortDescription|raw|nl2br }}</div>
-                                    </div>
-                                {% endif %}
-                                <h3 class="mt-8 mb-4">
-                                    {{ courseCount }} cours
-                                </h3>
-                            </header>
-                            <ol class="pl-0 mb-0 list-unstyled">
-                                {% include 'course/_dictation_entry.html.twig' with {position: 'before'} %}
-                                {% for course in section.publishedCourses %}
-                                    <li>
-                                        {% include 'course/program_summary/_course_item.html.twig' with { course: course } %}
-                                    </li>
-                                {% else %}
-                                    <li class="text-muted">Aucun cours pour le moment</li>
-                                {% endfor %}
-                                {% include 'course/_dictation_entry.html.twig' with {position: 'after'} %}
-                            </ol>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-        {% else %}
-            <div class="card v9d3ks">
-                <div class="card-body">
-                    <p class="mb-0 text-muted">Le sommaire de ce programme sera bientôt disponible.</p>
-                </div>
-            </div>
-        {% endfor %}
-    </section>
-
-    <div class="spacer-section"></div>
 </div>

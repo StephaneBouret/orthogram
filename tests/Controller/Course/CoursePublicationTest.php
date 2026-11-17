@@ -129,6 +129,10 @@ final class CoursePublicationTest extends WebTestCase
         $this->publish($this->exerciseCourseId, false);
         foreach ([self::SUMMARY, self::SECTION, self::SECTION.'/quiz-cours', self::SECTION.'/lecture'] as $url) {
             $this->client->request('GET', $url);
+            if (self::SECTION === $url) {
+                self::assertResponseRedirects(self::SUMMARY, 302);
+                $this->client->followRedirect();
+            }
             self::assertResponseIsSuccessful();
             self::assertSelectorNotExists('a[href="'.self::SECTION.'/exercice"]');
             self::assertStringNotContainsString('Exercice suspendu', $this->client->getResponse()->getContent());
@@ -301,6 +305,10 @@ final class CoursePublicationTest extends WebTestCase
         }
         foreach (['/ma-formation', self::SECTION] as $url) {
             $this->client->request('GET', $url);
+            if (self::SECTION === $url) {
+                self::assertResponseRedirects(self::SUMMARY, 302);
+                $this->client->followRedirect();
+            }
             self::assertResponseIsSuccessful();
             self::assertSelectorNotExists('#resume-course-title');
             self::assertSelectorNotExists('[role="progressbar"]');

@@ -35,6 +35,16 @@ if ('pdo_sqlite' !== $connection->getParams()['driver'] || $database !== str_rep
 if ($initialize) {
     (new Doctrine\ORM\Tools\SchemaTool($em))->createSchema($em->getMetadataFactory()->getAllMetadata());
     [$user, $quizCourse] = App\Tests\Support\QuizPlayerFactory::create($em);
+    foreach (['unsubscribed', 'subscriber'] as $profile) {
+        $profileUser = App\Tests\Support\QuizPlayerFactory::user('sidebar-'.$profile.'@example.test')->setRoles(['ROLE_USER']);
+        $em->persist($profileUser);
+        if ('subscriber' === $profile) {
+            $subscription = (new App\Entity\Subscription())->setEmail($profileUser->getEmail())
+                ->setStatus(App\Enum\SubscriptionStatus::ACTIVE)->setIsLifetime(true);
+            $profileUser->addSubscription($subscription);
+            $em->persist($subscription);
+        }
+    }
     $quizCourse->getSection()->setPosition(4);
     $program = $quizCourse->getSection()->getProgram();
     foreach (['intro' => 0, 'empty' => 1, 'done' => 2, 'exercise' => 3, 'last' => 5] as $slug => $position) {
@@ -59,13 +69,20 @@ if ($initialize) {
     $em->flush();
     $em->clear();
 }
-$anonymous = '1' === ($_GET['anonymous'] ?? null);
-$jarPath = $root.($anonymous ? '/anonymous.cookies' : '/browser.cookies');
+$profile = $_GET['profile'] ?? ('1' === ($_GET['anonymous'] ?? null) ? 'anonymous' : ($_COOKIE['sidebar_profile'] ?? 'admin'));
+if (!in_array($profile, ['anonymous', 'unsubscribed', 'subscriber', 'admin'], true)) {
+    http_response_code(400);
+    exit;
+}
+// Keep the chosen fixture identity during real link navigation and AJAX requests.
+setcookie('sidebar_profile', $profile, ['path' => '/', 'httponly' => true, 'samesite' => 'Strict']);
+$jarPath = $root.'/'.$profile.'.cookies';
 $jar = is_file($jarPath) ? unserialize(file_get_contents($jarPath)) : new Symfony\Component\BrowserKit\CookieJar();
 $client = new Symfony\Bundle\FrameworkBundle\KernelBrowser($kernel, [], null, $jar);
 $client->disableReboot();
-if (!$anonymous && !is_file($jarPath)) {
-    $client->loginUser($em->getRepository(App\Entity\User::class)->findOneBy(['email' => 'quiz-player@example.test']));
+if ('anonymous' !== $profile && !is_file($jarPath)) {
+    $email = 'admin' === $profile ? 'quiz-player@example.test' : 'sidebar-'.$profile.'@example.test';
+    $client->loginUser($em->getRepository(App\Entity\User::class)->findOneBy(['email' => $email]));
 }
 $headers = array_filter($_SERVER, static fn ($key) => (str_starts_with($key, 'HTTP_') && 'HTTP_COOKIE' !== $key) || in_array($key, ['CONTENT_TYPE', 'CONTENT_LENGTH'], true), ARRAY_FILTER_USE_KEY);
 $client->request($_SERVER['REQUEST_METHOD'], 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'], $_POST, [], $headers, file_get_contents('php://input'));

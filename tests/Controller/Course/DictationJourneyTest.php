@@ -115,6 +115,14 @@ final class DictationJourneyTest extends WebTestCase
         return dirname($this->url());
     }
 
+    private function visitLegacySection(): \Symfony\Component\DomCrawler\Crawler
+    {
+        $this->client->request('GET', $this->sectionUrl());
+        self::assertResponseRedirects(dirname($this->sectionUrl()), 302);
+
+        return $this->client->followRedirect();
+    }
+
     /** @return array<string, mixed> */
     private function phase(?DictationAction $action = null, int $revision = 0, ?string $copy = null): array
     {
@@ -130,23 +138,25 @@ final class DictationJourneyTest extends WebTestCase
     {
         $this->client->request('GET', $this->url());
         self::assertResponseRedirects('/dictees/'.$this->dictationId);
-        $crawler = $this->client->request('GET', $this->sectionUrl());
+        $crawler = $this->visitLegacySection();
         self::assertResponseIsSuccessful();
         self::assertStringContainsString('Commencer la dictée', $crawler->text());
-        self::assertGreaterThanOrEqual(3, $crawler->filter('[data-dictation-position="before"]')->count());
+        self::assertSame(2, $crawler->filter('[data-dictation-position="before"]')->count());
         self::assertSame(0, self::$database->manager()->getRepository(DictationAttempt::class)->count(['user' => $this->user]));
         self::assertStringNotContainsString('SECRET_PRIVATE_CONTENT', $crawler->html());
         self::assertStringNotContainsString('SECRET_CORRECTION_TEST', $crawler->html());
         $this->phase();
-        $crawler = $this->client->request('GET', $this->sectionUrl());
+        $crawler = $this->visitLegacySection();
         self::assertStringContainsString('Poursuivre l’écriture', $crawler->text());
         $state = $this->phase(DictationAction::Evaluate, 0, 'Erreur.');
         self::assertSame('self_correction', $state['state']);
-        $crawler = $this->client->request('GET', $this->sectionUrl());
+        $crawler = $this->visitLegacySection();
         self::assertStringContainsString('Poursuivre l’autocorrection', $crawler->text());
         $this->client->request('GET', $this->url());
         self::assertResponseRedirects('/dictees/tentatives/'.$state['attemptId']);
         $this->phase(DictationAction::Close, 1, 'Erreur.');
+        $this->client->request('GET', '/dictees/tentatives/'.$state['attemptId']);
+        self::assertSelectorTextContains('a[href="'.dirname($this->sectionUrl()).'"]', 'Retour au sommaire');
         $this->client->request('GET', $this->url());
         self::assertResponseIsSuccessful();
         self::assertStringContainsString('SECRET_PRIVATE_CONTENT', $this->client->getResponse()->getContent());
@@ -294,7 +304,7 @@ final class DictationJourneyTest extends WebTestCase
 
     public function testSearchPrivateMediaAndProgressCannotBypassPrerequisite(): void
     {
-        $crawler = $this->client->request('GET', $this->sectionUrl());
+        $crawler = $this->client->request('GET', $this->url($this->foundation));
         $autocomplete = html_entity_decode($crawler->filter('[data-symfony--ux-autocomplete--autocomplete-url-value]')->attr('data-symfony--ux-autocomplete--autocomplete-url-value'));
         $form = $crawler->filter('form[name="course_search"]')->form();
         $values = $form->getPhpValues();
@@ -345,7 +355,7 @@ final class DictationJourneyTest extends WebTestCase
         $_ENV['DICTATION_LEARNER_ENABLED'] = $_SERVER['DICTATION_LEARNER_ENABLED'] = '0';
         $this->client = self::createClient();
         $this->client->loginUser($legacy);
-        $crawler = $this->client->request('GET', $this->sectionUrl());
+        $crawler = $this->visitLegacySection();
         self::assertResponseIsSuccessful();
         self::assertSame(0, $crawler->filter('.dictation-journey-entry')->count());
         $this->client->request('GET', $this->url());
@@ -354,7 +364,7 @@ final class DictationJourneyTest extends WebTestCase
 
     public function testPrerequisiteNeverGrantsSubscriptionRightsAndAdminRemainsAllowed(): void
     {
-        $crawler = $this->client->request('GET', $this->sectionUrl());
+        $crawler = $this->client->request('GET', $this->url($this->foundation));
         $autocomplete = html_entity_decode($crawler->filter('[data-symfony--ux-autocomplete--autocomplete-url-value]')->attr('data-symfony--ux-autocomplete--autocomplete-url-value'));
         $em = self::$database->manager();
         $user = $em->find(User::class, $this->user->getId());
@@ -498,25 +508,27 @@ final class DictationJourneyTest extends WebTestCase
     public function testAfterCoursesEntryUsesAllLessonsAndKeepsGetReadOnly(): void
     {
         $state = $this->phase(DictationAction::Evaluate, 0, 'L’école ouvre.');
-        $crawler = $this->client->request('GET', $this->sectionUrl());
+        $crawler = $this->visitLegacySection();
         self::assertSame(0, $crawler->filter('[data-dictation-position="after"] a')->count());
         $em = self::$database->manager();
         $user = $em->find(User::class, $this->user->getId());
         foreach ([$this->course, $this->free] as $course) {
             $em->persist((new Lesson())->setUser($user)->setCourse($em->find(Courses::class, $course->getId()))->setName('Validé')->setStatus(LessonStatus::DONE));
             $em->flush();
-            $crawler = $this->client->request('GET', $this->sectionUrl());
+            $crawler = $this->visitLegacySection();
             if ($course === $this->course) {
                 self::assertSame(0, $crawler->filter('[data-dictation-position="after"] a')->count());
             }
         }
-        self::assertGreaterThanOrEqual(3, $crawler->filter('[data-dictation-position="after"] a')->count());
+        self::assertSame(2, $crawler->filter('[data-dictation-position="after"] a')->count());
         $this->client->request('GET', '/dictees/tentatives/'.$state['attemptId']);
         self::assertResponseIsSuccessful();
         self::assertSame('awaiting_courses', $this->phase()['state']);
         self::assertSame('reviewing', $this->phase(DictationAction::Resume, 1)['state']);
         self::assertSame('completed', $this->phase(DictationAction::Finalize, 2)['state']);
-        $crawler = $this->client->request('GET', $this->sectionUrl());
+        $this->client->request('GET', '/dictees/tentatives/'.$state['attemptId']);
+        self::assertSelectorTextContains('main a[href="'.dirname($this->sectionUrl()).'"]', 'Retour au sommaire');
+        $crawler = $this->visitLegacySection();
         self::assertStringContainsString('Consulter le résultat définitif', $crawler->text());
     }
 
@@ -559,9 +571,13 @@ final class DictationJourneyTest extends WebTestCase
         $waitingText = 'Vous pourrez reprendre votre dictée après la mise à disposition et la validation des cours de cette section.';
         foreach (['/courses/'.$section->getProgram()->getSlug(), $this->sectionUrl()] as $url) {
             $crawler = $this->client->request('GET', $url);
+            if ($url === $this->sectionUrl()) {
+                self::assertResponseRedirects(dirname($this->sectionUrl()), 302);
+                $crawler = $this->client->followRedirect();
+            }
             self::assertResponseIsSuccessful();
             $initial = $crawler->filter('[data-dictation-position="before"]');
-            self::assertGreaterThanOrEqual(3, $initial->count()); // Main content, desktop sidebar, mobile sidebar.
+            self::assertSame(2, $initial->count()); // Desktop and mobile sidebars only.
             self::assertSame($initial->count(), $initial->filter('.list-group-icon[aria-hidden="true"] .bi-pencil-square')->count());
             self::assertSame(0, $crawler->filter('.dictation-journey-entry .completed')->count());
             self::assertSame($exempt, str_contains($initial->text(), 'Conseillée pour repérer vos points à travailler.'));
@@ -574,11 +590,11 @@ final class DictationJourneyTest extends WebTestCase
         self::assertSame(0, (int) $em->getConnection()->fetchOne('SELECT COUNT(*) FROM dictation_attempt WHERE user_id = ?', [$user->getId()]));
         $this->phase(DictationAction::Evaluate, 0, $perfect ? 'L’école ouvre.' : 'Erreur.');
         if (!$perfect) {
-            $this->client->request('GET', $this->sectionUrl());
+            $this->visitLegacySection();
             self::assertSelectorNotExists('.dictation-journey-entry .completed');
             $this->phase(DictationAction::Close, 1, 'Erreur.');
         }
-        $crawler = $this->client->request('GET', $this->sectionUrl());
+        $crawler = $this->visitLegacySection();
         self::assertSelectorExists('[data-dictation-position="before"] .completed svg[aria-hidden="true"][focusable="false"]');
         self::assertSelectorNotExists('[data-dictation-position="after"] .completed');
         self::assertSelectorNotExists('[data-dictation-position="after"] a');
@@ -593,12 +609,12 @@ final class DictationJourneyTest extends WebTestCase
                 $em->persist($course);
                 $em->flush();
                 $courses[] = $course;
-                $crawler = $this->client->request('GET', $this->sectionUrl());
+                $crawler = $this->visitLegacySection();
                 self::assertStringNotContainsString($waitingText, $crawler->text());
                 self::assertSelectorTextContains('[data-dictation-position="before"]', 'Les cours sont accessibles');
                 self::assertSelectorTextContains('[data-dictation-position="after"]', 'Validez tous les cours');
-                self::assertSelectorExists('.main-content .card ol > li:first-child[data-dictation-position="before"]');
-                self::assertSelectorExists('.main-content .card ol > li:last-child[data-dictation-position="after"]');
+                self::assertSelectorExists('#customer-sidebar [data-sidebar-section] ol > li:first-child[data-dictation-position="before"]');
+                self::assertSelectorExists('#customer-sidebar [data-sidebar-section] ol > li:last-child[data-dictation-position="after"]');
                 self::assertSelectorNotExists('[data-dictation-position="after"] a');
             }
         } else {
@@ -607,7 +623,7 @@ final class DictationJourneyTest extends WebTestCase
         foreach ($courses as $index => $course) {
             $em->persist((new Lesson())->setUser($user)->setCourse($course)->setName('Validé')->setStatus(LessonStatus::DONE));
             $em->flush();
-            $this->client->request('GET', $this->sectionUrl());
+            $this->visitLegacySection();
             if (0 === $index) {
                 self::assertSelectorNotExists('[data-dictation-position="after"] a');
             }
@@ -617,11 +633,15 @@ final class DictationJourneyTest extends WebTestCase
         $revision = $perfect ? 1 : 2;
         $state = $this->phase(DictationAction::Resume, $revision);
         self::assertSame($perfect ? 'reviewing' : 'resuming', $state['state']);
-        $this->client->request('GET', $this->sectionUrl());
+        $this->visitLegacySection();
         self::assertSelectorNotExists('[data-dictation-position="after"] .completed');
         $this->phase(DictationAction::Finalize, $revision + 1, $perfect ? null : 'L’école ouvre.');
         foreach (['/courses/'.$section->getProgram()->getSlug(), $this->sectionUrl()] as $url) {
             $crawler = $this->client->request('GET', $url);
+            if ($url === $this->sectionUrl()) {
+                self::assertResponseRedirects(dirname($this->sectionUrl()), 302);
+                $crawler = $this->client->followRedirect();
+            }
             $after = $crawler->filter('[data-dictation-position="after"]');
             self::assertSame($after->count(), $after->filter('.completed svg[aria-hidden="true"][focusable="false"]')->count());
             self::assertStringContainsString('Consulter le résultat définitif', $after->text());

@@ -60,19 +60,19 @@
         <li class="list-group list-group-menu list-group-xs mb-6">
             <nav aria-label="{{ section.name }}">
                 <header class="d-flex align-items-center n2ymm7">
-                    <a href="{{ canViewSection ? path('app_course_section', {'programSlug': program.slug, 'sectionSlug': section.slug}) : path('app_course_program_summary', {slug: program.slug}) ~ '#section-' ~ section.id }}" class="course-section-link{{ isCurrentSection ? ' is-active' : '' }}" data-action="course-menu#closeOnNavigate">
-                        <h2 class="h4 text-md mb-2">
-                            {{ section.name }}
-                        </h2>
-                    </a>
-                    <button type="button" class="icon f4lgy4 border-0 bg-transparent p-0{{ isExpanded ? '' : ' collapsed' }}" data-bs-toggle="collapse" data-bs-target="#{{ collapseId }}" aria-expanded="{{ isExpanded ? 'true' : 'false' }}" aria-controls="{{ collapseId }}" aria-label="Afficher ou masquer les cours de {{ section.name }}">
-                        <span class="closed{{ isExpanded ? ' d-none' : '' }}" aria-hidden="true">
-                            {% include 'course/program_summary/icons/_closed.html.twig' %}
-                        </span>
-                        <span class="opened{{ isExpanded ? '' : ' d-none' }}" aria-hidden="true">
-                            {% include 'course/program_summary/icons/_opened.html.twig' %}
-                        </span>
-                    </button>
+                    <h2 class="h4 text-md mb-2 w-100">
+                        <button type="button" class="course-section-link course-section-toggle{{ isCurrentSection ? ' is-active' : '' }}{{ isExpanded ? '' : ' collapsed' }}" data-bs-toggle="collapse" data-bs-target="#{{ collapseId }}" aria-expanded="{{ isExpanded ? 'true' : 'false' }}" aria-controls="{{ collapseId }}">
+                            <span>{{ section.name }}</span>
+                            <span class="icon" aria-hidden="true">
+                                <span class="closed{{ isExpanded ? ' d-none' : '' }}">
+                                    {% include 'course/program_summary/icons/_closed.html.twig' %}
+                                </span>
+                                <span class="opened{{ isExpanded ? '' : ' d-none' }}">
+                                    {% include 'course/program_summary/icons/_opened.html.twig' %}
+                                </span>
+                            </span>
+                        </button>
+                    </h2>
                 </header>
                 <div id="{{ collapseId }}" class="collapse{{ isExpanded ? ' show' : '' }}"
                      data-sidebar-section="{{ section.id }}" data-sidebar-complete="{{ sectionCompletion[section.id] ? 'true' : 'false' }}"

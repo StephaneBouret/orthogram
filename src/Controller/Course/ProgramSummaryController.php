@@ -45,7 +45,6 @@ final class ProgramSummaryController extends AbstractController
         }
         $canInteract = $this->isGranted(CourseVoter::PROGRAM_VIEW, $program);
         $sections = $this->sectionsRepository->findByProgramWithCourses($program);
-        $coursesBySection = $this->coursesRepository->countCoursesBySections($program);
         $nbrCourses = $this->coursesRepository->countByProgram($program);
         $sectionsTotalDuration = $this->sectionDurationService->calculateTotalDuration($sections);
         $programTotalDurationMinutes = array_sum($sectionsTotalDuration);
@@ -61,7 +60,6 @@ final class ProgramSummaryController extends AbstractController
             'canInteract' => $canInteract,
             'program' => $program,
             'sections' => $sections,
-            'coursesBySection' => $coursesBySection,
             'nbrCourses' => $nbrCourses,
             'nbrLessonsDone' => $nbrLessonsDone,
             'completedCourseIds' => $completedCourseIds,

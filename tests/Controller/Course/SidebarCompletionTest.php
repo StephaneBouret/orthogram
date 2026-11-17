@@ -158,10 +158,9 @@ final class SidebarCompletionTest extends WebTestCase
         $this->client->request('GET', '/courses/quiz-formation');
         self::assertSelectorCount(0, '[data-sidebar-section].show');
         $this->client->request('GET', '/courses/quiz-formation/section-vide');
-        foreach (['desktop', 'mobile'] as $prefix) {
-            self::assertSelectorExists('#'.$prefix.'-collapse-'.$this->emptySectionId.'.show');
-        }
-        self::assertSelectorCount(2, '[data-sidebar-section].show');
+        self::assertResponseRedirects('/courses/quiz-formation', 302);
+        $this->client->followRedirect();
+        self::assertSelectorCount(0, '[data-sidebar-section].show');
     }
 
     private function toggleCourse(?bool $expectedComplete = null): void
@@ -178,10 +177,14 @@ final class SidebarCompletionTest extends WebTestCase
     {
         foreach (['/courses/quiz-formation', '/courses/quiz-formation/quiz-section', self::COURSE_URL] as $index => $url) {
             $this->client->request('GET', $url);
+            if (1 === $index) {
+                self::assertResponseRedirects('/courses/quiz-formation', 302);
+                $this->client->followRedirect();
+            }
             self::assertResponseIsSuccessful();
             self::assertSelectorExists('head meta[name="turbo-cache-control"][content="no-cache"]');
-            $this->assertSidebar($complete, 0 === $index);
-            self::assertSelectorCount($index > 0 ? 2 : 0, '.course-section-link.is-active');
+            $this->assertSidebar($complete, 2 !== $index);
+            self::assertSelectorCount(2 === $index ? 2 : 0, '.course-section-link.is-active');
         }
     }
 
@@ -193,6 +196,9 @@ final class SidebarCompletionTest extends WebTestCase
             self::assertSelectorExists('#'.$id.'.collapse'.($expanded ? '.show' : ':not(.show)'), $this->client->getCrawler()->filter('#'.$id)->outerHtml());
             self::assertSelectorExists('#'.$id.'[data-sidebar-complete="'.($complete ? 'true' : 'false').'"]');
             $button = 'button[aria-controls="'.$id.'"]';
+            self::assertSelectorCount(1, $button);
+            self::assertSelectorExists($button.'.course-section-link:not([data-action])');
+            self::assertSelectorNotExists($button.' a, '.$button.' button');
             self::assertSelectorExists($button.'[type="button"][data-bs-target="#'.$id.'"][aria-expanded="'.($expanded ? 'true' : 'false').'"]');
             self::assertSelectorExists($button.($expanded ? ':not(.collapsed)' : '.collapsed'));
             self::assertSelectorExists($button.' .closed'.($expanded ? '.d-none' : ':not(.d-none)'));

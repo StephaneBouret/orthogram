@@ -16,6 +16,7 @@ use App\Services\LearningReminderViewService;
 use Doctrine\DBAL\Driver\Exception as DriverException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Tools\SchemaTool;
 use libphonenumber\PhoneNumber;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Clock\ClockInterface;
@@ -31,14 +32,23 @@ final class LearningReminderControllerTest extends WebTestCase
     private LearningReminderRepository $repository;
     private User $user;
     private Program $program;
+    private MockClock $clock;
+    /** @var array{?string, ?string} */
+    private array $previousUrls;
 
     protected function setUp(): void
     {
+        $this->previousUrls = [$_ENV['DATABASE_URL'] ?? null, $_SERVER['DATABASE_URL'] ?? null];
+        $_ENV['DATABASE_URL'] = $_SERVER['DATABASE_URL'] = 'sqlite:///:memory:';
         $this->client = static::createClient();
         $this->client->disableReboot();
+        $this->clock = new MockClock();
+        static::getContainer()->set(ClockInterface::class, $this->clock);
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
         self::assertSame('test', static::$kernel->getEnvironment());
-        self::assertStringEndsWith('_test', $this->entityManager->getConnection()->getDatabase());
+        self::assertSame('pdo_sqlite', $this->entityManager->getConnection()->getParams()['driver']);
+        self::assertTrue($this->entityManager->getConnection()->getParams()['memory']);
+        (new SchemaTool($this->entityManager))->createSchema($this->entityManager->getMetadataFactory()->getAllMetadata());
         $this->repository = static::getContainer()->get(LearningReminderRepository::class);
 
         $suffix = bin2hex(random_bytes(8));
@@ -72,25 +82,17 @@ final class LearningReminderControllerTest extends WebTestCase
 
     protected function tearDown(): void
     {
-        if ($this->entityManager->isOpen()) {
-            $reminder = $this->repository->findOneByUser($this->user);
-
-            if (null !== $reminder) {
-                $this->entityManager->remove($reminder);
-            }
-
-            if ($this->entityManager->contains($this->program)) {
-                $this->entityManager->remove($this->program);
-            }
-
-            if ($this->entityManager->contains($this->user)) {
-                $this->entityManager->remove($this->user);
-            }
-
-            $this->entityManager->flush();
+        if (isset($this->entityManager)) {
+            $this->entityManager->getConnection()->close();
         }
-
         parent::tearDown();
+        [$_ENV['DATABASE_URL'], $_SERVER['DATABASE_URL']] = $this->previousUrls;
+        if (null === $_ENV['DATABASE_URL']) {
+            unset($_ENV['DATABASE_URL']);
+        }
+        if (null === $_SERVER['DATABASE_URL']) {
+            unset($_SERVER['DATABASE_URL']);
+        }
     }
 
     public function testInvalidJsonReturnsBadRequest(): void
@@ -536,7 +538,7 @@ final class LearningReminderControllerTest extends WebTestCase
     public function testRecurringCalendarDownloadsCurrentFormWithoutCreatingReminder(string $format): void
     {
         $tokens = $this->loadPageAndReadTokens();
-        static::getContainer()->set(ClockInterface::class, new MockClock('2026-09-07T06:00:00Z'));
+        $this->clock->modify('2026-09-07T06:00:00Z');
         $this->requestJson($this->calendarUrl($format), $this->dailyPayload(), $tokens['calendar']);
         self::assertResponseIsSuccessful();
         self::assertResponseHeaderSame('Content-Type', 'text/calendar; charset=UTF-8');
@@ -554,7 +556,7 @@ final class LearningReminderControllerTest extends WebTestCase
     public function testSplitCalendarDownloadDoesNotCreateReminderAndCarriesNotice(string $format): void
     {
         $tokens = $this->loadPageAndReadTokens();
-        static::getContainer()->set(ClockInterface::class, new MockClock('2026-03-28T23:00:00Z'));
+        $this->clock->modify('2026-03-28T23:00:00Z');
         $this->requestJson($this->calendarUrl($format), array_replace($this->dailyPayload(), ['reminderTime' => '02:30']), $tokens['calendar']);
         self::assertResponseIsSuccessful();
         self::assertResponseHeaderSame('Content-Type', 'text/calendar; charset=UTF-8');
@@ -594,7 +596,7 @@ final class LearningReminderControllerTest extends WebTestCase
         $this->entityManager->flush();
         $tokens = $this->loadPageAndReadTokens();
         $before = $this->reminderSnapshot();
-        static::getContainer()->set(ClockInterface::class, new MockClock('2026-09-07T06:00:00Z'));
+        $this->clock->modify('2026-09-07T06:00:00Z');
         // Both a recurring download and Google once preparation must leave every column intact.
         foreach ([$this->dailyPayload(), $this->onceCalendarPayload()] as $payload) {
             $this->requestJson($this->calendarUrl($format), $payload, $tokens['calendar']);
@@ -625,7 +627,7 @@ final class LearningReminderControllerTest extends WebTestCase
     public function testBUsesExistingIcsDownloadForBothFormatsWithoutCreatingReminder(string $format): void
     {
         $tokens = $this->loadPageAndReadTokens();
-        static::getContainer()->set(ClockInterface::class, new MockClock('2026-10-25T01:00:00Z'));
+        $this->clock->modify('2026-10-25T01:00:00Z');
         $this->requestJson($this->calendarUrl($format), array_replace($this->dailyPayload(), ['frequency' => 'weekly', 'weekdays' => [7], 'reminderTime' => '02:30']), $tokens['calendar']);
         self::assertResponseIsSuccessful();
         self::assertResponseHeaderSame('Content-Type', 'text/calendar; charset=UTF-8');
@@ -650,7 +652,7 @@ final class LearningReminderControllerTest extends WebTestCase
     public function testGoogleOncePreparationHasExactDatesAndDoesNotPersist(): void
     {
         $tokens = $this->loadPageAndReadTokens();
-        static::getContainer()->set(ClockInterface::class, new MockClock('2026-09-07T06:00:00Z'));
+        $this->clock->modify('2026-09-07T06:00:00Z');
         $this->requestJson($this->calendarUrl('google'), $this->onceCalendarPayload(), $tokens['calendar']);
         self::assertResponseIsSuccessful();
         $data = $this->responseData();
@@ -678,7 +680,7 @@ final class LearningReminderControllerTest extends WebTestCase
     public function testCalendarPreparationExpiresAtCloseFirstOccurrence(string $format, string $frequency): void
     {
         $tokens = $this->loadPageAndReadTokens();
-        static::getContainer()->set(ClockInterface::class, new MockClock('2026-09-07T06:28:00Z'));
+        $this->clock->modify('2026-09-07T06:28:00Z');
         $payload = array_replace($this->dailyPayload(), [
             'frequency' => $frequency,
             'weekdays' => 'weekly' === $frequency ? [1] : [],
@@ -698,8 +700,8 @@ final class LearningReminderControllerTest extends WebTestCase
     public function testCalendarRejectsInvalidPayloadAndOnceThatBecamePast(string $format): void
     {
         $tokens = $this->loadPageAndReadTokens();
-        $clock = new MockClock('2026-09-07T06:00:00Z');
-        static::getContainer()->set(ClockInterface::class, $clock);
+        $clock = $this->clock;
+        $clock->modify('2026-09-07T06:00:00Z');
         $this->requestJson($this->calendarUrl($format), array_replace($this->dailyPayload(), ['timezone' => 'Invalid/Zone']), $tokens['calendar']);
         self::assertResponseStatusCodeSame(422);
         $this->requestJson($this->calendarUrl($format), $this->onceCalendarPayload(), $tokens['calendar']);
