@@ -137,29 +137,35 @@ final class FreeCoursesTest extends WebTestCase
         }
     }
 
-    #[DataProvider('publicProfiles')]
-    public function testSidebarExpandsAllSectionsOnlyForAnonymousVisitors(string $profile): void
+    #[DataProvider('displayProfiles')]
+    public function testAnonymousSidebarUsesStableSlugsAndPreservesConnectedDefaults(string $profile): void
     {
         $this->profile($profile);
         $section = $this->free->getSection();
         $section->setPosition(2);
-        $empty = (new Sections())->setName('Vide')->setSlug('vide')->setPosition(0)->setProgram($section->getProgram());
-        $private = (new Sections())->setName('Privée')->setSlug('privee')->setPosition(1)->setProgram($section->getProgram());
+        $empty = (new Sections())->setName('Module 2')->setSlug('module-2')->setPosition(0)->setProgram($section->getProgram());
+        $private = (new Sections())->setName('Module 1')->setSlug('module-1')->setPosition(3)->setProgram($section->getProgram());
+        $other = (new Sections())->setName('Module 3')->setSlug('module-3')->setPosition(1)->setProgram($section->getProgram());
+        // Neither positions, numeric IDs nor display names identify the public defaults.
+        $about = (new Sections())->setName('Introduction renommée')->setSlug('a-propos-de-cette-formation')->setPosition(20)->setProgram($section->getProgram());
+        $fundamentals = (new Sections())->setName('Bases renommées')->setSlug('les-fondamentaux')->setPosition(10)->setProgram($section->getProgram());
         $paid = (new Courses())->setName('Réservé')->setSlug('reserve')->setSection($private);
-        foreach ([$empty, $private, $paid] as $entity) {
+        foreach ([$empty, $private, $other, $about, $fundamentals, $paid] as $entity) {
             $this->em->persist($entity);
         }
         $this->em->flush();
         $sectionId = $section->getId();
         $privateId = $private->getId();
         $emptyId = $empty->getId();
+        $otherId = $other->getId();
+        $publicOpenIds = [$about->getId(), $fundamentals->getId()];
         $this->em->clear();
         foreach ([self::SUMMARY, self::READER] as $url) {
             $this->client->request('GET', $url);
             self::assertResponseIsSuccessful();
             foreach (['desktop', 'mobile'] as $prefix) {
-                foreach ([$sectionId, $privateId, $emptyId] as $id) {
-                    $expanded = 'anonymous' === $profile || $id === $sectionId;
+                foreach ([$sectionId, $privateId, $emptyId, $otherId, ...$publicOpenIds] as $id) {
+                    $expanded = 'anonymous' === $profile ? in_array($id, $publicOpenIds, true) : $id === $sectionId;
                     $panel = '#'.$prefix.'-collapse-'.$id;
                     $button = 'button[aria-controls="'.$prefix.'-collapse-'.$id.'"]';
                     self::assertSelectorCount(1, $button);
@@ -170,12 +176,12 @@ final class FreeCoursesTest extends WebTestCase
                     self::assertSelectorExists($button.($expanded ? ':not(.collapsed)' : '.collapsed'));
                     self::assertSelectorExists($button.' .opened'.($expanded ? ':not(.d-none)' : '.d-none'));
                     self::assertSelectorExists($button.' .closed'.($expanded ? '.d-none' : ':not(.d-none)'));
-                    if ($id !== $sectionId) {
+                    if ($id !== $sectionId && ($id !== $privateId || !in_array($profile, ['subscriber', 'admin'], true))) {
                         self::assertSelectorExists($panel.'[data-sidebar-continuable="false"]');
                     }
                 }
             }
-            self::assertSelectorCount('anonymous' === $profile ? 6 : 2, '[data-sidebar-section].show');
+            self::assertSelectorCount('anonymous' === $profile ? 4 : 2, '[data-sidebar-section].show');
         }
     }
 

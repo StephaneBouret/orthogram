@@ -66,6 +66,10 @@ if ($initialize) {
             }
         }
     }
+    // These empty sections must never change connected learners' progression defaults.
+    foreach (['a-propos-de-cette-formation' => 'À propos de cette formation', 'les-fondamentaux' => 'Les fondamentaux'] as $slug => $name) {
+        $em->persist((new App\Entity\Sections())->setName($name)->setSlug($slug)->setPosition(10)->setProgram($program));
+    }
     $em->flush();
     $em->clear();
 }

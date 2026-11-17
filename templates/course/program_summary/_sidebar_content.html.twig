@@ -56,7 +56,9 @@
         {% if expandedSectionId is null and canContinue %}
             {% set expandedSectionId = section.id %}
         {% endif %}
-        {% set isExpanded = not app.user or expandedSectionId == section.id %}
+        {% set isExpanded = app.user is null
+            ? (section.slug in ['a-propos-de-cette-formation', 'les-fondamentaux'])
+            : expandedSectionId == section.id %}
         <li class="list-group list-group-menu list-group-xs mb-6">
             <nav aria-label="{{ section.name }}">
                 <header class="d-flex align-items-center n2ymm7">

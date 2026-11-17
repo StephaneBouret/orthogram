@@ -2,12 +2,12 @@
 
 À tester avec des comptes et contenus de recette, sur ordinateur puis à 390 px.
 
-1. Sur le sommaire d'un utilisateur connecté, seule la première section accessible contenant des cours non terminés est ouverte. Les sections vides et inaccessibles restent repliées. En anonyme, toutes les sections sont ouvertes au départ. La liste centrale est absente pour tous les profils ; les cours gratuits restent accessibles dans la sidebar. Aucun nom, slug ou identifiant pédagogique n'est codé en dur.
-2. Consulter un cours : seule sa section est ouverte par défaut, même terminée. Le nom et le chevron d'une section constituent un seul bouton de dépliage, sans navigation. Une ancienne URL de section redirige en 302 vers le sommaire du même programme, après contrôle des autorisations. Vérifier également un lien direct, la recherche et « Reprendre ma formation ».
+1. Sur le sommaire d'un utilisateur connecté, seule la première section accessible contenant des cours non terminés est ouverte. Les sections vides et inaccessibles restent repliées. En anonyme, seules « À propos de cette formation » et « Les fondamentaux » sont ouvertes, reconnues par leurs slugs `a-propos-de-cette-formation` et `les-fondamentaux` ; toutes les autres sections sont repliées. La liste centrale est absente pour tous les profils ; les cours gratuits restent accessibles dans la sidebar.
+2. Consulter un cours connecté : seule sa section est ouverte par défaut, même terminée. En anonyme, conserver les deux sections publiques ouvertes, même si le cours gratuit consulté appartient à un module différent. Le nom et le chevron d'une section constituent un seul bouton de dépliage, sans navigation. Une ancienne URL de section redirige en 302 vers le sommaire du même programme, après contrôle des autorisations. Vérifier également un lien direct, la recherche et « Reprendre ma formation ».
 3. Ouvrir plusieurs autres sections, puis fermer la section courante. Valider un cours sans terminer sa section : le cours reste affiché, les compteurs changent et tous les choix manuels sont conservés. Faire des choix différents dans les menus ordinateur et mobile ; le fragment masqué conserve aussi ses choix.
 4. Valider le dernier cours restant : seule cette section se ferme et la prochaine section accessible non terminée contenant des cours s'ouvre, sans navigation. Les autres ouvertures sont conservées. Une section suivante déjà terminée ou vide est sautée. Il n'y a pas de retour automatique vers une section antérieure.
 5. Réussir un exercice terminant sa section : le corrigé reste affiché et la prochaine section s'ouvre. Recommencer un exercice déjà réussi, avec succès ou échec : aucune nouvelle transition. Terminer un quiz, même à score nul : son bilan reste affiché et la progression est actualisée. Recommencer le quiz ne rejoue pas la transition. Une fin de quiz enregistrée dont la réponse réseau est perdue doit être récupérée sans rechargement.
-6. Quand aucune section suivante n'est à poursuivre, ne rien ouvrir. Si toute la formation est terminée, le sommaire reste replié ; une visite volontaire d'un cours terminé ouvre sa section. Une section vide peut toujours être dépliée manuellement ; son ancienne URL revient au sommaire sans sélectionner un cours.
+6. Pour un compte connecté, quand aucune section suivante n'est à poursuivre, ne rien ouvrir. Si toute la formation est terminée, le sommaire reste replié ; une visite volontaire d'un cours terminé ouvre sa section. Une section vide peut toujours être dépliée manuellement ; son ancienne URL revient au sommaire sans sélectionner un cours.
 7. Recharger, naviguer, puis utiliser Retour/Avance : les états par défaut sont recalculés et la progression est relue. Les pages conservent `turbo-cache-control=no-cache` et la protection existante contre le cache natif du navigateur. Aucune mémorisation durable des ouvertures.
 8. Vérifier Tab, Entrée et Espace : une seule bascule, `aria-expanded`, classe `collapsed` et chevrons cohérents. Les identifiants ordinateur/mobile sont distincts. Tester aussi Échap, le clic extérieur et les liens du menu mobile.
 9. Vérifier une erreur réseau ou un CSRF invalide : aucun repli anticipé. Cliquer sur « Terminé » pour annuler une validation manuelle : la progression change sans forcer l'ouverture. Ajouter un cours à une section terminée : les critères de complétion existants continuent de s'appliquer. Les entrées de dictée, leurs prérequis et les liens de découverte restent disponibles selon les autorisations existantes.
@@ -20,7 +20,27 @@ Le lanceur nécessite Node 22+, PHP et Chrome déjà installés, sans paquet npm
 
 Sur ce poste, Node est disponible via `C:\Program Files\Adobe\Adobe Photoshop 2026\node.exe`, sans être dans le PATH.
 
-## Complément du lot 2 — 17 novembre 2026 : tous les profils
+## Ouverture initiale anonyme — 17 novembre 2026
+
+Départ sur `preprod`, HEAD `e58fab8`, état de travail propre. Aucun commit, push, déploiement ou migration. Les deux slugs ont été confirmés par une requête Doctrine de lecture seule sur les noms/slugs des sections et du programme.
+
+Le seul changement applicatif est dans `templates/course/program_summary/_sidebar_content.html.twig` : si `app.user is null`, l'ouverture dépend exclusivement des deux slugs. Tous les comptes connectés, y compris sans abonnement et remember-me, conservent l'expression précédente `expandedSectionId == section.id`. Aucun ID numérique, nom affiché, position, droit d'abonnement ou statut de cours ne sert à choisir les deux sections anonymes. Les mécanismes Bootstrap/Stimulus, les classes des chevrons et `aria-expanded` restent les mêmes.
+
+L'audit de `course_sidebar_controller.js` et `course_sidebar.js` confirme que le premier écoute les événements Bootstrap pour synchroniser les boutons ; le second intervient sur les mises à jour de progression. Aucun des deux ne force l'ouverture des modules au chargement. Ils n'ont pas été modifiés.
+
+Fichiers modifiés : le template partagé, `tests/Controller/Course/FreeCoursesTest.php`, `tests/manual/sidebar_browser_check.cjs`, `tests/manual/sidebar_browser_router.php` et cette recette. Les fixtures placent les deux sections après les modules ; le test PHP renomme leurs libellés et vérifie les deux variantes de menu sur le sommaire et le lecteur gratuit, avec sept profils. Le routeur de recette ajoute les deux sections vides sans changer la progression des comptes connectés.
+
+Recette courte : en anonyme, ouvrir le sommaire à 1440 puis 390 px ; vérifier les deux sections ouvertes et tous les modules fermés. Fermer puis rouvrir les deux sections publiques et un module, avec la souris puis Entrée/Espace. Le menu mobile reste ouvert. Suivre un cours gratuit d'un module puis revenir par le breadcrumb : mêmes ouvertures initiales. Rejouer connecté sans abonnement, abonné et administrateur : ouvertures guidées et section courante inchangées.
+
+Vérifications exécutées :
+
+- PHPUnit sur `FreeCoursesTest.php` et `SidebarCompletionTest.php` : **56 tests, 3 472 assertions, tous réussis**, sur bases SQLite temporaires. Couverture des profils anonyme, sans abonnement, abonnement expiré/futur, remember-me, abonné et administrateur ; états des deux menus, boutons/aria/chevrons, accès et navigation. Journal : `var/sidebar-anonymous-tests.log`.
+- Chrome sans fenêtre : **245 contrôles réussis**, avec quatre profils, 1440/390 px et thèmes clair/sombre. Vérification des deux seules ouvertures après initialisation JavaScript, même dans le lecteur d'un autre module ; fermetures/réouvertures des sections publiques et des autres sections ; clavier Entrée/Espace, menu mobile maintenu ouvert, cours gratuit puis retour au sommaire. Les contrôles connectés de progression, quiz/exercice, mode agrandi, accès réservés et absence de sommaire central restent réussis. Rapport : `var/sidebar-browser-d74da7161026/report.json` ; journal : `var/sidebar-anonymous-browser.log`.
+- Lint Twig du template modifié, syntaxe JavaScript du scénario, PHP CS Fixer en simulation sur les deux fichiers PHP modifiés et `git diff --check` : sans erreur.
+
+Non exécutés pour ce changement : suite PHPUnit intégrale, parcours complet de dictée, téléphone physique, Firefox/Safari et lecteur d'écran. Aucun changement des autorisations, du filtrage de publication, des prérequis de dictée ou du JavaScript applicatif.
+
+## Historique du complément du lot 2 — 17 novembre 2026 : tous les profils
 
 Cette consigne remplace la conservation de la liste centrale en découverte décrite dans l'historique du 16 novembre ci-dessous. Travail poursuivi sur `preprod`, HEAD `8902e4f`, en préservant les 17 fichiers déjà modifiés. Aucun commit, push, déploiement ou migration.
 

@@ -211,10 +211,17 @@ async function main() {
             await send('Page.navigate', { url: base + route + '?profile=' + profile });
             await wait(`location.pathname === '${route}' && location.search === '?profile=${profile}' && document.readyState === 'complete' && !!window.Turbo && !!document.querySelector('[data-sidebar-section]')`);
             const label = `${profile} ${route}`;
-            const expectedOpen = profile === 'anonymous' ? 12 : profile === 'admin' && route === summary ? 0 : 2;
+            const expectedOpen = profile === 'anonymous' ? 4 : profile === 'admin' && route === summary ? 0 : 2;
             await check(`document.querySelectorAll('[data-sidebar-section].show').length === ${expectedOpen}`, `${label}: ouverture initiale préservée`);
+            if (profile === 'anonymous') {
+                // Stimulus and Bootstrap have connected: no client-side reopening of modules.
+                await pause(500);
+                for (const prefix of ['desktop', 'mobile']) {
+                    await check(`${open(prefix, 'À propos de cette formation')} && ${open(prefix, 'Les fondamentaux')} && [...document.querySelectorAll('[id^="${prefix}-collapse-"].show')].length === 2`, `${label} ${prefix}: seules les deux sections publiques sont ouvertes après initialisation JavaScript`);
+                }
+            }
             await check(`!document.querySelector('.program-course-content, #program-course-content-title, [id^="section-"], a[href*="#section-"]')`, `${label}: liste centrale et ancres absentes`);
-            await check('document.querySelectorAll("button.course-section-toggle").length === 12 && !document.querySelector("a.course-section-link, .course-section-toggle a, .course-section-toggle button")', `${label}: un bouton par section et par menu`);
+            await check('document.querySelectorAll("button.course-section-toggle").length === 16 && !document.querySelector("a.course-section-link, .course-section-toggle a, .course-section-toggle button")', `${label}: un bouton par section et par menu`);
             if (hasAccess) {
                 await check('!!document.querySelector("[role=progressbar]") && !document.querySelector(".course-discovery-actions")', `${label}: progression réservée conservée`);
             } else {
@@ -225,6 +232,19 @@ async function main() {
             for (const [prefix, width] of [['desktop', 1440], ['mobile', 390]]) {
                 await send('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: false });
                 if (prefix === 'mobile') await mouseClick('.course-mobile-menu-toggle');
+                if (profile === 'anonymous') {
+                    for (const name of ['À propos de cette formation', 'Les fondamentaux']) {
+                        const publicButton = `[aria-controls="${prefix}-collapse-${ids[name]}"]`;
+                        await mouseClick(publicButton + ' > span:first-child');
+                        await wait(`!${panel(prefix, name)}.classList.contains('collapsing')`);
+                        await check(`!${open(prefix, name)} && document.querySelector(${JSON.stringify(publicButton)}).getAttribute('aria-expanded') === 'false'`, `${label} ${prefix}: ${name} refermable à la souris`);
+                        await ev(`document.querySelector(${JSON.stringify(publicButton)}).focus()`);
+                        await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, text: '\r' });
+                        await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 });
+                        await wait(`${open(prefix, name)} && !${panel(prefix, name)}.classList.contains('collapsing')`);
+                        await check(`document.querySelector(${JSON.stringify(publicButton)}).getAttribute('aria-expanded') === 'true'`, `${label} ${prefix}: ${name} rouvrable au clavier`);
+                    }
+                }
                 const button = `[aria-controls="${prefix}-collapse-${ids.intro}"]`;
                 if (!await ev(open(prefix, 'intro'))) await toggle(prefix, 'intro');
                 await mouseClick(button + ' > span:first-child');
@@ -264,6 +284,16 @@ async function main() {
                 await mouseClick(`.course-mobile-menu-panel a[href="${summary}/intro/first"]`);
                 await wait(`location.pathname === '${summary}/intro/first' && !!document.querySelector('#lesson-content')`);
                 await check('!document.querySelector(".course-mobile-menu").classList.contains("is-open")', `${label}: lien du cours gratuit utilisable, menu fermé à la navigation`);
+                if (profile === 'anonymous') {
+                    for (const prefix of ['desktop', 'mobile']) {
+                        await check(`${open(prefix, 'À propos de cette formation')} && ${open(prefix, 'Les fondamentaux')} && !${open(prefix, 'intro')}`, `${label} ${prefix}: cours gratuit, mêmes ouvertures anonymes même dans une autre section`);
+                    }
+                    await mouseClick(`#lesson-header .breadcrumb a[href="${summary}"]`);
+                    await wait(`location.pathname === '${summary}' && !!document.querySelector('.program-summary-overview')`);
+                    for (const prefix of ['desktop', 'mobile']) {
+                        await check(`${open(prefix, 'À propos de cette formation')} && ${open(prefix, 'Les fondamentaux')} && !${open(prefix, 'intro')}`, `${label} ${prefix}: retour au sommaire, ouvertures initiales restaurées`);
+                    }
+                }
             }
             await check('browserErrors.length === 0', `${label}: aucune erreur JavaScript`);
         }
