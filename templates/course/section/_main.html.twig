@@ -3,8 +3,8 @@
 
     <div class="d-flex">
         <div class="w-100">
-            <div class="d-md-flex justify-content-md-between align-items-center spacer-section">
-                <div class="flex-fill mb-6 mb-md-0">
+            <div class="course-content-header spacer-section">
+                <div class="course-content-heading">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
@@ -29,16 +29,7 @@
                         {{ section.name }}
                     </h1>
                 </div>
-                <div class="mt-n2 mt-md-0">
-                    <div class="btn-row d-none d-md-flex">
-                        <button type="button" title="Agrandir la section" aria-label="Agrandir la section" aria-pressed="false" data-action="fullscreen#toggle" data-fullscreen-target="openButton" class="btn btn-md btn-outline-grey btn-icon">
-                            {% include 'course/program_summary/icons/_fullscreen_open.html.twig' %}
-                        </button>
-                        <button type="button" title="Réduire la section" aria-label="Réduire la section" aria-pressed="true" data-action="fullscreen#toggle" data-fullscreen-target="closeButton" class="btn btn-md btn-outline-grey btn-icon d-none">
-                            {% include 'course/program_summary/icons/_fullscreen_close.html.twig' %}
-                        </button>
-                    </div>
-                </div>
+                {% include 'course/_display_toggle.html.twig' %}
             </div>
         </div>
     </div>

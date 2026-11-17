@@ -752,13 +752,70 @@ nav .breadcrumb .breadcrumb-item a:hover {
     flex: 0 0 auto;
 }
 
-[data-action="fullscreen#toggle"] {
+/* Keep the display action out of .btn-row/.btn-icon and their legacy colors.
+   A single, stable-width button keeps focus and alignment when its label changes. */
+.course-content-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+}
+
+.course-content-heading {
+    flex: 1 1 24rem;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.course-page .btn.course-display-toggle {
+    --display-toggle-border: color-mix(in srgb, var(--orthogram-brand-hover) 75%, var(--orthogram-text));
     display: none;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    min-height: 46px;
+    min-width: 15rem;
+    max-width: 100%;
+    padding: 0.625rem 1rem;
+    border: 1px solid var(--display-toggle-border);
+    border-radius: 0.5rem;
+    background-color: var(--course-soft-bg);
+    color: var(--course-text);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.5;
+    box-shadow: none;
+}
+
+[data-bs-theme="dark"] .course-page .btn.course-display-toggle {
+    --display-toggle-border: var(--orthogram-brand);
+}
+
+.course-page .btn.course-display-toggle:hover {
+    background-color: var(--course-soft-bg-hover);
+}
+
+.course-page .btn.course-display-toggle:active {
+    background-color: var(--course-soft-bg-hover);
+    box-shadow: inset 0 0 0 1px var(--display-toggle-border);
+}
+
+.course-page .btn.course-display-toggle:focus-visible {
+    outline: 3px solid var(--course-text);
+    outline-offset: 3px;
+}
+
+.course-display-toggle svg {
+    display: block;
+    width: 1.125rem;
+    height: 1.125rem;
+    fill: currentColor;
 }
 
 @media (min-width: 768px) {
-    [data-action="fullscreen#toggle"] {
-        display: flex;
+    .course-page .btn.course-display-toggle {
+        display: inline-flex;
     }
 }
 

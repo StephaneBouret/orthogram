@@ -1,4 +1,4 @@
-// node tests/manual/sidebar_browser_check.cjs [path-to-Chrome]
+// node tests/manual/sidebar_browser_check.cjs [path-to-Chrome] [--display-only]
 // Real Bootstrap, Stimulus, Turbo and HTTP mutations on an isolated SQLite fixture.
 const fs = require('node:fs');
 const path = require('node:path');
@@ -9,7 +9,7 @@ const root = path.resolve(__dirname, '../..');
 const run = `sidebar-browser-${randomBytes(6).toString('hex')}`;
 const artifacts = path.join(root, 'var', run);
 fs.mkdirSync(artifacts);
-const chrome = process.argv[2] || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const chrome = process.argv.slice(2).find(arg => !arg.startsWith('--')) || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const base = 'http://127.0.0.1:8851';
 const debug = 'http://127.0.0.1:8852';
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -55,7 +55,10 @@ async function main() {
     const click = selector => ev(`document.querySelector(${JSON.stringify(selector)}).click()`);
     const summary = '/courses/quiz-formation';
     const visit = async (route, destination = route) => {
-        await ev(`window.Turbo.visit(${JSON.stringify(route)})`);
+        await ev(`new Promise(resolve => {
+            document.addEventListener('turbo:load', () => resolve(true), {once: true});
+            window.Turbo.visit(${JSON.stringify(route)});
+        })`);
         await wait(`location.pathname === ${JSON.stringify(destination)} && document.readyState === 'complete' && !!document.querySelector('[data-sidebar-section]')`);
         await pause(150);
     };
@@ -88,6 +91,12 @@ async function main() {
         await send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...point });
         await send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...point });
     };
+    if (process.argv.includes('--display-only')) {
+        await require('./display_toggle_browser_scenarios.cjs')({ send, ev, wait, check, mouseClick, visit, artifacts });
+        fs.writeFileSync(path.join(artifacts, 'report.json'), JSON.stringify(report, null, 2));
+        console.log(`Report: ${artifacts}`);
+        return;
+    }
     for (const [prefix, width] of [['desktop', 1440], ['mobile', 390]]) {
         await send('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: false });
         await visit(summary + '/intro/first');
@@ -109,9 +118,9 @@ async function main() {
             await ev(`document.documentElement.setAttribute('data-bs-theme', '${theme}')`);
             await check('document.documentElement.scrollWidth <= innerWidth', `${prefix} ${theme}: aucun débordement apprenant`);
             if (prefix === 'desktop') {
-                await mouseClick('[data-fullscreen-target="openButton"]');
+                await mouseClick('[data-fullscreen-target="button"]');
                 await check('document.querySelector(".sidebar-container").classList.contains("is-fullscreen") && getComputedStyle(document.querySelector("#customer-sidebar")).display === "none"', `${theme}: mode agrandi actif`);
-                await mouseClick('[data-fullscreen-target="closeButton"]');
+                await mouseClick('[data-fullscreen-target="button"]');
                 await check('!document.querySelector(".sidebar-container").classList.contains("is-fullscreen")', `${theme}: retour au mode normal`);
             }
             await ev('document.querySelector(".program-summary-overview").scrollIntoView({block: "center", behavior: "instant"})');
@@ -298,6 +307,7 @@ async function main() {
             await check('browserErrors.length === 0', `${label}: aucune erreur JavaScript`);
         }
     }
+    await require('./display_toggle_browser_scenarios.cjs')({ send, ev, wait, check, mouseClick, visit, artifacts });
     fs.writeFileSync(path.join(artifacts, 'report.json'), JSON.stringify(report, null, 2));
     console.log(`Report: ${artifacts}`);
 }

@@ -53,6 +53,9 @@ if ($initialize) {
         foreach ('empty' === $slug ? [] : ('intro' === $slug ? ['first', 'second'] : [$slug]) as $courseSlug) {
             $course = (new App\Entity\Courses())->setName($courseSlug)->setSlug($courseSlug)->setSection($section)->setPosition('second' === $courseSlug ? 1 : 0);
             $course->setIsFree('first' === $courseSlug);
+            if ('first' === $courseSlug) {
+                $course->setName('Les accords du participe passé avec les auxiliaires être et avoir : comprendre les exceptions et les appliquer');
+            }
             $em->persist($course);
             if ('done' === $slug) {
                 $em->persist((new App\Entity\Lesson())->setUser($user)->setCourse($course)->setName($slug)->setStatus(App\Enum\LessonStatus::DONE));
