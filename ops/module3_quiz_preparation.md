@@ -84,7 +84,7 @@ php bin/console app:quiz:module3-renewal enable @cible
 
 ### Prévisualisation et import fixe sur la base de travail locale
 
-La prévisualisation vérifie les cinq assertions de destination et calcule le plan dans une transaction en lecture seule. Pour appliquer un import fixe sur `orthogram`, la commande exige `--apply`, `--allow-work-database` et `--expect-plan` avec l’empreinte relue. L’écriture locale est limitée à l’environnement `dev`, sur `127.0.0.1:3306`, serveur `STEF-LEGION`. La commande et le service transmettent l’intention d’écriture au contrôle de destination partagé. La commande `app:quiz:module3-renewal` reste réservée aux bases jetables.
+La prévisualisation vérifie les cinq assertions de destination et calcule le plan dans une transaction en lecture seule. Pour appliquer un import fixe sur `orthogram`, la commande exige `--apply`, `--allow-work-database` et `--expect-plan` avec l’empreinte relue. L’écriture locale est limitée à l’environnement `dev`, sur `127.0.0.1:3306`, serveur `STEF-LEGION`. La commande et le service transmettent l’intention d’écriture au contrôle de destination partagé. Le renouvellement local dans `orthogram` se fait dans EasyAdmin. La procédure bêta décrit le consentement de production et l’activation distincte. [Procédure bêta du module 3](module3_quiz_production.md)
 
 ```powershell
 php bin/console app:quiz:module3-import --env=dev --expect-env=dev --expect-database=orthogram --expect-host=127.0.0.1 --expect-port=3306 --expect-server=STEF-LEGION

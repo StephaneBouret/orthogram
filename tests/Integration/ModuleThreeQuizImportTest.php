@@ -11,16 +11,20 @@ use App\Entity\QuizReserveImport;
 use App\Services\ModuleThreeQuizDestination;
 use App\Services\ModuleThreeQuizImporter;
 use App\Services\ModuleThreeQuizManifest;
+use App\Services\ModuleTwoQuizSnapshot;
 use App\Services\QuizAttemptService;
 use App\Services\QuizCommandDestination;
 use App\Services\QuizConfigurationValidator;
 use App\Services\QuizCorrectionService;
 use App\Services\QuizEditorialService;
 use App\Services\QuizQuestionSelector;
+use App\Services\QuizReleaseSnapshot;
+use App\Tests\Support\DictationFactory;
 use App\Tests\Support\DictationTestDatabase;
 use App\Tests\Support\QuizFactory;
 use App\Tests\Support\QuizPlayerFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Process\Process;
@@ -85,12 +89,12 @@ final class ModuleThreeQuizImportTest extends TestCase
     }
 
     /** @return array<string, mixed> */
-    private function apply(string $action = 'import'): array
+    private function apply(string $action = 'import', bool $allowProduction = false): array
     {
         $plan = $this->importer->plan($action, $this->context);
         self::assertSame([], $plan['errors']);
 
-        return $this->importer->apply($action, $plan['plan_hash'], $this->context);
+        return $this->importer->apply($action, $plan['plan_hash'], $this->context, allowProductionDatabase: $allowProduction);
     }
 
     /** @return array<string, string> */
@@ -141,7 +145,7 @@ final class ModuleThreeQuizImportTest extends TestCase
         }
         foreach ([[], $apply + $consent] as $flags) {
             self::assertSame(1, $import->execute(array_replace($local, ['--expect-env' => 'prod']) + $flags));
-            self::assertStringContainsString('Base jetable locale du module 3 requise', $import->getDisplay());
+            self::assertStringContainsString('orthogram est réservée au contexte dev', $import->getDisplay());
         }
         self::assertSame(1, $import->execute($this->options() + ['--apply' => true]));
         // Exercise the CLI plan check on a permitted disposable destination.
@@ -156,13 +160,26 @@ final class ModuleThreeQuizImportTest extends TestCase
         self::assertSame($before, $this->rows());
     }
 
-    public function testCommandImportAndActivationPreserveEveryPreexistingRow(): void
+    #[TestWith([false], 'recette')]
+    #[TestWith([true], 'politique de production sur base jetable')]
+    public function testCommandImportAndActivationPreserveEveryPreexistingRow(bool $prod): void
     {
+        $consent = $prod ? ['--allow-production-database' => true] : [];
+        if ($prod) {
+            $this->destination = new ModuleThreeQuizDestination(new QuizCommandDestination('prod'));
+            $validator = new QuizConfigurationValidator(Validation::createValidatorBuilder()->enableAttributeMapping()->getValidator());
+            $this->importer = new ModuleThreeQuizImporter($this->em, $this->manifest, $validator, new QuizEditorialService($this->em, $validator), $this->destination);
+            $this->context['environment'] = 'prod';
+        }
+        DictationFactory::create($this->em);
         [$user, $course] = QuizPlayerFactory::create($this->em);
         $started = $this->attempts->mutate($user, $course, 'start', []);
         $this->finish($user, $course, $this->em->find(QuizAttempt::class, $started['attemptId']));
         $this->attempts->mutate($user, $course, 'restart', ['attemptId' => $started['attemptId']]);
         $before = $this->rows();
+        $capture = fn () => ['destination' => $this->context, 'tables' => (new QuizReleaseSnapshot())->capture($this->em->getConnection())];
+        $baseline = $capture();
+        $audit = new ModuleTwoQuizSnapshot();
         $import = new CommandTester(new ModuleThreeQuizImportCommand($this->importer, $this->em, $this->destination));
         self::assertSame(0, $import->execute($this->options()), $import->getDisplay());
         $plan = json_decode($import->getDisplay(), true, 512, JSON_THROW_ON_ERROR);
@@ -172,11 +189,28 @@ final class ModuleThreeQuizImportTest extends TestCase
             $options = $this->options();
             unset($options[$field]);
             self::assertSame(1, $import->execute($options));
-            $options[$field] = '--expect-database' === $field ? 'orthogram' : 'wrong';
-            self::assertSame(1, $import->execute($options + ['--apply' => true, '--expect-plan' => $plan['plan_hash']]));
+            $options[$field] = 'wrong';
+            self::assertSame(1, $import->execute($options));
+            self::assertSame(1, $import->execute($options + ['--apply' => true, '--expect-plan' => $plan['plan_hash']] + $consent));
+        }
+        $apply = $this->options() + ['--apply' => true, '--expect-plan' => $plan['plan_hash']];
+        if ($prod) {
+            self::assertSame(1, $import->execute($apply));
+            self::assertStringContainsString('--allow-production-database requis', $import->getDisplay());
+            self::assertSame(1, $import->execute($apply + $consent + ['--allow-work-database' => true]));
+            self::assertSame(1, $import->execute($this->options() + $consent + ['--apply' => true]));
+            self::assertStringContainsString('--expect-plan SHA-256 requis', $import->getDisplay());
+            try {
+                $this->importer->apply('import', $plan['plan_hash'], $this->context);
+                self::fail('Consentement de production requis dans le service.');
+            } catch (\DomainException $error) {
+                self::assertStringContainsString('--allow-production-database requis', $error->getMessage());
+            }
         }
         self::assertSame($before, $this->rows());
-        self::assertSame(0, $import->execute($this->options() + ['--apply' => true, '--expect-plan' => $plan['plan_hash']]), $import->getDisplay());
+        self::assertSame(0, $import->execute($apply + $consent), $import->getDisplay());
+        self::assertSame(1, $import->execute($apply + $consent));
+        self::assertStringContainsString('Plan périmé sous verrou', $import->getDisplay());
         $after = $this->rows();
         $changes = ['quiz' => 3, 'quiz_question' => 168, 'quiz_answer' => 336, 'quiz_manifest_identity' => 3, 'quiz_reserve_import' => 168];
         foreach ($before as $table => $rows) {
@@ -186,6 +220,8 @@ final class ModuleThreeQuizImportTest extends TestCase
             }
         }
         $imported = $this->importer->plan('import', $this->context);
+        $fixed = $capture();
+        self::assertEquals($changes, $audit->compare($baseline, $fixed, 'import', $imported, 'module3')['changes']);
         self::assertSame([], $imported['errors']);
         self::assertSame([0, 0, 0, 168], [$imported['add_quizzes'], $imported['add_questions'], $imported['add_answers'], $imported['existing_copies']]);
         foreach ($imported['quizzes'] as $quiz) {
@@ -198,7 +234,7 @@ final class ModuleThreeQuizImportTest extends TestCase
         self::assertCount(28, array_filter($sources, static fn ($n) => 1 === $n));
         self::assertCount(14, $imported['held_sources']);
         self::assertSame([], array_intersect(array_keys($sources), $imported['held_sources']));
-        self::assertTrue($this->apply()['noop']);
+        self::assertTrue($this->apply(allowProduction: $prod)['noop']);
         self::assertSame($after, $this->rows());
 
         $renewal = new CommandTester(new ModuleThreeQuizRenewalCommand($this->importer, $this->em, $this->destination));
@@ -206,7 +242,14 @@ final class ModuleThreeQuizImportTest extends TestCase
         $activation = json_decode($renewal->getDisplay(), true, 512, JSON_THROW_ON_ERROR);
         self::assertSame(['renewal_enabled', 'renewal_enabled', 'renewal_enabled'], array_column($activation['renewal_changes'], 'field'));
         self::assertSame($after, $this->rows());
-        self::assertSame(0, $renewal->execute($this->options() + ['mode' => 'enable', '--apply' => true, '--expect-plan' => $activation['plan_hash']]));
+        $activate = $this->options() + ['mode' => 'enable', '--apply' => true, '--expect-plan' => $activation['plan_hash']];
+        if ($prod) {
+            self::assertSame(1, $renewal->execute($activate));
+            self::assertSame(1, $renewal->execute(array_replace($activate + $consent, ['--expect-plan' => $imported['plan_hash']])));
+            self::assertSame($after, $this->rows());
+        }
+        self::assertSame(0, $renewal->execute($activate + $consent));
+        self::assertCount(3, $audit->compare($fixed, $capture(), 'enable', $activation, 'module3')['changes']);
         $expected = $after;
         foreach ($expected['quiz'] as &$row) {
             if (in_array($row['id'], array_column($activation['renewal_changes'], 'quiz_id'), true)) {
@@ -217,7 +260,7 @@ final class ModuleThreeQuizImportTest extends TestCase
         self::assertSame($expected, $this->rows());
         $this->em->getConnection()->update('quiz', ['error_question_quota' => 5], ['id' => $imported['quizzes']['module3_test1']['id']]);
         $configured = $this->rows();
-        self::assertTrue($this->apply()['noop']);
+        self::assertTrue($this->apply(allowProduction: $prod)['noop']);
         self::assertSame($configured, $this->rows());
     }
 

@@ -16,6 +16,11 @@ final class ModuleThreeQuizDestination implements EditorialQuizDestination
         foreach (['env', 'database', 'host', 'port', 'server'] as $field) {
             EditorialQuizManifest::require(is_string($options['expect-'.$field] ?? null) && '' !== $options['expect-'.$field], '--expect-'.$field.' requis.');
         }
+        if ('prod' === $options['expect-env']) {
+            EditorialQuizManifest::require(0 !== strcasecmp('orthogram', $options['expect-database']), 'La base de travail orthogram est réservée au contexte dev.');
+
+            return $this->destination->verify($db, $options);
+        }
         if ('dev' === $options['expect-env'] && 'orthogram' === $options['expect-database']) {
             EditorialQuizManifest::require('import' === $action, 'Renouvellement interdit sur orthogram en dev.');
             if ($options['apply'] ?? false) {

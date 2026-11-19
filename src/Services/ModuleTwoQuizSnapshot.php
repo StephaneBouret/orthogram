@@ -10,8 +10,10 @@ final class ModuleTwoQuizSnapshot
      * @param array<string, mixed> $plan  post-operation preview, except for activation (reviewed pre-operation plan)
      *
      * @return array<string, mixed> */
-    public function compare(array $before, array $after, string $phase, array $plan = []): array
+    public function compare(array $before, array $after, string $phase, array $plan = [], string $module = 'module2'): array
     {
+        ModuleTwoQuizManifest::require(in_array($module, ['module2', 'module3'], true), 'Module inconnu.');
+        ModuleTwoQuizManifest::require('module2' === $module || 'migration' !== $phase, 'Aucune migration pour le module 3.');
         ModuleTwoQuizManifest::require(in_array($phase, ['migration', 'import', 'enable', 'disable', 'identical'], true), 'Phase inconnue.');
         ModuleTwoQuizManifest::require($before['destination'] === $after['destination'], 'Destinations différentes.');
         $left = $before['tables'];
@@ -33,7 +35,7 @@ final class ModuleTwoQuizSnapshot
         }
         if (in_array($phase, ['import', 'enable', 'disable'], true)) {
             ModuleTwoQuizManifest::require(($plan['destination'] ?? null) === $before['destination'] && [] === ($plan['errors'] ?? null) && [] === ($plan['differences'] ?? null), 'Plan absent, divergent ou destiné à une autre base.');
-            ModuleTwoQuizManifest::require(array_keys($plan['quizzes']) === ['module2_test1', 'module2_test2', 'module2_general'], 'Trois identités module 2 requises.');
+            ModuleTwoQuizManifest::require(array_keys($plan['quizzes']) === [$module.'_test1', $module.'_test2', $module.'_general'], 'Trois identités éditoriales requises pour '.$module.'.');
             $identities = array_column($after['tables']['quiz_manifest_identity']['rows'], null, 'quiz_key');
             $ids = [];
             foreach ($plan['quizzes'] as $key => $quiz) {
@@ -43,7 +45,8 @@ final class ModuleTwoQuizSnapshot
             }
             ModuleTwoQuizManifest::require(3 === count(array_unique($ids)), 'Trois quiz distincts requis.');
             if ('import' === $phase) {
-                ModuleTwoQuizManifest::require('import' === $plan['action'] && 0 === $plan['add_quizzes'] && 177 === $plan['existing_copies'], 'Prévisualisation complète après import requise.');
+                $copies = 'module3' === $module ? 168 : 177;
+                ModuleTwoQuizManifest::require('import' === $plan['action'] && 0 === $plan['add_quizzes'] && $copies === $plan['existing_copies'], 'Prévisualisation complète après import requise.');
                 $newIds = array_values(array_diff($ids, array_column($left['quiz']['rows'], 'id')));
                 ModuleTwoQuizManifest::require(in_array(count($newIds), [0, 3], true), 'Import partiel.');
                 $questions = array_filter($right['quiz_question']['rows'], static fn ($r) => in_array($r['quiz_id'], $newIds, true));
@@ -55,7 +58,7 @@ final class ModuleTwoQuizSnapshot
                     'quiz_reserve_import' => static fn ($r) => in_array($r['quiz_id'], $newIds, true),
                     'quiz_manifest_identity' => static fn ($r) => in_array($r['quiz_id'], $newIds, true),
                 ];
-                foreach (['quiz' => 3, 'quiz_question' => 177, 'quiz_answer' => 354, 'quiz_reserve_import' => 177, 'quiz_manifest_identity' => 3] as $table => $count) {
+                foreach (['quiz' => 3, 'quiz_question' => $copies, 'quiz_answer' => 2 * $copies, 'quiz_reserve_import' => $copies, 'quiz_manifest_identity' => 3] as $table => $count) {
                     $added = array_filter($right[$table]['rows'], $filters[$table]);
                     ModuleTwoQuizManifest::require(count($added) === ([] === $newIds ? 0 : $count), 'Volume ajouté divergent : '.$table);
                     $right[$table]['rows'] = array_values(array_filter($right[$table]['rows'], static fn ($r) => !$filters[$table]($r)));

@@ -7,7 +7,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 
-#[AsCommand(name: 'app:quiz:module3-renewal', description: 'Prévisualiser ou modifier le renouvellement des trois quiz du module 3 sur base jetable.')]
+#[AsCommand(name: 'app:quiz:module3-renewal', description: 'Prévisualiser ou modifier séparément le renouvellement des trois quiz tracés sur base jetable ou en production.')]
 final class ModuleThreeQuizRenewalCommand extends ModuleThreeQuizImportCommand
 {
     protected function configure(): void
