@@ -15,7 +15,7 @@ final class QuizCommandDestination
     /** @param array<string, mixed> $options
      * @return array{environment: string, database: string, host: string, port: int, server: string}
      */
-    public function verify(Connection $db, array $options): array
+    public function verify(Connection $db, array $options, bool $allowModuleThreeTestDatabase = false): array
     {
         $production = 'prod' === $this->environment;
         $write = (bool) ($options['apply'] ?? false);
@@ -50,6 +50,7 @@ final class QuizCommandDestination
         ModuleOneReserveManifest::require(!$production || (int) $row['server_port'] === $port, 'Port du serveur MySQL différent du port attendu.');
         if ($write && !$production) {
             ModuleOneReserveManifest::require(('orthogram' === $row['db'] && $allowWork)
+                || ($allowModuleThreeTestDatabase && 'test' === $this->environment && 1 === preg_match('/^orthogram_module3_[a-f0-9]{16}_test$/D', $row['db']))
                 || 1 === preg_match('/^orthogram_(quiz_reserve_lot3_[a-f0-9]{12}|dictation_2a_[a-f0-9]{16})(_test)?$/D', $row['db']), 'Écriture réservée à une copie identifiée ; orthogram exige --allow-work-database.');
         }
 

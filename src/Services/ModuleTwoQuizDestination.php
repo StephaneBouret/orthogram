@@ -5,7 +5,7 @@ namespace App\Services;
 use Doctrine\DBAL\Connection;
 
 /** Separate work/production consent, using the shared effective-destination assertions. */
-final class ModuleTwoQuizDestination
+final class ModuleTwoQuizDestination implements EditorialQuizDestination
 {
     public function __construct(private readonly QuizCommandDestination $destination)
     {

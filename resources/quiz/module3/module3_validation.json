@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "source_check": "112 entrées identiques au Word : numéro, thème, phrase, réponses, explication.",
+  "manifest_sha256": "fa86493da4fb4ede77c8246bf3f460b235183eb82f506ff2acdba08ca697e876",
+  "counts": {
+    "sources_total": 112,
+    "sources_retained": 98,
+    "future_reserve_candidates": 12,
+    "other_pedagogical_use": 2,
+    "copies": 168,
+    "initial_copies": 42,
+    "reserve_copies": 126,
+    "answer_rows": 336,
+    "sources_with_two_copies": 70,
+    "sources_with_one_copy": 28
+  },
+  "limits": "Contrôle documentaire ; aucune base ni exécution du moteur Symfony."
+}
