@@ -3213,3 +3213,25 @@ html[data-bs-theme="dark"] .word-token--missed {
     outline: 3px solid var(--orthogram-focus-ring, currentColor);
     outline-offset: -3px;
 }
+
+/* Phonétique : annotation centrée sous la lettre repérée dans un exemple. */
+.course-learn-card .course-phonetic-word {
+    display: inline-block;
+    white-space: nowrap;
+    padding-bottom: 1.25em;
+}
+
+.course-learn-card .course-phonetic-anchor {
+    position: relative;
+    display: inline-block;
+}
+
+.course-learn-card .course-phonetic-sound {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    line-height: 1.25;
+    white-space: nowrap;
+    text-decoration: none;
+}
