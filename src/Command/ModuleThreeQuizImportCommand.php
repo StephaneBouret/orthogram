@@ -13,7 +13,7 @@ class ModuleThreeQuizImportCommand extends EditorialQuizImportCommand
 {
     public function __construct(ModuleThreeQuizImporter $importer, EntityManagerInterface $em, ModuleThreeQuizDestination $destination)
     {
-        parent::__construct($importer, $em, $destination);
+        parent::__construct(static fn () => $importer, $em, $destination);
     }
 
     protected function configure(): void

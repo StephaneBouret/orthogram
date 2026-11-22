@@ -1,0 +1,111 @@
+{
+  "format": "orthogram.editorial.v1",
+  "module_key": "grand_essai",
+  "document_revision": 1,
+  "counts": {
+    "sources_total": 1,
+    "sources_retained": 1,
+    "sources_on_hold": 0,
+    "copies": 1,
+    "initial_copies": 1,
+    "reserve_copies": 0,
+    "answer_rows": 2,
+    "sources_with_one_copy": 1,
+    "sources_with_two_copies": 0
+  },
+  "quizzes": [
+    {
+      "quiz_key": "grand_essai_final",
+      "title": "Accords de recette",
+      "course_binding": "manual_after_import",
+      "renewal_enabled": false,
+      "error_question_quota": null,
+      "expected_initial_count": 1,
+      "expected_reserve_count": 0,
+      "initial_source_keys": [
+        "grand_essai_docx_007"
+      ],
+      "theme_matrix": [
+        {
+          "theme": "Accords",
+          "initial": [
+            7
+          ],
+          "reserve": [],
+          "per_attempt": 1,
+          "min_repeat_vs_previous": 1
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "original_number": 7,
+      "source_key": "grand_essai_docx_007",
+      "theme": "Accords",
+      "original": {
+        "theme": "Accords",
+        "text": "Les pages sont prêtes.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "Prêtes s’accorde avec pages."
+      },
+      "original_sha256": "3886be9e2543a6e6e3307eec6603a55eab02fb0aa95e10f538980e633a7c4dc2",
+      "status": "retained",
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Les pages sont prêtes.",
+        "theme": "Accords",
+        "explanation": "Prêtes s’accorde avec pages.",
+        "multiple": false,
+        "contains_error": false,
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ],
+        "corrected_text": "Les pages sont prêtes.",
+        "error_count": 0,
+        "correction_edits": []
+      },
+      "assignments": [
+        {
+          "copy_key": "grand_essai_final::grand_essai_docx_007",
+          "quiz_key": "grand_essai_final",
+          "role": "initial",
+          "position": 0
+        }
+      ]
+    }
+  ],
+  "copies": [
+    {
+      "copy_key": "grand_essai_final::grand_essai_docx_007",
+      "quiz_key": "grand_essai_final",
+      "role": "initial",
+      "position": 0,
+      "source_key": "grand_essai_docx_007",
+      "payload_sha256": "f52d33a5249667bce2c366b1e89fe39c27b9e50fcfef31c4c12d206d7932e057"
+    }
+  ],
+  "policy": {
+    "import_status_allowlist": [
+      "retained"
+    ],
+    "automatic_course_binding": false,
+    "new_quizzes_fixed": true,
+    "error_question_quota": null,
+    "corrected_text_is_documentary": true,
+    "activation": "separate",
+    "new_questions": 0
+  }
+}

@@ -13,7 +13,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class EditorialQuizImportCommand extends Command
 {
-    public function __construct(private readonly EditorialQuizImporter $importer, private readonly EntityManagerInterface $em, private readonly EditorialQuizDestination $destination)
+    /** @param \Closure(InputInterface): EditorialQuizImporter $loadImporter */
+    public function __construct(private readonly \Closure $loadImporter, private readonly EntityManagerInterface $em, private readonly EditorialQuizDestination $destination)
     {
         parent::__construct();
     }
@@ -39,16 +40,17 @@ abstract class EditorialQuizImportCommand extends Command
         $readonly = false;
         try {
             $action = $this->action($input);
+            $importer = ($this->loadImporter)($input);
             $context = $this->destination->verify($db, $input->getOptions(), $action);
             if ($input->getOption('apply')) {
                 $hash = $input->getOption('expect-plan');
                 EditorialQuizManifest::require(is_string($hash) && 1 === preg_match('/^[a-f0-9]{64}$/D', $hash), '--expect-plan SHA-256 requis.');
-                $report = $this->importer->apply($action, $hash, $context, (bool) ($input->getOptions()['allow-work-database'] ?? false), (bool) ($input->getOptions()['allow-production-database'] ?? false));
+                $report = $importer->apply($action, $hash, $context, (bool) ($input->getOptions()['allow-work-database'] ?? false), (bool) ($input->getOptions()['allow-production-database'] ?? false));
             } else {
                 $db->executeStatement('SET TRANSACTION READ ONLY');
                 $db->beginTransaction();
                 $readonly = true;
-                $report = $this->importer->plan($action, $context);
+                $report = $importer->plan($action, $context);
                 $db->rollBack();
                 $readonly = false;
             }

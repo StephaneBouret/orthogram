@@ -76,7 +76,10 @@ abstract class EditorialQuizImporter
             }
             if (false === $identity) {
                 ++$report['add_quizzes'];
-                $report['add_questions'] += ($spec['expected_initial_count'] + $spec['expected_reserve_count']);
+                $report['add_questions'] += $future->getQuestions()->count();
+                foreach ($future->getQuestions() as $question) {
+                    $report['add_answers'] += $question->getAnswers()->count();
+                }
                 if ('import' !== $action) {
                     $report['errors'][] = $key.' : import complet requis avant activation/désactivation.';
                 }
@@ -129,7 +132,9 @@ abstract class EditorialQuizImporter
                     $this->difference($report, $key, $source, 'trace', 'présente', null);
                     continue;
                 }
-                foreach (['manifest_hash' => $this->manifest->hash, 'payload_hash' => $copy['payload_sha256']] as $field => $expected) {
+                // The identity already reports a new edition once per quiz. Each trace must
+                // still belong to its registered edition, even when reviewing a revised file.
+                foreach (['manifest_hash' => $identity['manifest_hash'], 'payload_hash' => $copy['payload_sha256']] as $field => $expected) {
                     if ($trace[$field] !== $expected) {
                         $this->difference($report, $key, $source, $field, $expected, $trace[$field]);
                     }
@@ -170,20 +175,19 @@ abstract class EditorialQuizImporter
                 $this->difference($report, $key, null, 'untracked_questions', [], $extra);
             }
         }
-        if ($registered > 0 && 3 !== $registered) {
-            $report['errors'][] = 'Import partiel : '.$registered.'/3 identités présentes.';
+        if ($registered > 0 && count($keys) !== $registered) {
+            $report['errors'][] = 'Import partiel : '.$registered.'/'.count($keys).' identités présentes.';
         }
         if ([] === $missing) {
             $orphan = $db->fetchAllAssociative(
                 'SELECT t.quiz_id, t.source_key FROM quiz_reserve_import t LEFT JOIN quiz_manifest_identity i ON i.quiz_id = t.quiz_id WHERE t.source_key LIKE ? AND (i.quiz_key IS NULL OR i.quiz_key NOT IN (?)) ORDER BY t.quiz_id, t.source_key',
-                [$module.'\_docx\_%', $keys], [\Doctrine\DBAL\ParameterType::STRING, \Doctrine\DBAL\ArrayParameterType::STRING]
+                [addcslashes($module, '_%\\').'\_docx\_%', $keys], [\Doctrine\DBAL\ParameterType::STRING, \Doctrine\DBAL\ArrayParameterType::STRING]
             );
             if ([] !== $orphan) {
                 $this->difference($report, $module, null, 'orphan_traces', [], $orphan);
             }
             $this->checkAdditionalConflicts($report);
         }
-        $report['add_answers'] = 2 * $report['add_questions'];
         if ([] !== $report['differences']) {
             $report['errors'][] = 'Divergences détectées ; aucune écriture permise.';
         }

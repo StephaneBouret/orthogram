@@ -33,7 +33,7 @@ final class DictationTestDatabase
 
     public function __construct(?string $existingWorkerDatabase = null, string $recipe = 'dictation_2a')
     {
-        if (!in_array($recipe, ['dictation_2a', 'module2', 'module3'], true)) {
+        if (!in_array($recipe, ['dictation_2a', 'module2', 'module3', 'editorial'], true)) {
             throw new \LogicException('Recette inconnue.');
         }
         $this->name = $existingWorkerDatabase ?? 'orthogram_'.$recipe.'_'.bin2hex(random_bytes(8)).'_test';

@@ -12,13 +12,17 @@ abstract class EditorialQuizManifest
     /** @var array<string, mixed> */
     public readonly array $data;
     public readonly string $hash;
+    /** @var array<string, array<string, mixed>>|null */
+    private ?array $indexedSources = null;
 
     public function __construct(string $path)
     {
         $bytes = file_get_contents($path);
         self::require(false !== $bytes, 'Manifeste illisible.');
         $this->hash = hash('sha256', $bytes);
-        $this->data = json_decode($bytes, true, 512, JSON_THROW_ON_ERROR);
+        $data = json_decode($bytes, true, 512, JSON_THROW_ON_ERROR);
+        self::require(is_array($data) && !array_is_list($data), 'Objet JSON attendu à la racine du manifeste.');
+        $this->data = $data;
         $this->validate();
     }
 
@@ -50,7 +54,7 @@ abstract class EditorialQuizManifest
     /** @return array<string, array<string, mixed>> */
     public function sources(): array
     {
-        return array_column($this->data['sources'], null, 'source_key');
+        return $this->indexedSources ??= array_column($this->data['sources'], null, 'source_key');
     }
 
     /** @return list<array<string, mixed>> */
