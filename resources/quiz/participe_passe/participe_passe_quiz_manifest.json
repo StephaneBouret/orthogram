@@ -1,0 +1,4597 @@
+{
+  "module_key": "participe_passe",
+  "format": "orthogram.editorial.v1",
+  "document_revision": 1,
+  "source_document": {
+    "name": "Module_participe_passé_quiz.docx",
+    "sha256": "178fa5880218e081d1c8567c51a13dd136cb163510c4e4d2db85ad425b1fddf1"
+  },
+  "counts": {
+    "sources_total": 72,
+    "sources_retained": 65,
+    "sources_on_hold": 7,
+    "copies": 65,
+    "initial_copies": 26,
+    "reserve_copies": 39,
+    "answer_rows": 130,
+    "sources_with_two_copies": 0,
+    "sources_with_one_copy": 65
+  },
+  "quizzes": [
+    {
+      "quiz_key": "participe_passe_test1",
+      "title": "Test : accorder le participe passé seul, avec être ou avec avoir",
+      "placement": "Après la leçon sur « avoir », avant « Le participe passé suivi d’un infinitif (1) ».",
+      "course_binding": "manual_after_import",
+      "renewal_enabled": false,
+      "error_question_quota": null,
+      "expected_initial_count": 5,
+      "expected_reserve_count": 7,
+      "initial_source_keys": [
+        "participe_passe_docx_001",
+        "participe_passe_docx_003",
+        "participe_passe_docx_030",
+        "participe_passe_docx_008",
+        "participe_passe_docx_057"
+      ],
+      "theme_matrix": [
+        {
+          "theme": "reconnaître le participe passé employé avec ou sans auxiliaire",
+          "initial": [
+            1
+          ],
+          "reserve": [
+            26,
+            50
+          ],
+          "per_attempt": 1,
+          "min_repeat_vs_previous": 0
+        },
+        {
+          "theme": "« excepté »",
+          "initial": [
+            3
+          ],
+          "reserve": [
+            4
+          ],
+          "per_attempt": 1,
+          "min_repeat_vs_previous": 0
+        },
+        {
+          "theme": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+          "initial": [
+            30
+          ],
+          "reserve": [
+            6
+          ],
+          "per_attempt": 1,
+          "min_repeat_vs_previous": 0
+        },
+        {
+          "theme": "le participe passé employé avec l’auxiliaire « être »",
+          "initial": [
+            8
+          ],
+          "reserve": [
+            31,
+            55
+          ],
+          "per_attempt": 1,
+          "min_repeat_vs_previous": 0
+        },
+        {
+          "theme": "le participe passé employé avec l’auxiliaire « avoir »",
+          "initial": [
+            57
+          ],
+          "reserve": [
+            33
+          ],
+          "per_attempt": 1,
+          "min_repeat_vs_previous": 0
+        }
+      ]
+    },
+    {
+      "quiz_key": "participe_passe_test2",
+      "title": "Test : choisir l’accord dans les constructions particulières",
+      "placement": "Après la leçon sur « en », avant l’introduction aux verbes pronominaux.",
+      "course_binding": "manual_after_import",
+      "renewal_enabled": false,
+      "error_question_quota": null,
+      "expected_initial_count": 5,
+      "expected_reserve_count": 7,
+      "initial_source_keys": [
+        "participe_passe_docx_011",
+        "participe_passe_docx_061",
+        "participe_passe_docx_039",
+        "participe_passe_docx_017",
+        "participe_passe_docx_043"
+      ],
+      "theme_matrix": [
+        {
+          "theme": "le participe passé suivi d’un infinitif (1)",
+          "initial": [
+            11
+          ],
+          "reserve": [
+            36
+          ],
+          "per_attempt": 1,
+          "min_repeat_vs_previous": 0
+        },
+        {
+          "theme": "le participe passé suivi d’un infinitif (2)",
+          "initial": [
+            61
+          ],
+          "reserve": [
+            13,
+            38
+          ],
+          "per_attempt": 1,
+          "min_repeat_vs_previous": 0
+        },
+        {
+          "theme": "les participes passés « cru », « espéré », « dû », « pu », « voulu », « su »…",
+          "initial": [
+            39
+          ],
+          "reserve": [
+            16,
+            64
+          ],
+          "per_attempt": 1,
+          "min_repeat_vs_previous": 0
+        },
+        {
+          "theme": "les participes passés « couru », « coûté », « marché », « pesé », « valu », « vécu »…",
+          "initial": [
+            17
+          ],
+          "reserve": [
+            18
+          ],
+          "per_attempt": 1,
+          "min_repeat_vs_previous": 0
+        },
+        {
+          "theme": "le participe passé employé avec « en »",
+          "initial": [
+            43
+          ],
+          "reserve": [
+            19
+          ],
+          "per_attempt": 1,
+          "min_repeat_vs_previous": 0
+        }
+      ]
+    },
+    {
+      "quiz_key": "participe_passe_general",
+      "title": "Test général : accorder le participe passé",
+      "placement": "Après la leçon sur les verbes accidentellement pronominaux, en fin de section.",
+      "course_binding": "manual_after_import",
+      "renewal_enabled": false,
+      "error_question_quota": null,
+      "expected_initial_count": 16,
+      "expected_reserve_count": 25,
+      "initial_source_keys": [
+        "participe_passe_docx_002",
+        "participe_passe_docx_027",
+        "participe_passe_docx_005",
+        "participe_passe_docx_032",
+        "participe_passe_docx_010",
+        "participe_passe_docx_058",
+        "participe_passe_docx_012",
+        "participe_passe_docx_037",
+        "participe_passe_docx_015",
+        "participe_passe_docx_042",
+        "participe_passe_docx_065",
+        "participe_passe_docx_068",
+        "participe_passe_docx_022",
+        "participe_passe_docx_070",
+        "participe_passe_docx_024",
+        "participe_passe_docx_047"
+      ],
+      "theme_matrix": [
+        {
+          "theme": "reconnaître le participe passé employé avec ou sans auxiliaire",
+          "initial": [
+            2
+          ],
+          "reserve": [
+            25,
+            49
+          ],
+          "per_attempt": 1,
+          "min_repeat_vs_previous": 0
+        },
+        {
+          "theme": "« excepté »",
+          "initial": [
+            27
+          ],
+          "reserve": [
+            51,
+            52
+          ],
+          "per_attempt": 1,
+          "min_repeat_vs_previous": 0
+        },
+        {
+          "theme": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+          "initial": [
+            5
+          ],
+          "reserve": [
+            53,
+            54
+          ],
+          "per_attempt": 1,
+          "min_repeat_vs_previous": 0
+        },
+        {
+          "theme": "le participe passé employé avec l’auxiliaire « être »",
+          "initial": [
+            32
+          ],
+          "reserve": [
+            7,
+            56
+          ],
+          "per_attempt": 1,
+          "min_repeat_vs_previous": 0
+        },
+        {
+          "theme": "le participe passé employé avec l’auxiliaire « avoir »",
+          "initial": [
+            10,
+            58
+          ],
+          "reserve": [
+            9,
+            34
+          ],
+          "per_attempt": 2,
+          "min_repeat_vs_previous": 0
+        },
+        {
+          "theme": "le participe passé suivi d’un infinitif (1)",
+          "initial": [
+            12
+          ],
+          "reserve": [
+            59,
+            60
+          ],
+          "per_attempt": 1,
+          "min_repeat_vs_previous": 0
+        },
+        {
+          "theme": "le participe passé suivi d’un infinitif (2)",
+          "initial": [
+            37
+          ],
+          "reserve": [
+            14,
+            62
+          ],
+          "per_attempt": 1,
+          "min_repeat_vs_previous": 0
+        },
+        {
+          "theme": "les participes passés « cru », « espéré », « dû », « pu », « voulu », « su »…",
+          "initial": [
+            15
+          ],
+          "reserve": [
+            40,
+            63
+          ],
+          "per_attempt": 1,
+          "min_repeat_vs_previous": 0
+        },
+        {
+          "theme": "les participes passés « couru », « coûté », « marché », « pesé », « valu », « vécu »…",
+          "initial": [
+            42,
+            65
+          ],
+          "reserve": [
+            41,
+            66
+          ],
+          "per_attempt": 2,
+          "min_repeat_vs_previous": 0
+        },
+        {
+          "theme": "le participe passé employé avec « en »",
+          "initial": [
+            68
+          ],
+          "reserve": [
+            67
+          ],
+          "per_attempt": 1,
+          "min_repeat_vs_previous": 0
+        },
+        {
+          "theme": "le participe passé des verbes « essentiellement pronominaux »",
+          "initial": [
+            22,
+            70
+          ],
+          "reserve": [
+            21,
+            45,
+            69
+          ],
+          "per_attempt": 2,
+          "min_repeat_vs_previous": 0
+        },
+        {
+          "theme": "le participe passé des verbes « accidentellement pronominaux »",
+          "initial": [
+            24,
+            47
+          ],
+          "reserve": [
+            23,
+            48,
+            71
+          ],
+          "per_attempt": 2,
+          "min_repeat_vs_previous": 0
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "original_number": 1,
+      "source_key": "participe_passe_docx_001",
+      "theme": "reconnaître le participe passé employé avec ou sans auxiliaire",
+      "original": {
+        "theme": "reconnaître le participe passé employé avec ou sans auxiliaire",
+        "text": "Appliqués, les moines copistes maniaient l’art de la calligraphie.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. « Appliqués » est employé comme un adjectif (participe passé adjectival) ; il pourrait être remplacé par un autre adjectif de même sens comme « studieux », par exemple. « Appliqués » qualifie « les moines copistes » : il s’écrit donc au masculin pluriel."
+      },
+      "original_sha256": "6d3b660ac63e9ac717f27ee9d38060569402abb40daa59471e2d1d6b399fd53d",
+      "course_reference": {
+        "label": "reconnaître le participe passé employé avec ou sans auxiliaire",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Appliqués, les moines copistes maniaient l’art de la calligraphie.",
+        "corrected_text": "Appliqués, les moines copistes maniaient l’art de la calligraphie.",
+        "explanation": "Phrase correcte. « Appliqués » qualifie « les moines copistes », masculin pluriel.",
+        "theme": "reconnaître le participe passé employé avec ou sans auxiliaire",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test1::participe_passe_docx_001",
+          "quiz_key": "participe_passe_test1",
+          "position": 0,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 2,
+      "source_key": "participe_passe_docx_002",
+      "theme": "reconnaître le participe passé employé avec ou sans auxiliaire",
+      "original": {
+        "theme": "reconnaître le participe passé employé avec ou sans auxiliaire",
+        "text": "Deux cafés serré, s’il vous plaît !",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Deux cafés serrés, s’il vous plaît ! » Ou bien : « deux cafés forts... » ; « serrés », adjectif, s’accorde en genre et nombre avec le nom « cafés », masculin pluriel."
+      },
+      "original_sha256": "e650683eb54db09427d79d0de7d24119c79b242afd4df0fad8efb449a5dd1fb6",
+      "course_reference": {
+        "label": "reconnaître le participe passé employé avec ou sans auxiliaire",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Deux cafés serré, s’il vous plaît !",
+        "corrected_text": "Deux cafés serrés, s’il vous plaît !",
+        "explanation": "Correction : « Deux cafés serrés, s’il vous plaît ! » « Serrés » qualifie les deux cafés, au masculin pluriel.",
+        "theme": "reconnaître le participe passé employé avec ou sans auxiliaire",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "serré",
+            "correct_fragment": "serrés",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_002",
+          "quiz_key": "participe_passe_general",
+          "position": 0,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 3,
+      "source_key": "participe_passe_docx_003",
+      "theme": "« excepté »",
+      "original": {
+        "theme": "« excepté »",
+        "text": "Vues ses notes, j’ai bien peur qu’il ne redouble.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Vu ses notes, j’ai bien peur qu’il ne redouble. » Précédant le nom « notes » (ou le groupe nominal « ses notes »), le participe passé « vu » reste invariable."
+      },
+      "original_sha256": "77e30d0c735fca01b42cc94440a86ce085a8def1110fffc4adab9d798528346c",
+      "course_reference": {
+        "label": "« excepté »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Vues ses notes, j’ai bien peur qu’il ne redouble.",
+        "corrected_text": "Vu ses notes, j’ai bien peur qu’il ne redouble.",
+        "explanation": "Correction : « Vu ses notes, j’ai bien peur qu’il ne redouble. » Devant « ses notes », « vu » signifie « compte tenu de » et reste invariable.",
+        "theme": "« excepté »",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "Vues",
+            "correct_fragment": "Vu",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test1::participe_passe_docx_003",
+          "quiz_key": "participe_passe_test1",
+          "position": 1,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 4,
+      "source_key": "participe_passe_docx_004",
+      "theme": "« excepté »",
+      "original": {
+        "theme": "« excepté »",
+        "text": "Voici le montant de la facture, charges non comprises.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. Le participe passé adjectival « comprises » est placé après le nom « charges » : il s’accorde en genre et en nombre avec ce dernier."
+      },
+      "original_sha256": "37a5aaa11d4ba1336e8ae89ded8c0f3bfc363642c562140acea29bd158be6b92",
+      "course_reference": {
+        "label": "« excepté »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Voici le montant de la facture, charges non comprises.",
+        "corrected_text": "Voici le montant de la facture, charges non comprises.",
+        "explanation": "Phrase correcte. Placé après « charges », « comprises » qualifie ce nom féminin pluriel.",
+        "theme": "« excepté »",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test1::participe_passe_docx_004",
+          "quiz_key": "participe_passe_test1",
+          "position": 7,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 5,
+      "source_key": "participe_passe_docx_005",
+      "theme": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+      "original": {
+        "theme": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+        "text": "Ci-annexée, copie de l’acte de naissance de l’enfant.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Ci-annexé, copie de l’acte de naissance de l’enfant. » « Ci-annexé » est placé en tête de phrase et le nom « copie » n’est pas précédé d’un déterminant : double raison pour ne pas accorder !"
+      },
+      "original_sha256": "fd0f66abb0b7ffe7550356f4b14d3fc211cc2804bdd7afe3612d763c282aaf00",
+      "course_reference": {
+        "label": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Ci-annexée, copie de l’acte de naissance de l’enfant.",
+        "corrected_text": "Ci-annexé, copie de l’acte de naissance de l’enfant.",
+        "explanation": "Correction : « Ci-annexé, copie de l’acte de naissance de l’enfant. » En tête de phrase, « ci-annexé » reste invariable.",
+        "theme": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "Ci-annexée",
+            "correct_fragment": "Ci-annexé",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_005",
+          "quiz_key": "participe_passe_general",
+          "position": 2,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 6,
+      "source_key": "participe_passe_docx_006",
+      "theme": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+      "original": {
+        "theme": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+        "text": "Veuillez trouver ci-joints certificats et attestations demandés.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Veuillez trouver ci-joint certificats et attestations demandés. » L’absence de déterminant devant les noms « certificats » et « attestations » annule l’accord."
+      },
+      "original_sha256": "4d50580e4d4521e19d0c7d2436e3a025c3e2e541726faaa07ddefca0f8b3f6ad",
+      "course_reference": {
+        "label": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Veuillez trouver ci-joints certificats et attestations demandés.",
+        "corrected_text": "Veuillez trouver ci-joint certificats et attestations demandés.",
+        "explanation": "Correction : « Veuillez trouver ci-joint certificats et attestations demandés. » Devant des noms sans déterminant, on écrit « ci-joint ».",
+        "theme": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "ci-joints",
+            "correct_fragment": "ci-joint",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test1::participe_passe_docx_006",
+          "quiz_key": "participe_passe_test1",
+          "position": 8,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 7,
+      "source_key": "participe_passe_docx_007",
+      "theme": "le participe passé employé avec l’auxiliaire « être »",
+      "original": {
+        "theme": "le participe passé employé avec l’auxiliaire « être »",
+        "text": "Ils sont rentrés puisque la lumière est allumé.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Ils sont rentrés puisque la lumière est allumée. » « Rentrés » est correctement accordé en genre et en nombre avec le sujet « ils ». « Qui est-ce qui est allumé ? » : « la lumière », sujet. Le participe passé, employé avec « être », s’accorde avec le sujet « lumière ». On écrit donc « allumée », au féminin singulier."
+      },
+      "original_sha256": "32af0db5fa010460c988c2577fb29dea12d319750b06d3b474ee90c97b6b4206",
+      "course_reference": {
+        "label": "le participe passé employé avec l’auxiliaire « être »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Ils sont rentrés puisque la lumière est allumé.",
+        "corrected_text": "Ils sont rentrés puisque la lumière est allumée.",
+        "explanation": "Correction : « Ils sont rentrés puisque la lumière est allumée. » « Ils sont rentrés » est bien accordé ; « allumée » se rapporte à « la lumière ».",
+        "theme": "le participe passé employé avec l’auxiliaire « être »",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "allumé",
+            "correct_fragment": "allumée",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_007",
+          "quiz_key": "participe_passe_general",
+          "position": 22,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 8,
+      "source_key": "participe_passe_docx_008",
+      "theme": "le participe passé employé avec l’auxiliaire « être »",
+      "original": {
+        "theme": "le participe passé employé avec l’auxiliaire « être »",
+        "text": "Étais-tu venus au spectacle de fin d’année, Cathy ?",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Étais-tu venue au spectacle de fin d’année, Cathy ? » « Qui est-ce qui était venu ? » « Cathy ». L’auxiliaire « était » (« être » à l’imparfait) oblige à accorder le participle passé avec le sujet. On écrit donc « venue », au feminin singulier."
+      },
+      "original_sha256": "8652fc683e68273b43bfcead29642523d64049b92aa4bf4e41c527976fd13724",
+      "course_reference": {
+        "label": "le participe passé employé avec l’auxiliaire « être »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Étais-tu venus au spectacle de fin d’année, Cathy ?",
+        "corrected_text": "Étais-tu venue au spectacle de fin d’année, Cathy ?",
+        "explanation": "Correction : « Étais-tu venue au spectacle de fin d’année, Cathy ? » C’est Cathy qui est venue : avec « être », le participe est ici au féminin singulier.",
+        "theme": "le participe passé employé avec l’auxiliaire « être »",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "venus",
+            "correct_fragment": "venue",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test1::participe_passe_docx_008",
+          "quiz_key": "participe_passe_test1",
+          "position": 3,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 9,
+      "source_key": "participe_passe_docx_009",
+      "theme": "le participe passé employé avec l’auxiliaire « avoir »",
+      "original": {
+        "theme": "le participe passé employé avec l’auxiliaire « avoir »",
+        "text": "Vous auriez pu le lui dire gentiment.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. « Vous auriez pu quoi ? » « le lui dire gentiment ». Le COD est placé après le verbe et l’auxiliaire est « avoir » : le participe passé « pu » ne s’accorde pas."
+      },
+      "original_sha256": "df5643a39c3d39f9065480bdb5826a7babeb4addb5fceed7628f722dbb102ef8",
+      "course_reference": {
+        "label": "le participe passé employé avec l’auxiliaire « avoir »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Vous auriez pu le lui dire gentiment.",
+        "corrected_text": "Vous auriez pu le lui dire gentiment.",
+        "explanation": "Phrase correcte. Ce que vous auriez pu faire, c’est « le lui dire ». Le participe « pu » reste invariable.",
+        "theme": "le participe passé employé avec l’auxiliaire « avoir »",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_009",
+          "quiz_key": "participe_passe_general",
+          "position": 24,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 10,
+      "source_key": "participe_passe_docx_010",
+      "theme": "le participe passé employé avec l’auxiliaire « avoir »",
+      "original": {
+        "theme": "le participe passé employé avec l’auxiliaire « avoir »",
+        "text": "Ont-elles lu la lettre que je leur ai donné ?",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Ont-elles lu la lettre que je leur ai donnée ? » Deux verbes construits avec « avoir » dans cette phrase : « ont lu » et « ai donné ». 1- « Ont-elles lu quoi ? » « la lettre » (COD) placé après le verbe : « lu » ne s’accorde pas. 2- « Je leur ai donné quoi ? » « la lettre », remplacée par le pronom relatif « que » pour éviter la répétition. « Que » précède le verbe employé avec « avoir » : on accorde le participe passé « donné » avec le COD « la lettre » au féminin singulier (« donnée »)."
+      },
+      "original_sha256": "f6848d6ccee141d0c7daf5c5e743c11590e676192ca8d36603b3cc4a77513a35",
+      "course_reference": {
+        "label": "le participe passé employé avec l’auxiliaire « avoir »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Ont-elles lu la lettre que je leur ai donné ?",
+        "corrected_text": "Ont-elles lu la lettre que je leur ai donnée ?",
+        "explanation": "Correction : « Ont-elles lu la lettre que je leur ai donnée ? » Le COD de « donné » est « que », qui reprend « la lettre » et précède le participe. Le COD de « lu » vient après.",
+        "theme": "le participe passé employé avec l’auxiliaire « avoir »",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "donné",
+            "correct_fragment": "donnée",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_010",
+          "quiz_key": "participe_passe_general",
+          "position": 4,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 11,
+      "source_key": "participe_passe_docx_011",
+      "theme": "le participe passé suivi d’un infinitif (1)",
+      "original": {
+        "theme": "le participe passé suivi d’un infinitif (1)",
+        "text": "Les chiens que nous avons entendus aboyer ont dû apercevoir quelqu’un.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. Le participe passé « entendu » est suivi de l’infinitif « aboyer ». « Nous avons entendu qui ? » « les chiens », COD placé avant le verbe. Ce sont « les chiens » qui font l’action d’« aboyer » : le participe passé « entendus » est accordé au masculin pluriel avec « les chiens »."
+      },
+      "original_sha256": "1c58da827d9bf34d57642032b81d9a966687901f0192e5a9874647cb6e972db9",
+      "course_reference": {
+        "label": "le participe passé suivi d’un infinitif (1)",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Les chiens que nous avons entendus aboyer ont dû apercevoir quelqu’un.",
+        "corrected_text": "Les chiens que nous avons entendus aboyer ont dû apercevoir quelqu’un.",
+        "explanation": "Phrase correcte. Ce sont les chiens qui aboient : « entendus » s’accorde avec « que », qui reprend « les chiens ».",
+        "theme": "le participe passé suivi d’un infinitif (1)",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test2::participe_passe_docx_011",
+          "quiz_key": "participe_passe_test2",
+          "position": 0,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 12,
+      "source_key": "participe_passe_docx_012",
+      "theme": "le participe passé suivi d’un infinitif (1)",
+      "original": {
+        "theme": "le participe passé suivi d’un infinitif (1)",
+        "text": "Ces immeubles que j’ai vus construire ont été érigés en quelques mois.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact !  « Ces immeubles que j’ai vu construire ont été érigés en quelques mois. » Le participe passé est suivi d’un infinitif. « Nous avons vu quoi ? » « ces immeubles », COD placé avant le verbe. Mais les immeubles ne pouvant se construire eux-mêmes, le participe passé « vu » ne s’accorde pas."
+      },
+      "original_sha256": "56ab3696d842f132abaae820b5e384c493cc83ed97c2158e56622dde94a7203f",
+      "course_reference": {
+        "label": "le participe passé suivi d’un infinitif (1)",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Ces immeubles que j’ai vus construire ont été érigés en quelques mois.",
+        "corrected_text": "Ces immeubles que j’ai vu construire ont été érigés en quelques mois.",
+        "explanation": "Correction : « Ces immeubles que j’ai vu construire ont été érigés en quelques mois. » Les immeubles sont construits ; ils ne font pas l’action de construire. On écrit « vu construire ».",
+        "theme": "le participe passé suivi d’un infinitif (1)",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "vus",
+            "correct_fragment": "vu",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_012",
+          "quiz_key": "participe_passe_general",
+          "position": 6,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 13,
+      "source_key": "participe_passe_docx_013",
+      "theme": "le participe passé suivi d’un infinitif (2)",
+      "original": {
+        "theme": "le participe passé suivi d’un infinitif (2)",
+        "text": "Je les ai laissé partir tout seuls et je le regrette.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. Le non accord du participe passé « laissé » suivi d’un infinitif étant désormais admis, celui-là reste invariable."
+      },
+      "original_sha256": "5533e9c58b9960a6114642022167df3afcf55c58b7b7391d2a3ca51c2b8f2528",
+      "course_reference": {
+        "label": "le participe passé suivi d’un infinitif (2)",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Je les ai laissé partir tout seuls et je le regrette.",
+        "corrected_text": "Je les ai laissé partir tout seuls et je le regrette.",
+        "explanation": "Phrase correcte. L’invariabilité de « laissé » suivi d’un infinitif est admise par les rectifications de 1990. L’accord traditionnel « laissés » serait également possible ici.",
+        "theme": "le participe passé suivi d’un infinitif (2)",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test2::participe_passe_docx_013",
+          "quiz_key": "participe_passe_test2",
+          "position": 6,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 14,
+      "source_key": "participe_passe_docx_014",
+      "theme": "le participe passé suivi d’un infinitif (2)",
+      "original": {
+        "theme": "le participe passé suivi d’un infinitif (2)",
+        "text": "Ces meubles qu’elle a donnés à restaurer sont de style Empire.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. Il serait néanmoins possible de ne pas accorder le participe « donné » avec le COD « ces meubles » placé avant l’auxiliaire « a », les deux règles étant admises dans ce cas précis."
+      },
+      "original_sha256": "acc8042d9ce223c545cd4b08b93d2bd5c8eb7726b8646eb8a1fb65424c247898",
+      "course_reference": {
+        "label": "le participe passé suivi d’un infinitif (2)",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Ces meubles qu’elle a donnés à restaurer sont de style Empire.",
+        "corrected_text": "Ces meubles qu’elle a donnés à restaurer sont de style Empire.",
+        "explanation": "Phrase correcte. « Donnés » s’accorde ici avec « meubles ». Dans cette construction, la forme invariable « donné à restaurer » est également admise.",
+        "theme": "le participe passé suivi d’un infinitif (2)",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_014",
+          "quiz_key": "participe_passe_general",
+          "position": 28,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 15,
+      "source_key": "participe_passe_docx_015",
+      "theme": "les participes passés « cru », « espéré », « dû », « pu », « voulu », « su »…",
+      "original": {
+        "theme": "les participes passés « cru », « espérer », « dû », « pu », « voulu », « su »…",
+        "text": "Les mesures que j’ai dû prendre leur ont semblé nécessaires.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. Puisqu’il est suivi de l’infinitif « prendre », le participe passé « dû » ne s’accorde pas."
+      },
+      "original_sha256": "b6143b1c9bacf5c56cbd8c66943ed881e8cea65bb6443e7d6e49a8c32926e09a",
+      "course_reference": {
+        "label": "les participes passés « cru », « espéré », « dû », « pu », « voulu », « su »…",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Les mesures que j’ai dû prendre leur ont semblé nécessaires.",
+        "corrected_text": "Les mesures que j’ai dû prendre leur ont semblé nécessaires.",
+        "explanation": "Phrase correcte. Les mesures sont ce que l’on a dû prendre : elles complètent « prendre ».",
+        "theme": "les participes passés « cru », « espéré », « dû », « pu », « voulu », « su »…",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_015",
+          "quiz_key": "participe_passe_general",
+          "position": 8,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 16,
+      "source_key": "participe_passe_docx_016",
+      "theme": "les participes passés « cru », « espéré », « dû », « pu », « voulu », « su »…",
+      "original": {
+        "theme": "les participes passés « cru », « espérer », « dû », « pu », « voulu », « su »…",
+        "text": "Bien que le résultat soit décevant, ils ont fourni tous les efforts qu’ils ont pu.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. Attention ! Même si l’infinitif n’apparaît pas dans la phrase après « pu », il est sous-entendu : « …tous les efforts qu’ils ont pu fournir ». Le participe passé « pu » ne s’accorde donc pas."
+      },
+      "original_sha256": "020ed2aa7d55545ead5d8672100c203c61ebce1deceb958b1a09e6574ee3f800",
+      "course_reference": {
+        "label": "les participes passés « cru », « espéré », « dû », « pu », « voulu », « su »…",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Bien que le résultat soit décevant, ils ont fourni tous les efforts qu’ils ont pu.",
+        "corrected_text": "Bien que le résultat soit décevant, ils ont fourni tous les efforts qu’ils ont pu.",
+        "explanation": "Phrase correcte. « Fournir » est sous-entendu après « pu » : tous les efforts qu’ils ont pu fournir.",
+        "theme": "les participes passés « cru », « espéré », « dû », « pu », « voulu », « su »…",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test2::participe_passe_docx_016",
+          "quiz_key": "participe_passe_test2",
+          "position": 8,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 17,
+      "source_key": "participe_passe_docx_017",
+      "theme": "les participes passés « couru », « coûté », « marché », « pesé », « valu », « vécu »…",
+      "original": {
+        "theme": "les participes passés « courir », « coûter », « marcher », « peser », « valoir », « vivre »…",
+        "text": "Les pommes qu’elle a pesées coûtaient 2,50 € le kilo.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. « Elle a pesé quoi ? » « les pommes », COD, placé avant l’auxiliaire « avoir » : le participe passé s’accorde au féminin pluriel. Il est à noter dans cette phrase que l’information ne porte pas sur la quantité de pommes, mais sur leur prix…"
+      },
+      "original_sha256": "4c1eb7df89476f67b9c15002fbd121ee0d48066a38dc718e7a9ac047e30006d9",
+      "course_reference": {
+        "label": "les participes passés « couru », « coûté », « marché », « pesé », « valu », « vécu »…",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Les pommes qu’elle a pesées coûtaient 2,50 € le kilo.",
+        "corrected_text": "Les pommes qu’elle a pesées coûtaient 2,50 € le kilo.",
+        "explanation": "Phrase correcte. Elle a pesé les pommes. Le COD « que », placé avant le verbe, reprend « les pommes ».",
+        "theme": "les participes passés « couru », « coûté », « marché », « pesé », « valu », « vécu »…",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test2::participe_passe_docx_017",
+          "quiz_key": "participe_passe_test2",
+          "position": 3,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 18,
+      "source_key": "participe_passe_docx_018",
+      "theme": "les participes passés « couru », « coûté », « marché », « pesé », « valu », « vécu »…",
+      "original": {
+        "theme": "les participes passés « courir », « coûter », « marcher », « peser », « valoir », « vivre »…",
+        "text": "Grâce à son régime, les 125 kilos qu’il a pesés sont passés à 85.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Grâce à son régime, les 125 kilos qu’il a pesé sont passés à 85. » « Combien de kilos a-t-il pesé ? »  « 125 », complément de poids : le participe passé ne s’accorde pas."
+      },
+      "original_sha256": "7412a16a4325683343faa7f65192ec8628542690ece5da2271fcece038fe3d68",
+      "course_reference": {
+        "label": "les participes passés « couru », « coûté », « marché », « pesé », « valu », « vécu »…",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Les 85 kilos qu’il a pesés pendant des années restent inscrits dans son dossier.",
+        "corrected_text": "Les 85 kilos qu’il a pesé pendant des années restent inscrits dans son dossier.",
+        "explanation": "Correction : « Les 85 kilos qu’il a pesé pendant des années restent inscrits dans son dossier. » Les kilos expriment ici le poids de la personne. Ce complément de mesure ne commande pas d’accord.",
+        "theme": "les participes passés « couru », « coûté », « marché », « pesé », « valu », « vécu »…",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "pesés",
+            "correct_fragment": "pesé",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test2::participe_passe_docx_018",
+          "quiz_key": "participe_passe_test2",
+          "position": 10,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 19,
+      "source_key": "participe_passe_docx_019",
+      "theme": "le participe passé employé avec « en »",
+      "original": {
+        "theme": "le participe passé employé avec « en »",
+        "text": "Des gâteaux, combien en avez-vous préparé pour ce soir ?",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. « Vous avez préparé quoi ? » « en », mis pour « (une partie) des gâteaux » ; « en » est COD : le participe passé « préparé » ne s’accorde pas."
+      },
+      "original_sha256": "fbc904b6d3fc75a7f36743ccd07095d1c7ec6a1d4366d170d8f99cd2c9680732",
+      "course_reference": {
+        "label": "le participe passé employé avec « en »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Des gâteaux, combien en avez-vous préparé pour ce soir ?",
+        "corrected_text": "Des gâteaux, combien en avez-vous préparé pour ce soir ?",
+        "explanation": "Phrase correcte. Avec « en » partitif, la forme usuelle « préparé » est correcte.",
+        "theme": "le participe passé employé avec « en »",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test2::participe_passe_docx_019",
+          "quiz_key": "participe_passe_test2",
+          "position": 11,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 20,
+      "source_key": "participe_passe_docx_020",
+      "theme": "le participe passé employé avec « en »",
+      "original": {
+        "theme": "le participe passé employé avec « en »",
+        "text": "Ton frère m’a demandé bien des services, mais il ne m’en a jamais rendus !",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Ton frère m’a demandé bien des services, mais il ne m’en a jamais rendu ! » « En » remplace ici « bien des services » (quantité indéfinie) ; il est COD du verbe « a rendu » : le participe ne s’accorde pas."
+      },
+      "original_sha256": "3bd9e3526b248dbc6d6df2823d6603e751fd66f9e3737e3fd3d40f61e9de87af",
+      "course_reference": {
+        "label": "le participe passé employé avec « en »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "on_hold",
+      "reason": "Avec « en » partitif, l’invariabilité est usuelle, mais l’accord est attesté. Ne pas pénaliser cette variante dans un test binaire.",
+      "candidate": null,
+      "assignments": []
+    },
+    {
+      "original_number": 21,
+      "source_key": "participe_passe_docx_021",
+      "theme": "le participe passé des verbes « essentiellement pronominaux »",
+      "original": {
+        "theme": "le participe passé des verbes « essentiellement pronominaux »",
+        "text": "De peur, les petits se sont blottis contre leur mère.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. Verbe « essentiellement pronominal » (on ne peut « blottir quelqu’un »), « se blottir » s’accorde en genre et en nombre avec le sujet « les petits »."
+      },
+      "original_sha256": "e8f2af45abf64b71a191df8c1a6c7dc77751ec469a7b713e9aa5b6d0eac4bf6b",
+      "course_reference": {
+        "label": "le participe passé des verbes « essentiellement pronominaux »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "De peur, les petits se sont blottis contre leur mère.",
+        "corrected_text": "De peur, les petits se sont blottis contre leur mère.",
+        "explanation": "Phrase correcte. « Blottis » s’accorde ici avec « les petits ».",
+        "theme": "le participe passé des verbes « essentiellement pronominaux »",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_021",
+          "quiz_key": "participe_passe_general",
+          "position": 35,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 22,
+      "source_key": "participe_passe_docx_022",
+      "theme": "le participe passé des verbes « essentiellement pronominaux »",
+      "original": {
+        "theme": "le participe passé des verbes « essentiellement pronominaux »",
+        "text": "Elles se sont empressés de lui annoncer l’excellente nouvelle.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Elles se sont empressées de lui annoncer l’excellente nouvelle. » Faites attention à la fois au genre et au nombre pour accorder correctement le participe passé avec le sujet « elles »."
+      },
+      "original_sha256": "d975effab93d05547a1907c025d00101975ea273e935221d8b2b897e8c3a2997",
+      "course_reference": {
+        "label": "le participe passé des verbes « essentiellement pronominaux »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Elles se sont empressés de lui annoncer l’excellente nouvelle.",
+        "corrected_text": "Elles se sont empressées de lui annoncer l’excellente nouvelle.",
+        "explanation": "Correction : « Elles se sont empressées de lui annoncer l’excellente nouvelle. » Le sujet de « se sont empressées » est « elles », féminin pluriel.",
+        "theme": "le participe passé des verbes « essentiellement pronominaux »",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "empressés",
+            "correct_fragment": "empressées",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_022",
+          "quiz_key": "participe_passe_general",
+          "position": 12,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 23,
+      "source_key": "participe_passe_docx_023",
+      "theme": "le participe passé des verbes « accidentellement pronominaux »",
+      "original": {
+        "theme": "le participe passé des verbes « accidentellement pronominaux »",
+        "text": "Les filles se sont couchées de bonne heure pour être en forme demain.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. « Se coucher » est un verbe « accidentellement pronominal » (il est possible de « coucher quelqu’un »).« Les filles couchent qui ? » « elles-mêmes » (« se »), COD ; le participe passé « couchées » est donc correctement accordé avec le sujet « les filles »."
+      },
+      "original_sha256": "2099b1e93de29b4935bbc00b165021c7fbcf6b91e8c366e358ad35c080def56f",
+      "course_reference": {
+        "label": "le participe passé des verbes « accidentellement pronominaux »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Les filles se sont couchées de bonne heure pour être en forme demain.",
+        "corrected_text": "Les filles se sont couchées de bonne heure pour être en forme demain.",
+        "explanation": "Phrase correcte. Les filles ont couché qui ? Elles-mêmes. « Se » est complément direct et précède « couchées ».",
+        "theme": "le participe passé des verbes « accidentellement pronominaux »",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_023",
+          "quiz_key": "participe_passe_general",
+          "position": 38,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 24,
+      "source_key": "participe_passe_docx_024",
+      "theme": "le participe passé des verbes « accidentellement pronominaux »",
+      "original": {
+        "theme": "le participe passé des verbes « accidentellement pronominaux »",
+        "text": "Les jours se sont succédé et rien n’a réellement changé.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. « Les jours ont succédé à quoi ? » « à eux-mêmes » (ou « se »), COI. Le participe passé ne s’accorde pas."
+      },
+      "original_sha256": "51758cceafe33c191a826e45999eee9413d852f91ca4299046bb29c32c2c252c",
+      "course_reference": {
+        "label": "le participe passé des verbes « accidentellement pronominaux »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Les jours se sont succédé et rien n’a réellement changé.",
+        "corrected_text": "Les jours se sont succédé et rien n’a réellement changé.",
+        "explanation": "Phrase correcte. Les jours ont succédé les uns aux autres. « Se » est complément indirect : on écrit « succédé ».",
+        "theme": "le participe passé des verbes « accidentellement pronominaux »",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_024",
+          "quiz_key": "participe_passe_general",
+          "position": 14,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 25,
+      "source_key": "participe_passe_docx_025",
+      "theme": "reconnaître le participe passé employé avec ou sans auxiliaire",
+      "original": {
+        "theme": "reconnaître le participe passé employé avec ou sans auxiliaire",
+        "text": "En partant, les petits ont laissé les placards ouverts et la bibliothèque dérangé.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « En partant, les petits ont laissé les placards ouverts et la bibliothèque dérangée. » « Dérangée » qualifie le nom « bibliothèque », féminin singulier. Le participe passé adjectival « ouverts » est, quant à lui, correctement accordé avec le nom « placards », au masculin pluriel."
+      },
+      "original_sha256": "ea5bfe7cbdcfa00db23c17fce80dbf31a7b484e323c5f8e1508f6dd5686b87b3",
+      "course_reference": {
+        "label": "reconnaître le participe passé employé avec ou sans auxiliaire",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "En partant, les petits ont laissé les placards ouverts et la bibliothèque dérangé.",
+        "corrected_text": "En partant, les petits ont laissé les placards ouverts et la bibliothèque dérangée.",
+        "explanation": "Correction : « En partant, les petits ont laissé les placards ouverts et la bibliothèque dérangée. » « Dérangée » qualifie « la bibliothèque », comme « ouverts » qualifie « les placards ».",
+        "theme": "reconnaître le participe passé employé avec ou sans auxiliaire",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "dérangé",
+            "correct_fragment": "dérangée",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_025",
+          "quiz_key": "participe_passe_general",
+          "position": 16,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 26,
+      "source_key": "participe_passe_docx_026",
+      "theme": "reconnaître le participe passé employé avec ou sans auxiliaire",
+      "original": {
+        "theme": "reconnaître le participe passé employé avec ou sans auxiliaire",
+        "text": "Une fois ces lettres rédigé, vous pourrez les envoyer directement par mail.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Une fois ces lettres rédigées, vous pourrez les envoyer directement par mail. » « Les lettres » sont « rédigées », ou « écrites », ou « faites »…, autant d’adjectifs s’accordant avec le nom « lettres » au féminin pluriel."
+      },
+      "original_sha256": "02314bef092728a775789d48696c8318567514b1c399810e516f0835e0d3f986",
+      "course_reference": {
+        "label": "reconnaître le participe passé employé avec ou sans auxiliaire",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Une fois ces lettres rédigé, vous pourrez les envoyer directement par mail.",
+        "corrected_text": "Une fois ces lettres rédigées, vous pourrez les envoyer directement par mail.",
+        "explanation": "Correction : « Une fois ces lettres rédigées, vous pourrez les envoyer directement par mail. » « Rédigées » qualifie « ces lettres », féminin pluriel.",
+        "theme": "reconnaître le participe passé employé avec ou sans auxiliaire",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "rédigé",
+            "correct_fragment": "rédigées",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test1::participe_passe_docx_026",
+          "quiz_key": "participe_passe_test1",
+          "position": 5,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 27,
+      "source_key": "participe_passe_docx_027",
+      "theme": "« excepté »",
+      "original": {
+        "theme": "« excepté »",
+        "text": "Attendu les évènements, la réunion est ajournée.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. « Attendu » précède le nom « évènements » (ou le groupe nominal « les évènements ») : il ne s’accorde pas."
+      },
+      "original_sha256": "9015978eeb0120a917547633fe216f7763b90a8acff1321a8b2e46b11af2a3ee",
+      "course_reference": {
+        "label": "« excepté »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Attendu les évènements, la réunion est ajournée.",
+        "corrected_text": "Attendu les évènements, la réunion est ajournée.",
+        "explanation": "Phrase correcte. « Attendu » signifie ici « compte tenu de ». Il reste invariable devant « les évènements ».",
+        "theme": "« excepté »",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_027",
+          "quiz_key": "participe_passe_general",
+          "position": 1,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 28,
+      "source_key": "participe_passe_docx_028",
+      "theme": "« excepté »",
+      "original": {
+        "theme": "« excepté »",
+        "text": "Il te restera encore un peu de temps pour finir, passée la semaine.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Il te restera encore un peu de temps pour finir, passé la semaine. » Puisqu’il précède « la semaine », « passé » demeure invariable."
+      },
+      "original_sha256": "ccec4de239d17b537c1e67d4871f6c1840057561715dafafccdcee089f207fea",
+      "course_reference": {
+        "label": "« excepté »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "on_hold",
+      "reason": "La tournure détachée « passée la semaine » est peu naturelle ici ; le repère temporel mérite une réécriture.",
+      "candidate": null,
+      "assignments": []
+    },
+    {
+      "original_number": 29,
+      "source_key": "participe_passe_docx_029",
+      "theme": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+      "original": {
+        "theme": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+        "text": "Veuillez trouver ci-annexé les certificats et attestations demandés.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Veuillez trouver ci-annexés les certificats et attestations demandés. »  Le déterminant « les » précède le nom « certificats » (et implicitement le nom « attestations »).  « Ci-annexés », qui n’est pas en début de phrase, s’accorde donc en genre et nombre avec ces deux noms (masculin pluriel)."
+      },
+      "original_sha256": "99db84090e4f4fe21d77b81c3f3467c0d5360a8e53edc5447eafa4823bb1c2b6",
+      "course_reference": {
+        "label": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "on_hold",
+      "reason": "Devant « les certificats », en cours de phrase, « ci-annexé » peut rester invariable. La clé « 1 erreur » sanctionnerait une forme admise.",
+      "candidate": null,
+      "assignments": []
+    },
+    {
+      "original_number": 30,
+      "source_key": "participe_passe_docx_030",
+      "theme": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+      "original": {
+        "theme": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+        "text": "Veuillez prendre connaissance des photocopies ci-annexées.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. « Ci-annexées » est placé après le nom « photocopies » et s’accorde donc avec ce dernier au féminin pluriel."
+      },
+      "original_sha256": "02c21772a9271aa489091c2090c36b38c08e25f42a13adb9bfc7c5aea9392b15",
+      "course_reference": {
+        "label": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Veuillez prendre connaissance des photocopies ci-annexées.",
+        "corrected_text": "Veuillez prendre connaissance des photocopies ci-annexées.",
+        "explanation": "Phrase correcte. Après « photocopies », « ci-annexées » est adjectif et s’accorde au féminin pluriel.",
+        "theme": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test1::participe_passe_docx_030",
+          "quiz_key": "participe_passe_test1",
+          "position": 2,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 31,
+      "source_key": "participe_passe_docx_031",
+      "theme": "le participe passé employé avec l’auxiliaire « être »",
+      "original": {
+        "theme": "le participe passé employé avec l’auxiliaire « être »",
+        "text": "Le printemps est là ! Les hirondelles sont arrivées.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte."
+      },
+      "original_sha256": "49f4d6dbe0db89fc4037d5599a99fd91c4b1b9ac77b9c791e550d04b6319b2d6",
+      "course_reference": {
+        "label": "le participe passé employé avec l’auxiliaire « être »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Le printemps est là ! Les hirondelles sont arrivées.",
+        "corrected_text": "Le printemps est là ! Les hirondelles sont arrivées.",
+        "explanation": "Phrase correcte. Les hirondelles sont arrivées : avec « être », le participe s’accorde avec le sujet féminin pluriel.",
+        "theme": "le participe passé employé avec l’auxiliaire « être »",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test1::participe_passe_docx_031",
+          "quiz_key": "participe_passe_test1",
+          "position": 9,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 32,
+      "source_key": "participe_passe_docx_032",
+      "theme": "le participe passé employé avec l’auxiliaire « être »",
+      "original": {
+        "theme": "le participe passé employé avec l’auxiliaire « être »",
+        "text": "Est-ce qu’elle est allée dîner avec lui finalement ?",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte."
+      },
+      "original_sha256": "f1d5679a844bb9730f348d5270cc1b3ececa91e20aa0432b12d9a3f07dad31d5",
+      "course_reference": {
+        "label": "le participe passé employé avec l’auxiliaire « être »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Est-ce qu’elle est allée dîner avec lui finalement ?",
+        "corrected_text": "Est-ce qu’elle est allée dîner avec lui finalement ?",
+        "explanation": "Phrase correcte. Avec « être », « allée » s’accorde avec « elle ». L’infinitif « dîner » indique le but du déplacement.",
+        "theme": "le participe passé employé avec l’auxiliaire « être »",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_032",
+          "quiz_key": "participe_passe_general",
+          "position": 3,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 33,
+      "source_key": "participe_passe_docx_033",
+      "theme": "le participe passé employé avec l’auxiliaire « avoir »",
+      "original": {
+        "theme": "le participe passé employé avec l’auxiliaire « avoir »",
+        "text": "Les belles escapades qu’il m’a promis, ce n’était que du vent !",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Les belles escapades qu’il m’a promises, ce n’était que du vent ! » « Il a promis quoi ? » « les belles escapades », COD placé avant le verbe : le participe passé s’accorde en genre et nombre avec ce COD (féminin pluriel). À l’oral, on entend l’accord !"
+      },
+      "original_sha256": "76f7fdc7570210a3f388a4b967b6f5493ee7cea43d8f1764a730cf2b8a5fa7da",
+      "course_reference": {
+        "label": "le participe passé employé avec l’auxiliaire « avoir »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Les belles escapades qu’il m’a promis, ce n’était que du vent !",
+        "corrected_text": "Les belles escapades qu’il m’a promises, ce n’était que du vent !",
+        "explanation": "Correction : « Les belles escapades qu’il m’a promises, ce n’était que du vent ! » Il a promis quoi ? Les escapades, reprises avant le participe par « que » : on écrit « promises ».",
+        "theme": "le participe passé employé avec l’auxiliaire « avoir »",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "promis",
+            "correct_fragment": "promises",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test1::participe_passe_docx_033",
+          "quiz_key": "participe_passe_test1",
+          "position": 11,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 34,
+      "source_key": "participe_passe_docx_034",
+      "theme": "le participe passé employé avec l’auxiliaire « avoir »",
+      "original": {
+        "theme": "le participe passé employé avec l’auxiliaire « avoir »",
+        "text": "Je trouve très intéressantes les propositions qu’ils nous ont faits.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Je trouve très intéressantes les propositions qu’ils nous ont faites. » « Ils nous ont fait quoi ? » « les propositions », COD remplacé par le pronom relatif « que » afin d’éviter la répétition. Le COD est placé avant le verbe et l’auxiliaire « avoir » est employé : le participe passé s’accorde en genre et nombre avec le COD (féminin pluriel). À l’oral, on entend l’accord."
+      },
+      "original_sha256": "e81615baecce53b360f78de2088a27322b5fee71962aa7031d77501e2b3f82bd",
+      "course_reference": {
+        "label": "le participe passé employé avec l’auxiliaire « avoir »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Je trouve très intéressantes les propositions qu’ils nous ont faits.",
+        "corrected_text": "Je trouve très intéressantes les propositions qu’ils nous ont faites.",
+        "explanation": "Correction : « Je trouve très intéressantes les propositions qu’ils nous ont faites. » « Que » reprend « les propositions », COD placé avant « ont faites ». « Nous » indique à qui les propositions sont faites.",
+        "theme": "le participe passé employé avec l’auxiliaire « avoir »",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "faits",
+            "correct_fragment": "faites",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_034",
+          "quiz_key": "participe_passe_general",
+          "position": 25,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 35,
+      "source_key": "participe_passe_docx_035",
+      "theme": "le participe passé suivi d’un infinitif (1)",
+      "original": {
+        "theme": "le participe passé suivi d’un infinitif (1)",
+        "text": "Lorsqu’elle lui a signifié de s’approcher discrètement, je l’ai vu faire.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Lorsqu’elle lui a signifié de s’approcher discrètement, je l’ai vue faire. » Le participe passé « vu » est suivi de l’infinitif « faire ». « J’ai vu qui ? » « l’ », (remplaçant le pronom « elle »), COD placé avant le verbe. C’est « l’ » (ou « elle ») qui agit (« faire ») : on écrit donc « vue »."
+      },
+      "original_sha256": "8b54ff3fb2dbf9cc2b0dc744368fc29e5f25c292950c700eca73b062f5c892a7",
+      "course_reference": {
+        "label": "le participe passé suivi d’un infinitif (1)",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "on_hold",
+      "reason": "« Je l’ai vu faire » : le référent de l’ peut être masculin ou féminin ; le contexte ne permet pas d’imposer « vue ».",
+      "candidate": null,
+      "assignments": []
+    },
+    {
+      "original_number": 36,
+      "source_key": "participe_passe_docx_036",
+      "theme": "le participe passé suivi d’un infinitif (1)",
+      "original": {
+        "theme": "le participe passé suivi d’un infinitif (1)",
+        "text": "Nos amis ont vus s’envoler toutes leurs économies dans cette arnaque !",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Nos amis ont vu s’envoler toutes leurs économies dans cette arnaque ! » Le participe passé « vu » est suivi de l’infinitif « s’envoler » ; « Nos amis ont vu s’envoler quoi ? » « toutes leurs économies », COD placé après le verbe : le participe « vu » ne s’accorde pas."
+      },
+      "original_sha256": "0e8a0e665baacd61fb4b9f9050845ba7dc894791ef6b41961d0bdb46200ba03a",
+      "course_reference": {
+        "label": "le participe passé suivi d’un infinitif (1)",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Nos amis ont vus s’envoler toutes leurs économies dans cette arnaque !",
+        "corrected_text": "Nos amis ont vu s’envoler toutes leurs économies dans cette arnaque !",
+        "explanation": "Correction : « Nos amis ont vu s’envoler toutes leurs économies dans cette arnaque ! » Le groupe « toutes leurs économies » suit le participe ; rien ne justifie un accord avec le sujet « nos amis ».",
+        "theme": "le participe passé suivi d’un infinitif (1)",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "vus",
+            "correct_fragment": "vu",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test2::participe_passe_docx_036",
+          "quiz_key": "participe_passe_test2",
+          "position": 5,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 37,
+      "source_key": "participe_passe_docx_037",
+      "theme": "le participe passé suivi d’un infinitif (2)",
+      "original": {
+        "theme": "le participe passé suivi d’un infinitif (2)",
+        "text": "La plupart des travaux que vous avez fait faire pourront être déduits de vos impôts.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. Le participe « fait » suivi d’un infinitif ne s’accorde jamais."
+      },
+      "original_sha256": "87c86e6ad61966dadef234f9823a8f7692442fe4ae104f970751a756aa3fccf9",
+      "course_reference": {
+        "label": "le participe passé suivi d’un infinitif (2)",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "La plupart des travaux que vous avez fait faire pourront être déduits de vos impôts.",
+        "corrected_text": "La plupart des travaux que vous avez fait faire pourront être déduits de vos impôts.",
+        "explanation": "Phrase correcte. « Fait » suivi d’un infinitif est invariable, même si « les travaux » précède le verbe.",
+        "theme": "le participe passé suivi d’un infinitif (2)",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_037",
+          "quiz_key": "participe_passe_general",
+          "position": 7,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 38,
+      "source_key": "participe_passe_docx_038",
+      "theme": "le participe passé suivi d’un infinitif (2)",
+      "original": {
+        "theme": "le participe passé suivi d’un infinitif (2)",
+        "text": "Les discours qu’ils nous ont donné à préparer devront être corrigés.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. Il serait cependant toléré d’accorder le participe « donné » avec le COD « les discours » placé avant l’auxiliaire « ont » : « Les discours qu’ils nous ont donnés à préparer… »."
+      },
+      "original_sha256": "ec162fac3ab61c817aa4b234dc2e8cd120a4bcfeb29ac27ca7beb327da4a000f",
+      "course_reference": {
+        "label": "le participe passé suivi d’un infinitif (2)",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Les discours qu’ils nous ont donné à préparer devront être corrigés.",
+        "corrected_text": "Les discours qu’ils nous ont donné à préparer devront être corrigés.",
+        "explanation": "Phrase correcte. La forme invariable « donné à préparer » est admise. Dans cette construction, l’accord « donnés » est aussi possible.",
+        "theme": "le participe passé suivi d’un infinitif (2)",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test2::participe_passe_docx_038",
+          "quiz_key": "participe_passe_test2",
+          "position": 7,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 39,
+      "source_key": "participe_passe_docx_039",
+      "theme": "les participes passés « cru », « espéré », « dû », « pu », « voulu », « su »…",
+      "original": {
+        "theme": "les participes passés « cru », « espérer », « dû », « pu », « voulu », « su »…",
+        "text": "Ces changements, c’est bien toi qui les as voulu.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Ces changements, c’est bien toi qui les as voulus. » On ne peut ajouter un infinitif après le participe passé « voulu » : ce dernier s’accorde donc avec le COD « les », mis pour « ces changements », masculin pluriel (« Ils ont voulu quoi ? »)."
+      },
+      "original_sha256": "ac8eb7dbf187719e92d32ec33335c4016b21fca46a8c04dfc39b87216764f8c5",
+      "course_reference": {
+        "label": "les participes passés « cru », « espéré », « dû », « pu », « voulu », « su »…",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Ces changements, c’est bien toi qui les as voulu.",
+        "corrected_text": "Ces changements, c’est bien toi qui les as voulus.",
+        "explanation": "Correction : « Ces changements, c’est bien toi qui les as voulus. » Ce sont bien les changements que tu as voulus. « Les » est le COD de « vouloir », placé avant lui.",
+        "theme": "les participes passés « cru », « espéré », « dû », « pu », « voulu », « su »…",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "voulu",
+            "correct_fragment": "voulus",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test2::participe_passe_docx_039",
+          "quiz_key": "participe_passe_test2",
+          "position": 2,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 40,
+      "source_key": "participe_passe_docx_040",
+      "theme": "les participes passés « cru », « espéré », « dû », « pu », « voulu », « su »…",
+      "original": {
+        "theme": "les participes passés « cru », « espérer », « dû », « pu », « voulu », « su »…",
+        "text": "Les deux hommes que j’ai crus apercevoir ce matin ne semblaient pas faire partie du personnel.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Les deux hommes que j’ai cru apercevoir ce matin ne semblaient pas faire partie du personnel. » Le participe passé « cru » est suivi du verbe à l’infinitif « apercevoir » : il n’y a pas d’accord du participe."
+      },
+      "original_sha256": "af5dacec59519663dc610381f3ce43bdf8e2f5c8614dbf29e4aab78255ff03cf",
+      "course_reference": {
+        "label": "les participes passés « cru », « espéré », « dû », « pu », « voulu », « su »…",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Les deux hommes que j’ai crus apercevoir ce matin ne semblaient pas faire partie du personnel.",
+        "corrected_text": "Les deux hommes que j’ai cru apercevoir ce matin ne semblaient pas faire partie du personnel.",
+        "explanation": "Correction : « Les deux hommes que j’ai cru apercevoir ce matin ne semblaient pas faire partie du personnel. » C’est moi qui ai cru apercevoir les hommes : « que » est le complément de « apercevoir ».",
+        "theme": "les participes passés « cru », « espéré », « dû », « pu », « voulu », « su »…",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "crus",
+            "correct_fragment": "cru",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_040",
+          "quiz_key": "participe_passe_general",
+          "position": 30,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 41,
+      "source_key": "participe_passe_docx_041",
+      "theme": "les participes passés « couru », « coûté », « marché », « pesé », « valu », « vécu »…",
+      "original": {
+        "theme": "les participes passés « courir », « coûter », « marcher », « peser », « valoir », « vivre »…",
+        "text": "Les efforts que lui a coûtés cet examen ont finalement été récompensés.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. « Cet examen lui a coûté quoi ? » « les efforts », COD placé avant « avoir » : le participe passé s’accorde au masculin pluriel. Notez qu’aucun complément de mesure répondant à la question « combien ? » n’est sous-entendu."
+      },
+      "original_sha256": "c715a35a5b783730f6d5ffb33bb1c2e1c05cfcb6e558241671a05b23c75dd6b2",
+      "course_reference": {
+        "label": "les participes passés « couru », « coûté », « marché », « pesé », « valu », « vécu »…",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Les efforts que lui a coûtés cet examen ont finalement été récompensés.",
+        "corrected_text": "Les efforts que lui a coûtés cet examen ont finalement été récompensés.",
+        "explanation": "Phrase correcte. « Coûter » signifie ici « nécessiter ». Il a pour COD « que », qui reprend « les efforts ».",
+        "theme": "les participes passés « couru », « coûté », « marché », « pesé », « valu », « vécu »…",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_041",
+          "quiz_key": "participe_passe_general",
+          "position": 32,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 42,
+      "source_key": "participe_passe_docx_042",
+      "theme": "les participes passés « couru », « coûté », « marché », « pesé », « valu », « vécu »…",
+      "original": {
+        "theme": "les participes passés « courir », « coûter », « marcher », « peser », « valoir », « vivre »…",
+        "text": "Les trois ans qu’il a vécu aux États-Unis lui ont permis de parler parfaitement la langue.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. « Combien de temps a-t-il vécu aux États-Unis ? » « trois ans », complément de durée : le participe passé « vécu » ne s’accorde pas."
+      },
+      "original_sha256": "8ac9dbf8b334f0aed737ac7375b67d14e94c309884f5ecd7959a68662cb5f099",
+      "course_reference": {
+        "label": "les participes passés « couru », « coûté », « marché », « pesé », « valu », « vécu »…",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Les trois ans qu’il a vécu aux États-Unis lui ont permis de parler parfaitement la langue.",
+        "corrected_text": "Les trois ans qu’il a vécu aux États-Unis lui ont permis de parler parfaitement la langue.",
+        "explanation": "Phrase correcte. « Trois ans » indique combien de temps il a vécu aux États-Unis. « Vécu » reste invariable.",
+        "theme": "les participes passés « couru », « coûté », « marché », « pesé », « valu », « vécu »…",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_042",
+          "quiz_key": "participe_passe_general",
+          "position": 9,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 43,
+      "source_key": "participe_passe_docx_043",
+      "theme": "le participe passé employé avec « en »",
+      "original": {
+        "theme": "le participe passé employé avec « en »",
+        "text": "Elles m’ont raconté l’histoire dans les moindres détails et voici les conclusions que j’en ai tiré.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Elles m’ont raconté l’histoire dans les moindres détails et voici les conclusions que j’en ai tirées. » « En » est précédé de « que » qui remplace « les conclusions » (« J’en ai tiré quoi ? » « les conclusions »). Ici, le COD n’est donc pas « en », mais « les conclusions ». La règle du participe passé avec le COD placé avant « avoir » s’applique : il s’accorde en genre et en nombre avec le COD « conclusions », au féminin pluriel."
+      },
+      "original_sha256": "f9cab9e4a3fe93e1ae905415ed2df830f3c9330f07907af68b80a8b908e95be8",
+      "course_reference": {
+        "label": "le participe passé employé avec « en »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Elles m’ont raconté l’histoire dans les moindres détails et voici les conclusions que j’en ai tiré.",
+        "corrected_text": "Elles m’ont raconté l’histoire dans les moindres détails et voici les conclusions que j’en ai tirées.",
+        "explanation": "Correction : « Elles m’ont raconté l’histoire dans les moindres détails et voici les conclusions que j’en ai tirées. » On a tiré quoi ? Des conclusions. « Que » les reprend avant « ai tirées » ; « en » indique de quoi on les a tirées.",
+        "theme": "le participe passé employé avec « en »",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "tiré",
+            "correct_fragment": "tirées",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test2::participe_passe_docx_043",
+          "quiz_key": "participe_passe_test2",
+          "position": 4,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 44,
+      "source_key": "participe_passe_docx_044",
+      "theme": "le participe passé employé avec « en »",
+      "original": {
+        "theme": "le participe passé employé avec « en »",
+        "text": "Des efforts, il a en beaucoup exigés, mais il en a peu fourni lui-même.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Des efforts, il a en beaucoup exigé, mais il en a peu fourni lui-même. » « En » remplace « (une partie) des efforts » ; « en » est COD : le participe passé « exigé » reste invariable. Le participe « fourni » obéit à la même règle : il est donc correctement orthographié."
+      },
+      "original_sha256": "68c82e6039c47ed9c3e933e7b0afae9ae8c3fd5bf17d51aae9617ab6db417a50",
+      "course_reference": {
+        "label": "le participe passé employé avec « en »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "on_hold",
+      "reason": "« Il a en beaucoup exigés » présente aussi un problème de place du pronom, conservé dans le corrigé. Le décompte d’une seule erreur serait trompeur.",
+      "candidate": null,
+      "assignments": []
+    },
+    {
+      "original_number": 45,
+      "source_key": "participe_passe_docx_045",
+      "theme": "le participe passé des verbes « essentiellement pronominaux »",
+      "original": {
+        "theme": "le participe passé des verbes « essentiellement pronominaux »",
+        "text": "Lors du dernier conseil municipal, l’opposition s’est abstenu de voter.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Lors du dernier conseil municipal, l’opposition s’est abstenue de voter. » Puisqu’il il est impossible « d’abstenir quelqu’un », « s’abstenir » est un verbe « essentiellement pronominal ». Le sujet étant « l’opposition », le participe passé « s’abstenue » est accordé au féminin singulier avec ce sujet."
+      },
+      "original_sha256": "0a6aa5d1a09166ead3528386456dc3d0b506b48f221d417c7861794b9cee8ca0",
+      "course_reference": {
+        "label": "le participe passé des verbes « essentiellement pronominaux »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Lors du dernier conseil municipal, l’opposition s’est abstenu de voter.",
+        "corrected_text": "Lors du dernier conseil municipal, l’opposition s’est abstenue de voter.",
+        "explanation": "Correction : « Lors du dernier conseil municipal, l’opposition s’est abstenue de voter. » « L’opposition » est le sujet féminin singulier de « s’est abstenue ».",
+        "theme": "le participe passé des verbes « essentiellement pronominaux »",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "abstenu",
+            "correct_fragment": "abstenue",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_045",
+          "quiz_key": "participe_passe_general",
+          "position": 36,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 46,
+      "source_key": "participe_passe_docx_046",
+      "theme": "le participe passé des verbes « essentiellement pronominaux »",
+      "original": {
+        "theme": "le participe passé des verbes « essentiellement pronominaux »",
+        "text": "Durant toute cette affaire, ils se sont entre-nuis.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Durant toute cette affaire, ils se sont entre-nui. » Bien qu’il soit « essentiellement pronominal », le verbe « s’entre-nuire » a un participe passé invariable ; c’est une exception."
+      },
+      "original_sha256": "2f0c0e1b522788b0c8e2e4286dda7f6985d21fd31549ad6ea2079120303b51ae",
+      "course_reference": {
+        "label": "le participe passé des verbes « essentiellement pronominaux »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "on_hold",
+      "reason": "Verbe rare « s’entre-nuire » : privilégier des exceptions plus utiles, comme « s’arroger », avant de retenir cet item.",
+      "candidate": null,
+      "assignments": []
+    },
+    {
+      "original_number": 47,
+      "source_key": "participe_passe_docx_047",
+      "theme": "le participe passé des verbes « accidentellement pronominaux »",
+      "original": {
+        "theme": "le participe passé des verbes « accidentellement pronominaux »",
+        "text": "Les petits se sont lavés les mains avant de goûter.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Les petits se sont lavé les mains avant de goûter. » « Se laver » un est verbe « accidentellement pronominal » puisqu’il est possible de « laver quelque chose ou quelqu’un ». « Les petits se sont lavé quoi ? » : « les mains », COD. Ce COD étant placé après le verbe, le participle passé « lavé » ne s’accorde pas."
+      },
+      "original_sha256": "5e8d1602fe45e7f7ffbbd478949cf27373bc3e6b73121319eb726e287d312473",
+      "course_reference": {
+        "label": "le participe passé des verbes « accidentellement pronominaux »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Les petits se sont lavés les mains avant de goûter.",
+        "corrected_text": "Les petits se sont lavé les mains avant de goûter.",
+        "explanation": "Correction : « Les petits se sont lavé les mains avant de goûter. » Les petits ont lavé quoi ? Leurs mains, COD placé après. « Se » est indirect : « ils se sont lavé les mains ».",
+        "theme": "le participe passé des verbes « accidentellement pronominaux »",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "lavés",
+            "correct_fragment": "lavé",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_047",
+          "quiz_key": "participe_passe_general",
+          "position": 15,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 48,
+      "source_key": "participe_passe_docx_048",
+      "theme": "le participe passé des verbes « accidentellement pronominaux »",
+      "original": {
+        "theme": "le participe passé des verbes « accidentellement pronominaux »",
+        "text": "Se sont-ils parlés ou non ?",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Se sont-ils parlé ou non ? » « Ils ont parlé à qui ? » « se », COI : le participe passé « parlé » reste invariable."
+      },
+      "original_sha256": "6627d8b7d6a1d9778cedc2b97b08ee1971e9e233a377d4dd7c6ecc01f34cb67c",
+      "course_reference": {
+        "label": "le participe passé des verbes « accidentellement pronominaux »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Se sont-ils parlés ou non ?",
+        "corrected_text": "Se sont-ils parlé ou non ?",
+        "explanation": "Correction : « Se sont-ils parlé ou non ? » On parle à quelqu’un. Ici, « se » est indirect ; on écrit « parlé ».",
+        "theme": "le participe passé des verbes « accidentellement pronominaux »",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "parlés",
+            "correct_fragment": "parlé",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_048",
+          "quiz_key": "participe_passe_general",
+          "position": 39,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 49,
+      "source_key": "participe_passe_docx_049",
+      "theme": "reconnaître le participe passé employé avec ou sans auxiliaire",
+      "original": {
+        "theme": "reconnaître le participe passé employé avec ou sans auxiliaire",
+        "text": "Les murs enduit à la chaux absorbent moins l’humidité.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Les murs enduits à la chaux absorbent moins l’humidité. »"
+      },
+      "original_sha256": "da81e1d50505b220c692b493c9b455c4e1a686a3c95f5abee1c53052a849d009",
+      "course_reference": {
+        "label": "reconnaître le participe passé employé avec ou sans auxiliaire",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Les murs enduit à la chaux absorbent moins l’humidité.",
+        "corrected_text": "Les murs enduits à la chaux absorbent moins l’humidité.",
+        "explanation": "Correction : « Les murs enduits à la chaux absorbent moins l’humidité. » « Enduits » qualifie « les murs », masculin pluriel.",
+        "theme": "reconnaître le participe passé employé avec ou sans auxiliaire",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "enduit",
+            "correct_fragment": "enduits",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_049",
+          "quiz_key": "participe_passe_general",
+          "position": 17,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 50,
+      "source_key": "participe_passe_docx_050",
+      "theme": "reconnaître le participe passé employé avec ou sans auxiliaire",
+      "original": {
+        "theme": "reconnaître le participe passé employé avec ou sans auxiliaire",
+        "text": "Fort bien accueillies, elles ont promis de revenir chez leurs hôtes l’été prochain.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte."
+      },
+      "original_sha256": "bf068658a094092e853b27cbcc4bff4f956805e2d68d40dcc44c387cddfd5c65",
+      "course_reference": {
+        "label": "reconnaître le participe passé employé avec ou sans auxiliaire",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Fort bien accueillies, elles ont promis de revenir chez leurs hôtes l’été prochain.",
+        "corrected_text": "Fort bien accueillies, elles ont promis de revenir chez leurs hôtes l’été prochain.",
+        "explanation": "Phrase correcte. « Accueillies » qualifie « elles », féminin pluriel. Dans « ont promis de revenir », rien ne justifie d’accorder « promis ».",
+        "theme": "reconnaître le participe passé employé avec ou sans auxiliaire",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test1::participe_passe_docx_050",
+          "quiz_key": "participe_passe_test1",
+          "position": 6,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 51,
+      "source_key": "participe_passe_docx_051",
+      "theme": "« excepté »",
+      "original": {
+        "theme": "« excepté »",
+        "text": "Quand je serai absente, Jules s’occupera des enfants, y compris des tâches ménagères.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. La locution « y compris » est invariable."
+      },
+      "original_sha256": "b7a000283456958068cd8b36d969632836b3b5046e5607187e1b997b8fb14d76",
+      "course_reference": {
+        "label": "« excepté »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Quand je serai absente, Jules s’occupera de tout, y compris des tâches ménagères.",
+        "corrected_text": "Quand je serai absente, Jules s’occupera de tout, y compris des tâches ménagères.",
+        "explanation": "Phrase correcte. « Y compris » introduit le groupe nominal et reste invariable.",
+        "theme": "« excepté »",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_051",
+          "quiz_key": "participe_passe_general",
+          "position": 18,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 52,
+      "source_key": "participe_passe_docx_052",
+      "theme": "« excepté »",
+      "original": {
+        "theme": "« excepté »",
+        "text": "Ce restaurant propose un menu à 15 €, café et boisson incluse.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Ce restaurant propose un menu à 15 €, café et boisson inclus. » Attention ! Ce sont bien « le café » et « la boisson » qui sont « inclus » : le masculin l’emportant sur le féminin (en orthographe…), il ne peut y avoir de « e »."
+      },
+      "original_sha256": "12c619037b0b5ecd9b818db44940d0fb2b08b3f8d8f4ed907203d20a1bbe148c",
+      "course_reference": {
+        "label": "« excepté »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Ce menu à 15 € comprend deux suppléments, tous deux incluse dans le prix.",
+        "corrected_text": "Ce menu à 15 € comprend deux suppléments, tous deux inclus dans le prix.",
+        "explanation": "Correction : « Ce menu à 15 € comprend deux suppléments, tous deux inclus dans le prix. » « Inclus » qualifie « deux suppléments » ; le masculin pluriel est marqué dans « tous deux ».",
+        "theme": "« excepté »",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "incluse",
+            "correct_fragment": "inclus",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_052",
+          "quiz_key": "participe_passe_general",
+          "position": 19,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 53,
+      "source_key": "participe_passe_docx_053",
+      "theme": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+      "original": {
+        "theme": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+        "text": "Tu pourras lire ci-annexé copie du contrat.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. Il n’y a pas de déterminant devant le nom « copie », donc « ci-annexé » ne s’accorde pas."
+      },
+      "original_sha256": "27d8d23838a847367a7de517b6f9b0ec9bb9646905db8914ad63a327b00fb986",
+      "course_reference": {
+        "label": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Tu pourras lire ci-annexé copie du contrat.",
+        "corrected_text": "Tu pourras lire ci-annexé copie du contrat.",
+        "explanation": "Phrase correcte. Ici, « ci-annexé » précède « copie » sans déterminant et reste invariable.",
+        "theme": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_053",
+          "quiz_key": "participe_passe_general",
+          "position": 20,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 54,
+      "source_key": "participe_passe_docx_054",
+      "theme": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+      "original": {
+        "theme": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+        "text": "Merci d’envoyer mon message avec les pièces ci-jointes.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte."
+      },
+      "original_sha256": "17ecb5cc104842138379f44401056b9e16ff5f8d74a00945e86ca7906434e3c8",
+      "course_reference": {
+        "label": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Merci d’envoyer mon message avec les pièces ci-jointes.",
+        "corrected_text": "Merci d’envoyer mon message avec les pièces ci-jointes.",
+        "explanation": "Phrase correcte. Après « les pièces », on accorde : « ci-jointes », au féminin pluriel.",
+        "theme": "« ci-joint » / « ci-inclus » / « ci-annexé »",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_054",
+          "quiz_key": "participe_passe_general",
+          "position": 21,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 55,
+      "source_key": "participe_passe_docx_055",
+      "theme": "le participe passé employé avec l’auxiliaire « être »",
+      "original": {
+        "theme": "le participe passé employé avec l’auxiliaire « être »",
+        "text": "Nous sommes sortis plus tôt que d’habitude.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. Attention ! On ignore ce que remplace « nous » dans la phrase. On met donc le participe au masculin pluriel, par défaut. Si le pronom « nous » avait remplacé des personnes féminines déjà évoquées, il aurait fallu écrire « sorties »."
+      },
+      "original_sha256": "5052662cbb833f7b707364d4126e6fb04b5544dcc57a33c830c001a0ccd98cd5",
+      "course_reference": {
+        "label": "le participe passé employé avec l’auxiliaire « être »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Paul et moi, nous sommes sortis plus tôt que d’habitude.",
+        "corrected_text": "Paul et moi, nous sommes sortis plus tôt que d’habitude.",
+        "explanation": "Phrase correcte. « Nous » inclut Paul. Avec « être », le participe prend ici le masculin pluriel.",
+        "theme": "le participe passé employé avec l’auxiliaire « être »",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test1::participe_passe_docx_055",
+          "quiz_key": "participe_passe_test1",
+          "position": 10,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 56,
+      "source_key": "participe_passe_docx_056",
+      "theme": "le participe passé employé avec l’auxiliaire « être »",
+      "original": {
+        "theme": "le participe passé employé avec l’auxiliaire « être »",
+        "text": "J’ai bien peur que les voisins ne soient fâché : j’ai taillé une partie de leur haie par erreur.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « J’ai bien peur que les voisins ne soient fâchés : j’ai taillé une partie de leur haie par erreur. » « Soient » correspond à « sont » au subjonctif présent. Il s’agit donc bien de l’auxiliaire « être » ! « Fâchés » s’accorde avec le sujet « les voisins », au masculin pluriel."
+      },
+      "original_sha256": "b2bd95f2dad74b061e64991ed28599924eedeb0e24ebfef09c8f2e26e2a77813",
+      "course_reference": {
+        "label": "le participe passé employé avec l’auxiliaire « être »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "J’ai bien peur que les voisins ne soient fâché : j’ai taillé une partie de leur haie par erreur.",
+        "corrected_text": "J’ai bien peur que les voisins ne soient fâchés : j’ai taillé une partie de leur haie par erreur.",
+        "explanation": "Correction : « J’ai bien peur que les voisins ne soient fâchés : j’ai taillé une partie de leur haie par erreur. » Le sujet de « soient fâchés » est « les voisins », masculin pluriel.",
+        "theme": "le participe passé employé avec l’auxiliaire « être »",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "fâché",
+            "correct_fragment": "fâchés",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_056",
+          "quiz_key": "participe_passe_general",
+          "position": 23,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 57,
+      "source_key": "participe_passe_docx_057",
+      "theme": "le participe passé employé avec l’auxiliaire « avoir »",
+      "original": {
+        "theme": "le participe passé employé avec l’auxiliaire « avoir »",
+        "text": "Ces documents, où les avez-vous trouvés ?",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. « Vous avez trouvé quoi ? » « ces documents »  (COD, repris par le pronom personnel « les »). Le COD est placé avant le verbe employé avec « avoir » : « trouvés » est donc accordé avec le COD, au masculin pluriel."
+      },
+      "original_sha256": "5466910fba8b206089daa49d7a374c0d626ba8830d3f5164e04d31a01bebdf4a",
+      "course_reference": {
+        "label": "le participe passé employé avec l’auxiliaire « avoir »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Ces documents, où les avez-vous trouvés ?",
+        "corrected_text": "Ces documents, où les avez-vous trouvés ?",
+        "explanation": "Phrase correcte. Le COD « les », qui désigne « ces documents », précède « avez trouvés ».",
+        "theme": "le participe passé employé avec l’auxiliaire « avoir »",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test1::participe_passe_docx_057",
+          "quiz_key": "participe_passe_test1",
+          "position": 4,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 58,
+      "source_key": "participe_passe_docx_058",
+      "theme": "le participe passé employé avec l’auxiliaire « avoir »",
+      "original": {
+        "theme": "le participe passé employé avec l’auxiliaire « avoir »",
+        "text": "Il a mis toutes ses économies dans l’achat d’une voiture électrique.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. « Il a mis quoi ? » « toutes ses économies ». Le COD est placé après le verbe construit avec « avoir » : pas d’accord. Attention ! Le « s » du participe « mis » n’a rien à voir avec un accord : puisque au féminin « mis » donne « mise », il s’écrit de facto avec un « s »."
+      },
+      "original_sha256": "768358cff4d47e1985dd329c0abbe0d00853ef46b7741a2b22f3258283f054eb",
+      "course_reference": {
+        "label": "le participe passé employé avec l’auxiliaire « avoir »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Il a mis toutes ses économies dans l’achat d’une voiture électrique.",
+        "corrected_text": "Il a mis toutes ses économies dans l’achat d’une voiture électrique.",
+        "explanation": "Phrase correcte. Le COD « toutes ses économies » suit le participe. Le s de « mis » appartient déjà à la forme masculine du singulier.",
+        "theme": "le participe passé employé avec l’auxiliaire « avoir »",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_058",
+          "quiz_key": "participe_passe_general",
+          "position": 5,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 59,
+      "source_key": "participe_passe_docx_059",
+      "theme": "le participe passé suivi d’un infinitif (1)",
+      "original": {
+        "theme": "le participe passé suivi d’un infinitif (1)",
+        "text": "Ces hommes que tu as aperçus discuter dans le couloir sont de nouveaux collègues.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. Le participe passé est suivi d’un infinitif. « Tu as aperçu qui ? » « ces hommes », COD placé avant le verbe. Ce sont « ces hommes » qui font l’action de « discuter » (infinitif) : le participe passé « vus » est accordé au masculin pluriel avec « ces hommes »."
+      },
+      "original_sha256": "ef01aa76a9a892f4a8b3a845498da7cb17377e8de8587cc3b7066db3c41004bf",
+      "course_reference": {
+        "label": "le participe passé suivi d’un infinitif (1)",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Ces hommes que tu as aperçus discuter dans le couloir sont de nouveaux collègues.",
+        "corrected_text": "Ces hommes que tu as aperçus discuter dans le couloir sont de nouveaux collègues.",
+        "explanation": "Phrase correcte. Ce sont les hommes qui discutent. « Aperçus » s’accorde avec « que », qui reprend « ces hommes ».",
+        "theme": "le participe passé suivi d’un infinitif (1)",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_059",
+          "quiz_key": "participe_passe_general",
+          "position": 26,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 60,
+      "source_key": "participe_passe_docx_060",
+      "theme": "le participe passé suivi d’un infinitif (1)",
+      "original": {
+        "theme": "le participe passé suivi d’un infinitif (1)",
+        "text": "Tu devrais aller voir cette pianiste que j’ai déjà entendu jouer : elle a un talent fou.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Tu devrais aller voir cette pianiste que j’ai déjà entendue jouer : elle a un talent fou. » Le COD « cette pianiste » réalise l’action de « jouer » : le participe passé « entendue » est par conséquent accordé au féminin singulier."
+      },
+      "original_sha256": "7c67ee0fe6c07dde91be752eba9bc14beff2a816fa81bfb695827c4504c161c7",
+      "course_reference": {
+        "label": "le participe passé suivi d’un infinitif (1)",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Tu devrais aller voir cette pianiste que j’ai déjà entendu jouer : elle a un talent fou.",
+        "corrected_text": "Tu devrais aller voir cette pianiste que j’ai déjà entendue jouer : elle a un talent fou.",
+        "explanation": "Correction : « Tu devrais aller voir cette pianiste que j’ai déjà entendue jouer : elle a un talent fou. » C’est la pianiste qui joue : « entendue » s’accorde avec le féminin singulier.",
+        "theme": "le participe passé suivi d’un infinitif (1)",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "entendu",
+            "correct_fragment": "entendue",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_060",
+          "quiz_key": "participe_passe_general",
+          "position": 27,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 61,
+      "source_key": "participe_passe_docx_061",
+      "theme": "le participe passé suivi d’un infinitif (2)",
+      "original": {
+        "theme": "le participe passé suivi d’un infinitif (2)",
+        "text": "Pourquoi les courriers que tu as faits envoyer la semaine dernière ne sont-ils pas encore arrivés ?",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Pourquoi les courriers que tu as fait envoyer la semaine dernière ne sont-ils pas encore arrivés ? » Le participe passé « fait » est suivi de l’infinitif « envoyer » : il ne s’accorde pas."
+      },
+      "original_sha256": "1c9964de9a6ff697b575266ab1e5674806d87cd1041fbcc673b425ba227365a4",
+      "course_reference": {
+        "label": "le participe passé suivi d’un infinitif (2)",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Pourquoi les courriers que tu as faits envoyer la semaine dernière ne sont-ils pas encore arrivés ?",
+        "corrected_text": "Pourquoi les courriers que tu as fait envoyer la semaine dernière ne sont-ils pas encore arrivés ?",
+        "explanation": "Correction : « Pourquoi les courriers que tu as fait envoyer la semaine dernière ne sont-ils pas encore arrivés ? » « Fait » est immédiatement suivi de l’infinitif « envoyer » ; il reste invariable.",
+        "theme": "le participe passé suivi d’un infinitif (2)",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "faits",
+            "correct_fragment": "fait",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test2::participe_passe_docx_061",
+          "quiz_key": "participe_passe_test2",
+          "position": 1,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 62,
+      "source_key": "participe_passe_docx_062",
+      "theme": "le participe passé suivi d’un infinitif (2)",
+      "original": {
+        "theme": "le participe passé suivi d’un infinitif (2)",
+        "text": "Les efforts que notre équipe a eu à faire sont enfin récompensés.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. « L’équipe a dû faire des efforts » : « avoir à » ayant ici le sens de « devoir », le participe passé « eu » ne s’accorde pas avec le COD « les efforts »."
+      },
+      "original_sha256": "3b4ad3719fd817bf5d2bcb5f39f5dfabd98f2affc223e9995101469e8197c4aa",
+      "course_reference": {
+        "label": "le participe passé suivi d’un infinitif (2)",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Les efforts que notre équipe a eu à faire sont enfin récompensés.",
+        "corrected_text": "Les efforts que notre équipe a eu à faire sont enfin récompensés.",
+        "explanation": "Phrase correcte. L’équipe a dû faire les efforts : « efforts » complète « faire ». La forme « eu à faire » est correcte.",
+        "theme": "le participe passé suivi d’un infinitif (2)",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_062",
+          "quiz_key": "participe_passe_general",
+          "position": 29,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 63,
+      "source_key": "participe_passe_docx_063",
+      "theme": "les participes passés « cru », « espéré », « dû », « pu », « voulu », « su »…",
+      "original": {
+        "theme": "les participes passés « cru », « espérer », « dû », « pu », « voulu », « su »…",
+        "text": "Les travaux d’agrandissement qu’ils ont voulu faire l’année dernière n’ont jamais vu le jour.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. « Voulu » étant suivi de l’infinitif « faire », il ne s’accorde pas."
+      },
+      "original_sha256": "eb3e6cfc7875dc8b837aad53fe2658d6b6c4dccccd287d8ece3657fac4282d7f",
+      "course_reference": {
+        "label": "les participes passés « cru », « espéré », « dû », « pu », « voulu », « su »…",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Les travaux d’agrandissement qu’ils ont voulu faire l’année dernière n’ont jamais vu le jour.",
+        "corrected_text": "Les travaux d’agrandissement qu’ils ont voulu faire l’année dernière n’ont jamais vu le jour.",
+        "explanation": "Phrase correcte. Le complément « les travaux » dépend de « faire » : on écrit « voulu faire ».",
+        "theme": "les participes passés « cru », « espéré », « dû », « pu », « voulu », « su »…",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_063",
+          "quiz_key": "participe_passe_general",
+          "position": 31,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 64,
+      "source_key": "participe_passe_docx_064",
+      "theme": "les participes passés « cru », « espéré », « dû », « pu », « voulu », « su »…",
+      "original": {
+        "theme": "les participes passés « cru », « espérer », « dû », « pu », « voulu », « su »…",
+        "text": "Les seules paroles que vous avez su lui dire ont suffi à la réconforter.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. Même si le pronom « lui » est intercalé entre le participe « su » et le verbe à l’infinitif « dire », la règle s’applique : « su » ne s’accorde pas."
+      },
+      "original_sha256": "b41e8c969ad819d87e35094ba1ac71c752d48961f4fcf0a025de50bf1f15ad55",
+      "course_reference": {
+        "label": "les participes passés « cru », « espéré », « dû », « pu », « voulu », « su »…",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Les seules paroles que vous avez su lui dire ont suffi à la réconforter.",
+        "corrected_text": "Les seules paroles que vous avez su lui dire ont suffi à la réconforter.",
+        "explanation": "Phrase correcte. Ce que vous avez su faire, c’est dire ces paroles. « Su » reste invariable.",
+        "theme": "les participes passés « cru », « espéré », « dû », « pu », « voulu », « su »…",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_test2::participe_passe_docx_064",
+          "quiz_key": "participe_passe_test2",
+          "position": 9,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 65,
+      "source_key": "participe_passe_docx_065",
+      "theme": "les participes passés « couru », « coûté », « marché », « pesé », « valu », « vécu »…",
+      "original": {
+        "theme": "les participes passés « courir », « coûter », « marcher », « peser », « valoir », « vivre »…",
+        "text": "Les ennuis que cet appareil m’a valu m’ont poussé à changer de marque.",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Les ennuis que cet appareil m’a valus m’ont poussé à changer de marque. » « Cet appareil m’a valu quoi ? « les ennuis », COD, placé avant l’auxiliaire « avoir » : le participe passé s’accorde au masculin pluriel."
+      },
+      "original_sha256": "79b0c8fe72e3e564ae35569e1c1fdc5d3a77870a01763c274a74a650f032ee65",
+      "course_reference": {
+        "label": "les participes passés « couru », « coûté », « marché », « pesé », « valu », « vécu »…",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Les ennuis que cet appareil a valu à ses propriétaires les ont incités à changer de marque.",
+        "corrected_text": "Les ennuis que cet appareil a valus à ses propriétaires les ont incités à changer de marque.",
+        "explanation": "Correction : « Les ennuis que cet appareil a valus à ses propriétaires les ont incités à changer de marque. » L’appareil a valu quoi à ses propriétaires ? Des ennuis, repris avant le verbe par « que » : « valus ».",
+        "theme": "les participes passés « couru », « coûté », « marché », « pesé », « valu », « vécu »…",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "valu",
+            "correct_fragment": "valus",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_065",
+          "quiz_key": "participe_passe_general",
+          "position": 10,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 66,
+      "source_key": "participe_passe_docx_066",
+      "theme": "les participes passés « couru », « coûté », « marché », « pesé », « valu », « vécu »…",
+      "original": {
+        "theme": "les participes passés « courir », « coûter », « marcher », « peser », « valoir », « vivre »…",
+        "text": "Ils n’ont pas oublié les moments heureux qu’ils ont vécus ensemble.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte."
+      },
+      "original_sha256": "3792cc054c7111e2835e7bbdf63b87e7c6476eb6e7623e81cfadcd0c2be1031e",
+      "course_reference": {
+        "label": "les participes passés « couru », « coûté », « marché », « pesé », « valu », « vécu »…",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Ils n’ont pas oublié les moments heureux qu’ils ont vécus ensemble.",
+        "corrected_text": "Ils n’ont pas oublié les moments heureux qu’ils ont vécus ensemble.",
+        "explanation": "Phrase correcte. Ils ont vécu des moments heureux. « Que », COD placé avant « ont vécus », reprend ces moments.",
+        "theme": "les participes passés « couru », « coûté », « marché », « pesé », « valu », « vécu »…",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_066",
+          "quiz_key": "participe_passe_general",
+          "position": 33,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 67,
+      "source_key": "participe_passe_docx_067",
+      "theme": "le participe passé employé avec « en »",
+      "original": {
+        "theme": "le participe passé employé avec « en »",
+        "text": "De tous les candidats présents pour ce poste, combien en avez-vous retenu pour le prochain entretien ?",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte."
+      },
+      "original_sha256": "349cf686a78ec7932235b9f93fffe41c2cff18c09c394a061c0784ea28d460ba",
+      "course_reference": {
+        "label": "le participe passé employé avec « en »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "De tous les candidats présents pour ce poste, combien en avez-vous retenu pour le prochain entretien ?",
+        "corrected_text": "De tous les candidats présents pour ce poste, combien en avez-vous retenu pour le prochain entretien ?",
+        "explanation": "Phrase correcte. « En » représente une partie des candidats. La forme usuelle invariable « retenu » est correcte.",
+        "theme": "le participe passé employé avec « en »",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_067",
+          "quiz_key": "participe_passe_general",
+          "position": 34,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 68,
+      "source_key": "participe_passe_docx_068",
+      "theme": "le participe passé employé avec « en »",
+      "original": {
+        "theme": "le participe passé employé avec « en »",
+        "text": "Cette vue depuis la montgolfière était splendide. Regarde les photos que j’en ai prises !",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. C’est ici le pronom « que », précédant le pronom « en », qui est COD. Il remplace « les photos ». Le participe passé « prises » est donc correctement accordé au féminin pluriel avec ce COD placé avant l’auxiliaire « avoir »."
+      },
+      "original_sha256": "b90de3301f2dfc927da04b958642bff54523f013b39b1904d6ff8204619ccc22",
+      "course_reference": {
+        "label": "le participe passé employé avec « en »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Cette vue depuis la montgolfière était splendide. Regarde les photos que j’en ai prises !",
+        "corrected_text": "Cette vue depuis la montgolfière était splendide. Regarde les photos que j’en ai prises !",
+        "explanation": "Phrase correcte. « Que » reprend « les photos », COD placé avant le participe ; « en » désigne ce dont on a pris des photos.",
+        "theme": "le participe passé employé avec « en »",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_068",
+          "quiz_key": "participe_passe_general",
+          "position": 11,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 69,
+      "source_key": "participe_passe_docx_069",
+      "theme": "le participe passé des verbes « essentiellement pronominaux »",
+      "original": {
+        "theme": "le participe passé des verbes « essentiellement pronominaux »",
+        "text": "Sais-tu pourquoi Sandrine s’est absentée pendant deux jours ?",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte."
+      },
+      "original_sha256": "3d422e91d798d2f9aa902c9ecfc26f06182bdef39fad1b26e4bde103db9bb6d1",
+      "course_reference": {
+        "label": "le participe passé des verbes « essentiellement pronominaux »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Sais-tu pourquoi Sandrine s’est absentée pendant deux jours ?",
+        "corrected_text": "Sais-tu pourquoi Sandrine s’est absentée pendant deux jours ?",
+        "explanation": "Phrase correcte. Sandrine est le sujet de « s’est absentée » : féminin singulier.",
+        "theme": "le participe passé des verbes « essentiellement pronominaux »",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_069",
+          "quiz_key": "participe_passe_general",
+          "position": 37,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 70,
+      "source_key": "participe_passe_docx_070",
+      "theme": "le participe passé des verbes « essentiellement pronominaux »",
+      "original": {
+        "theme": "le participe passé des verbes « essentiellement pronominaux »",
+        "text": "Ils se sont arrogé des droits considérables sans que personne n’en ait rien su.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. Le participe passé du verbe « s’arroger », pourtant « essentiellement pronominal», ne s’accorde pas avec le sujet : c’est une exception."
+      },
+      "original_sha256": "8f21f13ae1b75615b28d71e2daefea2a44e0ba9de672119c9df6f14d6270bdc1",
+      "course_reference": {
+        "label": "le participe passé des verbes « essentiellement pronominaux »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Ils se sont arrogé des droits considérables sans que personne n’en ait rien su.",
+        "corrected_text": "Ils se sont arrogé des droits considérables sans que personne n’en ait rien su.",
+        "explanation": "Phrase correcte. Ils se sont arrogé quoi ? Des droits. Le COD suit le participe ; « se » est indirect.",
+        "theme": "le participe passé des verbes « essentiellement pronominaux »",
+        "multiple": false,
+        "contains_error": false,
+        "error_count": 0,
+        "correction_edits": [],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": true,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": false,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_070",
+          "quiz_key": "participe_passe_general",
+          "position": 13,
+          "role": "initial"
+        }
+      ]
+    },
+    {
+      "original_number": 71,
+      "source_key": "participe_passe_docx_071",
+      "theme": "le participe passé des verbes « accidentellement pronominaux »",
+      "original": {
+        "theme": "le participe passé des verbes « accidentellement pronominaux »",
+        "text": "Vous êtes-vous bien ressourcés pendant vos vacances, mesdames ?",
+        "answers": [
+          "0 erreur, faux",
+          "1 erreur, vrai"
+        ],
+        "explanation": "C'est exact ! « Vous êtes-vous bien ressourcées pendant vos vacances, mesdames ? » « Vous avez ressourcé qui ? » « vous (-mêmes) ». Le pronom « vous » étant COD, le participe passé s’accorde en genre et en nombre avec le sujet « mesdames », au féminin pluriel."
+      },
+      "original_sha256": "c22fbe7a7fe96958e0799ba8b03fe9a798bb48508a1d06a3409f010c07f4a12d",
+      "course_reference": {
+        "label": "le participe passé des verbes « accidentellement pronominaux »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "retained",
+      "reason": null,
+      "candidate": {
+        "title": "Combien d’erreurs contient cette phrase ?",
+        "text": "Vous êtes-vous bien ressourcés pendant vos vacances, mesdames ?",
+        "corrected_text": "Vous êtes-vous bien ressourcées pendant vos vacances, mesdames ?",
+        "explanation": "Correction : « Vous êtes-vous bien ressourcées pendant vos vacances, mesdames ? » « Vous » renvoie à « mesdames » ; elles ont ressourcé qui ? Elles-mêmes. D’où « ressourcées ».",
+        "theme": "le participe passé des verbes « accidentellement pronominaux »",
+        "multiple": false,
+        "contains_error": true,
+        "error_count": 1,
+        "correction_edits": [
+          {
+            "incorrect_fragment": "ressourcés",
+            "correct_fragment": "ressourcées",
+            "occurrences": 1
+          }
+        ],
+        "answers": [
+          {
+            "content": "0 erreur",
+            "correct": false,
+            "position": 0
+          },
+          {
+            "content": "1 erreur",
+            "correct": true,
+            "position": 1
+          }
+        ]
+      },
+      "assignments": [
+        {
+          "copy_key": "participe_passe_general::participe_passe_docx_071",
+          "quiz_key": "participe_passe_general",
+          "position": 40,
+          "role": "reserve"
+        }
+      ]
+    },
+    {
+      "original_number": 72,
+      "source_key": "participe_passe_docx_072",
+      "theme": "le participe passé des verbes « accidentellement pronominaux »",
+      "original": {
+        "theme": "le participe passé des verbes « accidentellement pronominaux »",
+        "text": "Ils ont réussi parce qu’ils se sont entraidés.",
+        "answers": [
+          "0 erreur, vrai",
+          "1 erreur, faux"
+        ],
+        "explanation": "C'est exact ! Phrase correcte. Le pronom « se » étant COD (« Ils ont entraidé qui ? »), le participe passé s’accorde en genre et en nombre avec le sujet « ils »."
+      },
+      "original_sha256": "f5089e5b6c53d9cabc56eb92f9b750946fd16026fa50832b16d058d6bfc8487b",
+      "course_reference": {
+        "label": "le participe passé des verbes « accidentellement pronominaux »",
+        "evidence": "Sommaire Participe passé fourni ; rattachement manuel."
+      },
+      "status": "on_hold",
+      "reason": "« S’entraider » illustre la réciprocité, mais l’énoncé sert mal la distinction entre essentiellement et accidentellement pronominal. Revoir le classement avec Caroline.",
+      "candidate": null,
+      "assignments": []
+    }
+  ],
+  "copies": [
+    {
+      "copy_key": "participe_passe_test1::participe_passe_docx_001",
+      "quiz_key": "participe_passe_test1",
+      "position": 0,
+      "role": "initial",
+      "source_key": "participe_passe_docx_001",
+      "payload_sha256": "625b293dae89416e41f74f481f503c6303a991e53fae836413d8314c1deff6d4"
+    },
+    {
+      "copy_key": "participe_passe_test1::participe_passe_docx_003",
+      "quiz_key": "participe_passe_test1",
+      "position": 1,
+      "role": "initial",
+      "source_key": "participe_passe_docx_003",
+      "payload_sha256": "36cd24fdbc2e96fd0bf79cf98214c62376dd64ea55a41f055e753207ad8d332d"
+    },
+    {
+      "copy_key": "participe_passe_test1::participe_passe_docx_030",
+      "quiz_key": "participe_passe_test1",
+      "position": 2,
+      "role": "initial",
+      "source_key": "participe_passe_docx_030",
+      "payload_sha256": "8b596fb926328c839eaae02aa86c041654f50b72fa1c55097a49be62bb431d83"
+    },
+    {
+      "copy_key": "participe_passe_test1::participe_passe_docx_008",
+      "quiz_key": "participe_passe_test1",
+      "position": 3,
+      "role": "initial",
+      "source_key": "participe_passe_docx_008",
+      "payload_sha256": "7620fa137367e67f2ccfe45789d2c5a3f0a93f2cdd9e3b852f890140bce517a8"
+    },
+    {
+      "copy_key": "participe_passe_test1::participe_passe_docx_057",
+      "quiz_key": "participe_passe_test1",
+      "position": 4,
+      "role": "initial",
+      "source_key": "participe_passe_docx_057",
+      "payload_sha256": "f71a150e93e645bcf5b58a163acb1445776707a03228a566f7f4f3efddb6138a"
+    },
+    {
+      "copy_key": "participe_passe_test1::participe_passe_docx_026",
+      "quiz_key": "participe_passe_test1",
+      "position": 5,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_026",
+      "payload_sha256": "d57b629903c4b98e076da3273b10668f1e404cccb98dda7fae6a5b03039b83e0"
+    },
+    {
+      "copy_key": "participe_passe_test1::participe_passe_docx_050",
+      "quiz_key": "participe_passe_test1",
+      "position": 6,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_050",
+      "payload_sha256": "eb9ee71e67a510834c9726ed0527fdaca51189d1bda6ffb98e7baf1831486986"
+    },
+    {
+      "copy_key": "participe_passe_test1::participe_passe_docx_004",
+      "quiz_key": "participe_passe_test1",
+      "position": 7,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_004",
+      "payload_sha256": "6d75b83fe65cea24eb3d0af97e11a5a7028553515dfa9eb87e09b19d0a70d715"
+    },
+    {
+      "copy_key": "participe_passe_test1::participe_passe_docx_006",
+      "quiz_key": "participe_passe_test1",
+      "position": 8,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_006",
+      "payload_sha256": "9e7ed7216cc10c1546505e1717835c3275aa1c270523046889632d1641c53da5"
+    },
+    {
+      "copy_key": "participe_passe_test1::participe_passe_docx_031",
+      "quiz_key": "participe_passe_test1",
+      "position": 9,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_031",
+      "payload_sha256": "647802cce9b97f8359ab8064e28f9713bf245aff63313c47443674eb682bfc82"
+    },
+    {
+      "copy_key": "participe_passe_test1::participe_passe_docx_055",
+      "quiz_key": "participe_passe_test1",
+      "position": 10,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_055",
+      "payload_sha256": "15fa90509d96bed668d2abaeb00811887b71eeedf7ec39220a64ac48e30e59ca"
+    },
+    {
+      "copy_key": "participe_passe_test1::participe_passe_docx_033",
+      "quiz_key": "participe_passe_test1",
+      "position": 11,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_033",
+      "payload_sha256": "ebba23d5af1e42f23ce64dab9bf1759e329fa40cf6acda20f7e3168dff8c0f05"
+    },
+    {
+      "copy_key": "participe_passe_test2::participe_passe_docx_011",
+      "quiz_key": "participe_passe_test2",
+      "position": 0,
+      "role": "initial",
+      "source_key": "participe_passe_docx_011",
+      "payload_sha256": "c757a57eee8ab9517e16be80ebc080457c05b5866d1a153b46541803a694dde0"
+    },
+    {
+      "copy_key": "participe_passe_test2::participe_passe_docx_061",
+      "quiz_key": "participe_passe_test2",
+      "position": 1,
+      "role": "initial",
+      "source_key": "participe_passe_docx_061",
+      "payload_sha256": "1901c9e2cf5d839ded182070bc0a0f5731fb32ac572c1273072c190b650e85e7"
+    },
+    {
+      "copy_key": "participe_passe_test2::participe_passe_docx_039",
+      "quiz_key": "participe_passe_test2",
+      "position": 2,
+      "role": "initial",
+      "source_key": "participe_passe_docx_039",
+      "payload_sha256": "953ef46675fa384e55eef213eb059e306b90bfb03229983d82621cb7e45d1aba"
+    },
+    {
+      "copy_key": "participe_passe_test2::participe_passe_docx_017",
+      "quiz_key": "participe_passe_test2",
+      "position": 3,
+      "role": "initial",
+      "source_key": "participe_passe_docx_017",
+      "payload_sha256": "5d47df7fccced78416ae9ccd1f9855f38ff21477e5725489d2513c5cf2bc8e80"
+    },
+    {
+      "copy_key": "participe_passe_test2::participe_passe_docx_043",
+      "quiz_key": "participe_passe_test2",
+      "position": 4,
+      "role": "initial",
+      "source_key": "participe_passe_docx_043",
+      "payload_sha256": "7d99a314fea6b884bed0edd66415172d53366c579178a073a597a4a0ee91503c"
+    },
+    {
+      "copy_key": "participe_passe_test2::participe_passe_docx_036",
+      "quiz_key": "participe_passe_test2",
+      "position": 5,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_036",
+      "payload_sha256": "f446a357502bc39ecbcd1136b75bda4c3531a90e9056a0803fbc61be5f4a5e1f"
+    },
+    {
+      "copy_key": "participe_passe_test2::participe_passe_docx_013",
+      "quiz_key": "participe_passe_test2",
+      "position": 6,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_013",
+      "payload_sha256": "7d2519f9ee54bbd69456248f4c1a7962d46dc6638a01ffbb1d9ca00a5327f50d"
+    },
+    {
+      "copy_key": "participe_passe_test2::participe_passe_docx_038",
+      "quiz_key": "participe_passe_test2",
+      "position": 7,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_038",
+      "payload_sha256": "173a3c0d3cebe707ecc9be1d1d6158439ee783463bf27b60fbc258c39ad3fda1"
+    },
+    {
+      "copy_key": "participe_passe_test2::participe_passe_docx_016",
+      "quiz_key": "participe_passe_test2",
+      "position": 8,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_016",
+      "payload_sha256": "82ad64f17198dd6f9b36aca9ed5d8883e01b9732e23f7b7c75a07660fb7ec976"
+    },
+    {
+      "copy_key": "participe_passe_test2::participe_passe_docx_064",
+      "quiz_key": "participe_passe_test2",
+      "position": 9,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_064",
+      "payload_sha256": "ee5912c692a706773e0941e0c7fb907208c4deb98ed6939ba8e7765bc87249ce"
+    },
+    {
+      "copy_key": "participe_passe_test2::participe_passe_docx_018",
+      "quiz_key": "participe_passe_test2",
+      "position": 10,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_018",
+      "payload_sha256": "301a5872dd86a4bd247c6502748f105bdf2f9502697584ee5c3c7cb45676a4a4"
+    },
+    {
+      "copy_key": "participe_passe_test2::participe_passe_docx_019",
+      "quiz_key": "participe_passe_test2",
+      "position": 11,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_019",
+      "payload_sha256": "a8b6a33bc7cc0ba3e099b9474e9a309ec15d0eb3fac750874d47b29acdfd4119"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_002",
+      "quiz_key": "participe_passe_general",
+      "position": 0,
+      "role": "initial",
+      "source_key": "participe_passe_docx_002",
+      "payload_sha256": "3d7d4b536f666004f0115420a512cf406598975b4345e727b09b8c3b767652a5"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_027",
+      "quiz_key": "participe_passe_general",
+      "position": 1,
+      "role": "initial",
+      "source_key": "participe_passe_docx_027",
+      "payload_sha256": "824acb783007c65911917f104cd2358cd0673ccef970b2e09d42ea2b5ea3b3e0"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_005",
+      "quiz_key": "participe_passe_general",
+      "position": 2,
+      "role": "initial",
+      "source_key": "participe_passe_docx_005",
+      "payload_sha256": "13138025193e405508faa40455225ec325b6000b245ae16e094776bb11337ddf"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_032",
+      "quiz_key": "participe_passe_general",
+      "position": 3,
+      "role": "initial",
+      "source_key": "participe_passe_docx_032",
+      "payload_sha256": "62a8a330830dc9d1fe3c829128fee05d32bcf8972fcac8991465798a07912674"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_010",
+      "quiz_key": "participe_passe_general",
+      "position": 4,
+      "role": "initial",
+      "source_key": "participe_passe_docx_010",
+      "payload_sha256": "1a8f78dd2d9854ef894c49812f4c36c9e2cb55981773d5fe19b56a578ef072d5"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_058",
+      "quiz_key": "participe_passe_general",
+      "position": 5,
+      "role": "initial",
+      "source_key": "participe_passe_docx_058",
+      "payload_sha256": "561b0f83295f303ed17efafcf8b685878cf88e1774fb25591209317ca2780871"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_012",
+      "quiz_key": "participe_passe_general",
+      "position": 6,
+      "role": "initial",
+      "source_key": "participe_passe_docx_012",
+      "payload_sha256": "9999b61382b7bb5cfacd32b2598f50070e50304c7932f75ce34a9f81bdcf478c"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_037",
+      "quiz_key": "participe_passe_general",
+      "position": 7,
+      "role": "initial",
+      "source_key": "participe_passe_docx_037",
+      "payload_sha256": "0c7f19b33efce6ee0bbbc59c4edd4e7a2b52e3b1da01e1a1f76dc5b8a678240c"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_015",
+      "quiz_key": "participe_passe_general",
+      "position": 8,
+      "role": "initial",
+      "source_key": "participe_passe_docx_015",
+      "payload_sha256": "00cf7fbfdfdab2163cdeb4690bbe15aaa2f58410b917a6f7453895232235fb22"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_042",
+      "quiz_key": "participe_passe_general",
+      "position": 9,
+      "role": "initial",
+      "source_key": "participe_passe_docx_042",
+      "payload_sha256": "5f0fdbe9b31bc04205d004098a08dd401ba7a17b5f142063ffea9292c86890c5"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_065",
+      "quiz_key": "participe_passe_general",
+      "position": 10,
+      "role": "initial",
+      "source_key": "participe_passe_docx_065",
+      "payload_sha256": "a85aefc26acc07f3ce19ca4aa1fb80353bdbda1d8f08e25a9ffc25e946a0c08b"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_068",
+      "quiz_key": "participe_passe_general",
+      "position": 11,
+      "role": "initial",
+      "source_key": "participe_passe_docx_068",
+      "payload_sha256": "d36b1262f4ba501e8a302cbb9a1e6bd03610ead9ed4df777c45c72cf352e8ab6"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_022",
+      "quiz_key": "participe_passe_general",
+      "position": 12,
+      "role": "initial",
+      "source_key": "participe_passe_docx_022",
+      "payload_sha256": "d68ace1f459b90384ce4192763ec1c871dbaf29ce55fad3cc8abfbf9637d00db"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_070",
+      "quiz_key": "participe_passe_general",
+      "position": 13,
+      "role": "initial",
+      "source_key": "participe_passe_docx_070",
+      "payload_sha256": "2918621d2bb68ec03f30078dc3b5e1781bbaccfd3aa20ae21dd5dcc1ac53de09"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_024",
+      "quiz_key": "participe_passe_general",
+      "position": 14,
+      "role": "initial",
+      "source_key": "participe_passe_docx_024",
+      "payload_sha256": "3292b323c68dea0415c7a527d42faa928c868a718d1a74f70d201a5d0a3ead75"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_047",
+      "quiz_key": "participe_passe_general",
+      "position": 15,
+      "role": "initial",
+      "source_key": "participe_passe_docx_047",
+      "payload_sha256": "8cf745f674270d72f0e54b9d5553605d47d1c131573c16f398b0d61dcad053c2"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_025",
+      "quiz_key": "participe_passe_general",
+      "position": 16,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_025",
+      "payload_sha256": "0af2a3fa3a3744fabf0863de02a36b4f2d5aa1f8bd36fd2141b576b858791dca"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_049",
+      "quiz_key": "participe_passe_general",
+      "position": 17,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_049",
+      "payload_sha256": "9ebe5a866ca92395fa35946e39173a8bb8388a40305a38062936ca9e57de52ce"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_051",
+      "quiz_key": "participe_passe_general",
+      "position": 18,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_051",
+      "payload_sha256": "5837a84b40c435655a36dc2a5dbbfc28ba49bcce150970f380c02058f90efeb9"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_052",
+      "quiz_key": "participe_passe_general",
+      "position": 19,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_052",
+      "payload_sha256": "ff531b51be999ff404041bd342f7afa62e6626143d54c31d6573fcbaa030fc4e"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_053",
+      "quiz_key": "participe_passe_general",
+      "position": 20,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_053",
+      "payload_sha256": "1d2f556456f45f03c12fe98205e6496133212d9a0054ba5257f380234d7f4292"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_054",
+      "quiz_key": "participe_passe_general",
+      "position": 21,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_054",
+      "payload_sha256": "ef9aa38ed8e1e99bec1b0aa693547981ddf05f96aff2977ec556a9e6f6a4b248"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_007",
+      "quiz_key": "participe_passe_general",
+      "position": 22,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_007",
+      "payload_sha256": "da28fbb11d514cf65ce16748135c591ba993b4bd17dd8acf3d21e552e02300fb"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_056",
+      "quiz_key": "participe_passe_general",
+      "position": 23,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_056",
+      "payload_sha256": "88be8226189f73fa70e90145a516b80dc9f1595dcddbffbde824fe25d8798034"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_009",
+      "quiz_key": "participe_passe_general",
+      "position": 24,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_009",
+      "payload_sha256": "071370d2d8c8830325a1840b580d9b4cffe364e3373c5d816b16bf89326e245c"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_034",
+      "quiz_key": "participe_passe_general",
+      "position": 25,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_034",
+      "payload_sha256": "89afbce0ee7329cb3b3645749f7fced6ecee008a899acbc9e98d973660e60033"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_059",
+      "quiz_key": "participe_passe_general",
+      "position": 26,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_059",
+      "payload_sha256": "34d3ed314cfc56f19da601bc32dffcd767e54a77da4dd27dd4f76d68781875c0"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_060",
+      "quiz_key": "participe_passe_general",
+      "position": 27,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_060",
+      "payload_sha256": "dfca466e39e0fc1333c89eae46a0eab941168e5ac475f279d84d544474b4c603"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_014",
+      "quiz_key": "participe_passe_general",
+      "position": 28,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_014",
+      "payload_sha256": "9f4e1a94c86ddab096d0ce65a7b5ffe0ff6383e7794cba24aac045effe323622"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_062",
+      "quiz_key": "participe_passe_general",
+      "position": 29,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_062",
+      "payload_sha256": "2b78044b5eb575f59a5c841415c9cf05af3ba6c40d8516ec02b719858339759f"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_040",
+      "quiz_key": "participe_passe_general",
+      "position": 30,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_040",
+      "payload_sha256": "b82651a7b6184548602dcd8781ebb58b42b2960b993754be81e7a5f980ffc908"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_063",
+      "quiz_key": "participe_passe_general",
+      "position": 31,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_063",
+      "payload_sha256": "fe760d7cfc158997f27bc6da9aaa595f4d47a4feba94dde14106685366854823"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_041",
+      "quiz_key": "participe_passe_general",
+      "position": 32,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_041",
+      "payload_sha256": "549a9e43cafdc68f5d0ae9c321d4de8a47af25d54e8d0e833d406c044025ee0f"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_066",
+      "quiz_key": "participe_passe_general",
+      "position": 33,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_066",
+      "payload_sha256": "ec42bfb1a1517afa49f35be6be2a5833ead1f9c93cd53bcb47c2f6093e8e51d6"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_067",
+      "quiz_key": "participe_passe_general",
+      "position": 34,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_067",
+      "payload_sha256": "4e8b2158bd47149ad741556d2c71d25cd89d5ded5a7c13f53e57f5732121fb26"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_021",
+      "quiz_key": "participe_passe_general",
+      "position": 35,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_021",
+      "payload_sha256": "5ea218926283773475cc4b58cf9b8be2ca962f6c8e3dfc199bc3c7149fc82a50"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_045",
+      "quiz_key": "participe_passe_general",
+      "position": 36,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_045",
+      "payload_sha256": "0af6bf1710bf4949c5bc8901358dff78827433c78a95eb57983dc774990d0868"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_069",
+      "quiz_key": "participe_passe_general",
+      "position": 37,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_069",
+      "payload_sha256": "d8a5f611d4477b789d9d266d8afccfb7a6425c43ff34c861f138dee3fb2d491e"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_023",
+      "quiz_key": "participe_passe_general",
+      "position": 38,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_023",
+      "payload_sha256": "e4f0af6d8a50dfefd6cfdfdeeba316e4e4a80c057215a4b00f454d9b619a0e8a"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_048",
+      "quiz_key": "participe_passe_general",
+      "position": 39,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_048",
+      "payload_sha256": "9c9d2ea1a59ae3fc8c82be4c1001e94153c072c686261a1cf3a636ae6e29ea50"
+    },
+    {
+      "copy_key": "participe_passe_general::participe_passe_docx_071",
+      "quiz_key": "participe_passe_general",
+      "position": 40,
+      "role": "reserve",
+      "source_key": "participe_passe_docx_071",
+      "payload_sha256": "7ad78648344d643d8d814084502b93855b023eb95952f625cb8f9d3b71151eac"
+    }
+  ],
+  "policy": {
+    "import_status_allowlist": [
+      "retained"
+    ],
+    "automatic_course_binding": false,
+    "new_quizzes_fixed": true,
+    "error_question_quota": null,
+    "corrected_text_is_documentary": true,
+    "activation": "separate",
+    "new_questions": 0
+  }
+}
