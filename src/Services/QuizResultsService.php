@@ -23,51 +23,104 @@ final class QuizResultsService
     ) {
     }
 
+    /** @return array{sections: array<int, array<string, mixed>>, hasArchives: bool} */
+    public function moduleOverview(): array
+    {
+        $rows = $this->em->createQueryBuilder()
+            ->select('IDENTITY(a.course) AS courseId', 'IDENTITY(a.quiz) AS quizId', 'COUNT(a.completedAt) AS completed')
+            ->from(QuizAttempt::class, 'a')->where('a.user = :user')->setParameter('user', $this->currentUser())
+            ->groupBy('a.course', 'a.quiz')->getQuery()->getArrayResult();
+        $passed = [];
+        foreach ($rows as $row) {
+            $passed[$row['courseId'].':'.$row['quizId']] = (int) $row['completed'] > 0;
+        }
+
+        $sections = [];
+        $hasArchives = false;
+        foreach ($this->personalCatalog($passed) as $key => $course) {
+            $section = $course->getSection();
+            if (null === $section) {
+                $hasArchives = true;
+                continue;
+            }
+            $id = $section->getId();
+            $sections[$id] ??= ['id' => $id, 'name' => $section->getName(), 'passed' => 0, 'total' => 0];
+            ++$sections[$id]['total'];
+            if ($passed[$key] ?? false) {
+                ++$sections[$id]['passed'];
+            }
+            unset($passed[$key]);
+        }
+
+        return ['sections' => $sections, 'hasArchives' => $hasArchives || [] !== $passed];
+    }
+
     /**
-     * Two fetch-joined queries, independent of the number of attempts. History is
-     * chronological (completedAt, id); no questions or responses leave this method.
+     * Personal histories in chronological order (completedAt, id).
      *
      * @return list<array<string, mixed>>
      */
-    public function results(): array
+    public function results(?int $sectionId = null, bool $archivesOnly = false): array
     {
-        $user = $this->currentUser();
-        /** @var list<QuizAttempt> $attempts */
-        $attempts = $this->em->createQueryBuilder()
+        $query = $this->em->createQueryBuilder()
             ->select('a', 'c', 'q', 's', 'p', 'currentQuiz')->from(QuizAttempt::class, 'a')
             ->leftJoin('a.course', 'c')->leftJoin('a.quiz', 'q')
             ->leftJoin('c.section', 's')->leftJoin('s.program', 'p')->leftJoin('c.quiz', 'currentQuiz')
-            ->where('a.user = :user')->setParameter('user', $user)
-            ->orderBy('a.completedAt', 'ASC')->addOrderBy('a.id', 'ASC')->getQuery()->getResult();
-        /** @var list<Courses> $courses */
-        $courses = $this->em->createQueryBuilder()
-            ->select('c', 'q', 's', 'p')->from(Courses::class, 'c')
-            ->innerJoin('c.quiz', 'q')->leftJoin('c.section', 's')->leftJoin('s.program', 'p')
-            ->where('c.contentType = :type')->setParameter('type', CourseContentType::Quiz)
-            ->orderBy('p.id', 'ASC')->addOrderBy('s.position', 'ASC')->addOrderBy('s.id', 'ASC')
-            ->addOrderBy('c.position', 'ASC')->addOrderBy('c.id', 'ASC')->getQuery()->getResult();
-
-        $groups = [];
-        foreach ($courses as $course) {
-            if ($this->security->isGranted(CourseVoter::INTERACT, $course)) {
-                $key = $course->getId().':'.$course->getQuiz()->getId();
-                $groups[$key] = ['course' => $course, 'attempts' => []];
-            }
+            ->where('a.user = :user')->setParameter('user', $this->currentUser());
+        if (null !== $sectionId) {
+            $query->andWhere('s.id = :section AND c.contentType = :type AND q.id = currentQuiz.id')
+                ->setParameter('section', $sectionId)->setParameter('type', CourseContentType::Quiz);
         }
+        $attempts = $query->orderBy('a.completedAt', 'ASC')->addOrderBy('a.id', 'ASC')->getQuery()->getResult();
+        $byKey = [];
         foreach ($attempts as $attempt) {
-            $course = $attempt->getCourse();
-            // Missing associations cannot establish editorial identity, even if titles match.
-            $key = $this->groupKey($attempt);
-            $groups[$key] ??= ['course' => $course, 'attempts' => []];
-            $groups[$key]['attempts'][] = $attempt;
+            $byKey[$this->groupKey($attempt)][] = $attempt;
         }
 
         $results = [];
-        foreach ($groups as $key => $group) {
-            $results[] = $this->group((string) $key, $group['course'], $group['attempts']);
+        foreach ($this->personalCatalog($byKey, $sectionId) as $key => $course) {
+            if (!$archivesOnly || null === $course->getSection()) {
+                $results[] = $this->group($key, $course, $byKey[$key] ?? []);
+            }
+            unset($byKey[$key]);
+        }
+        if (null === $sectionId) {
+            // Unmatched attempts belong to historical course/quiz pairs.
+            foreach ($byKey as $key => $group) {
+                $results[] = $this->group($key, $group[0]->getCourse(), $group);
+            }
         }
 
         return $results;
+    }
+
+    /**
+     * Ordered current course/quiz pairs, including personal results after access expires.
+     *
+     * @param array<string, mixed> $owned
+     *
+     * @return array<string, Courses>
+     */
+    private function personalCatalog(array $owned, ?int $sectionId = null): array
+    {
+        $query = $this->em->createQueryBuilder()
+            ->select('c', 'q', 's', 'p')->from(Courses::class, 'c')
+            ->innerJoin('c.quiz', 'q')->leftJoin('c.section', 's')->leftJoin('s.program', 'p')
+            ->where('c.contentType = :type')->setParameter('type', CourseContentType::Quiz);
+        if (null !== $sectionId) {
+            $query->andWhere('s.id = :section')->setParameter('section', $sectionId);
+        }
+        $courses = $query->orderBy('p.id', 'ASC')->addOrderBy('s.position', 'ASC')->addOrderBy('s.id', 'ASC')
+            ->addOrderBy('c.position', 'ASC')->addOrderBy('c.id', 'ASC')->getQuery()->getResult();
+        $catalog = [];
+        foreach ($courses as $course) {
+            $key = $course->getId().':'.$course->getQuiz()->getId();
+            if (isset($owned[$key]) || $this->security->isGranted(CourseVoter::INTERACT, $course)) {
+                $catalog[$key] = $course;
+            }
+        }
+
+        return $catalog;
     }
 
     /** An owned completed attempt anchors the group, including standalone archives.

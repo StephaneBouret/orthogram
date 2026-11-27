@@ -341,8 +341,7 @@ final class QuizResultsTest extends WebTestCase
         $checker = new \Symfony\Component\Security\Core\Authorization\AuthorizationChecker(
             self::getContainer()->get('security.token_storage'), self::getContainer()->get('security.access.decision_manager'));
         $gate = $this->createMock(\Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface::class);
-        $gate->expects(self::atLeastOnce())->method('isGranted')->willReturnCallback(static fn ($attribute, $subject = null) =>
-            \App\Security\Voter\CourseVoter::INTERACT !== $attribute && $checker->isGranted($attribute, $subject));
+        $gate->expects(self::atLeastOnce())->method('isGranted')->willReturnCallback(static fn ($attribute, $subject = null) => \App\Security\Voter\CourseVoter::INTERACT !== $attribute && $checker->isGranted($attribute, $subject));
         self::getContainer()->set('security.authorization_checker', $gate);
         $this->client->loginUser($this->em()->find(User::class, $userId));
         $this->client->request('GET', '/courses/quiz-formation/quiz-section/quiz-cours');
@@ -408,6 +407,16 @@ final class QuizResultsTest extends WebTestCase
         self::assertTrue($results[1]['archived']);
         self::assertNull($results[1]['courseUrl']);
         self::assertNotNull($results[1]['latest']['correctionUrl']);
+        $this->client->request('GET', '/mes-resultats');
+        self::assertSelectorTextContains('.results-module', '0 test passé sur 1');
+        $this->client->clickLink('Quiz section');
+        self::assertSelectorCount(1, 'main article');
+        self::assertSelectorTextContains('main article', 'Nouveau test');
+        $this->client->clickLink('← Tous les modules');
+        $this->client->clickLink('Archives');
+        self::assertSelectorCount(1, 'main article');
+        $this->client->clickLink('Voir mon évolution et mes tentatives');
+        self::assertSelectorExists('main > a[href="/mes-resultats/archives"]');
     }
 
     public function testDeletedQuizArchivesEachAttemptWithoutLosingItsCorrectionLink(): void
@@ -441,8 +450,10 @@ final class QuizResultsTest extends WebTestCase
     public function testResultsPageRequiresAuthenticationAndInactiveAccountsAreDisconnected(): void
     {
         $this->client->getCookieJar()->clear();
-        $this->client->request('GET', '/mes-resultats');
-        self::assertResponseRedirects('/login');
+        foreach (['/mes-resultats', $this->moduleUrl(), '/mes-resultats/archives'] as $url) {
+            $this->client->request('GET', $url);
+            self::assertResponseRedirects('/login');
+        }
         $user = $this->em()->find(User::class, $this->user->getId());
         $user->setAccountStatus(\App\Enum\UserAccountStatus::SUSPENDED);
         $this->em()->flush();
@@ -451,10 +462,15 @@ final class QuizResultsTest extends WebTestCase
         self::assertResponseRedirects('/login');
     }
 
+    private function moduleUrl(): string
+    {
+        return '/mes-resultats/modules/'.$this->course->getSection()->getId();
+    }
+
     public function testResultsPageOffersStartWithoutCreatingAnAttempt(): void
     {
         $before = $this->databaseState();
-        $crawler = $this->client->request('GET', '/mes-resultats');
+        $crawler = $this->client->request('GET', $this->moduleUrl());
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('main', 'Pas encore passé');
         self::assertSelectorNotExists('main canvas');
@@ -468,7 +484,7 @@ final class QuizResultsTest extends WebTestCase
         $attempt = $this->attempt(0, false);
         $attempt->record([$attempt->getSnapshot()['questions'][0]['answers'][0]['id']], true);
         $this->em()->flush();
-        $this->client->request('GET', '/mes-resultats');
+        $this->client->request('GET', $this->moduleUrl());
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('main', 'En cours');
         self::assertSelectorTextContains('main', 'Continuer le test');
@@ -490,7 +506,9 @@ final class QuizResultsTest extends WebTestCase
         $finished = $this->attempt($score);
         $this->attempt(0, false);
         $before = $this->databaseState();
-        $crawler = $this->client->request('GET', '/mes-resultats');
+        $this->client->request('GET', '/mes-resultats');
+        self::assertSelectorTextContains('.results-module', '1 test passé sur 1');
+        $crawler = $this->client->clickLink('Quiz section');
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.results-score', (50 * $score).' %');
         self::assertSelectorTextContains('main', 'Une tentative est en cours.');
@@ -520,6 +538,12 @@ final class QuizResultsTest extends WebTestCase
         self::assertSelectorTextContains('main', 'Aucun résultat pour le moment');
         self::assertSelectorNotExists('main article, main canvas');
         self::assertSelectorExists('main a[href="/mon-abonnement"]');
+        self::assertSelectorNotExists('main a[href="/mes-resultats/archives"]');
+        foreach ([$this->moduleUrl(), '/mes-resultats/modules/999999', '/mes-resultats/archives'] as $url) {
+            $this->client->request('GET', $url);
+            self::assertResponseStatusCodeSame(404);
+            self::assertTrue($this->client->getResponse()->headers->hasCacheControlDirective('no-store'));
+        }
     }
 
     public function testPagePreservesExpiredResultsButOffersNoForbiddenActions(): void
@@ -528,7 +552,7 @@ final class QuizResultsTest extends WebTestCase
         $this->user->setRoles([]);
         $this->em()->flush();
         $this->client->loginUser($this->user);
-        $this->client->request('GET', '/mes-resultats');
+        $this->client->request('GET', $this->moduleUrl());
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('main', '50 %');
         self::assertSelectorTextContains('main', 'Résultat conservé');
@@ -542,7 +566,7 @@ final class QuizResultsTest extends WebTestCase
         $changed = $a->getSnapshot();
         $changed['questions'][0]['explanation'] = 'Nouvelle explication';
         $this->attempt(1, snapshot: $changed);
-        $this->client->request('GET', '/mes-resultats');
+        $this->client->request('GET', $this->moduleUrl());
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.results-stats', 'Contenu du test modifié');
         self::assertSelectorTextContains('.results-stats', 'pour ce contenu du test');
@@ -550,7 +574,12 @@ final class QuizResultsTest extends WebTestCase
         $this->em()->flush();
         $this->client->request('GET', '/mes-resultats');
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('#results-archives', 'Archives');
+        self::assertSelectorNotExists('.results-module, main article');
+        $this->client->clickLink('Archives');
+        self::assertSelectorTextContains('h1', 'Mes résultats — Archives');
+        self::assertSelectorExists('nav a[href="/mes-resultats"].active');
+        self::assertSelectorExists('meta[name="turbo-cache-control"][content="no-cache"]');
+        self::assertTrue($this->client->getResponse()->headers->hasCacheControlDirective('no-store'));
         self::assertSelectorCount(2, 'main article');
         self::assertSelectorNotExists('main article .results-actions a');
         self::assertSelectorCount(2, 'main article a[href*="/historique/"]');
@@ -570,16 +599,29 @@ final class QuizResultsTest extends WebTestCase
             $this->em()->persist($entity);
         }
         $this->em()->flush();
+        $this->attempt(2, course: $second);
+        $this->attempt(0, course: $second);
+        $this->attempt(0, false, course: $second);
+        $this->attempt(0, false, course: $first);
+        $before = $this->databaseState();
         $crawler = $this->client->request('GET', '/mes-resultats');
         self::assertResponseIsSuccessful();
-        self::assertSame(['Première section', 'Quiz section'], $crawler->filter('summary h2 .results-section-name')->each(static fn ($node) => $node->text()));
-        self::assertSelectorCount(2, 'details.results-section[open]');
-        self::assertSame(['1 test', '2 tests'], $crawler->filter('.results-section-count')->each(static fn ($node) => $node->text()));
+        self::assertTrue($this->client->getResponse()->headers->hasCacheControlDirective('private'));
+        self::assertTrue($this->client->getResponse()->headers->hasCacheControlDirective('no-store'));
+        self::assertSelectorExists('meta[name="turbo-cache-control"][content="no-cache"]');
+        self::assertSelectorNotExists('main article, main canvas, main details');
+        self::assertSame(['Première section', 'Quiz section'], $crawler->filter('.results-module h2')->each(static fn ($node) => $node->text()));
+        self::assertSame(['0 test passé sur 1', '1 test passé sur 2'], $crawler->filter('.results-module .results-muted')->each(static fn ($node) => $node->text()));
+        $crawler = $this->client->clickLink('Quiz section');
+        self::assertSelectorTextContains('h1', 'Mes résultats — Quiz section');
         self::assertSame([
-            '/courses/quiz-formation/premiere/premier',
             '/courses/quiz-formation/quiz-section/deuxieme',
             '/courses/quiz-formation/quiz-section/quiz-cours',
-        ], $crawler->filter('main article a')->each(static fn ($node) => $node->attr('href')));
+        ], $crawler->filter('main article a[href^="/courses/"]')->each(static fn ($node) => $node->attr('href')));
+        $this->client->clickLink('← Tous les modules');
+        $crawler = $this->client->clickLink('Première section');
+        self::assertSame(['/courses/quiz-formation/premiere/premier'], $crawler->filter('main article a')->each(static fn ($node) => $node->attr('href')));
+        self::assertSame($before, $this->databaseState());
     }
 
     public function testPageDoesNotDrawAnInvalidZeroTotal(): void
@@ -587,7 +629,7 @@ final class QuizResultsTest extends WebTestCase
         $attempt = $this->attempt(0);
         (new \ReflectionProperty(QuizAttempt::class, 'total'))->setValue($attempt, 0);
         $this->em()->flush();
-        $this->client->request('GET', '/mes-resultats');
+        $this->client->request('GET', $this->moduleUrl());
         self::assertResponseIsSuccessful();
         self::assertSelectorTextContains('.results-score', 'Indisponible');
         self::assertSelectorNotExists('main canvas');
@@ -614,6 +656,7 @@ final class QuizResultsTest extends WebTestCase
         $crawler = $this->client->request('GET', $url);
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('nav a[href="/mes-resultats"][aria-current="page"]');
+        self::assertSame($this->moduleUrl(), $crawler->selectLink('← Quiz section')->attr('href'));
         self::assertSelectorTextContains('.results-gain', '+50 points depuis la première tentative');
         self::assertSelectorTextContains('#results-history-heading', 'Mes 5 tentatives');
         self::assertSelectorTextContains('header', 'Continuer le test');
@@ -739,6 +782,7 @@ final class QuizResultsTest extends WebTestCase
         $this->em()->flush();
         $this->em()->clear();
         $this->client->request('GET', '/mes-resultats/historique/'.$a->getId());
+        self::assertSelectorExists('main > a[href="/mes-resultats/archives"]');
         self::assertResponseIsSuccessful();
         self::assertSelectorCount(1, 'tbody tr');
         self::assertSelectorTextContains('#tentative-selectionnee', '50 %');

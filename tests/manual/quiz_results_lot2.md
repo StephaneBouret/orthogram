@@ -86,7 +86,8 @@ Points préexistants, hors de ce lot :
 ## Recette manuelle courte
 
 1. Se connecter, ouvrir « Mes résultats » après « Ma formation ». Vérifier
-   l'ordre des sections et les états « Pas encore passé » / « En cours ».
+   l’ordre des modules et leurs compteurs. Ouvrir un module au clavier pour vérifier
+   les états « Pas encore passé » et « En cours » sur ses fiches.
 2. Avec des résultats 0/50/100 %, comparer score, pourcentage et légende de
    l'anneau. Une reprise en cours conserve le dernier résultat terminé.
 3. Ouvrir « Revoir ma correction » : le titre et le score doivent correspondre
@@ -106,10 +107,12 @@ php -S 127.0.0.1:8803 -t public tests/manual/quiz_results_browser_router.php
 ```
 
 Ce routeur est réservé à `cli-server` et aux requêtes locales. Il crée uniquement
-`var/quiz-results-browser.sqlite`, vérifie son chemin avant création du schéma,
+`var/quiz-results-modules.sqlite`, vérifie son chemin avant création du schéma,
 utilise les fixtures existantes et connecte un compte de test. Il ne purge ni
 ne modifie la base configurée dans `.env`. Le fichier et les cookies de test
-sont conservés entre exécutions.
+sont conservés entre exécutions. Le compte de recette présente huit modules.
+Le script capture la grille et les trois fiches de « Module 2 » dans
+`var/mes-resultats-grille.png` et `var/mes-resultats-module-2.png`.
 
 Lancer Chrome sans fenêtre avec un profil dédié et CDP sur 8804, par exemple :
 

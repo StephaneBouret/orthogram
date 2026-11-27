@@ -1,6 +1,6 @@
 // Native Chrome CDP. Start quiz_history_browser_router.php on 8803 and Chrome CDP on 8804.
 const fs = require('node:fs');
-const origin = 'http://127.0.0.1:8803';
+const origin = process.env.RESULTS_TEST_ORIGIN || 'http://127.0.0.1:8803';
 const cdp = 'http://127.0.0.1:8804';
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 const retouches = process.env.QUIZ_HISTORY_RETOUCHES === '1';
@@ -133,19 +133,15 @@ const retouches = process.env.QUIZ_HISTORY_RETOUCHES === '1';
         await send('Input.dispatchKeyEvent', { type: 'char', text: '\r', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 });
         await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 });
     };
-    const sectionChecks = async () => {
-        await wait(`document.querySelectorAll('details.results-section[open]').length === 2 && Object.keys(historyCharts.instances).length === 6`);
-        await check(`document.querySelector('.results-section-count').textContent === '2 tests' && document.querySelectorAll('details.results-section')[0].querySelectorAll('article').length === 2`, 'compteur : deux cartes, pas huit tentatives');
-        await check(`getComputedStyle(document.querySelector('.results-section-name')).color === 'rgb(243, 151, 27)' && getComputedStyle(document.querySelector('.results-section-title')).fontWeight === '700'`, 'titre gras, orange réel du logo');
-        await evaluate(`document.querySelector('.results-section summary').focus()`);
-        await enter();
-        await wait(`!document.querySelector('.results-section').open`);
-        await check(`!document.querySelector('.results-section').open && document.querySelectorAll('.results-section')[1].open && getComputedStyle(document.activeElement).outlineStyle === 'solid'`, 'repli au clavier indépendant, focus visible');
-        await enter();
-        await wait(`document.querySelector('.results-section').open`);
+    const sectionChecks = async index => {
+        const count = retouches ? [2, 4][index] : 3;
+        await wait(`document.querySelectorAll('article').length === ${count} && Object.keys(historyCharts.instances).length === ${count}`);
         await wait(`[...document.querySelectorAll('.results-ring canvas')].every(c => c.getBoundingClientRect().width === 96 && historyCharts.getChart(c).width === 96 && historyCharts.getChart(c).height === 96)`);
-        await check(`Object.keys(historyCharts.instances).length === 6`, 'réouverture : six anneaux de 96 px sans doublon');
-        await check(`document.querySelector('.results-change--up').textContent.includes('+20 points par rapport à la précédente') && document.querySelector('.results-change--down').textContent.includes('-50 points par rapport à la précédente') && document.querySelector('.results-change--stable').textContent.includes('Stable par rapport à la précédente') && [...document.querySelectorAll('.results-change > span')].every(s => s.getAttribute('aria-hidden') === 'true')`, 'hausse, baisse, stable : libellés entiers et flèches décoratives');
+        if (!retouches) return;
+        const signs = index === 0 ? [['up', '+20 points']] : [['down', '-50 points'], ['stable', 'Stable']];
+        for (const [sign, label] of signs) {
+            await check(`document.querySelector('.results-change--${sign}').textContent.includes('${label} par rapport à la précédente') && [...document.querySelectorAll('.results-change > span')].every(s => s.getAttribute('aria-hidden') === 'true')`, `variation ${sign} et flèche décorative`);
+        }
         await check(`(() => {
             const lum = rgb => rgb.match(/\\d+/g).slice(0, 3).map(Number).map(v => v / 255).map(v => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4).reduce((n, v, i) => n + v * [.2126, .7152, .0722][i], 0);
             return [...document.querySelectorAll('.results-change')].every(e => {
@@ -159,21 +155,30 @@ const retouches = process.env.QUIZ_HISTORY_RETOUCHES === '1';
         await send('Emulation.setDeviceMetricsOverride', { width: 1366, height: 1000, deviceScaleFactor: 1, mobile: false });
         await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
         await send('Page.navigate', { url: origin + '/mes-resultats' });
-        await wait(`document.querySelectorAll('main a[href*="/historique/"]').length === ${retouches ? 6 : 3} && window.Turbo`);
-        const historyUrls = await evaluate(`[...document.querySelectorAll('main a[href*="/historique/"]')].map(a => a.href)`);
+        await wait(`document.querySelector('.results-module') && window.Turbo`);
         await evaluate(`(async () => { window.historyCharts = (await import('chart.js')).Chart; window.historyMarker = true; })()`);
-        if (retouches) {
-            for (const width of [1366, 390]) {
-                await send('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: width < 500 });
-                for (const theme of ['light', 'dark']) {
-                    await evaluate(`document.documentElement.dataset.bsTheme = '${theme}'; localStorage.setItem('theme', '${theme}')`);
-                    await sectionChecks();
-                    await evaluate('document.activeElement.blur(); window.scrollTo(0,0)');
-                    await screenshot(`results-${width}-${theme}`);
+        const historyUrls = [];
+        const moduleCount = retouches ? 2 : 1;
+        for (let index = 0; index < moduleCount; index++) {
+            await check(`document.querySelectorAll('.results-module').length === ${moduleCount} && !document.querySelector('main canvas')`, 'grille personnelle sans graphique');
+            await evaluate(`document.querySelectorAll('.results-module')[${index}].click()`);
+            await sectionChecks(index);
+            historyUrls.push(...await evaluate(`[...document.querySelectorAll('main a[href*="/historique/"]')].map(a => a.href)`));
+            if (retouches) {
+                for (const width of [1366, 390]) {
+                    await send('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: width < 500 });
+                    for (const theme of ['light', 'dark']) {
+                        await evaluate(`document.documentElement.dataset.bsTheme = '${theme}'; localStorage.setItem('theme', '${theme}')`);
+                        await sectionChecks(index);
+                    }
                 }
             }
-            await send('Emulation.setDeviceMetricsOverride', { width: 1366, height: 1000, deviceScaleFactor: 1, mobile: false });
+            await evaluate(`document.querySelector('main > a').click()`);
+            await wait(`document.querySelector('.results-module') && Object.keys(historyCharts.instances).length === 0`);
         }
+        await send('Emulation.setDeviceMetricsOverride', { width: 1366, height: 1000, deviceScaleFactor: 1, mobile: false });
+        await evaluate(`document.querySelector('.results-module').click()`);
+        await sectionChecks(0);
         await evaluate(`document.querySelector('main a[href*="/historique/"]').click()`);
         await wait(ready);
         await check(`document.querySelector('.results-gain').textContent.includes('+50 points') && document.querySelectorAll('tbody tr').length === 5`, 'cinq tentatives terminées, gain +50, active exclue');
@@ -211,7 +216,7 @@ const retouches = process.env.QUIZ_HISTORY_RETOUCHES === '1';
         await check(`window.historyMarker === true`, 'retour explicite par Turbo vers la même sélection');
         if (retouches) {
             await evaluate(`document.querySelector('main > a').click()`);
-            await sectionChecks();
+            await sectionChecks(0);
             await evaluate('history.back()');
             await wait(ready);
             await check(`${labels}.length === 5 && ${line}.config.plugins.filter(p => p.id === 'result-percentages').length === 1`, 'retour Turbo : étiquettes et plugin unique');
@@ -291,14 +296,11 @@ const retouches = process.env.QUIZ_HISTORY_RETOUCHES === '1';
         await send('Emulation.setScriptExecutionDisabled', { value: true });
         if (retouches) {
             await send('Page.navigate', { url: origin + '/mes-resultats' });
-            await wait(`document.querySelector('.results-section summary')`);
-            await evaluate(`document.querySelector('.results-section summary').focus()`);
+            await wait(`document.querySelector('.results-module')`);
+            await evaluate(`document.querySelector('.results-module').focus()`);
             await enter();
-            await wait(`!document.querySelector('.results-section').open`);
-            await check(`!document.querySelector('.results-section').open && document.querySelectorAll('.results-section')[1].open`, 'sans JavaScript : repli natif au clavier indépendant');
-            await enter();
-            await wait(`document.querySelector('.results-section').open`);
-            await check(`document.querySelector('.results-section').open`, 'sans JavaScript : réouverture native');
+            await wait(`location.pathname.includes('/modules/') && document.querySelectorAll('article').length === 2`);
+            await check(`document.querySelector('main > a').pathname === '/mes-resultats'`, 'sans JavaScript : accès au module au clavier et retour vers la grille');
         }
         await send('Page.navigate', { url: selections[2] });
         await wait(`document.querySelector('tbody tr') && document.querySelector('#tentative-selectionnee').textContent.includes('50 %')`);

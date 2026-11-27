@@ -52,7 +52,7 @@ de sa finalisation ou de son idempotence ; aucune nouvelle dépendance.
 
 ## Recette courte des trois lots
 
-1. Se connecter et ouvrir « Mes résultats » dans la navbar. Vérifier les états
+1. Se connecter, ouvrir « Mes résultats » dans la navbar et choisir un module. Vérifier les états
    non passé/en cours, les scores 0/50/100 %, les légendes et le maintien du
    dernier score lorsqu'une nouvelle tentative est active.
 2. Ouvrir l'historique du test à cinq résultats 40, 60, 50, 70 et 90 %.
@@ -83,7 +83,7 @@ php -S 127.0.0.1:8803 -t public tests/manual/quiz_history_browser_router.php
 ```
 
 Ce routeur est limité au serveur PHP local et vérifie le chemin de sa seule
-base `var/quiz-history-browser.sqlite` avant création du schéma. Il utilise les
+base `var/quiz-history-modules.sqlite` avant création du schéma. Il utilise les
 fixtures existantes et conserve cette base ainsi que les cookies entre les
 exécutions. Il ne peuple ni ne purge la base configurée dans `.env`. Les trois
 tests de recette sont le groupe comparable avec tentative active, le groupe
@@ -147,7 +147,7 @@ déploiement effectué pour ce lot.
 
 Pour la recette élargie, définir `$env:QUIZ_HISTORY_RETOUCHES='1'` dans les deux
 terminaux avant de lancer le routeur et le script CDP ci-dessus. Cette variante
-crée uniquement `var/quiz-history-retouches.sqlite` et ses propres cookies,
+crée uniquement `var/quiz-history-modules-retouches.sqlite` et ses propres cookies,
 sans effacer la recette précédente. Elle contient deux tests dans « Les
 fondamentaux », une seconde section indépendante et les cas stable, baisse,
 première tentative à zéro, 100 % et 40 tentatives le même jour.
@@ -172,10 +172,10 @@ Contrôles des retouches réellement effectués :
   `history-mobile-dark.png` (évolution), `history-dense-mobile-light.png` et
   `history-dense-mobile-dark.png` (historique dense).
 
-Pour vérifier manuellement : replier la première section au clavier, constater
-que la seconde reste ouverte, rouvrir puis suivre une carte vers son historique.
-Changer le thème, sélectionner une ancienne tentative, revenir et rouvrir la
-section. Refaire sans JavaScript et sur mobile. Les règles de calcul et de
+Pour vérifier manuellement, ouvrir le premier module au clavier, puis une fiche
+et son historique. Changer de thème, sélectionner une ancienne tentative et
+revenir au module. Utiliser « ← Tous les modules » pour ouvrir le second
+module. Refaire le parcours sans JavaScript et sur mobile. Les règles de calcul et de
 comparabilité restent celles du service du lot 1.
 
 ### Vérification du tableau mobile en thème clair

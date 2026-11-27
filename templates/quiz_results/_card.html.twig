@@ -10,7 +10,7 @@
                     {{ card.hasInProgress ? 'En cours' : 'Pas encore passé' }}
                 {% endif %}
             </p>
-            <h3 class="h4 mb-2" id="{{ cardId }}-title">{{ card.title }}</h3>
+            <h2 class="h4 mb-2" id="{{ cardId }}-title">{{ card.title }}</h2>
             {% if latest %}
                 <p class="results-muted mb-0">{{ latest.score }} bonne{{ latest.score > 1 ? 's' : '' }} réponse{{ latest.score > 1 ? 's' : '' }} sur {{ latest.total }} question{{ latest.total > 1 ? 's' : '' }}</p>
             {% else %}

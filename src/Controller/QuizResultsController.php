@@ -23,26 +23,43 @@ final class QuizResultsController extends AbstractController
     }
 
     #[Route('/mes-resultats', name: 'app_quiz_results', methods: ['GET'])]
-    public function index(QuizResultsService $results, ChartBuilderInterface $chartBuilder): Response
+    public function index(QuizResultsService $results): Response
     {
-        $cards = $results->results();
+        return $this->render('quiz_results/index.html.twig', $results->moduleOverview() + ['resumeCourse' => $this->bookmarks->current()],
+            new Response(headers: ['Cache-Control' => 'private, no-store']));
+    }
+
+    #[Route('/mes-resultats/modules/{id}', name: 'app_quiz_results_module', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function module(string $id, QuizResultsService $results, ChartBuilderInterface $chartBuilder): Response
+    {
+        $cards = $results->results(sectionId: $this->positiveId($id));
+
+        return $this->cardPage($cards, $chartBuilder, $cards[0]['section']['name'] ?? null);
+    }
+
+    #[Route('/mes-resultats/archives', name: 'app_quiz_results_archives', methods: ['GET'])]
+    public function archives(QuizResultsService $results, ChartBuilderInterface $chartBuilder): Response
+    {
+        $cards = $results->results(archivesOnly: true);
         usort($cards, static fn (array $a, array $b) => $a['catalogOrder'] <=> $b['catalogOrder'] ?: strcmp($a['key'], $b['key']));
-        $sections = [];
-        $archives = [];
-        foreach ($cards as $card) {
-            $latest = $card['latest'];
-            $card['chart'] = $this->doughnut($chartBuilder, $latest);
-            if ($card['archived'] || null === $card['section']) {
-                $archives[] = $card;
-            } else {
-                $id = $card['section']['id'];
-                $sections[$id] ??= ['id' => $id, 'name' => $card['section']['name'], 'cards' => []];
-                $sections[$id]['cards'][] = $card;
-            }
+
+        return $this->cardPage($cards, $chartBuilder);
+    }
+
+    /** @param list<array<string, mixed>> $cards */
+    private function cardPage(array $cards, ChartBuilderInterface $chartBuilder, ?string $moduleName = null): Response
+    {
+        $headers = ['Cache-Control' => 'private, no-store'];
+        if ([] === $cards) {
+            throw new NotFoundHttpException('Résultats introuvables.', headers: $headers);
+        }
+        foreach ($cards as $index => $card) {
+            $cards[$index]['chart'] = $this->doughnut($chartBuilder, $card['latest']);
         }
 
-        return $this->render('quiz_results/index.html.twig', ['sections' => $sections, 'archives' => $archives, 'resumeCourse' => $this->bookmarks->current()],
-            new Response(headers: ['Cache-Control' => 'private, no-store']));
+        return $this->render('quiz_results/module.html.twig', [
+            'moduleName' => $moduleName, 'cards' => $cards, 'resumeCourse' => $this->bookmarks->current(),
+        ], new Response(headers: $headers));
     }
 
     #[Route('/mes-resultats/historique/{anchor}', name: 'app_quiz_results_history', requirements: ['anchor' => '\d+'], methods: ['GET'])]
@@ -63,7 +80,7 @@ final class QuizResultsController extends AbstractController
     private function positiveId(mixed $value): int
     {
         if (!is_string($value) || !ctype_digit($value) || (int) $value < 1 || (string) (int) $value !== $value) {
-            throw new NotFoundHttpException('Tentative introuvable.', headers: ['Cache-Control' => 'private, no-store']);
+            throw new NotFoundHttpException('Identifiant introuvable.', headers: ['Cache-Control' => 'private, no-store']);
         }
 
         return (int) $value;

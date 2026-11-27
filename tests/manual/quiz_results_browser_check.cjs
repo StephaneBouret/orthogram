@@ -47,6 +47,13 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
         const result = await send('Page.captureScreenshot', { format: 'png' });
         fs.writeFileSync(`var/results-${name}.png`, Buffer.from(result.data, 'base64'));
     };
+    const fullScreenshot = async name => {
+        await evaluate('window.scrollTo(0, 0); document.fonts.ready');
+        const { cssContentSize } = await send('Page.getLayoutMetrics');
+        const result = await send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: true,
+            clip: { x: 0, y: 0, width: await evaluate('document.documentElement.clientWidth'), height: cssContentSize.height, scale: 1 } });
+        fs.writeFileSync(`var/${name}.png`, Buffer.from(result.data, 'base64'));
+    };
     const ready = `window.resultsChart && document.querySelectorAll('main canvas').length === 3 && [...document.querySelectorAll('main canvas')].every(canvas => resultsChart.getChart(canvas)?.width > 0)`;
     try {
         await send('Page.enable');
@@ -56,6 +63,38 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
         await send('Page.navigate', { url: origin + '/mes-resultats' });
         await wait(`document.querySelector('main.quiz-results') && window.Turbo`);
         await evaluate(`(async () => { window.resultsChart = (await import('chart.js')).Chart; localStorage.setItem('theme', 'light'); document.documentElement.setAttribute('data-bs-theme', 'light'); window.resultsDocumentMarker = true; return true; })()`);
+        const moduleLink = "document.querySelectorAll('.results-module')[2]";
+        await check(`document.querySelectorAll('.results-module').length === 8 && !document.querySelector('main canvas') && ${moduleLink}.textContent.includes('3 tests passés sur 3')`, 'grille de huit modules, compteur de Module 2');
+        for (const [width, columns] of [[1366, 4], [768, 2], [390, 1], [320, 1]]) {
+            await send('Emulation.setDeviceMetricsOverride', { width, height: 960, deviceScaleFactor: 1, mobile: width < 500 });
+            for (const theme of ['light', 'dark']) {
+                await evaluate(`document.documentElement.dataset.bsTheme = '${theme}'; localStorage.setItem('theme', '${theme}')`);
+                await check(`getComputedStyle(document.querySelector('.results-modules')).gridTemplateColumns.split(' ').length === ${columns} && document.documentElement.scrollWidth <= document.documentElement.clientWidth`, `grille ${width}px ${theme} : ${columns} colonne(s), sans débordement`);
+                if (width === 1366 && theme === 'dark') await fullScreenshot('mes-resultats-grille');
+            }
+        }
+        const title = "document.querySelector('.results-module h2')";
+        await evaluate(`window.originalTitle = ${title}.textContent; ${title}.textContent = 'Les fondamentaux de l’orthographe et les particularités grammaticales'`);
+        await check(`${title}.offsetHeight > 2 * parseFloat(getComputedStyle(${title}).lineHeight) && ${title}.scrollWidth <= ${title}.clientWidth && document.documentElement.scrollWidth <= document.documentElement.clientWidth`, 'titre long lisible à 320 px');
+        await evaluate(`${title}.textContent = originalTitle`);
+        await send('Emulation.setDeviceMetricsOverride', { width: 1366, height: 960, deviceScaleFactor: 1, mobile: false });
+        await evaluate("document.querySelectorAll('.results-module')[1].focus()");
+        await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Tab', windowsVirtualKeyCode: 9 });
+        await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Tab', windowsVirtualKeyCode: 9 });
+        await check(`${moduleLink} === document.activeElement && ${moduleLink}.matches(':focus-visible') && getComputedStyle(${moduleLink}).outlineStyle === 'solid'`, 'focus clavier visible sur la carte Module 2');
+        const moduleUrl = await evaluate(`${moduleLink}.href`);
+        await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', windowsVirtualKeyCode: 13 });
+        await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Enter', windowsVirtualKeyCode: 13 });
+        await wait(ready);
+        await check(`document.querySelector('h1').textContent === 'Mes résultats — Module 2' && document.querySelectorAll('article').length === 3 && window.resultsDocumentMarker`, 'activation clavier avec Turbo et trois fiches dédiées');
+        await fullScreenshot('mes-resultats-module-2');
+        await evaluate('history.back()');
+        await wait(`document.querySelector('.results-module') && Object.keys(resultsChart.instances).length === 0`);
+        await evaluate(`${moduleLink}.click()`);
+        await wait(ready);
+        await send('Page.reload');
+        await wait(`!window.resultsDocumentMarker && document.querySelector('article') && location.href === ${JSON.stringify(moduleUrl)}`);
+        await evaluate(`(async () => { window.resultsChart = (await import('chart.js')).Chart; window.resultsDocumentMarker = true; localStorage.setItem('theme', 'light'); document.documentElement.dataset.bsTheme = 'light'; })()`);
         await wait(ready);
         await check(`JSON.stringify([...document.querySelectorAll('main canvas')].map(c => resultsChart.getChart(c).data.datasets[0].data)) === '[[0,2],[1,1],[2,0]]'`, 'anneaux 0 / 50 / 100 %, valeurs exactes');
         await check(`Object.values(resultsChart.instances).length === 3`, 'une instance UX par canvas');
@@ -82,14 +121,17 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
         for (const width of [320, 768, 1024]) {
             await send('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: width < 768 });
             await delay(200);
-            await check(`document.documentElement.scrollWidth <= innerWidth`, `${width}px sans débordement`);
+            for (const theme of ['light', 'dark']) {
+                await evaluate(`document.documentElement.dataset.bsTheme = '${theme}'`);
+                await check(`document.documentElement.scrollWidth <= document.documentElement.clientWidth && [...document.querySelectorAll('.results-ring canvas')].every(c => resultsChart.getChart(c).width === 96)`, `${width}px ${theme} : anneaux visibles sans débordement`);
+            }
         }
         for (let cycle = 0; cycle < 2; cycle++) {
             await evaluate(`document.querySelector('main a[href*="/tentatives/"]').click()`);
             await wait(`location.pathname.includes('/tentatives/') && document.querySelector('main details') && Object.keys(resultsChart.instances).length === 0`);
             await check(`window.resultsDocumentMarker === true`, 'navigation Turbo réelle et destruction des graphiques au départ');
             await evaluate('history.back()');
-            await wait(`location.pathname === '/mes-resultats' && ${ready}`);
+            await wait(`location.href === ${JSON.stringify(moduleUrl)} && ${ready}`);
             await check(`Object.keys(resultsChart.instances).length === 3`, 'retour Turbo sans canvas ni instance doublés');
         }
         if (errors.length) throw Error('Console: ' + errors.join('\n'));

@@ -9,7 +9,7 @@ $project = dirname(__DIR__, 2);
 require $project.'/vendor/autoload.php';
 (new Symfony\Component\Dotenv\Dotenv())->bootEnv($project.'/.env');
 $retouches = '1' === getenv('QUIZ_HISTORY_RETOUCHES');
-$fixtureName = $retouches ? 'quiz-history-retouches' : 'quiz-history-browser';
+$fixtureName = $retouches ? 'quiz-history-modules-retouches' : 'quiz-history-modules';
 $database = str_replace('\\', '/', $project).'/var/'.$fixtureName.'.sqlite';
 $initialize = !is_file($database);
 $_ENV['DATABASE_URL'] = $_SERVER['DATABASE_URL'] = 'sqlite:///'.$database;
@@ -91,7 +91,7 @@ if (!file_exists($jarPath)) {
     $client->loginUser($em->find(App\Entity\User::class, 1));
 }
 $headers = array_filter($_SERVER, static fn ($key) => str_starts_with($key, 'HTTP_') || in_array($key, ['CONTENT_TYPE', 'CONTENT_LENGTH']), ARRAY_FILTER_USE_KEY);
-$client->request($_SERVER['REQUEST_METHOD'], 'http://127.0.0.1:8803'.$_SERVER['REQUEST_URI'], $_POST, [], $headers, file_get_contents('php://input'));
+$client->request($_SERVER['REQUEST_METHOD'], 'http://127.0.0.1:'.$_SERVER['SERVER_PORT'].$_SERVER['REQUEST_URI'], $_POST, [], $headers, file_get_contents('php://input'));
 $response = $client->getResponse();
 file_put_contents($jarPath, serialize($client->getCookieJar()));
 http_response_code($response->getStatusCode());

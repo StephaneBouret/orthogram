@@ -120,10 +120,16 @@ final class CourseBookmarkTest extends WebTestCase
         $before = $this->em()->getConnection()->fetchAllAssociative('SELECT * FROM quiz_attempt');
         $this->visit('quiz-cours'); // Reopening a completed quiz must preserve its attempt.
         $this->visit('lecture'); // A completed course is a valid bookmark.
-        foreach (['/mes-resultats', '/mes-resultats/historique/'.$attempt->getId(), '/mes-resultats/tentatives/'.$attempt->getId()] as $url) {
+        $pages = [
+            '/mes-resultats' => 'Reprendre ma formation',
+            '/mes-resultats/modules/'.$quiz->getSection()->getId() => 'Reprendre ma formation',
+            '/mes-resultats/historique/'.$attempt->getId() => 'Reprendre mon cours',
+            '/mes-resultats/tentatives/'.$attempt->getId() => 'Reprendre mon cours',
+        ];
+        foreach ($pages as $url => $label) {
             $this->client->request('GET', $url);
             self::assertResponseIsSuccessful();
-            self::assertSelectorTextContains('a[href="'.self::READER.'lecture"][data-turbo-prefetch="false"]', 'Reprendre mon cours');
+            self::assertSelectorTextContains('a[href="'.self::READER.'lecture"][data-turbo-prefetch="false"]', $label);
             self::assertSelectorExists('meta[name="turbo-cache-control"][content="no-cache"]');
             self::assertTrue($this->client->getResponse()->headers->hasCacheControlDirective('private'));
             self::assertSame($this->readingId, $this->bookmark());
@@ -261,7 +267,7 @@ final class CourseBookmarkTest extends WebTestCase
         $this->em()->flush();
         $this->client->request('GET', '/mes-resultats');
         self::assertResponseIsSuccessful();
-        self::assertStringNotContainsString('Reprendre mon cours', $this->client->getResponse()->getContent());
+        self::assertStringNotContainsString('Reprendre ma formation', $this->client->getResponse()->getContent());
         self::assertNull($this->bookmark());
         self::assertSame(2, $this->em()->getRepository(User::class)->count([]));
     }
@@ -314,7 +320,7 @@ final class CourseBookmarkTest extends WebTestCase
         $this->em()->flush();
         $this->client->request('GET', '/mes-resultats');
         self::assertResponseIsSuccessful();
-        self::assertStringNotContainsString('Reprendre mon cours', $this->client->getResponse()->getContent());
+        self::assertStringNotContainsString('Reprendre ma formation', $this->client->getResponse()->getContent());
         $this->client->request('POST', '/course/'.$this->quizId.'/bookmark', server: ['HTTP_X_CSRF_TOKEN' => $token]);
         self::assertResponseStatusCodeSame(403);
         $this->client->request('GET', self::READER.'quiz-cours');

@@ -9,10 +9,11 @@
 
 {% block body %}
     <main class="quiz-results container py-5">
-        <a href="{{ path('app_quiz_results') }}" class="d-inline-block mb-4">← Retour à mes résultats</a>
+        {% set inModule = group.section and not group.archived %}
+        <a href="{{ inModule ? path('app_quiz_results_module', {id: group.section.id}) : path('app_quiz_results_archives') }}" class="d-inline-block mb-4">← {{ inModule ? group.section.name : 'Archives' }}</a>
         <header class="results-card-heading mb-4">
             <div class="results-card-description">
-                <p class="results-eyebrow">{{ group.section ? group.section.name : 'Archives' }}</p>
+                <p class="results-eyebrow">{{ inModule ? group.section.name : 'Archives' }}</p>
                 <h1 class="h3">{{ group.title }}</h1>
                 <p class="results-muted mb-0">Mon évolution et mes tentatives</p>
             </div>
